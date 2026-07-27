@@ -46,11 +46,6 @@ pub struct ZimBuilder {
     pub zlib_clusters: bool,
 }
 
-#[derive(Clone, Debug)]
-pub struct Blob {
-    pub data: Vec<u8>,
-}
-
 impl ZimBuilder {
     pub fn add_article(
         mut self,
@@ -114,7 +109,7 @@ impl ZimBuilder {
             };
             let _ = mime_index_for(m, &mut mimes);
         }
-        drop(mime_index_for);
+        let _ = mime_index_for;
 
         // MIME list — starts at offset 80.
         let mut mime_list_bytes: Vec<u8> = Vec::new();
