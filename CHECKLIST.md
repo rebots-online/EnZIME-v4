@@ -57,39 +57,39 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: canonical serialization/invalid digest tests pass.
   - Accept: IDs contain no path or URL.
 
-- [ ] **P1-03 Implement ZIM ports**
+- [/] **P1-03 Implement ZIM ports**
   - Allowed files: `crates/ports/src/zim.rs`, module export, tests.
   - Do: implement exact §7 public types and `ZimEngine`/`ZimArchive`.
   - Verify: public signature snapshot equals architecture.
   - Accept: port imports no AnZIMmerman/provider crate.
 
-- [ ] **P1-04 Implement catalog and transfer ports**
+- [/] **P1-04 Implement catalog and transfer ports**
   - Allowed files: `crates/ports/src/catalog.rs`,
     `crates/ports/src/transfer.rs`, exports, tests.
   - Do: implement exact §8 traits/types/errors.
   - Verify: signature/serialization snapshots pass.
   - Accept: application can plan without HTTP/file concrete imports.
 
-- [ ] **P1-05 Implement annotation and signature ports**
+- [/] **P1-05 Implement annotation and signature ports**
   - Allowed files: domain annotation/trust modules, ports signature module,
     tests.
   - Do: implement §9 types/traits and validation.
   - Verify: selector bounds and signature-domain tests pass.
   - Accept: multi-selector and trust states are complete.
 
-- [ ] **P1-06 Implement inference, embedding and retrieval ports**
+- [/] **P1-06 Implement inference, embedding and retrieval ports**
   - Allowed files: inference/embedding/retrieval port/domain modules, tests.
   - Do: implement exact §§10–11 types and traits.
   - Verify: signature/serde snapshot tests pass.
   - Accept: no runtime provider imported.
 
-- [ ] **P1-07 Implement lore and entitlement ports**
+- [/] **P1-07 Implement lore and entitlement ports**
   - Allowed files: lore/entitlement domain/port modules, tests.
   - Do: implement exact §§12–13 entities, traits and errors.
   - Verify: state/policy unit tests pass.
   - Accept: candidate cannot become accepted memory implicitly.
 
-- [ ] **P1-08 Apply SQLite initial migration**
+- [/] **P1-08 Apply SQLite initial migration**
   - Allowed files: `schemas/sqlite/0001_initial.sql`,
     `crates/storage-sqlite/`, tests.
   - Do: transcribe §6 executable SQL exactly and implement migration runner.

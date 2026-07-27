@@ -1,0 +1,9 @@
+I have the complete specification. Let me examine the existing structure and write the files.Now I need to add `async-trait` and `bytes` to domain's Cargo.toml since annotation.rs uses them:Let me verify the build compiles correctly:Both compile errors are outside my task scope:
+- `model` module is declared in orchestrator-owned `lib.rs` for another coder
+- `ArticleDocument` is referenced in §9.2 but not defined anywhere in §9 — transcribed exactly per instructions
+
+Files created/modified:
+- **Created** `crates/domain/src/annotation.rs` — §9.1 selector model + entities, §9.2 `AnnotationResolver` trait + `AnnotationError`, §9.3 `AnnotationService` trait + `AnnotationAssetInput`/`AnnotationAssetRecord`
+- **Created** `crates/domain/src/trust.rs` — §9.5 `SignatureEnvelope`, `SignatureVerification`, `SignatureVerificationState`
+- **Created** `crates/ports/src/signature.rs` — §9.5 `SignatureProvider` trait + `SignatureError`
+- **Modified** `crates/domain/Cargo.toml` — added `async-trait = "0.1"` and `bytes = { version = "1", features = ["serde"] }`

@@ -1,0 +1,10 @@
+Now I have everything I need. Let me create the three files.Let me do a parse-only syntax check on each of my three files to confirm they're well-formed Rust:Expected errors (single-file compile lacks crate context). The file parses cleanly. Let me confirm the other two parse cleanly:All three files parse cleanly; the only errors are unresolved-imports from single-file parsing (no extern crates linked), which is expected. Cargo.toml files already declare all dependencies I use (`async-trait`, `bytes`, `futures-core`, `serde`, `thiserror`, `domain`), so no Cargo.toml changes were needed.
+
+**Created:**
+- `crates/domain/src/pack.rs` — §8.1 durable pack entities: `PackManifest`, `PackKind`, `PackVersionSummary`, `VerificationState` (imports `PackId`/`PackVersionId` from `crate::identity`).
+- `crates/ports/src/catalog.rs` — §8.2 catalog types, `CatalogSource` trait, `CatalogError`.
+- `crates/ports/src/transfer.rs` — §8.2 transfer types, `TransferByteStream` alias, `TransferSource` trait, `TransferError`; §8.3 `InstallPlan`, `StorageDestination`, `TransferMode`, `VerificationPlan`; §8.5 transfer-limit constants (`TRANSFER_CHUNK_BYTES`, `TRANSFER_MAX_PARALLEL_CHUNKS_ANDROID`/`_DESKTOP`, `TRANSFER_MAX_REDIRECTS`, `TRANSFER_PROBE_MAX_BYTES`, `TRANSFER_CATALOG_MAX_BYTES`, `TRANSFER_RETRY_COUNT`, `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_MAX_MS`).
+
+**Not modified:** both `lib.rs` files (orchestrator-owned), `Cargo.toml` files (deps already present), existing `identity.rs`/`zim.rs`.
+
+Full-workspace `cargo check` will not pass yet because sibling modules declared in the orchestrator-owned `lib.rs` files (e.g. `domain::lore`, `ports::inference`) are being written by parallel coders — out of scope for P1-04.

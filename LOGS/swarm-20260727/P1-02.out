@@ -1,0 +1,9 @@
+I'll create the four files now.Compilation failure: `ContentDigest` derives `Hash` but its field type `DigestAlgorithm` doesn't. Let me check the canonical §7.1 in ARCHITECTURE.md.The canonical §7.1 has the same derives — `ContentDigest: Hash` but `DigestAlgorithm` without `Hash`. This is internally inconsistent: `ContentDigest` cannot derive `Hash` if its field type doesn't. The minimal fix preserving the spec's explicit intent (`ContentDigest` is `Hash`) is to add `Hash` to `DigestAlgorithm`. The task forbids *dropping* a derive; it does not forbid adding one, and adding `Hash` to a fieldless enum is benign (no serialization/equality change).All 12 tests pass.
+
+**Files created/modified:**
+- `crates/domain/Cargo.toml` — added `serde`+`thiserror` deps and `serde_json` dev-dep
+- `crates/domain/src/lib.rs` — populated with `#![forbid(unsafe_code)]` and `pub mod identity;`
+- `crates/domain/src/identity.rs` — new: six identity types, `IdentityError`, `parse`/`as_str` for the four identifier newtypes, `sha256_from_hex`/`hex`/`algorithm` for `ContentDigest`, `hex_len` for `DigestAlgorithm`
+- `crates/domain/tests/identity.rs` — new: 12 tests covering round-trip serde, location-bearing rejection, empty/whitespace/length boundaries, and SHA-256 hex validation
+
+**One deviation, noted for verification:** ARCHITECTURE.md §7.1 (and the task spec, which is byte-faithful to it) derives `Hash` on `ContentDigest` but not on `DigestAlgorithm`, which is uncompilable in Rust. I added `Hash` to `DigestAlgorithm`'s derive list (the minimal fix that preserves the spec's explicit intent that `ContentDigest` be hashable; the task forbids dropping a derive but not adding one, and `Hash` on a fieldless enum changes no serialization, equality, or ABI). This should be flagged to the architect for an §7.1 amendment.

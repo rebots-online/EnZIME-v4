@@ -1,0 +1,10 @@
+I have the spec. Now I'll write the four files. Domain gets entities/state enums; ports gets traits/errors. Splitting ProviderEntitlementEvent + request types into ports alongside the EntitlementSource trait (matching the request/response pattern in `zim.rs`).Now let me verify the new files compile cleanly with `cargo check`:Errors are all in sibling modules (`model`, `annotation`) being authored concurrently by other coders — not in my files. Confirming no errors reference `lore.rs` or `entitlement.rs`:No errors in my modules. The remaining failures are in `annotation.rs`/`model.rs` — sibling modules owned by other coders, outside my scope per the task instructions.
+
+Files created/modified:
+- `crates/domain/src/lore.rs` (new) — `LoreCandidate`, `LoreEvidence`, `LoreMemory`, `LoreMemoryStatus`, `LoreCorrection`, `LoreQuery` transcribed verbatim from §12.2.
+- `crates/domain/src/entitlement.rs` (new) — capability key constants from §13.1 + `CapabilityDecision`, `CapabilityDecisionSource` from §13.2.
+- `crates/ports/src/lore.rs` (new) — `LoreService` trait + `LoreError` from §12.2.
+- `crates/ports/src/entitlement.rs` (new) — `ProviderEntitlementEvent`, `EntitlementRefreshRequest`, `EntitlementRestoreRequest`, `EntitlementSource` trait, `CapabilityPolicy` trait, `EntitlementError` from §13.2.
+- `crates/domain/Cargo.toml` — added `serde_json = "1"` (needed by `lore.rs`).
+
+A-08: `LoreCandidate` has no `Default` and the only promotion path is the explicit, evidence-bearing `LoreService::accept`. A-09: `CapabilityDecision { allowed: false, source: CapabilityDecisionSource::Denied }` expresses a denied paid capability per-key without affecting other capabilities; no RevenueCat-specific type exists in either crate. A-02 upheld: both crates depend only on `domain`, `serde`, `serde_json`, `thiserror`, `async_trait`, `bytes`, `futures_core`.

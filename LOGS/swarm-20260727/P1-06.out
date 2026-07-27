@@ -1,0 +1,9 @@
+Now I have a complete picture. The task spec contains `BackendKind` and `ModelFormat` enums whose variants (`LiteRtLm`, `Gguf`, `LiteRt`) are litert/gguf-named — AMD-2 forbids creating these. I'll transcribe everything else exactly and let compile errors flow per the task's "completeness beats compilation" rule.**Created files:**
+- `crates/domain/src/model.rs` — `ModelLifecycleState` derived from §10.5 mermaid states
+- `crates/ports/src/inference.rs` — §10.1 supporting types and traits + §10.4 selection types
+- `crates/ports/src/embedding.rs` — §10.2 `EmbeddingBackend` trait and types (reuses `InferenceError`)
+- `crates/ports/src/retrieval.rs` — §11.2 retrieval contracts (`Retriever`, `ContextBuilder`, scope/hit/locator types)
+
+**Known compile issue (per AMD-2 instruction):** I did **not** define `BackendKind` or `ModelFormat` — their only variants are litert/gguf-named (`LiteRtLm`, `LiteRt`, `Gguf`), which §26 AMD-2 forbids. `BackendDescriptor` and `ModelManifest` reference these undefined types; per the task's "completeness beats compilation" rule, this will surface for resolution in a later debug pass.
+
+No Cargo.toml changes were required (all needed deps already present). No `lib.rs` files modified.

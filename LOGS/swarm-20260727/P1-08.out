@@ -1,0 +1,8 @@
+I need to see the truncated section between `chunk_embeddings` and `models`.Now let me explore the existing crate structure.Let me check existing crate dependencies for patterns.Now I'll extract the verbatim §6.2 schema into the target SQL file.Now I'll write the migration runner. First the Cargo.toml:Now let me try a compile check on just this crate.Compile passes. Let me sanity-check the SQL contents cover all expected tables.Done. Files created/modified:
+
+- **`schemas/sqlite/0001_initial.sql`** (new, 706 lines) — §6.2 verbatim: 51 `CREATE TABLE`, 1 `CREATE VIRTUAL TABLE` (`retrieval_chunks_fts`), 22 `CREATE INDEX`, 8 `CREATE TRIGGER`, wrapped in `BEGIN IMMEDIATE; … COMMIT;` exactly as written.
+- **`crates/storage-sqlite/src/migration.rs`** (new) — `MigrationRunner` with `ensure_schema_migrations_table`, `list_applied`, `is_applied`, `apply_initial`, `apply_versioned`; `apply_pragmas`/`open_with_pragmas` (§6.1 WAL+foreign_keys ON at connection time); `sha256_hex` for §6.4 fingerprinting; `MigrationError::{ClockBeforeEpoch, FingerprintMismatch, Sqlite}`; `INITIAL_VERSION`/`INITIAL_NAME`/`INITIAL_SQL` (`include_str!`-bound at compile time so SQL drift fails the build).
+- **`crates/storage-sqlite/src/lib.rs`** (rewritten) — `#![forbid(unsafe_code)]`, declares `pub mod migration;` and re-exports.
+- **`crates/storage-sqlite/Cargo.toml`** — added `rusqlite = { version = "0.32", features = ["bundled"] }`, `sha2 = "0.10"`, `thiserror = "2"`.
+
+Did not touch `crates/domain/src/lib.rs` or `crates/ports/src/lib.rs` (orchestrator-owned). `cargo check -p storage-sqlite` passes.

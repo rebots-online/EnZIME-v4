@@ -4,3 +4,11 @@ version.workspace = true
 edition.workspace = true
 license-file.workspace = true
 authors.workspace = true
+
+[dependencies]
+domain = { path = "../domain" }
+async-trait = "0.1"
+bytes = { version = "1", features = ["serde"] }
+futures-core = "0.3"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"

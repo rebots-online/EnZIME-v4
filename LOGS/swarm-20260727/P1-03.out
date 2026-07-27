@@ -1,0 +1,10 @@
+Now I'll create the zim.rs port module and update Cargo.toml.The compile error is entirely in the `domain` crate (declared modules `model`/`pack`/`trust` don't exist yet — those are owned by parallel tasks P1-02 siblings). My zim.rs only depends on `domain::identity`, which IS implemented. Let me verify my file's syntax parses cleanly in isolation:Only `unresolved crate` errors (expected — running rustc without dependencies). No syntax errors in zim.rs. Let me confirm by filtering the cargo output for any errors actually inside `zim.rs`:Zero errors reference `zim.rs` or `ports/src/*`. All 7 errors are inside the `domain` crate (its missing `model.rs`, `pack.rs`, `trust.rs` modules — owned by parallel tasks, off-limits to me per the task constraints).
+
+## Files created or modified
+
+- **Created** `crates/ports/src/zim.rs` — all entities, error enum, stream type alias, and `ZimEngine`/`ZimArchive` traits, verbatim from §7.1/§7.2. No implementations (correct — this is a port crate).
+- **Modified** `crates/ports/Cargo.toml` — added the `[dependencies]` block (`domain`, `async-trait`, `bytes` w/ `serde`, `futures-core`, `serde` w/ `derive`, `thiserror`). `[package]` block untouched.
+
+Architectural constraint A-02 honored: the crate depends only on `domain` and plain serialization/async utilities — no provider crate is referenced.
+
+Stopping here per task instructions (no commit, tree left dirty, no second task picked up).
