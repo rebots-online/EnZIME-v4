@@ -1,0 +1,280 @@
+# Copyright (C) 2025–2026 Robin L. M. Cheung, MBA
+# All rights reserved.
+# Unauthorized use without prior written consent is strictly prohibited.
+
+name: Build EnZIM
+# EnZIM CI/CD Build Workflow
+# Copyright (C) 2025 Robin L. M. Cheung, MBA. All rights reserved.
+
+on:
+  push:
+    branches: [main, master, develop]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  WIX: C:\WixTools
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact_suffix: linux
+            runs-on: [self-hosted, linux]
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_suffix: windows
+            runs-on: [self-hosted, windows]
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Read version
+        id: version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            core.setOutput('version', pkg.version);
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install dependencies (Ubuntu)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Calculate build number
+        id: build_number
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const m = Math.floor(Date.now() / 60000) % 100000;
+            const bn = String(m).padStart(5, '0');
+            core.setOutput('build_number', bn);
+            console.log('Build number: ' + bn);
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Verify dependency versions
+        run: npx tauri --version
+
+      - name: Setup WiX for Tauri (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { execSync } = require('child_process');
+            const localAppData = process.env.LOCALAPPDATA || '';
+            const tauriWix = path.join(localAppData, 'tauri', 'WixTools314');
+            const systemWix = 'C:\\WixTools';
+            // Remove broken cached copy
+            if (fs.existsSync(tauriWix)) {
+              fs.rmSync(tauriWix, { recursive: true, force: true });
+              console.log('Removed cached WiX at ' + tauriWix);
+            }
+            // Copy system-installed WiX (admin-extracted, no MOTW block)
+            if (fs.existsSync(systemWix)) {
+              fs.mkdirSync(tauriWix, { recursive: true });
+              execSync(`xcopy "${systemWix}\\*" "${tauriWix}\\" /E /Y /Q`);
+              console.log('Copied system WiX from ' + systemWix + ' to ' + tauriWix);
+              // Verify light.exe exists
+              const lightExe = path.join(tauriWix, 'light.exe');
+              console.log('light.exe exists: ' + fs.existsSync(lightExe));
+            } else {
+              console.log('WARNING: System WiX not found at ' + systemWix);
+            }
+
+      - name: Build Tauri app
+        run: npx tauri build --target ${{ matrix.target }}
+
+      - name: Rename binaries with version + build number
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const tag = 'v${{ steps.version.outputs.version }}-${{ steps.build_number.outputs.build_number }}';
+            const bundle = path.join('src-tauri', 'target', '${{ matrix.target }}', 'release', 'bundle');
+            const dirs = ['appimage', 'deb', 'msi', 'nsis'];
+            const exts = ['.AppImage', '.deb', '.msi', '.exe'];
+            for (const dir of dirs) {
+              const full = path.join(bundle, dir);
+              if (!fs.existsSync(full)) continue;
+              for (const f of fs.readdirSync(full)) {
+                const ext = path.extname(f);
+                const stem = path.basename(f, ext);
+                if (exts.includes(ext)) {
+                  const oldPath = path.join(full, f);
+                  const newPath = path.join(full, `${stem}_${tag}${ext}`);
+                  fs.renameSync(oldPath, newPath);
+                  console.log(`Renamed: ${f} -> ${stem}_${tag}${ext}`);
+                }
+              }
+            }
+
+      - name: Upload Linux artifacts
+        if: matrix.platform == 'ubuntu-22.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: enzim-v${{ steps.version.outputs.version }}-${{ steps.build_number.outputs.build_number }}-${{ matrix.artifact_suffix }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+          if-no-files-found: warn
+
+      - name: Upload Windows artifacts
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: enzim-v${{ steps.version.outputs.version }}-${{ steps.build_number.outputs.build_number }}-${{ matrix.artifact_suffix }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+          if-no-files-found: warn
+
+  # Android build
+  build-android:
+    runs-on: [self-hosted, linux, android]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK
+        run: |
+          # Use NDK 27 which is well-tested with Tauri 2
+          sdkmanager --install "ndk;27.0.12077973"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/27.0.12077973" >> $GITHUB_ENV
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Initialize Tauri Android
+        run: |
+          npx tauri android init
+          # Verify generated project structure
+          ls -la src-tauri/gen/android/ || true
+
+      - name: Calculate build number
+        id: build_number
+        run: |
+          EPOCH_MINUTES=$(($(date +%s) / 60))
+          BUILD_NUM=$((EPOCH_MINUTES % 100000))
+          echo "build_number=$(printf '%05d' $BUILD_NUM)" >> $GITHUB_OUTPUT
+
+      - name: Build Android APK
+        run: npx tauri android build --verbose
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: enzim-v${{ steps.version.outputs.version }}-${{ steps.build_number.outputs.build_number }}-android
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
+          if-no-files-found: warn
+
+
+  # Release job - only runs on tags
+  release:
+    needs: [build, build-android]
+    runs-on: [self-hosted, linux]    
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Calculate build number
+        id: build_number
+        run: |
+          EPOCH_MINUTES=$(($(date +%s) / 60))
+          BUILD_NUM=$((EPOCH_MINUTES % 100000))
+          echo "build_number=$(printf '%05d' $BUILD_NUM)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: EnZIM ${{ github.ref_name }}.${{ steps.build_number.outputs.build_number }}
+          body: |
+            ## EnZIM - Offline ZIM Reader & Knowledge Explorer
+            
+            **Version:** ${{ github.ref_name }}.${{ steps.build_number.outputs.build_number }}
+            
+            ### Downloads
+            - **Linux:** `.deb` (Debian/Ubuntu), `.AppImage` (Universal)
+            - **Windows:** `.msi` (Installer), `.exe` (NSIS)
+            - **Android:** `.apk` (Universal)
+            
+            ---
+            Copyright (C) 2025 Robin L. M. Cheung, MBA. All rights reserved.
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

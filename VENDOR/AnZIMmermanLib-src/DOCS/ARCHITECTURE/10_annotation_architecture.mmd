@@ -1,0 +1,338 @@
+# EnZIM Annotation System - Data Flow & Architecture Diagrams
+
+## Annotation Creation Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant ReaderView
+    participant CanvasLayer as CanvasAnnotationLayer
+    participant TextHighlighter
+    participant AnnotationPanel
+    participant Store as useAnnotationStore
+    participant Storage as IndexedDB + Files
+
+    alt Click-to-Stick Annotation
+        User->>CanvasLayer: Click on article content
+        CanvasLayer->>CanvasLayer: calculateRelativePosition()
+        CanvasLayer->>ReaderView: handleCanvasPlacement(x, y, type)
+        ReaderView->>AnnotationPanel: Open at position
+        User->>AnnotationPanel: Create annotation (voice/ink/text/photo/video)
+        AnnotationPanel->>Store: addAnnotation()
+        Store->>Storage: Persist to IndexedDB
+        Store->>Storage: Save media blob to app-private files
+        Store-->>CanvasLayer: Update pinnedAnnotations
+        CanvasLayer-->>User: Render pin icon on canvas
+    else Text Highlight
+        User->>TextHighlighter: Select text
+        TextHighlighter->>TextHighlighter: getSelectionInfo()
+        TextHighlighter->>TextHighlighter: generateSelector()
+        User->>TextHighlighter: Choose highlight color
+        TextHighlighter->>Store: addAnnotation(type: 'highlight')
+        Store->>Storage: Persist to IndexedDB
+        Store-->>TextHighlighter: Update highlights
+        TextHighlighter-->>User: Render highlight overlay
+    end
+```
+
+## Sidecar Bundle Export Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant ReaderView
+    participant ExportDialog as BundleExportDialog
+    participant BundleUtil as annotationBundle.ts
+    participant ZIMService as zimService.ts
+    participant Store as useAnnotationStore
+    participant Storage as App Files
+    participant UserDevice as Downloads/Share
+
+    User->>ReaderView: Click Export button
+    ReaderView->>ExportDialog: Open export dialog
+    ExportDialog->>Store: getAnnotationsForArticle()
+    Store-->>ExportDialog: annotations[]
+    User->>ExportDialog: Confirm export
+    ExportDialog->>ZIMService: Get current archive path
+    ZIMService-->>ExportDialog: filePath
+    ExportDialog->>BundleUtil: computeZIMFingerprint(filePath)
+    BundleUtil-->>ExportDialog: fingerprint
+    ExportDialog->>BundleUtil: exportAnnotationBundle(annotations, fingerprint, ...)
+    BundleUtil->>Storage: Read media blobs
+    BundleUtil->>BundleUtil: Create ZIP with manifest + metadata + annotations/
+    BundleUtil-->>ExportDialog: bundleBlob
+    ExportDialog->>UserDevice: Trigger download via URL.createObjectURL()
+    UserDevice-->>User: .enzim file saved
+```
+
+## Sidecar Bundle Import Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant ReaderView
+    participant ImportDialog as BundleImportDialog
+    participant BundleUtil as annotationBundle.ts
+    participant Store as useAnnotationStore
+    participant ZIMService as zimService.ts
+    participant Storage as IndexedDB + Files
+
+    User->>ReaderView: Click Import button
+    ReaderView->>ImportDialog: Open import dialog
+    User->>ImportDialog: Select .enzim file
+    ImportDialog->>BundleUtil: extractManifest(bundleBlob)
+    BundleUtil-->>ImportDialog: manifest
+    ImportDialog->>ZIMService: Get current archive fingerprint
+    ZIMService-->>ImportDialog: localFingerprint
+    ImportDialog->>BundleUtil: verifyZIMFingerprint(manifest.zimFingerprint, localFingerprint)
+    alt Fingerprints Match
+        BundleUtil-->>ImportDialog: true
+        ImportDialog-->>User: Show "Verified" status
+        User->>ImportDialog: Confirm import
+        ImportDialog->>BundleUtil: importAnnotationBundle(bundleBlob, localFingerprint)
+        BundleUtil->>BundleUtil: Extract ZIP, parse annotations
+        BundleUtil-->>ImportDialog: { manifest, annotations[] }
+        ImportDialog->>Store: importAnnotations(annotations)
+        Store->>Storage: Persist to IndexedDB
+        Store->>Storage: Save media blobs
+        Store-->>ReaderView: Update annotation state
+        ReaderView-->>User: Render imported pins/highlights
+    else Fingerprints Mismatch
+        BundleUtil-->>ImportDialog: false
+        ImportDialog-->>User: Show warning with zimSource info
+        User->>ImportDialog: Cancel or proceed anyway
+    end
+```
+
+## Component Hierarchy
+
+```mermaid
+graph TD
+    ReaderView[ReaderView.tsx] --> ReaderToolbar[ReaderToolbar]
+    ReaderView --> ArticleContent[ArticleContent div#article-content]
+    ReaderView --> AnnotationPanel[AnnotationPanel conditional render]
+    ReaderView --> ExportDialog[BundleExportDialog conditional]
+    ReaderView --> ImportDialog[BundleImportDialog conditional]
+    ReaderView --> ShareMenu[ShareMenu conditional]
+
+    ReaderToolbar --> NavButtons[Navigation Buttons]
+    ReaderToolbar --> ZoomControls[Zoom Controls]
+    ReaderToolbar --> BookmarkBtn[Bookmark Toggle]
+    ReaderToolbar --> ShareBtn[Share Button]
+    ReaderToolbar --> ExportBtn[Export Button]
+    ReaderToolbar --> ImportBtn[Import Button]
+    ReaderToolbar --> PinBtn[Pin Placement Toggle]
+    ReaderToolbar --> PanelToggle[Annotation Panel Toggle]
+
+    ArticleContent --> TextHighlighter[TextHighlighter component]
+    ArticleContent --> CanvasLayer[CanvasAnnotationLayer overlay]
+
+    CanvasLayer --> PinnedAnnotations[PinnedAnnotation[] render loop]
+
+    AnnotationPanel --> VoiceRecorder[VoiceRecorder tab]
+    AnnotationPanel --> InkCanvas[InkCanvas tab]
+    AnnotationPanel --> TextNoteEditor[TextNoteEditor tab]
+    AnnotationPanel --> PhotoCapture[PhotoCapture tab]
+    AnnotationPanel --> VideoCapture[VideoCapture tab]
+    AnnotationPanel --> SavedAnnotations[Saved Annotations List]
+
+    VoiceRecorder --> MediaRecorder[MediaRecorder API]
+    InkCanvas --> HTMLCanvas[HTML5 Canvas API]
+    PhotoCapture --> FileInput[File Input with capture="environment"]
+    VideoCapture --> FileInput2[File Input with capture="environment"]
+    TextNoteEditor --> TextArea[textarea with color picker]
+```
+
+## Store Data Flow
+
+```mermaid
+graph LR
+    subgraph ZustandStore[useAnnotationStore]
+        State[annotations: Annotation[]]
+        Methods[addAnnotation<br/>updateAnnotation<br/>removeAnnotation<br/>getAnnotationsForArticle<br/>getAllAnnotations<br/>importAnnotations<br/>searchAnnotations]
+    end
+
+    subgraph Persistence[zustand/middleware persist]
+        IndexedDB[(IndexedDB<br/>enzim-annotation-store)]
+    end
+
+    subgraph MediaStorage[App-Private File Storage]
+        VoiceFiles[annotations/voice-*.webm]
+        InkFiles[annotations/ink-*.png]
+        PhotoFiles[annotations/photo-*.jpg]
+        VideoFiles[annotations/video-*.mp4]
+    end
+
+    subgraph Components
+        CanvasLayer[CanvasAnnotationLayer]
+        AnnotationPanel[AnnotationPanel]
+        AnnotationsView[AnnotationsView sidebar]
+    end
+
+    Components -->|dispatch| Methods
+    Methods -->|updates| State
+    State -->|persists| Persistence
+    Methods -->|reads/writes| MediaStorage
+    State -->|renders| Components
+```
+
+## Sharing Protocol Architecture
+
+```mermaid
+graph TD
+    subgraph Export["Export Flow"]
+        Annotations[Annotation[]] -->|exportAnnotationBundle| Bundle[.enzim ZIP Bundle]
+        ZIMFile[ZIM File] -->|computeZIMFingerprint| Fingerprint[SHA-256 Fingerprint]
+        Fingerprint --> Bundle
+        Bundle -->|option 1| Email[Email Attachment]
+        Bundle -->|option 2| QRCode[QR Code<br/>max 2KB]
+        Bundle -->|option 3| P2P[P2P WebRTC<br/>future]
+        Bundle -->|option 4| Cloud[Cloud Storage<br/>future premium]
+    end
+
+    subgraph Import["Import Flow"]
+        ReceivedBundle[Received .enzim] -->|extractManifest| Manifest[manifest.json]
+        LocalZIM[Local ZIM File] -->|computeZIMFingerprint| LocalFingerprint[Local Fingerprint]
+        Manifest -->|zimFingerprint| Verify{Verify Match?}
+        LocalFingerprint --> Verify
+        Verify -->|match| ImportAnnotations[Import Annotations]
+        Verify -->|mismatch| ShowWarning[Show Warning<br/>with zimSource]
+        ImportAnnotations -->|importAnnotations| Store[useAnnotationStore]
+    end
+
+    Email -.-> ReceivedBundle
+    QRCode -.-> ReceivedBundle
+    P2P -.-> ReceivedBundle
+    Cloud -.-> ReceivedBundle
+```
+
+## Mobile vs Desktop Architecture
+
+```mermaid
+graph TB
+    subgraph Shared[Shared Components]
+        CoreAnnotationPanel[AnnotationPanel.tsx]
+        CoreStore[useAnnotationStore.ts]
+        CoreBundle[annotationBundle.ts]
+    end
+
+    subgraph Desktop[Desktop Tauri]
+        DTauriFS[Tauri FS API<br/>save to Downloads]
+        DShell[Tauri Shell<br/>open file picker]
+        DShare[Web Share API fallback]
+    end
+
+    subgraph Mobile[Mobile Tauri/WebView]
+        MCamera[Camera API<br/>capture="environment"]
+        MShare[Native Share Intent]
+        MQrScan[QR Scanner<br/>camera access]
+        MTouch[Touch Events<br/>for ink drawing]
+    end
+
+    subgraph Web[Web PWA]
+        WIndexedDB[IndexedDB<br/>persist storage]
+        WFileSystem[File System Access API<br/>where supported]
+        WShare[Web Share API]
+    end
+
+    CoreAnnotationPanel -->|uses| DTauriFS
+    CoreAnnotationPanel -->|uses| DShell
+    CoreAnnotationPanel -->|uses| DShare
+
+    CoreAnnotationPanel -->|uses| MCamera
+    CoreAnnotationPanel -->|uses| MShare
+    CoreAnnotationPanel -->|uses| MQrScan
+    CoreAnnotationPanel -->|uses| MTouch
+
+    CoreAnnotationPanel -->|uses| WIndexedDB
+    CoreAnnotationPanel -->|uses| WFileSystem
+    CoreAnnotationPanel -->|uses| WShare
+
+    CoreStore -->|persists to| DTauriFS
+    CoreStore -->|persists to| WIndexedDB
+    CoreStore -->|persists to| MShare
+
+    CoreBundle -->|exports via| DTauriFS
+    CoreBundle -->|exports via| WShare
+    CoreBundle -->|exports via| MShare
+```
+
+## Annotation Positioning System
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Canvas as CanvasAnnotationLayer
+    participant Container as Article Content Container
+    participant Store as useAnnotationStore
+    participant Render as Render Loop
+
+    User->>Canvas: Click at (clientX, clientY)
+    Canvas->>Container: getBoundingClientRect()
+    Container-->>Canvas: rect {top, left, width, height}
+    Canvas->>Canvas: calculateRelativePosition()
+    Note over Canvas: xPercent = ((clientX - rect.left) / rect.width) * 100<br/>yPercent = ((clientY - rect.top) / rect.height) * 100
+    Canvas->>Store: addAnnotation({position: {x: xPercent, y: yPercent}})
+    Store-->>Canvas: Updated annotations list
+    Canvas->>Render: Render pinned annotations
+    Render->>Render: For each annotation:<br/>displayX = (xPercent / 100) * containerWidth<br/>displayY = (yPercent / 100) * containerHeight
+    Render-->>User: Pin icon at calculated position
+
+    Note over User,Render: On window resize:<br/>Recalculate displayX/displayY from stored percentages
+```
+
+## Bundle File Format Detail
+
+```mermaid
+graph LR
+    subgraph Bundle["annotation-bundle.enzim<br/>ZIP Archive"]
+        Manifest[manifest.json<br/>version, zimFingerprint, articleUrl, etc.]
+        Metadata[metadata.json<br/>export metadata, creator, platform]
+        AnnotationsDir[annotations/ directory]
+
+        AnnotationsDir --> Voice[voice-001.webm<br/>voice-002.webm]
+        AnnotationsDir --> Ink[ink-001.png<br/>ink-002.png]
+        AnnotationsDir --> Photo[photo-001.jpg<br/>photo-002.jpg]
+        AnnotationsDir --> Video[video-001.mp4<br/>video-002.mp4]
+    end
+
+    subgraph Validation["Import Validation"]
+        Extract[Extract ZIP] --> ReadManifest[Read manifest.json]
+        ReadManifest --> GetLocalFingerprint[Compute local ZIM fingerprint]
+        GetLocalFingerprint --> Compare{Compare fingerprints}
+        Compare -->|match| Import[Import annotations]
+        Compare -->|mismatch| Warning[Show mismatch warning]
+    end
+
+    Bundle -.->|imported by| Validation
+```
+
+## Keyboard Shortcuts & Interactions
+
+```mermaid
+graph LR
+    subgraph Shortcuts[Keyboard Shortcuts]
+        CmdShiftA[Cmd/Ctrl + Shift + A<br/>Toggle annotation panel]
+        CmdShiftH[Cmd/Ctrl + Shift + H<br/>Toggle highlight mode]
+        CmdShiftP[Cmd/Ctrl + Shift + P<br/>Toggle pin placement mode]
+        Escape[Escape<br/>Close annotation panel]
+    end
+
+    subgraph Mouse[Mouse/Touch Interactions]
+        Click[Click canvas<br/>Place pin in placement mode]
+        Select[Select text<br/>Show highlight toolbar]
+        Drag[Drag on canvas<br/>Ink drawing in ink mode]
+        TapPin[Click/tap pin<br/>Edit annotation]
+        LongPress[Long press<br/>Context menu]
+    end
+
+    subgraph Gestures[Mobile Gestures]
+        Pinch[Pinch<br/>Zoom article]
+        Swipe[Swipe<br/>Navigate history]
+        DoubleTap[Double tap<br/>Toggle fullscreen]
+    end
+
+    Shortcuts -->|handled by| useAnnotationShortcuts
+    Mouse -->|handled by| CanvasAnnotationLayer
+    Gestures -->|handled by| ReaderView
+```

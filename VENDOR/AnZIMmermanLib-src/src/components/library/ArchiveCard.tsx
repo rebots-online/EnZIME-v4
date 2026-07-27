@@ -1,0 +1,172 @@
+// Copyright (C) 2025–2026 Robin L. M. Cheung, MBA
+// All rights reserved.
+// Unauthorized use without prior written consent is strictly prohibited.
+
+// EnZIM - Offline ZIM Reader & Knowledge Explorer
+// Copyright (C) 2025 Robin L. M. Cheung, MBA. All rights reserved.
+
+import { useState } from 'react';
+import { BookOpen, MoreVertical, FolderOpen, Info, CheckSquare, Square, StickyNote } from 'lucide-react';
+import { ZimArchive } from '../../stores/archiveStore';
+import { useAnnotationStore } from '../../stores/annotationStore';
+
+interface ArchiveCardProps {
+  archive: ZimArchive;
+  viewMode: 'grid' | 'list';
+  onOpen: () => void;
+  selected?: boolean;
+  onToggleSelect?: () => void;
+}
+
+function formatSize(bytes: number): string {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let size = bytes;
+  let unitIndex = 0;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  return `${size.toFixed(1)} ${units[unitIndex]}`;
+}
+
+function formatNumber(num: number): string {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toString();
+}
+
+export function ArchiveCard({ archive, viewMode, onOpen, selected, onToggleSelect }: ArchiveCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const annotationCount = useAnnotationStore((s) => s.getAnnotationCountForArchive(archive.id));
+  if (viewMode === 'list') {
+    return (
+      <div 
+        className={`surface rounded-lg p-4 flex items-center gap-4 hover:border-[var(--accent)] cursor-pointer transition-colors ${selected ? 'ring-2 ring-[var(--accent)] border-[var(--accent)]' : ''}`}
+        onClick={onOpen}
+      >
+        {/* Selection checkbox */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSelect?.(); }}
+          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 flex-shrink-0"
+        >
+          {selected ? <CheckSquare className="w-5 h-5 text-[var(--accent)]" /> : <Square className="w-5 h-5 text-secondary opacity-40 hover:opacity-100" />}
+        </button>
+
+        {/* Icon */}
+        <div className="w-12 h-12 bg-gradient-to-br from-cyan-400/20 to-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+          {archive.favicon ? (
+            <img src={archive.favicon} alt="" className="w-8 h-8" />
+          ) : (
+            <BookOpen className="w-6 h-6 text-[var(--accent)]" />
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium truncate">{archive.title || archive.name}</h3>
+          <p className="text-sm text-secondary truncate">{archive.description}</p>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-center gap-6 text-sm text-secondary">
+          <span>{formatNumber(archive.articleCount)} articles</span>
+          {annotationCount > 0 && (
+            <span className="flex items-center gap-1">
+              <StickyNote className="w-3.5 h-3.5" />
+              {formatNumber(annotationCount)}
+            </span>
+          )}
+          <span>{formatSize(archive.size)}</span>
+          <span className="uppercase">{archive.language}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="relative">
+          <button 
+            className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
+          >
+            <MoreVertical className="w-4 h-4" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-full mt-1 surface rounded-lg shadow-xl border border-[var(--border)] py-1 min-w-[160px] z-50">
+              <button
+                onClick={(e) => { e.stopPropagation(); onOpen(); setMenuOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--accent)] hover:text-white transition-colors"
+              >
+                <FolderOpen className="w-4 h-4" /> Open
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); alert(`${archive.title || archive.name}\n${archive.description}\n${formatNumber(archive.articleCount)} articles • ${formatSize(archive.size)} • ${archive.language}`); setMenuOpen(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--accent)] hover:text-white transition-colors"
+              >
+                <Info className="w-4 h-4" /> Details
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className={`surface rounded-xl overflow-hidden hover:border-[var(--accent)] cursor-pointer transition-all hover:shadow-lg group ${selected ? 'ring-2 ring-[var(--accent)] border-[var(--accent)]' : ''}`}
+      onClick={onOpen}
+    >
+      {/* Header/Icon */}
+      <div className="h-32 bg-gradient-to-br from-cyan-400/20 to-blue-600/20 flex items-center justify-center relative">
+        {archive.favicon ? (
+          <img src={archive.favicon} alt="" className="w-16 h-16" />
+        ) : (
+          <BookOpen className="w-12 h-12 text-[var(--accent)]" />
+        )}
+        
+        {/* Selection indicator */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleSelect?.(); }}
+          className="absolute top-2 left-2 p-1 rounded bg-black/30 hover:bg-black/50 transition-colors z-10"
+        >
+          {selected ? <CheckSquare className="w-5 h-5 text-[var(--accent)]" /> : <Square className="w-5 h-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity" />}
+        </button>
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); onOpen(); }}
+            className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+            title="Open"
+          >
+            <FolderOpen className="w-5 h-5 text-white" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); alert(`${archive.title || archive.name}\n${archive.description}\n${formatNumber(archive.articleCount)} articles • ${formatSize(archive.size)} • ${archive.language}`); }}
+            className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+            title="Details"
+          >
+            <Info className="w-5 h-5 text-white" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="font-medium truncate mb-1">{archive.title || archive.name}</h3>
+        <p className="text-sm text-secondary line-clamp-2 mb-3">{archive.description}</p>
+        
+        {/* Stats */}
+        <div className="flex items-center justify-between text-xs text-secondary">
+          <span>{formatNumber(archive.articleCount)} articles</span>
+          {annotationCount > 0 && (
+            <span className="flex items-center gap-0.5">
+              <StickyNote className="w-3 h-3" />
+              {formatNumber(annotationCount)}
+            </span>
+          )}
+          <span>{formatSize(archive.size)}</span>
+          <span className="uppercase font-medium">{archive.language}</span>
+        </div>
+      </div>
+    </div>
+  );
+}

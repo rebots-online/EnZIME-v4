@@ -10,8 +10,5 @@ apps/*/dist/
 # Never any tmp (I-8)
 .tmp/
 
-# Vendored upstream trees: large; assimilation (embedded .git removal) is an
-# operator-directed step per INC-15. Lock file VENDOR/VENDOR-LOCK.md is tracked.
-VENDOR/tauri/
-VENDOR/wllama3/
-VENDOR/AnZIMmermanLib-src/
+# VENDOR/ trees are ASSIMILATED plain source in our tree (INC-15) — not
+# submodules, no embedded .git. They are tracked and committed.
