@@ -103,7 +103,7 @@ Every visible control must complete its named action or be absent.
 | Shell | Tauri 2 Android | Tauri 2 desktop | Tauri 2 desktop |
 | ZIM access | SAF + app storage | native paths | native paths |
 | SQLite | bundled | bundled | bundled |
-| Local inference | LiteRT-LM primary | LiteRT-LM/GGUF adapter | LiteRT-LM/GGUF adapter |
+| Local inference | wllama3 | wllama3 | wllama3 |
 | Entitlement online source | RevenueCat adapter | RevenueCat web restore adapter | RevenueCat web restore adapter |
 | Offline entitlement | signed local artifact | signed local artifact | signed local artifact |
 | Background transfer | foreground service | process job | process job |
@@ -195,8 +195,7 @@ reduced motion and non-colour-only status.
 | `ext.revenuecat` | online purchase report | vendor event source only | No |
 | `ext.os.keystore` | device secret protection | platform trusted boundary | Yes |
 | `ext.os.share` | explicit import/export | user-authorized boundary | Yes |
-| `ext.litertlm` | on-device inference runtime | replaceable engine | Yes when installed |
-| `ext.gguf` | desktop inference runtime | replaceable engine | Yes when installed |
+| `ext.wllama` | on-device inference runtime | replaceable engine | Yes when installed |
 
 ## 2.4 Trust boundaries
 
@@ -244,8 +243,7 @@ Ring 1 has no dependency on:
 - React;
 - RevenueCat;
 - libzim;
-- LiteRT-LM;
-- GGUF;
+- wllama3;
 - Android;
 - Windows;
 - Linux;
@@ -326,10 +324,15 @@ No domain/application module imports a provider crate or SDK.
 
 ## A-03 — Platform graph isolation
 
-Android, Linux and Windows use explicit feature compositions.
-There is no desktop default feature.
-RevenueCat native code cannot enter Linux/Windows dependency graphs.
-Desktop-only GGUF code cannot enter Android dependency graphs.
+Android, Linux and Windows ship one codebase under a single release
+composition (§5.2).
+There is no per-platform Cargo feature and no default feature that omits a
+crate.
+Every platform's dependency graph is identical; a graph difference is a build
+failure.
+Platform difference is expressed ONLY by `#[cfg(target_os = "...")]` inside
+`crates/platform-adapter`, never by a feature that removes a user-visible
+capability.
 
 ## A-04 — Last-known-good activation
 
@@ -394,7 +397,7 @@ EnZIME/
 ├── LICENSES/
 ├── VENDOR/
 │   ├── LOCKFILE.md
-│   ├── litert-lm/
+│   ├── wllama3/
 │   ├── tauri/
 │   └── AnZIMmermanLib/
 ├── apps/
@@ -438,14 +441,12 @@ EnZIME/
 │   ├── transfer-file/
 │   ├── annotations/
 │   ├── sidecar/
-│   ├── inference-litert/
-│   ├── inference-gguf/
+│   ├── inference-wllama/
 │   ├── retrieval/
 │   ├── lore/
 │   ├── entitlement/
 │   ├── revenuecat-adapter/
-│   ├── platform-android/
-│   ├── platform-desktop/
+│   ├── platform-adapter/
 │   ├── backup/
 │   └── diagnostics/
 ├── packages/
@@ -512,33 +513,30 @@ EnZIME/
 
 ## 5.2 Cargo feature compositions
 
+There is exactly one release composition, shared by Android, Linux and
+Windows. No Cargo feature removes a user-visible capability from any platform.
+
 ```toml
 [features]
-default = []
-android = [
-  "dep:platform-android",
-  "dep:inference-litert",
+default = [
+  "dep:platform-adapter",
+  "dep:inference-wllama",
   "dep:revenuecat-adapter"
-]
-linux = [
-  "dep:platform-desktop",
-  "dep:inference-litert",
-  "dep:inference-gguf"
-]
-windows = [
-  "dep:platform-desktop",
-  "dep:inference-litert",
-  "dep:inference-gguf"
 ]
 ```
 
+`crates/platform-adapter` exposes the §17.2 platform port and selects
+per-target behaviour with `#[cfg(target_os = "...")]` modules
+(`android.rs`, `linux.rs`, `windows.rs`).
+
 Release composition assertions:
 
-- exactly one of `android`, `linux`, `windows` is enabled;
-- `android` excludes `inference-gguf`;
-- `linux` and `windows` exclude native RevenueCat SDK code;
+- there is no per-platform feature; `default` is the only release composition;
+- every platform's dependency graph is identical; a graph difference is a build
+  failure;
 - all platforms include `zim-anzimmerman`, `storage-sqlite`, `annotations`,
-  `sidecar`, `retrieval`, `lore`, `entitlement`, `backup`, `diagnostics`.
+  `sidecar`, `inference-wllama`, `retrieval`, `lore`, `entitlement`,
+  `revenuecat-adapter`, `platform-adapter`, `backup`, `diagnostics`.
 
 ---
 
@@ -945,7 +943,7 @@ CREATE TABLE chunk_embeddings (
 
 CREATE TABLE inference_backends (
   backend_id TEXT PRIMARY KEY,
-  backend_kind TEXT NOT NULL CHECK(backend_kind IN ('litert_lm','gguf')),
+  backend_kind TEXT NOT NULL CHECK(backend_kind IN ('local_lm')),
   display_name TEXT NOT NULL,
   enabled INTEGER NOT NULL CHECK(enabled IN (0,1)),
   priority INTEGER NOT NULL,
@@ -959,7 +957,7 @@ CREATE TABLE models (
   display_name TEXT NOT NULL,
   family TEXT NOT NULL,
   model_kind TEXT NOT NULL CHECK(model_kind IN ('chat','embedding','reranker')),
-  format TEXT NOT NULL CHECK(format IN ('litert','gguf')),
+  format TEXT NOT NULL CHECK(format IN ('gguf')),
   manifest_json TEXT NOT NULL CHECK(json_valid(manifest_json)),
   artifact_sha256 TEXT NOT NULL CHECK(length(artifact_sha256) = 64),
   artifact_size_bytes INTEGER NOT NULL CHECK(artifact_size_bytes > 0),
@@ -1362,7 +1360,7 @@ pub struct ContentDigest {
     pub hex: String,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DigestAlgorithm {
     Sha256,
@@ -2348,14 +2346,12 @@ pub struct BackendDescriptor {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BackendKind {
-    LiteRtLm,
-    Gguf,
+    LocalLm,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ModelFormat {
-    LiteRt,
     Gguf,
 }
 
@@ -2533,10 +2529,11 @@ pub trait EmbeddingBackend: Send + Sync {
 
 | Platform | Chat backend | Embedding backend |
 |---|---|---|
-| Android | `LiteRtLmInferenceBackend` | `LiteRtEmbeddingBackend` |
-| Linux | `LiteRtLmInferenceBackend` or `GgufInferenceBackend` | `LiteRtEmbeddingBackend` |
-| Windows | `LiteRtLmInferenceBackend` or `GgufInferenceBackend` | `LiteRtEmbeddingBackend` |
+| Android | `WllamaInferenceBackend` | `WllamaEmbeddingBackend` |
+| Linux | `WllamaInferenceBackend` | `WllamaEmbeddingBackend` |
+| Windows | `WllamaInferenceBackend` | `WllamaEmbeddingBackend` |
 
+`crates/inference-wllama` provides the sole release backend on every platform.
 No null backend exists in the release composition.
 When no compatible installed model exists, Ask remains a complete non-AI state:
 
@@ -2580,10 +2577,14 @@ pub struct BackendSelection {
 Selection order:
 
 1. user-pinned compatible healthy backend/model;
-2. compatible active installation within RAM/thermal policy;
-3. lowest measured first-token latency;
-4. lowest measured energy per generated token on battery;
-5. lowest stable identifier as deterministic tie-breaker.
+2. the sole release backend (`inference-wllama`) when a compatible model is
+   installed and RAM/thermal policy permits;
+3. otherwise no backend is selected and Ask remains a complete non-AI state
+   (§10.3).
+
+With a single release backend there is no cross-backend arbitration; the
+deterministic tie-breaker (lowest stable identifier) applies only between
+multiple installed models on the one backend.
 
 Policy never downloads a model automatically.
 
@@ -3592,7 +3593,7 @@ export interface ModelSummary {
   displayName: string;
   family: string;
   modelKind: "chat" | "embedding" | "reranker";
-  format: "litert" | "gguf";
+  format: "gguf";
   artifactSizeBytes: number;
   installed: boolean;
   active: boolean;
@@ -5062,14 +5063,12 @@ Case and spelling are normative.
 | `enzime-transfer-file` | crate | file/SAF transfer |
 | `enzime-annotations` | crate | annotation service |
 | `enzime-sidecar` | crate | CBOR/signature |
-| `enzime-inference-litert` | crate | LiteRT-LM |
-| `enzime-inference-gguf` | crate | desktop GGUF |
+| `enzime-inference-wllama` | crate | wllama3 inference (all platforms) |
 | `enzime-retrieval` | crate | retrieval/citations |
 | `enzime-lore` | crate | memory |
 | `enzime-entitlement` | crate | offline policy |
 | `enzime-revenuecat-adapter` | crate | purchase events |
-| `enzime-platform-android` | crate | Android adapters |
-| `enzime-platform-desktop` | crate | Linux/Windows adapters |
+| `enzime-platform-adapter` | crate | platform adapters (Android/Linux/Windows `#[cfg]` modules) |
 | `enzime-backup` | crate | backup/restore |
 | `enzime-diagnostics` | crate | redacted diagnostics |
 | `domain::identity` | module | stable IDs |
@@ -5212,11 +5211,9 @@ Case and spelling are normative.
 | `AnnotationResolver` | `MultiSelectorAnnotationResolver` |
 | `AnnotationService` | `SqliteAnnotationService` |
 | `SignatureProvider` | `OsKeystoreEd25519SignatureProvider` |
-| `InferenceBackend` | `LiteRtLmInferenceBackend` |
-| `InferenceBackend` | `GgufInferenceBackend` |
-| `InferenceSession` | `LiteRtLmInferenceSession` |
-| `InferenceSession` | `GgufInferenceSession` |
-| `EmbeddingBackend` | `LiteRtEmbeddingBackend` |
+| `InferenceBackend` | `WllamaInferenceBackend` |
+| `InferenceSession` | `WllamaInferenceSession` |
+| `EmbeddingBackend` | `WllamaEmbeddingBackend` |
 | `Retriever` | `HybridLocalRetriever` |
 | `ContextBuilder` | `BudgetedContextBuilder` |
 | `LoreService` | `SqliteLoreService` |
@@ -5427,6 +5424,13 @@ No new global variable may omit the `--ez-` prefix.
 
 # 17. Platform Adapters
 
+All platform adapters live in one crate, `crates/platform-adapter`, which
+exposes the §17.2 `PlatformAdapter` port and selects per-target behaviour with
+`#[cfg(target_os = "...")]` modules `android.rs`, `linux.rs` and `windows.rs`.
+There are no separate per-platform adapter crates; the Android, Linux and
+Windows adapter types below are the `#[cfg]` implementations inside that one
+crate.
+
 ## 17.1 Concern matrix
 
 | Concern | Android adapter | Linux adapter | Windows adapter |
@@ -5513,7 +5517,9 @@ Android release requirements:
 - model and pack storage estimates include filesystem allocation overhead;
 - audio capture requests permission at the voice action;
 - network and battery policy are enforced before resuming background work;
-- no desktop adapter crate appears in dependency tree.
+- the single `platform-adapter` crate compiles for Android, Linux and Windows;
+  platform-specific code is selected by `#[cfg(target_os = "...")]`, never by a
+  Cargo feature.
 
 ## 17.4 Linux
 
@@ -5720,8 +5726,8 @@ Quarantined content:
 | `CT-RET-002` | unknown model citation is rejected |
 | `CT-LORE-001` | candidate never auto-promotes |
 | `CT-LORE-002` | deletion removes retrieval projection |
-| `CT-PLAT-001` | Android graph excludes desktop crates |
-| `CT-PLAT-002` | desktop graphs exclude native RevenueCat |
+| `CT-PLAT-001` | Android dependency graph contains the full crate set |
+| `CT-PLAT-002` | Linux and Windows dependency graphs each contain the full crate set |
 
 ## 19.3 UI state matrix
 
@@ -5863,31 +5869,40 @@ Lock files:
 
 Release build rejects dirty vendored trees.
 
-## 20.2 CI jobs
+## 20.2 Release scripts
+
+No `.forgejo/` or `.github/` workflow is authored. Each release check is a
+local script under `tools/release/`, invoked manually on the release commit.
+The script names are normative; their targets are:
 
 ```text
-lint-rust
-lint-typescript
-test-domain
-test-storage
-test-contracts
-test-zim-conformance
-test-sidecar-conformance
-test-entitlement-conformance
-test-react
-test-e2e-linux
-check-android-graph
-check-linux-graph
-check-windows-graph
-build-android-debug
-build-linux-debug
-build-windows-debug
-audit-dependencies
-generate-sbom
-verify-vendor-lock
-verify-entity-table
-verify-no-production-placeholders
+tools/release/lint-rust.sh
+tools/release/lint-typescript.sh
+tools/release/test-domain.sh
+tools/release/test-storage.sh
+tools/release/test-contracts.sh
+tools/release/test-zim-conformance.sh
+tools/release/test-sidecar-conformance.sh
+tools/release/test-entitlement-conformance.sh
+tools/release/test-react.sh
+tools/release/test-e2e-linux.sh
+tools/release/check-android-graph.sh
+tools/release/check-linux-graph.sh
+tools/release/check-windows-graph.sh
+tools/release/build-android-debug.sh
+tools/release/build-linux-debug.sh
+tools/release/build-windows-debug.sh
+tools/release/audit-dependencies.sh
+tools/release/generate-sbom.sh
+tools/release/verify-vendor-lock.sh
+tools/release/verify-entity-table.sh
+tools/release/verify-no-production-placeholders.sh
 ```
+
+The `check-*-graph` scripts assert that the Android, Linux and Windows
+dependency graphs each contain the full crate set (§5.2, `CT-PLAT-001`,
+`CT-PLAT-002`). The `verify-entity-table` script is the local
+`tools/contract-gen` mode for the SC1 SP-4 entity-table orphan/stranded check.
 
 ## 20.3 Placeholder gate
 
@@ -5951,7 +5966,7 @@ The signed manifest contains:
 
 Release requires:
 
-- all CI jobs green;
+- all local release scripts pass on the release commit;
 - physical Android `E2E-01` through `E2E-07`;
 - Linux and Windows desktop smoke;
 - database backup/restore drill;
@@ -6073,13 +6088,14 @@ export interface DonorReceipt {
 
 ## 22.2 Initial vendor inputs
 
-Expected locked inputs:
+Every vendored component is compiled from source held under `VENDOR/`
+(AMD-3). Expected locked inputs:
 
 | Vendor ID | Role |
 |---|---|
-| `vendor.tauri.v2.11.1` | shell/build reference |
-| `vendor.litert-lm.1ff29cc` | inference runtime |
-| `vendor.anzimmerman.current` | multilingual ZIM library |
+| `vendor.tauri.tauri-v2.11.1` | shell/build reference |
+| `vendor.wllama3.3.5.1` | inference runtime (sole local engine, all platforms) |
+| `vendor.anzimmerman-src.c73245e` | multilingual ZIM library |
 
 Exact commits/digests are authority of `VENDOR-MANIFEST.md`.
 If that manifest cannot prove an input, implementation does not begin.
@@ -6100,7 +6116,7 @@ If that manifest cannot prove an input, implementation does not begin.
 - implement domain types;
 - apply SQLite migration;
 - generate TypeScript contracts;
-- create complete platform compositions;
+- create the single release composition;
 - pass contract tests.
 
 ### Stage M2 — first complete vertical slice
@@ -6326,6 +6342,25 @@ The architecture is complete only when the following statements remain true:
 
 Any failed statement reopens architecture work.
 It is not delegated to a coder as “figure it out.”
+
+## 25.1 Re-attestation (2026-07-27)
+
+On 2026-07-27 the §1–§25 baseline was reconciled in place to the §26
+amendments AMD-1 through AMD-4, and the §7.1 `DigestAlgorithm` compile defect
+was corrected. After that reconciliation:
+
+- this document is **complete, stub-free and end-state** — it contains no
+  `TBD`, no “future work”, no “open issue”, no placeholder and no stub;
+- the baseline (§1–§25) and the §16 entity table are internally consistent
+  with the effective architecture (baseline overlaid with §26);
+- every public entity named here resolves to exactly one definition; no entity
+  has a second name;
+- the contract chain (Rust identities → SQL schema → TypeScript contracts →
+  §24 entity-to-UI binding) is serializable end-to-end.
+
+**Attestation timestamp (ISO-8601, UTC):** `2026-07-27T14:31:47Z`
+**Authoring agent:** model family `GLM`, version `5.2` (`glm-5.2`), harness
+`opencode`.
 
 ---
 

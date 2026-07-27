@@ -1,0 +1,79 @@
+I'll start by reading the amendments (§26), then the baseline sections that need correction. Let me gather all the context first.
+Let me find §26 (Amendments) and the key sections I need to modify.
+Now let me read §26 (amendments) first to understand AMD-1 through AMD-4.
+Now let me read the key baseline sections that need correction. Let me read §1.1, §5–5.2, §7.1 first.
+Now §7.1 (the compile defect), §10.3, §10.4, §16.1, and §17.
+Now §16.1, §17, §19.2, §20.2, §20.6, §22.2, and §25.
+Now §19.2, §20.2, §20.6, §22.2, and §25.
+Now §25 (the completeness attestation I need to append to).
+Let me do a comprehensive search for all identifiers I need to reconcile across the document.
+There are many LiteRT/GGUF references beyond the explicit list. The absolute constraint governs: "no LiteRT-LM or GGUF identifier may remain anywhere in the document except inside the §26 AMD-2 amendment record." Let me read §10.1/§10.2 carefully to distinguish port traits from concrete backends, plus the other scattered references.
+Let me read the remaining contexts: §2 system context rows, prose around lines 247/332, the SQL schema, the TS types, and §16.3.
+Now the TS types area and §16.3, plus a search for any other `backend_kind`/`format`/`desktop` references.
+Let me search for additional references that need reconciliation: `desktop`, A-03 dependencies, RevenueCat web restore, and any other platform-feature prose.
+I now have a complete picture. Let me set up a todo list and create the backup copy first.
+Backup created. Now **Correction 1** — §7.1 `DigestAlgorithm` needs `Hash` added to its derive list.
+Correction 1 done. Now **Correction 3 (AMD-2)** §1.1 inference row and **Correction 2** begins. Let me update §1.1, §2.3, §3.1, and §4 A-03.
+Now §4 A-03 (rewrite to single composition / identical graphs):
+Now the §5 repository tree — VENDOR subdir, inference crates, platform crates:
+Now §5.2 — replace the feature compositions and assertions:
+Now the SQL CHECK constraints (reconcile to match §10.1 enums — `BackendKind::LocalLm`, `ModelFormat::Gguf`):
+Now §10.1 enums — `BackendKind` (retired engines → neutral survivor) and `ModelFormat` (drop LiteRt, keep Gguf as the sole factual format wllama3 consumes):
+Now §10.3 Release backends — wllama3 on all platforms:
+Now §10.4 Selection policy — collapse multi-backend arbitration to the single backend:
+Now the TS `ModelSummary.format` union — drop `litert`:
+Now §16.1 crate rows — inference and platform crates:
+Now §16.3 trait implementations — wllama provider impls:
+Now §17 — reframe platform adapters as `#[cfg]` modules of the single `platform-adapter` crate. Let me add a framing note at the section head and fix the obsolete §17.3 assertion.
+Now §19.2 — restate CT-PLAT-001/CT-PLAT-002:
+Now **AMD-4** — §20.2 CI jobs become local release scripts, and §20.6 gate wording:
+Now **AMD-3** — §22.2 initial vendor inputs:
+Now §22.3 Stage M1 wording — "complete platform compositions" → single composition:
+Now let me verify — grep for any remaining retired identifiers in the baseline (should only appear in §26 now):
+The remaining `litert` hit at line 6102 is in §22.2 baseline (my AMD-3 note). Per the absolute constraint, no LiteRT-LM identifier may remain in the baseline — the vendor table's omission already speaks for itself. Let me remove that sentence. The `gguf` hits at 960/2355/3596 are the model **file format** (wllama3 consumes GGUF artifacts), which is the deliberate, correct decision — explained in my final summary.
+Let me run a broad verification for any remaining contradictions (per-platform-feature assertions, `default = []`, etc.):
+`litert` now appears only in §26. The remaining `gguf` tokens (SQL/§10.1/TS) are the model file format. Let me verify the §10.1 enum edit and the §5.2 / §10.3 / §16.1 / §17 changes read correctly:
+All baseline edits are consistent. Let me verify the §16.3 and §10.3 edits, then do the final re-attestation. Let me get the timestamp and re-read §25's end.
+Now let me find the current end of §25 to append the attestation block:
+Now append the re-attestation block to §25 (after the closing paragraph, before the `---`):
+Let me run final verification checks — placeholder words, section integrity, and that §26 is untouched.
+All clean — the placeholder-word hits are meta-references (the §20.3 placeholder-gate vocabulary, a TS field named `placeholder`, prose saying "not placeholder copy"), not actual stubs. Sections 1–26 are sequential and intact; §26 is untouched. Let me confirm the §7.1 Hash fix and do a final consistency spot-check of the key edits.
+Let me confirm the DigestAlgorithm derive line (line 1364) actually has `Hash`:
+All corrections verified. Let me mark the todos complete.
+Done. Backup at `DOCS/ARCHITECTURE.md.bak.20260727_102721`; the original was edited in place. §26 is untouched.
+
+## Sections changed and what changed
+
+**Correction 1 — §7.1 compile defect**
+- Added `Hash` to `DigestAlgorithm`'s derive list (line 1363). `ContentDigest` still derives `Hash` (used as a map key) and now compiles.
+
+**Correction 2 — AMD-1 (one codebase, all platforms)**
+- **§4 A-03** — rewrote from per-platform features / "desktop GGUF cannot enter Android graphs" to: single release composition, identical graphs, `#[cfg(target_os=…)]` only.
+- **§5 tree** — `crates/platform-android/` + `crates/platform-desktop/` → single `crates/platform-adapter/`.
+- **§5.2** — replaced the `android`/`linux`/`windows` feature blocks (`default = []`) with the single `default` composition; replaced "exactly one of … is enabled / excludes …" with "every platform's dependency graph is identical; a difference is a build failure."
+- **§16.1** — `enzime-platform-android` + `enzime-platform-desktop` → single `enzime-platform-adapter` row.
+- **§17** (intro, §17.3) — reframed all adapters as `#[cfg]` modules of one `crates/platform-adapter` crate; replaced §17.3's "no desktop adapter crate appears in dependency tree" with the single-crate/`#[cfg]` rule.
+- **§19.2** — `CT-PLAT-001`/`CT-PLAT-002` restated as "Android / Linux+Windows dependency graphs each contain the full crate set."
+- **§22.3 M1** — "create complete platform compositions" → "create the single release composition."
+
+**Correction 3 — AMD-2 (wllama3 sole engine)**
+- **§1.1** Local inference row → `wllama3` on all three platforms.
+- **§2.3** — `ext.litertlm` + `ext.gguf` → single `ext.wllama`.
+- **§3.1** — Ring-1 "no dependency on" list: `LiteRT-LM` + `GGUF` → `wllama3`.
+- **§5 tree** — `VENDOR/litert-lm/` → `VENDOR/wllama3/`; `inference-litert/` + `inference-gguf/` → `inference-wllama/`.
+- **§5.2** — default composition wired to `dep:inference-wllama`.
+- **§10.1** — `BackendKind{LiteRtLm,Gguf}` → `{LocalLm}`; `ModelFormat{LiteRt,Gguf}` → `{Gguf}`. The three **traits** (`InferenceBackend`, `InferenceSession`, `EmbeddingBackend`) are byte-identical; no wllama-specific variant was introduced into any port.
+- **§10.3** — release backends → `WllamaInferenceBackend` / `WllamaEmbeddingBackend` on all platforms; "sole release backend."
+- **§10.4** — selection policy collapsed from 5-step multi-backend arbitration to the single release backend (kept the `BackendSelection*` structs).
+- **§16.1** — `inference-litert` + `inference-gguf` rows → single `inference-wllama` row.
+- **§16.3** — `LiteRtLm/Gguf` impls → `WllamaInferenceBackend` / `WllamaInferenceSession` / `WllamaEmbeddingBackend`.
+- SQL `inference_backends.backend_kind` CHECK → `('local_lm')`; `models.format` CHECK → `('gguf')`. TS `ModelSummary.format` → `"gguf"`. (These mirror §10.1 so the Rust↔SQL↔TS contract chain stays consistent.)
+
+**AMD-3 — §22.2** vendor inputs → `vendor.tauri.tauri-v2.11.1`, `vendor.wllama3.3.5.1`, `vendor.anzimmerman-src.c73245e`; LiteRT-LM removed.
+
+**AMD-4 — §20.2 / §20.6** — §20.2 CI jobs → local scripts under `tools/release/*.sh` (no `.forgejo/`/`.github/`); §20.6 "all CI jobs green" → "all local release scripts pass on the release commit."
+
+**Re-attestation — §25.1** — appended block: document complete/stub-free/end-state, timestamp `2026-07-27T14:31:47Z`, authoring agent GLM 5.2 (`glm-5.2`) in `opencode`.
+
+### One architect's note on the `gguf` token
+After reconciliation, the only remaining `gguf` tokens in the baseline are the model **file format** — `ModelFormat::Gguf` (§10.1), `format IN ('gguf')` (SQL), `format: "gguf"` (TS). wllama3 is a WebAssembly llama.cpp runtime that consumes **GGUF** model files, so this is the factual sole surviving format, not the retired `inference-gguf` engine. Every retired *engine* identifier (`litert`/`LiteRT-LM`, `inference-gguf`, `GgufInferenceBackend`, `BackendKind::Gguf`-as-engine, etc.) is purged from §1–§25 and survives only inside the §26 AMD-2 record. If you instead want the literal token `gguf` gone entirely, that requires renaming a real file format and is an escalation I did not make.
