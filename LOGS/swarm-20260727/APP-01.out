@@ -1,0 +1,27 @@
+Now the Tauri config, capabilities, and icon:Generate a 512×512 solid PNG. I'll write a minimal valid PNG by hand via a small Node script (no extra deps needed; PNG is straightforward):Now the React side. I'll declare `__APP_VERSION__` inline in `App.tsx` (so I don't need a separate `vite-env.d.ts`, staying within the file list):Now run `cargo check -p reader`. The build will require `tauri-build` and `tauri` crate — these need a frontend `dist/` for `generate_context!()`. But `cargo check` should be fine since `tauri::generate_context!()` reads `tauri.conf.json` (which I set), and `frontendDist` only matters at bundle time. Let's verify:`cargo check -p reader` finished cleanly. Let me also verify the frontend deps install (the task permits `pnpm install`):TypeScript clean too.## APP-01 complete
+
+**Files created** (all under the allowed list):
+
+| File | Purpose |
+|---|---|
+| `apps/reader/src-tauri/Cargo.toml` | Preserved `[package]`/`[features]`/optional-deps verbatim; added `[lib]`, `tauri-build` build-dep, `tauri`+`serde`+`serde_json` deps |
+| `apps/reader/src-tauri/build.rs` | `tauri_build::build()` |
+| `apps/reader/src-tauri/src/lib.rs` | `pub fn run()` → simplest `tauri::Builder` (zero plugins) |
+| `apps/reader/src-tauri/src/main.rs` | `windows_subsystem` guard + `enzime_reader_lib::run()` |
+| `apps/reader/src-tauri/tauri.conf.json` | `EnZIME Reader`, `mba.robin.enzime`, `1.0.52684`, devUrl `:41847`, copyright/publisher set, `main` window |
+| `apps/reader/src-tauri/capabilities/default.json` | `main` window ← `core:default` only |
+| `apps/reader/src-tauri/icons/icon.png` | 512×512 RGBA solid (#090B13) |
+| `apps/reader/package.json` | `@enzime/reader` `1.0.52684`, react 19 / zustand / @tauri-apps/api + vite toolchain |
+| `apps/reader/vite.config.ts` | react plugin, port **41847** `strictPort`, `define __APP_VERSION__` |
+| `apps/reader/tsconfig.json` + `tsconfig.node.json` | strict TS, `vite/client` types |
+| `apps/reader/index.html` | `#root` mounts `/src/main.tsx` |
+| `apps/reader/src/main.tsx` | `createRoot` + `RouterProvider` |
+| `apps/reader/src/router.tsx` | All 9 routes from the spec (`/setup`, `/`, `/library`, `/reader/:packId/:articleKey`, `/ask`, `/ask/:conversationId`, `/notes`, `/memory`, `/settings`) |
+| `apps/reader/src/App.tsx` | 9 named view components + `App` shell with bottom-right version stamp (declares `__APP_VERSION__` globally — no extra `vite-env.d.ts` needed) |
+| `apps/reader/src/styles/global.css` | `#090B13` canvas, `#F4F6FF` text, Inter stack, fixed version chip |
+
+No `pnpm-workspace.yaml` change — `apps/*` is already a member.
+
+**`cargo check -p reader`: ✅ succeeded** (`Finished dev profile [unoptimized + debuginfo] target(s) in 35.58s`, no warnings on `reader`). `tsc --noEmit` also clean; `pnpm install` resolved 123 packages.
+
+Tree left dirty per instructions, no commits, nothing touched outside the allowed file list.

@@ -4,6 +4,18 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::pin::Pin;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BackendKind {
+    LocalLm,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ModelFormat {
+    Gguf,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BackendDescriptor {
     pub backend_id: String,

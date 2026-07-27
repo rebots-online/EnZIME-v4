@@ -1,0 +1,8 @@
+I'll start by reading the authoritative architecture document and the existing checklist to understand the full scope.
+The frozen `DOCS/ARCHITECTURE.md` is 6451 lines. I must read it fully to extract every verbatim fact. Let me read it in large parallel chunks, plus the existing checklist and key support files.
+Continuing to read the architecture.
+Let me read the final portion of the architecture (sections 17-24).
+I've read the entire architecture. Now let me examine the current repo state (existing files, Cargo.toml, packages) and the existing checklist format so the new checklist aligns with what's already present.
+Let me check the depth of existing source so I scope tasks accurately.
+I have the complete architecture and repo state. This is a large single-deliverable task: regenerate `CHECKLIST.md` as a fully self-contained, parallelized recipe. Let me set up tracking, back up the existing file, then write the new one.
+Now I'll write the new `CHECKLIST.md`. This is a large, fully self-contained recipe organized into dependency-tiered, file-disjoint waves.

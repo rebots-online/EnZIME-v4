@@ -1,0 +1,37 @@
+I need to find the missing types referenced in the PlatformAdapter trait (PlatformCapabilityReport, PlatformStorageRoot, PlatformError, PowerState, NetworkState). Let me search the architecture.Let me check if the missing platform types are defined elsewhere in the architecture.The trait references types not defined in §17.2. Let me check if they exist elsewhere in the architecture or in the domain crate.Let me check the workspace Cargo.toml and existing crate patterns for tokio usage.Let me run the baseline cargo check to confirm the 8 errors.I have full context. Now I'll make the three fixes.Let me see the full output to confirm Causes 2 and 3 are clean and only the trait-body references remain.Causes 1, 2, 3 are all fixed. The remaining 12 errors are all E0425 for 5 types (`PlatformCapabilityReport`, `PlatformStorageRoot`, `PlatformError` ×8, `PowerState`, `NetworkState`) referenced in the trait body but **never defined anywhere in `ARCHITECTURE.md`** (verified by grep — they appear only at lines 5451–5476, all inside the trait).
+
+Let me confirm Causes 2 and 3 files are individually clean by checking they have no errors:## Summary
+
+**Changes made (4 files, all in scope):**
+
+1. **`crates/ports/src/platform.rs`** (new) — transcribed §17.2 of `DOCS/ARCHITECTURE.md` verbatim: `PlatformAdapter` trait, `PlatformKind` enum, `PlatformFileToken` struct, with `use async_trait::async_trait;` and `use serde::{Deserialize, Serialize};` prepended (matches the pattern in `inference.rs`). No `#[cfg]`, no implementation, no platform-specific code — trait and associated types only, per AMD-1.
+
+2. **`crates/ports/src/signature.rs:1`** — `crate::trust` → `domain::trust` (item names unchanged).
+
+3. **`crates/ports/src/inference.rs`** — added the two missing enums from §10.1 verbatim above `BackendDescriptor`: `BackendKind { LocalLm }` and `ModelFormat { Gguf }` (with the AMD-2 narrowed variant sets and the exact `#[serde(rename_all = "snake_case")]` attributes).
+
+4. **`crates/ports/Cargo.toml`** — added `tokio = { version = "1", default-features = false }` (genuinely missing: §17.2 trait body references `tokio::io::AsyncRead`/`AsyncWrite`). `default-features = false` honors the no-default-feature discipline.
+
+**`cargo check -p ports` result:**
+
+All three enumerated causes are eliminated:
+- `E0583 module 'platform'` — **gone** (file exists).
+- `E0432 unresolved import 'crate::trust'` — **gone** (signature.rs clean).
+- `E0425 BackendKind / ModelFormat` (6 errors) — **gone** (inference.rs clean).
+
+**12 new `E0425` errors remain, all in `crates/ports/src/platform.rs`**, for 5 type names that the §17.2 trait body references but that are **never defined anywhere in `ARCHITECTURE.md`** (verified by grep: they appear only at the 6 trait-body sites in §17.2, never as `pub struct`/`pub enum`):
+
+| Type | Occurrences in trait |
+|---|---|
+| `PlatformError` | 8 |
+| `PlatformCapabilityReport` | 1 |
+| `PlatformStorageRoot` | 1 |
+| `PowerState` | 1 |
+| `NetworkState` | 1 |
+
+Per the task constraints I cannot resolve these without violating a binding rule:
+- **closed-world (CLAUDE.md)** forbids inventing types absent from the pak;
+- **"no stub/mock/placeholder"** forbids synthesizing minimal definitions;
+- **"transcribe the trait verbatim"** forbids editing the trait body to drop or parameterize the references.
+
+This is a §17.2 architecture defect of the same class as the §7.1 defect reconciled in commit `e9f407e`, and is outside FIX-02's three enumerated causes. Flagging it for a separate architecture amendment rather than working around it. Tree left dirty; no `git add`/`commit`.

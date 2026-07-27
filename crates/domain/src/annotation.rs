@@ -118,15 +118,6 @@ pub enum AnnotationResolutionState {
     Orphaned,
 }
 
-#[async_trait]
-pub trait AnnotationResolver: Send + Sync {
-    async fn resolve(
-        &self,
-        selector: &SelectorBundle,
-        article: &ArticleDocument,
-    ) -> Result<AnnotationResolution, AnnotationError>;
-}
-
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum AnnotationError {
     #[error("annotation not found")]
@@ -141,43 +132,6 @@ pub enum AnnotationError {
     InvalidAsset(String),
     #[error("storage error: {0}")]
     Storage(String),
-}
-
-#[async_trait]
-pub trait AnnotationService: Send + Sync {
-    async fn create(
-        &self,
-        draft: AnnotationDraft,
-    ) -> Result<AnnotationRecord, AnnotationError>;
-    async fn get(
-        &self,
-        annotation_id: &str,
-    ) -> Result<AnnotationRecord, AnnotationError>;
-    async fn update(
-        &self,
-        annotation_id: &str,
-        expected_revision: u32,
-        draft: AnnotationDraft,
-    ) -> Result<AnnotationRecord, AnnotationError>;
-    async fn soft_delete(
-        &self,
-        annotation_id: &str,
-        expected_revision: u32,
-    ) -> Result<(), AnnotationError>;
-    async fn restore(
-        &self,
-        annotation_id: &str,
-    ) -> Result<AnnotationRecord, AnnotationError>;
-    async fn list_for_article(
-        &self,
-        pack_id: &PackId,
-        article_key: &ArticleKey,
-    ) -> Result<Vec<AnnotationRecord>, AnnotationError>;
-    async fn attach_asset(
-        &self,
-        annotation_id: &str,
-        asset: AnnotationAssetInput,
-    ) -> Result<AnnotationAssetRecord, AnnotationError>;
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

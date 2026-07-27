@@ -6,6 +6,7 @@
 //! serialization/async utility crates only. It must never depend on a
 //! concrete provider crate.
 
+pub mod annotation;
 pub mod catalog;
 pub mod embedding;
 pub mod entitlement;

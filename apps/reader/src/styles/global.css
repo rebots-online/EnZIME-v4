@@ -1,0 +1,47 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #090B13;
+  color: #F4F6FF;
+  font-family: Inter, "JetBrains Mono", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.view h1 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#app-version {
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(244, 246, 255, 0.55);
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  pointer-events: none;
+  user-select: none;
+}

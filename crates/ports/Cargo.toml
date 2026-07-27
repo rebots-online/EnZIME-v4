@@ -12,3 +12,4 @@ bytes = { version = "1", features = ["serde"] }
 futures-core = "0.3"
 serde = { version = "1", features = ["derive"] }
 thiserror = "2"
+tokio = { version = "1", default-features = false }

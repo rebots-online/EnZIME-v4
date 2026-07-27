@@ -1,0 +1,11 @@
+No code outside the source file references these traits. Let me verify the canonical form in ARCHITECTURE.md before moving.Let me check the domain crate's lib.rs for any `deny(warnings)` attribute, since the `async_trait` import will become unused after the trait removal.No `deny(warnings)` — strict scope per the task. I'll leave domain's now-unused `async_trait` import (a warning is not an error). Now executing the three changes.Now verify with `cargo check --workspace`.**Done. FIX-01 target error eliminated.**
+
+**Moved:**
+- `AnnotationResolver` trait (8 lines) and `AnnotationService` trait (35 lines), verbatim, from `crates/domain/src/annotation.rs` → new `crates/ports/src/annotation.rs`.
+- New file imports `ArticleDocument` from `crate::zim` and `SelectorBundle`/`AnnotationResolution`/`AnnotationError`/`AnnotationDraft`/`AnnotationRecord`/`AnnotationAssetInput`/`AnnotationAssetRecord` + `ArticleKey`/`PackId` from `domain`.
+- Added `pub mod annotation;` to `crates/ports/src/lib.rs` (alphabetical head of list).
+- All structs/enums/error stayed in `domain::annotation`, untouched. No `Cargo.toml` change needed — `ports` already had `async-trait` and `domain`.
+
+**`cargo check --workspace` result:** the targeted `error[E0425]: cannot find type 'ArticleDocument' in this scope` at `crates/domain/src/annotation.rs:126:19` is **gone**. The remaining 8 errors (`ModelFormat`/`BackendKind` in `ports/src/inference.rs`, `E0583 module 'platform'`, `E0432 crate::trust`) are pre-existing in other files and outside FIX-01's scope. One expected warning: `unused import: async_trait::async_trait` in `crates/domain/src/annotation.rs` — left in place because the task said to remove only the two trait declarations.
+
+Tree left dirty as instructed; no `git add`/`commit` performed.

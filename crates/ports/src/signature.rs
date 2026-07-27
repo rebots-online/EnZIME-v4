@@ -1,4 +1,4 @@
-use crate::trust::{SignatureEnvelope, SignatureVerification};
+use domain::trust::{SignatureEnvelope, SignatureVerification};
 use async_trait::async_trait;
 
 #[async_trait]
