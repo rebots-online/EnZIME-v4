@@ -50,7 +50,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: package/Cargo metadata loads; tree matches §5.
   - Accept: no production feature module or placeholder implementation exists.
 
-- [ ] **P1-02 Implement domain identities**
+- ✅ **P1-02 Implement domain identities** — glm-4.7/crush 2026-07-27; orchestrator-attested (read crates/domain/src/identity.rs against §7.1; 12 tests pass)
   - Allowed files: `crates/domain/src/identity.rs`, module export, tests.
   - Do: implement `PackId`, `PackVersionId`, `ArticleKey`, `EntryKey`,
     `ContentDigest`, `DigestAlgorithm` with validation.
