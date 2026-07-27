@@ -43,7 +43,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 1 — Repository and contracts
 
-- [ ] **P1-01 Create locked monorepo skeleton**
+- ✅ **P1-01 Create locked monorepo skeleton** — glm-4.7/crush 2026-07-27; orchestrator-attested (read Cargo.toml, apps/reader/src-tauri/Cargo.toml, rust-toolchain.toml against §5 + §26 AMD-1; `cargo metadata` loads 20 packages)
   - Allowed files: root manifests/toolchain files and empty directories in
     `ARCHITECTURE.md` §5.
   - Do: create workspace with no default platform feature.

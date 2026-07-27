@@ -1,0 +1,18 @@
+[package]
+name = "reader"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+authors.workspace = true
+
+[features]
+default = [
+  "dep:platform-adapter",
+  "dep:inference-wllama",
+  "dep:revenuecat-adapter",
+]
+
+[dependencies]
+platform-adapter = { path = "../../../crates/platform-adapter", optional = true }
+inference-wllama = { path = "../../../crates/inference-wllama", optional = true }
+revenuecat-adapter = { path = "../../../crates/revenuecat-adapter", optional = true }

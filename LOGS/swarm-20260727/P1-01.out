@@ -1,0 +1,17 @@
+I'll execute task P1-01 systematically. First, let me confirm the current state of the repository.Good - the repo is the spec pak with VENDOR trees. No existing root manifests. Let me create everything now in batches.Now the root files and Tauri app manifest.All files created for task P1-01.
+
+**Root manifests (6):**
+- `Cargo.toml` — workspace root, 19 crates + `apps/reader/src-tauri` as members, `[workspace.package]` with version 4.0.0/edition 2021/license Proprietary/authors
+- `rust-toolchain.toml` — stable channel pinned to `aarch64-linux-android`, `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`
+- `deny.toml` — `[advisories]`, `[licenses]`, `[bans]` with explicit SPDX allow-list and `wildcards = "deny"`
+- `package.json` — `enzime-reader` v4.0.0, private
+- `pnpm-workspace.yaml` — `apps/*` and `packages/*`
+- `.npmrc` — public-hoist patterns for tauri/esbuild
+
+**Per-crate (19 × 2):** for each crate under `crates/` (domain, ports, application, storage-sqlite, object-store, zim-anzimmerman, catalog-openzim, transfer-http, transfer-file, annotations, sidecar, inference-wllama, retrieval, lore, entitlement, revenuecat-adapter, platform-adapter, backup, diagnostics): a minimal `Cargo.toml` inheriting workspace metadata, plus a zero-byte `src/lib.rs`.
+
+**Tauri workspace member (2):** `apps/reader/src-tauri/Cargo.toml` with the single composition `default = ["dep:platform-adapter", "dep:inference-wllama", "dep:revenuecat-adapter"]` (no per-platform features) and `apps/reader/src-tauri/src/lib.rs` (zero bytes).
+
+**Directory placeholders (no files):** `packages/{contracts,design-tokens,ui-primitives,test-fixtures}`, `schemas/{sqlite,sidecar,entitlement,ipc}`, `fixtures/{zim,catalogs,sidecars,retrieval,entitlement,malicious}`, `tests/{conformance,integration,e2e,performance}`, `tools/{contract-gen,fixture-builder,evidence-registry,release}`, `LICENSES/`, `VENDOR/` (pre-existing).
+
+Working tree left dirty; no commits made.

@@ -6326,3 +6326,91 @@ The architecture is complete only when the following statements remain true:
 
 Any failed statement reopens architecture work.
 It is not delegated to a coder as “figure it out.”
+
+---
+
+# 26. Amendments (append-only; SC1 SP-6)
+
+The §1–§25 baseline and the §16 entity table are frozen. Every subsequent
+change lands here as a diff-shaped overlay. Effective architecture =
+baseline overlaid with this section, in order.
+
+## AMD-1 (2026-07-27) — One codebase, one composition, all platforms, all functionality
+
+Operator-directed. Android, Linux and Windows ship the **same Tauri 2
+codebase with the complete feature set**. No Cargo feature removes a
+user-visible capability from any platform.
+
+```text
+MODIFY §5.2: replace the android/linux/windows feature compositions with:
+
+[features]
+default = [
+  "dep:platform-adapter",
+  "dep:inference-wllama",
+  "dep:revenuecat-adapter"
+]
+
+Platform difference is expressed ONLY by #[cfg(target_os = "...")] inside
+`crates/platform-adapter`, never by a feature that omits a crate.
+```
+
+- `crates/platform-android` and `crates/platform-desktop` are superseded by a
+  single `crates/platform-adapter` exposing the §17.2 platform port, with
+  per-target `#[cfg]` modules `android.rs`, `linux.rs`, `windows.rs`.
+- The §5.2 "exactly one of android/linux/windows is enabled" assertion is
+  retired. The replacement assertion: **every platform's dependency graph is
+  identical**; a graph difference is a build failure.
+- `CT-PLAT-001`/`CT-PLAT-002` (§19.2) are restated as: the Android, Linux and
+  Windows dependency graphs each contain the full crate set.
+
+## AMD-2 (2026-07-27) — wllama3 is the sole local inference engine, all platforms
+
+Operator-directed, absolute requirement.
+
+```text
+MODIFY §10.3 Release backends:
+  RETIRE  inference-litert (LiteRT-LM)   — removed from the release set
+  RETIRE  inference-gguf                 — removed from the release set
+  ADD     crates/inference-wllama        — wllama3, ALL platforms
+
+MODIFY §1.1 platform posture, row "Local inference":
+  Android | Linux | Windows  →  wllama3 (all three)
+
+MODIFY §16.1 crate rows: replace inference-litert / inference-gguf rows
+  with a single inference-wllama row.
+```
+
+The §10.1/§10.2 `InferenceBackend`, `InferenceSession` and `EmbeddingModel`
+traits are **unchanged** — they are provider-agnostic ports, and wllama3 is a
+provider behind them. §10.4's selection policy resolves to one backend.
+
+## AMD-3 (2026-07-27) — Build from our own vendored source
+
+Operator-directed. Every vendored component is compiled from source we hold,
+so an upstream change can neither impair us nor lock us out of servicing our
+own code.
+
+- Vendored trees live at `VENDOR/<component>/` (§5), cloned once at that
+  permanent path, each with a sibling `<component>.UPSTREAM-VENDOR.lock`
+  pinning remote, tag, commit, commit date, vendor date and tree digest
+  (`VENDOR-MANIFEST.md` § "Tree digest algorithm").
+- Vendor set: `wllama3`, `tauri` (v2.11.1), `AnZIMmermanLib`.
+- Upstream prebuilt binaries may be used **only** as development-time
+  scaffolding to keep work moving; they are never linked into a release
+  artifact, and each such use carries a from-source successor task.
+
+## AMD-4 (2026-07-27) — No CI until public-release operator signoff
+
+Operator-directed global rule.
+
+- No `.forgejo/` or `.github/` workflow is authored.
+- §20.2's job names become local scripts under `tools/release/`, invoked
+  manually; §20.6's "all CI jobs green" is restated as "all local release
+  scripts pass on the release commit".
+- SC1 SP-4's entity-table orphan/stranded check becomes a local
+  `tools/contract-gen` mode, not a CI gate.
+- Version stamping uses the canonical script (`scripts/update-version.sh`,
+  copied from `~/Admin-Manual/versioning/update-version.sh`), never a manual
+  edit. MAJOR=4. Artifacts are staged in the canonical checkout's tracked
+  `dist/`, slug-first: `enzime-reader-v<MAJOR.MINOR.BUILD>-<qualifier>`.

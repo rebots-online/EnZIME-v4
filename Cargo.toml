@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/domain", "crates/ports", "crates/application",
+  "crates/storage-sqlite", "crates/object-store",
+  "crates/zim-anzimmerman", "crates/catalog-openzim",
+  "crates/transfer-http", "crates/transfer-file",
+  "crates/annotations", "crates/sidecar",
+  "crates/inference-wllama", "crates/retrieval", "crates/lore",
+  "crates/entitlement", "crates/revenuecat-adapter",
+  "crates/platform-adapter", "crates/backup", "crates/diagnostics",
+  "apps/reader/src-tauri",
+]
+
+[workspace.package]
+version = "4.0.0"
+edition = "2021"
+license-file = "LICENSE"
+authors = ["Robin L. M. Cheung, MBA"]
+publish = false
+rust-version = "1.82"

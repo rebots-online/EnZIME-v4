@@ -1,0 +1,20 @@
+EnZIME Reader
+
+Copyright (C) 2026 Robin L. M. Cheung, MBA.
+All rights reserved.
+
+This software and its source code are proprietary and confidential.
+
+No part of this software, its source code, documentation, design assets,
+schemas, or derived artifacts may be reproduced, distributed, transmitted,
+displayed, published, sublicensed, sold, reverse-engineered, decompiled, or
+used to create derivative works, in any form or by any means, without the
+prior express written permission of the copyright holder.
+
+No licence, express or implied, by estoppel or otherwise, to any intellectual
+property right is granted by this document.
+
+Third-party components vendored under VENDOR/ remain governed by their own
+licences, which are recorded in VENDOR/VENDOR-LOCK.md and reproduced under
+LICENSES/. Those licences apply to those components only and do not extend to
+any part of EnZIME Reader.

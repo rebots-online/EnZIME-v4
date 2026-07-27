@@ -1,0 +1,6 @@
+[package]
+name = "transfer-file"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+authors.workspace = true
