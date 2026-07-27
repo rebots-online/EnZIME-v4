@@ -42,6 +42,7 @@ async fn zim_minimal_article_v1() {
             ("Creator".into(), "conformance".into()),
             ("Publisher".into(), "conformance".into()),
             ("Date".into(), "2026-07-27".into()),
+            ("Counter".into(), "article=1;text/plain;charset=UTF-8=6".into()),
         ],
         main_page_index: Some(0),
         ..ZimBuilder::default()
@@ -192,17 +193,56 @@ async fn zim_unicode_paths_v1() {
 
 #[tokio::test]
 async fn zim_large_cluster_guard_v1() {
-    // Fixture: a cluster whose decompressed size exceeds
-    // limits::MAX_DECOMPRESSED_CLUSTER_BYTES. Built with a ZLIB cluster of
-    // highly-compressible data that decompresses far past the cap.
-    let bomb_blob: Vec<u8> = vec![0u8; 64 * 1024 * 1024]; // 64 MiB of zeros
+    // Fixture: a real raw-DEFLATE decompression bomb. The compressed payload
+    // is a few MiB; its decompressed form is `BOMB_BYTES` (>> the engine's
+    // 2 GiB decompression budget). Engine must refuse with `DecompressionLimit`.
+    const BOMB_BYTES: u64 = 3 * 1024 * 1024 * 1024; // 3 GiB > MAX_DECOMPRESSED_CLUSTER_BYTES
+
+    struct ZeroReader {
+        remaining: u64,
+    }
+    impl std::io::Read for ZeroReader {
+        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+            if self.remaining == 0 {
+                return Ok(0);
+            }
+            let n = (buf.len() as u64).min(self.remaining) as usize;
+            for b in &mut buf[..n] {
+                *b = 0;
+            }
+            self.remaining -= n as u64;
+            Ok(n)
+        }
+    }
+
+    // Decompressed payload = [offset_table] || [3 GiB of zeros].
+    // offset_table: [8, 3GiB+8] (start, end of the single blob).
+    let mut inner = Vec::with_capacity(8);
+    inner.extend_from_slice(&8u32.to_le_bytes());
+    inner.extend_from_slice(&(8u32.wrapping_add(BOMB_BYTES as u32)).to_le_bytes());
+
+    use std::io::Write;
+    let mut enc = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::default());
+    enc.write_all(&inner).unwrap();
+    let mut reader = ZeroReader { remaining: BOMB_BYTES };
+    std::io::copy(&mut reader, &mut enc).unwrap();
+    let mut zlib = enc.finish().expect("encode");
+    // ZlibEncoder wraps raw DEFLATE in a 2-byte header and 4-byte adler32
+    // trailer; ZIM clusters store raw DEFLATE alone.
+    zlib.drain(0..2);
+    zlib.truncate(zlib.len().saturating_sub(4));
+    let mut on_disk = Vec::with_capacity(1 + zlib.len());
+    on_disk.push(2u8); // COMPRESSION_ZLIB
+    on_disk.extend_from_slice(&zlib);
+
     let builder = ZimBuilder {
-        zlib_clusters: true,
+        raw_cluster_override: Some(on_disk),
         ..ZimBuilder::default()
     }
-    .add_article(b'A', "Big", "Big", "text/html", bomb_blob);
+    .add_article(b'A', "Big", "Big", "text/html", b"<p>x</p>".to_vec());
     let path = support::write_temp(&builder);
     let archive = open(&path.to_string_lossy()).await;
+
     let err = match archive
         .article(&domain::identity::ArticleKey("A/Big".into()))
         .await
