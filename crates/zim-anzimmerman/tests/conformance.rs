@@ -33,8 +33,20 @@ fn minimal_html_article(title: &str, body: &str) -> Vec<u8> {
 
 #[tokio::test]
 async fn zim_minimal_article_v1() {
-    // Fixture: one HTML article.
-    let builder = ZimBuilder::default().add_article(
+    // Fixture: one HTML article plus the standard metadata entries.
+    let builder = ZimBuilder {
+        metadata: vec![
+            ("Title".into(), "Main Page".into()),
+            ("Description".into(), "A one-article ZIM".into()),
+            ("Language".into(), "eng".into()),
+            ("Creator".into(), "conformance".into()),
+            ("Publisher".into(), "conformance".into()),
+            ("Date".into(), "2026-07-27".into()),
+        ],
+        main_page_index: Some(0),
+        ..ZimBuilder::default()
+    }
+    .add_article(
         b'A',
         "Main_Page",
         "Main Page",
@@ -51,9 +63,11 @@ async fn zim_minimal_article_v1() {
     let engine = AnZimmermanZimEngine::new();
     let metadata = engine.probe(&req).await.expect("probe");
     assert_eq!(metadata.article_count, 1, "M/Counter absent -> header count");
+    assert_eq!(metadata.title, "Main Page");
+    assert_eq!(metadata.creator, "conformance");
+    assert_eq!(metadata.language_bcp47, "eng");
 
     let archive = open(&path.to_string_lossy()).await;
-    assert_eq!(archive.metadata().title, "Main Page");
     let doc = archive
         .article(&domain::identity::ArticleKey("A/Main_Page".into()))
         .await

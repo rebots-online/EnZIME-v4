@@ -1,0 +1,62 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.3",
+  "version": 1,
+  "serialNumber": "urn:uuid:8bdb390e-a4cf-4d42-8628-0106cdad1b8f",
+  "metadata": {
+    "timestamp": "2026-07-27T22:16:00.535230734Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cargo-cyclonedx",
+        "version": "0.5.9"
+      }
+    ],
+    "authors": [
+      {
+        "name": "Robin L. M. Cheung, MBA"
+      }
+    ],
+    "component": {
+      "type": "library",
+      "bom-ref": "path+file:///home/robin/forgejo/EnZIME-v4/crates/application#1.0.52684",
+      "author": "Robin L. M. Cheung, MBA",
+      "name": "application",
+      "version": "1.0.52684",
+      "scope": "required",
+      "licenses": [
+        {
+          "license": {
+            "name": "Unknown",
+            "text": {
+              "encoding": "base64",
+              "content": "RW5aSU1FIFJlYWRlcgoKQ29weXJpZ2h0IChDKSAyMDI2IFJvYmluIEwuIE0uIENoZXVuZywgTUJBLgpBbGwgcmlnaHRzIHJlc2VydmVkLgoKVGhpcyBzb2Z0d2FyZSBhbmQgaXRzIHNvdXJjZSBjb2RlIGFyZSBwcm9wcmlldGFyeSBhbmQgY29uZmlkZW50aWFsLgoKTm8gcGFydCBvZiB0aGlzIHNvZnR3YXJlLCBpdHMgc291cmNlIGNvZGUsIGRvY3VtZW50YXRpb24sIGRlc2lnbiBhc3NldHMsCnNjaGVtYXMsIG9yIGRlcml2ZWQgYXJ0aWZhY3RzIG1heSBiZSByZXByb2R1Y2VkLCBkaXN0cmlidXRlZCwgdHJhbnNtaXR0ZWQsCmRpc3BsYXllZCwgcHVibGlzaGVkLCBzdWJsaWNlbnNlZCwgc29sZCwgcmV2ZXJzZS1lbmdpbmVlcmVkLCBkZWNvbXBpbGVkLCBvcgp1c2VkIHRvIGNyZWF0ZSBkZXJpdmF0aXZlIHdvcmtzLCBpbiBhbnkgZm9ybSBvciBieSBhbnkgbWVhbnMsIHdpdGhvdXQgdGhlCnByaW9yIGV4cHJlc3Mgd3JpdHRlbiBwZXJtaXNzaW9uIG9mIHRoZSBjb3B5cmlnaHQgaG9sZGVyLgoKTm8gbGljZW5jZSwgZXhwcmVzcyBvciBpbXBsaWVkLCBieSBlc3RvcHBlbCBvciBvdGhlcndpc2UsIHRvIGFueSBpbnRlbGxlY3R1YWwKcHJvcGVydHkgcmlnaHQgaXMgZ3JhbnRlZCBieSB0aGlzIGRvY3VtZW50LgoKVGhpcmQtcGFydHkgY29tcG9uZW50cyB2ZW5kb3JlZCB1bmRlciBWRU5ET1IvIHJlbWFpbiBnb3Zlcm5lZCBieSB0aGVpciBvd24KbGljZW5jZXMsIHdoaWNoIGFyZSByZWNvcmRlZCBpbiBWRU5ET1IvVkVORE9SLUxPQ0subWQgYW5kIHJlcHJvZHVjZWQgdW5kZXIKTElDRU5TRVMvLiBUaG9zZSBsaWNlbmNlcyBhcHBseSB0byB0aG9zZSBjb21wb25lbnRzIG9ubHkgYW5kIGRvIG5vdCBleHRlbmQgdG8KYW55IHBhcnQgb2YgRW5aSU1FIFJlYWRlci4K"
+            }
+          }
+        }
+      ],
+      "purl": "pkg:cargo/application@1.0.52684?download_url=file://.",
+      "components": [
+        {
+          "type": "library",
+          "bom-ref": "path+file:///home/robin/forgejo/EnZIME-v4/crates/application#1.0.52684 bin-target-0",
+          "name": "application",
+          "version": "1.0.52684",
+          "purl": "pkg:cargo/application@1.0.52684?download_url=file://.#src/lib.rs"
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "cdx:rustc:sbom:target:triple",
+        "value": "x86_64-unknown-linux-gnu"
+      }
+    ]
+  },
+  "components": [],
+  "dependencies": [
+    {
+      "ref": "path+file:///home/robin/forgejo/EnZIME-v4/crates/application#1.0.52684"
+    }
+  ]
+}
