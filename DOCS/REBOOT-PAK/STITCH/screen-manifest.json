@@ -1,0 +1,135 @@
+{
+  "schema": "enzime.stitch.screen-manifest.v1",
+  "projectTitle": "EnZIME Reader",
+  "designSystem": "EnZIME Aurora Glass",
+  "generationModel": "GEMINI_3_FLASH",
+  "qualityEscalationModel": "GEMINI_3_1_PRO",
+  "screens": [
+    {
+      "screenId": "home-dashboard",
+      "title": "Home / Dashboard",
+      "route": "/",
+      "rootComponent": "HomeView",
+      "entities": [
+        "HomeView",
+        "RecentPacksList",
+        "TaskInbox",
+        "ReadinessPanel"
+      ]
+    },
+    {
+      "screenId": "library-pack-manager",
+      "title": "Library / Pack Manager",
+      "route": "/library",
+      "rootComponent": "LibraryView",
+      "entities": [
+        "LibraryView",
+        "PackCard",
+        "CatalogBrowser",
+        "DownloadQueue",
+        "StoragePlanner"
+      ]
+    },
+    {
+      "screenId": "reader",
+      "title": "Reader",
+      "route": "/reader/:packId/:articleKey",
+      "rootComponent": "ReaderView",
+      "entities": [
+        "ReaderView",
+        "ArticleToolbar",
+        "ArticleContent",
+        "BreadcrumbNav"
+      ]
+    },
+    {
+      "screenId": "annotation-workspace",
+      "title": "Annotation Workspace",
+      "route": "/reader/:packId/:articleKey",
+      "rootComponent": "AnnotationWorkspace",
+      "entities": [
+        "AnnotationPanel",
+        "TextHighlighter",
+        "InkCanvas",
+        "VoiceRecorder",
+        "SidecarImportDialog"
+      ]
+    },
+    {
+      "screenId": "ask-ai-conversation",
+      "title": "Ask / AI Conversation",
+      "route": "/ask/:conversationId",
+      "rootComponent": "AskView",
+      "entities": [
+        "AskView",
+        "ConversationThread",
+        "MessageBubble",
+        "CitationChip",
+        "BackendStatusBadge",
+        "ScopeSelector"
+      ]
+    },
+    {
+      "screenId": "notes-browser",
+      "title": "Notes Browser",
+      "route": "/notes",
+      "rootComponent": "NotesView",
+      "entities": [
+        "NotesView",
+        "AnnotationList",
+        "NotebookTree",
+        "TagFilter",
+        "SidecarLayerToggle"
+      ]
+    },
+    {
+      "screenId": "memory-lore-browser",
+      "title": "Memory / Lore Browser",
+      "route": "/memory",
+      "rootComponent": "MemoryView",
+      "entities": [
+        "MemoryView",
+        "MemoryInbox",
+        "EntityGraph",
+        "EpisodeTimeline",
+        "MemoryDetailPanel"
+      ]
+    },
+    {
+      "screenId": "settings",
+      "title": "Settings",
+      "route": "/settings",
+      "rootComponent": "SettingsView",
+      "entities": [
+        "SettingsView",
+        "ComputePanel",
+        "AccessibilityPanel",
+        "EntitlementPanel",
+        "BackupRestorePanel"
+      ]
+    },
+    {
+      "screenId": "first-launch-setup",
+      "title": "First Launch / Setup",
+      "route": "/setup",
+      "rootComponent": "SetupWizard",
+      "entities": [
+        "SetupWizard",
+        "CapabilityReport",
+        "SetupPathChooser",
+        "ModelRecommendation"
+      ]
+    },
+    {
+      "screenId": "download-plan-dialog",
+      "title": "Download Plan Dialog",
+      "route": "/library",
+      "rootComponent": "DownloadPlanDialog",
+      "entities": [
+        "DownloadPlanDialog",
+        "InstallPlanSummary",
+        "StorageImpactBar"
+      ]
+    }
+  ]
+}

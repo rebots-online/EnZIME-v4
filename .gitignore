@@ -1,0 +1,11 @@
+# Build output (disposable)
+target/
+node_modules/
+**/build/
+apps/*/dist/
+
+# Release artifacts ARE tracked (CC12 / BUILD floor)
+!/dist/
+
+# Never any tmp (I-8)
+.tmp/

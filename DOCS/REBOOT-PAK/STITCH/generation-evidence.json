@@ -1,0 +1,26 @@
+{
+  "schema": "enzime.stitch.generation-evidence.v1",
+  "status": "not_executed_in_current_session",
+  "reason": "The Stitch MCP server was not exposed as a callable connector in this Work session.",
+  "project": {
+    "expectedTitle": "EnZIME Reader",
+    "projectId": null,
+    "verified": false
+  },
+  "designSystem": {
+    "expectedName": "EnZIME Aurora Glass",
+    "verified": false
+  },
+  "screens": [
+    {"screenId": "home-dashboard", "remoteScreenId": null, "verified": false},
+    {"screenId": "library-pack-manager", "remoteScreenId": null, "verified": false},
+    {"screenId": "reader", "remoteScreenId": null, "verified": false},
+    {"screenId": "annotation-workspace", "remoteScreenId": null, "verified": false},
+    {"screenId": "ask-ai-conversation", "remoteScreenId": null, "verified": false},
+    {"screenId": "notes-browser", "remoteScreenId": null, "verified": false},
+    {"screenId": "memory-lore-browser", "remoteScreenId": null, "verified": false},
+    {"screenId": "settings", "remoteScreenId": null, "verified": false},
+    {"screenId": "first-launch-setup", "remoteScreenId": null, "verified": false},
+    {"screenId": "download-plan-dialog", "remoteScreenId": null, "verified": false}
+  ]
+}

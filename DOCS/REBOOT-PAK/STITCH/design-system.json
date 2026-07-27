@@ -1,0 +1,59 @@
+{
+  "schema": "enzime.stitch.design-system.v1",
+  "name": "EnZIME Aurora Glass",
+  "product": "EnZIME Reader",
+  "mode": "dark",
+  "colors": {
+    "canvas": "#090B13",
+    "elevated": "#111521",
+    "glass": "rgba(23,28,44,0.72)",
+    "glassStrong": "rgba(28,34,54,0.90)",
+    "borderSubtle": "rgba(189,198,255,0.14)",
+    "textPrimary": "#F4F6FF",
+    "textSecondary": "#B7BDD4",
+    "textMuted": "#7F879F",
+    "primary": "#7C8CFF",
+    "primaryHover": "#91A0FF",
+    "accent": "#34E0D4",
+    "success": "#4CE3A4",
+    "warning": "#FFCA6A",
+    "danger": "#FF6F91"
+  },
+  "typography": {
+    "ui": "Inter",
+    "mono": "JetBrains Mono",
+    "reader": "Literata",
+    "basePx": 16,
+    "readerLineHeight": 1.65
+  },
+  "shape": {
+    "smallRadiusPx": 8,
+    "mediumRadiusPx": 14,
+    "largeRadiusPx": 22,
+    "panelBlurPx": 18
+  },
+  "layout": {
+    "desktopFrame": {
+      "widthPx": 1440,
+      "heightPx": 1024
+    },
+    "mobileFrame": {
+      "widthPx": 412,
+      "heightPx": 915
+    },
+    "navigationRailPx": 84,
+    "contentMaxWidthPx": 1600
+  },
+  "rules": [
+    "Use glass only for chrome and overlays, never behind long-form article text.",
+    "Use periwinkle for primary action and navigation.",
+    "Use teal for verified, ready, active, or connected state.",
+    "Show status with icon and text; never rely on color alone.",
+    "Keep the reader surface opaque, quiet, and typographically editorial.",
+    "Use compact JetBrains Mono telemetry for sizes, versions, hashes, and readiness.",
+    "Every primary action has a visible keyboard focus state.",
+    "Support 200 percent text scaling without clipped controls.",
+    "Eliminate nonessential motion in reduced-motion mode.",
+    "Do not rename any component or entity supplied in a screen prompt."
+  ]
+}
