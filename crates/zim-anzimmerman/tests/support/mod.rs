@@ -44,6 +44,13 @@ pub struct ZimBuilder {
     pub uuid: [u8; 16],
     /// If set, every cluster is compressed with raw DEFLATE.
     pub zlib_clusters: bool,
+    /// Pairs of `(metadata_name, metadata_value)` written verbatim as
+    /// `M/<name>` text articles in namespace `M`.
+    pub metadata: Vec<(String, String)>,
+    /// If set, replaces the on-disk cluster payload for the (single) article
+    /// cluster with these exact bytes (`[comp_byte] || [compressed]`).
+    /// Used by the decompression-bomb conformance fixture.
+    pub raw_cluster_override: Option<Vec<u8>>,
 }
 
 impl ZimBuilder {
@@ -85,9 +92,26 @@ impl ZimBuilder {
     /// written. The output is a valid v6 ZIM with one cluster per article
     /// (keeps the fixture builder trivial and avoids cross-blob packing).
     pub fn write(&self, out: &mut Vec<u8>) -> usize {
-        let article_entries: Vec<&TestEntry> = self
+        // Metadata entries are stored as text articles in namespace M.
+        let metadata_entries: Vec<TestEntry> = self
+            .metadata
+            .iter()
+            .map(|(name, value)| TestEntry::Article {
+                namespace: b'M',
+                url: format!("M/{}", name).strip_prefix("M/").unwrap_or(name).to_string(),
+                title: name.clone(),
+                mimetype: "text/plain;charset=UTF-8".to_string(),
+                blob: value.as_bytes().to_vec(),
+            })
+            .collect();
+        let all_entries: Vec<&TestEntry> = self
             .entries
             .iter()
+            .chain(metadata_entries.iter())
+            .collect();
+        let article_entries: Vec<&TestEntry> = all_entries
+            .iter()
+            .copied()
             .filter(|e| matches!(e, TestEntry::Article { .. }))
             .collect();
 
@@ -111,18 +135,25 @@ impl ZimBuilder {
         }
         let _ = mime_index_for;
 
-        // MIME list — starts at offset 80.
+        // MIME list — starts at offset 80. Always at least `\0\0`.
         let mut mime_list_bytes: Vec<u8> = Vec::new();
         for m in &mimes {
             mime_list_bytes.extend_from_slice(m.as_bytes());
             mime_list_bytes.push(0);
         }
-        mime_list_bytes.push(0); // terminating double-NUL
+        mime_list_bytes.push(0); // terminating second NUL
+        if mime_list_bytes.len() < 2 {
+            // Empty MIME list — still need the full double-NUL terminator.
+            mime_list_bytes.extend_from_slice(b"\0\0");
+        }
         let mime_list_pos: u64 = 80;
         let mime_list_end: u64 = mime_list_pos + mime_list_bytes.len() as u64;
 
         // One cluster per article — cluster K contains the blob of the K-th
-        // article entry. Each cluster is `[compression_byte] || [offset_table] || [blobs]`.
+        // article entry. The on-disk form is
+        //   `[compression_byte] || [compressed(offset_table || blob)]`.
+        // We pre-serialise every cluster to its final bytes here so the
+        // offset table below can use actual compressed sizes.
         let cluster_count: u32 = article_entries.len() as u32;
         let mut cluster_payloads: Vec<Vec<u8>> = Vec::with_capacity(article_entries.len());
         for entry in &article_entries {
@@ -130,27 +161,47 @@ impl ZimBuilder {
                 TestEntry::Article { blob, .. } => blob.clone(),
                 _ => unreachable!(),
             };
-            // Build offset table: [start_offset][end_offset]
             let table_bytes = 8usize; // two u32 offsets
-            let start = table_bytes;
-            let end = table_bytes + blob.len();
-            let mut buf = Vec::with_capacity(1 + table_bytes + blob.len());
-            buf.push(if self.zlib_clusters {
+            let start = table_bytes as u32;
+            let end = (table_bytes + blob.len()) as u32;
+            let mut inner = Vec::with_capacity(table_bytes + blob.len());
+            inner.extend_from_slice(&start.to_le_bytes());
+            inner.extend_from_slice(&end.to_le_bytes());
+            inner.extend_from_slice(&blob);
+            let compression_byte = if self.zlib_clusters {
                 COMPRESSION_ZLIB
             } else {
                 COMPRESSION_DEFAULT
-            });
-            buf.extend_from_slice(&start.to_le_bytes());
-            buf.extend_from_slice(&end.to_le_bytes());
-            buf.extend_from_slice(&blob);
-            cluster_payloads.push(buf);
+            };
+            let mut on_disk = Vec::with_capacity(1 + inner.len());
+            on_disk.push(compression_byte);
+            if self.zlib_clusters {
+                let mut enc = ZlibEncoder::new(Vec::new(), Compression::default());
+                enc.write_all(&inner).unwrap();
+                let mut z = enc.finish().unwrap();
+                // flate2's ZlibEncoder wraps raw DEFLATE in a 2-byte zlib
+                // header and a 4-byte adler32 trailer; ZIM clusters store
+                // raw DEFLATE alone, so strip them.
+                z.drain(0..2);
+                z.truncate(z.len().saturating_sub(4));
+                on_disk.extend_from_slice(&z);
+            } else {
+                on_disk.extend_from_slice(&inner);
+            }
+            cluster_payloads.push(on_disk);
+        }
+        // Optional override: replace cluster 0 with hand-built bytes
+        // (used by the decompression-bomb fixture).
+        if let Some(raw) = self.raw_cluster_override.as_ref() {
+            if !cluster_payloads.is_empty() {
+                cluster_payloads[0] = raw.clone();
+            }
         }
 
         // Plan the layout: header | mime | directory | path_ptr_table | cluster_ptr_table | clusters | checksum
-        let entry_count = self.entries.len() as u32;
+        let entry_count = all_entries.len() as u32;
 
-        let directory_size: u64 = self
-            .entries
+        let directory_size: u64 = all_entries
             .iter()
             .map(|e| match e {
                 TestEntry::Article { url, title, .. } => 16 + url.len() + 1 + title.len() + 1,
@@ -171,7 +222,7 @@ impl ZimBuilder {
         let mut entry_offsets: Vec<u64> = Vec::with_capacity(entry_count as usize);
         {
             let mut cursor = directory_pos;
-            for e in &self.entries {
+            for e in &all_entries {
                 entry_offsets.push(cursor);
                 cursor += match e {
                     TestEntry::Article { url, title, .. } => {
@@ -227,7 +278,7 @@ impl ZimBuilder {
 
         // Directory entries
         let mut cluster_idx_for_article: u32 = 0;
-        for e in &self.entries {
+        for e in &all_entries {
             match e {
                 TestEntry::Article {
                     namespace,
@@ -288,30 +339,9 @@ impl ZimBuilder {
         }
         assert_eq!(out.len() as u64, clusters_pos);
 
-        // Clusters (optionally recompressed with raw DEFLATE).
+        // Clusters — already in final on-disk form (post-compression).
         for raw in &cluster_payloads {
-            if self.zlib_clusters {
-                let compression_byte = raw[0];
-                let payload = &raw[1..];
-                let compressed_payload: Vec<u8> = match compression_byte {
-                    COMPRESSION_ZLIB => {
-                        let mut enc = ZlibEncoder::new(Vec::new(), Compression::default());
-                        // ZIM ZLIB expects RAW deflate (no zlib header), so
-                        // strip the 2-byte header and 4-byte adler32 trailer
-                        // the flate2 ZlibEncoder produces.
-                        enc.write_all(payload).unwrap();
-                        let mut z = enc.finish().unwrap();
-                        z.drain(0..2);
-                        z.truncate(z.len().saturating_sub(4));
-                        z
-                    }
-                    _ => payload.to_vec(),
-                };
-                out.push(compression_byte);
-                out.extend_from_slice(&compressed_payload);
-            } else {
-                out.extend_from_slice(raw);
-            }
+            out.extend_from_slice(raw);
         }
         assert_eq!(out.len() as u64, checksum_pos);
 
