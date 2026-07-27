@@ -1,0 +1,69 @@
+{
+  "schema": "enzime.release-manifest.v1",
+  "product": "EnZIME Reader",
+  "slug": "enzime-reader",
+  "version": "1.0.52684",
+  "versionCode": 100000,
+  "packageName": "mba.robin.enzime",
+  "buildDate": "2026-07-27T10:04:08-04:00",
+  "gitCommit": "660286c5b2fac7268546eb13b5641d3afbd821d0",
+  "copyright": "Copyright (C) 2026 Robin L. M. Cheung, MBA. All rights reserved.",
+  "publisher": "Robin L. M. Cheung, MBA",
+  "signing": {
+    "android": "production.keystore alias=upload (RSA-2048/SHA256withRSA)",
+    "windows": "UNSIGNED - Authenticode requires a Windows host",
+    "linux": "unsigned bundles"
+  },
+  "artifacts": [
+    {
+      "name": "enzime-reader-v1.0.52684-android-native-debug-symbols.zip",
+      "sizeBytes": 10502026,
+      "sha256": "05f96f943b0fe7fe236d560edb5d18327b2ff1738f380b52f4aad12b9c0e4280"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-android-universal-debug.apk",
+      "sizeBytes": 440552248,
+      "sha256": "caa7c22c4a8a2f112b28383d31a28c865480431fed2e5e72698c15406d30eab1"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-android-universal-release-signed.aab",
+      "sizeBytes": 13894901,
+      "sha256": "e8e353061fc9d9cf65229e0a2fd0ff975e323152d6332c9db383723bd8fd6166"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-android-universal-release-signed.apk",
+      "sizeBytes": 37205688,
+      "sha256": "2ce6e535615c0a35ba3a41776a37bf7fb2e62d4d3a5907f289bef838ec1dc013"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-linux-amd64.AppImage",
+      "sizeBytes": 78567928,
+      "sha256": "4ef2da2966aa3fdf099f204c497b46624ddc4a905e5b7ebb26b21565ae5f0182"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-linux-amd64.deb",
+      "sizeBytes": 3007844,
+      "sha256": "10940ce609db3bd72be6fc51e13b5408e929caaf1d1a15a0431bb5ae5a82dc6b"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-sbom.cdx.json",
+      "sizeBytes": 379655,
+      "sha256": "2297c80989f4279e3ed82d63807cb75caf41cc4412aa3e71aa7f08b71d0ee167"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-source.tar.gz",
+      "sizeBytes": 103736125,
+      "sha256": "892c0f96384a47fde727196807b5b1e53b8712ac4cecf74f9da06caa6176b556"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-web-pwa.zip",
+      "sizeBytes": 82998,
+      "sha256": "8deefe6a67c85ad051374ed8ef52a95be67bdbb3d10d529e60ca481c64ba0a85"
+    },
+    {
+      "name": "enzime-reader-v1.0.52684-windows-x64-setup.exe",
+      "sizeBytes": 2014249,
+      "sha256": "56fe8b7b3aa716a0b66ea46160553aca2e2d0fb00bf1c52e4ab4a80ca78928e1"
+    }
+  ]
+}

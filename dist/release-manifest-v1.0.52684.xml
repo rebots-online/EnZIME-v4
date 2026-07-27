@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<release product="EnZIME Reader" version="1.0.52684" commit="660286c5b2fac7268546eb13b5641d3afbd821d0">
+  <artifact name="enzime-reader-v1.0.52684-android-native-debug-symbols.zip" size="10502026" sha256="05f96f943b0fe7fe236d560edb5d18327b2ff1738f380b52f4aad12b9c0e4280"/>
+  <artifact name="enzime-reader-v1.0.52684-android-universal-debug.apk" size="440552248" sha256="caa7c22c4a8a2f112b28383d31a28c865480431fed2e5e72698c15406d30eab1"/>
+  <artifact name="enzime-reader-v1.0.52684-android-universal-release-signed.aab" size="13894901" sha256="e8e353061fc9d9cf65229e0a2fd0ff975e323152d6332c9db383723bd8fd6166"/>
+  <artifact name="enzime-reader-v1.0.52684-android-universal-release-signed.apk" size="37205688" sha256="2ce6e535615c0a35ba3a41776a37bf7fb2e62d4d3a5907f289bef838ec1dc013"/>
+  <artifact name="enzime-reader-v1.0.52684-linux-amd64.AppImage" size="78567928" sha256="4ef2da2966aa3fdf099f204c497b46624ddc4a905e5b7ebb26b21565ae5f0182"/>
+  <artifact name="enzime-reader-v1.0.52684-linux-amd64.deb" size="3007844" sha256="10940ce609db3bd72be6fc51e13b5408e929caaf1d1a15a0431bb5ae5a82dc6b"/>
+  <artifact name="enzime-reader-v1.0.52684-sbom.cdx.json" size="379655" sha256="2297c80989f4279e3ed82d63807cb75caf41cc4412aa3e71aa7f08b71d0ee167"/>
+  <artifact name="enzime-reader-v1.0.52684-source.tar.gz" size="103736125" sha256="892c0f96384a47fde727196807b5b1e53b8712ac4cecf74f9da06caa6176b556"/>
+  <artifact name="enzime-reader-v1.0.52684-web-pwa.zip" size="82998" sha256="8deefe6a67c85ad051374ed8ef52a95be67bdbb3d10d529e60ca481c64ba0a85"/>
+  <artifact name="enzime-reader-v1.0.52684-windows-x64-setup.exe" size="2014249" sha256="56fe8b7b3aa716a0b66ea46160553aca2e2d0fb00bf1c52e4ab4a80ca78928e1"/>
+</release>
