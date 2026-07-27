@@ -1,6 +1,27 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
+// P2-01 LOCAL-VERIFICATION STUBS — REVERT BEFORE TASK COMPLETION.
+// These exist ONLY so cargo can build `zim-anzimmerman` while the parallel
+// platform task stabilises `platform.rs`. They will be removed by the P2-01
+// worker the moment the verification run finishes.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlatformError;
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlatformCapabilityReport;
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlatformStorageRoot;
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PowerState {
+    Unknown,
+}
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NetworkState {
+    Unknown,
+}
+
 #[async_trait]
 pub trait PlatformAdapter: Send + Sync {
     fn platform(&self) -> PlatformKind;

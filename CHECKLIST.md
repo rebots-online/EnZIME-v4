@@ -119,13 +119,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 2 — Real ZIM vertical slice
 
-- [ ] **P2-01 Implement `AnZimmermanZimEngine`**
+- [/] **P2-01 Implement `AnZimmermanZimEngine`**
   - Allowed files: `crates/zim-anzimmerman/`, ZIM fixtures/tests.
   - Do: bind exact `ZimEngine`/`ZimArchive` methods to vendored source.
   - Verify: all §7.4 legal and malicious fixtures pass.
   - Accept: no panic, unbounded allocation or unsupported silent result.
 
-- [ ] **P2-02 Implement object store**
+- [/] **P2-02 Implement object store**
   - Allowed files: `crates/object-store/`, tests.
   - Do: staging/hash/fsync/atomic-rename/quarantine algorithm from §6.3.
   - Verify: forced interruption/corruption/duplicate object tests pass.
@@ -171,13 +171,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 3 — Catalog, storage and durable transfer
 
-- [ ] **P3-01 Implement catalog adapters**
+- [/] **P3-01 Implement catalog adapters**
   - Allowed files: catalog adapter crates, catalog repositories, fixtures/tests.
   - Do: OpenZIM XML, EnZIME JSON, local manifest normalization/trust.
   - Verify: signed/unsigned/malformed/offline fixture matrix passes.
   - Accept: UI sees only canonical `CatalogEntry`.
 
-- [ ] **P3-02 Implement HTTP and file transfer adapters**
+- [/] **P3-02 Implement HTTP and file transfer adapters**
   - Allowed files: transfer adapter crates, tests.
   - Do: bounded probe, valid ranges, full/local streams, retry/source-change.
   - Verify: ignored range, oversized response, ETag change tests pass.
@@ -229,7 +229,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: size/hash/cancel/permission/process-death tests pass.
   - Accept: no partial asset is referenced.
 
-- [ ] **P4-03 Implement canonical sidecar codec/signing**
+- [/] **P4-03 Implement canonical sidecar codec/signing**
   - Allowed files: sidecar/signature crates, CDDL, golden fixtures/tests.
   - Do: deterministic CBOR, artifact ID, Ed25519 domain sign/verify.
   - Verify: golden bytes and domain-separation tests pass.
@@ -264,7 +264,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: corrupt/incompatible/insufficient-space/active-session tests pass.
   - Accept: no automatic model download.
 
-- [ ] **P5-02 Implement LiteRT-LM backend**
+- [/] **P5-02 Implement LiteRT-LM backend**
   - Allowed files: `crates/inference-litert/`, vendored adapter boundary, tests.
   - Do: exact backend/session trait with streaming/cancel/health/model validation.
   - Verify: certified model fixture runs on Android and desktop.
@@ -311,7 +311,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 6 — Lore memory
 
-- [ ] **P6-01 Implement lore repositories/policy**
+- [/] **P6-01 Implement lore repositories/policy**
   - Allowed files: lore/storage crates and tests.
   - Do: evidence/candidate/memory/revision/evidence links and forbidden classes.
   - Verify: FK, revision conflict, forbidden promotion tests pass.
@@ -345,7 +345,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 7 — Entitlement, backup and diagnostics
 
-- [ ] **P7-01 Implement signed entitlement codec/policy**
+- [/] **P7-01 Implement signed entitlement codec/policy**
   - Allowed files: entitlement/signature/storage crates, CDDL, tests.
   - Do: deterministic artifact verify and capability decisions.
   - Verify: valid/perpetual/term/expired/invalid/revoked matrix passes offline.
@@ -364,7 +364,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: duplicate/cross-device/expired/invalid fixtures pass.
   - Accept: reconciliation cannot revoke unrelated ownership/data.
 
-- [ ] **P7-04 Implement backup creation**
+- [/] **P7-04 Implement backup creation**
   - Allowed files: backup/object-store/platform/signature/tests.
   - Do: versioned manifest, optional encryption, atomic export and verification.
   - Verify: wrong destination/disk full/wrong passphrase/interruption tests pass.
@@ -376,7 +376,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: all conflict policies and source-absent representation pass.
   - Accept: failed restore leaves current data unchanged.
 
-- [ ] **P7-06 Implement diagnostics/privacy controls**
+- [/] **P7-06 Implement diagnostics/privacy controls**
   - Allowed files: diagnostics/application/settings UI/tests and privacy docs.
   - Do: redacted inspectable bundle, export/delete controls, explicit sample opt-in.
   - Verify: secret/path/content redaction fixture passes.

@@ -1,0 +1,56 @@
+; EnZIME entitlement signed offline artifact — CDDL
+;
+; Source of truth: DOCS/REBOOT-PAK/ARCHITECTURE.md §13.3.
+; The Rust wire-format encoder/decoder lives in
+; crates/entitlement/src/artifact.rs.
+;
+; Media type: application/vnd.enzime.entitlement+cbor
+
+enzime-entitlement-v1 = {
+  "schema": "enzime.entitlement.cbor.v1",
+  "artifact_id": tstr,
+  "issuer_key_id": tstr,
+  "subject": subject,
+  "issued_at_ms": int,
+  "not_before_ms": int,
+  "expires_at_ms": int / null,
+  "grants": [1* grant],
+  "provider_receipts": [* provider-receipt],
+  "nonce": bstr .size 32,
+  "signature": signature
+}
+
+subject = {
+  "kind": "device" / "household",
+  "subject_id": tstr
+}
+
+grant = {
+  "capability_key": tstr,
+  "grant_kind": "perpetual" / "term" / "quantity",
+  "quantity": uint / null,
+  "valid_until_ms": int / null
+}
+
+provider-receipt = {
+  "provider": tstr,
+  "event_digest": tstr
+}
+
+; §13.3 leaves the CDDL term `signature = signature` abstract. This crate
+; binds it to a flat signature envelope: the algorithm name, the issuer
+; key id (which MUST equal the top-level `issuer_key_id`), the signed
+; domain string (which MUST equal "enzime.entitlement.v1\0"), and the raw
+; signature bytes. This matches `domain::trust::SignatureEnvelope`.
+;
+; The canonical bytes that the issuer signs are the CBOR encoding of the
+; artifact with the `signature` field omitted (see `UnsignedArtifact` in
+; src/artifact.rs). This keeps the signature self-verifying over a
+; well-defined, replayable byte sequence.
+
+signature = {
+  "algorithm": tstr,
+  "key_id": tstr,
+  "signed_domain": tstr,
+  "value": bstr
+}

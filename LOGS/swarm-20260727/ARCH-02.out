@@ -1,0 +1,444 @@
+[0m
+> build · glm-5.2
+[0m
+[0m$ [0mls -la DOCS/ && echo "---REBOOT-PAK---" && ls -la DOCS/REBOOT-PAK/ 2>/dev/null | head -50
+total 564
+drwxrwxr-x 1 robin robin    224 Jul 27 17:15 .
+drwxrwxr-x 1 robin robin    586 Jul 27 17:15 ..
+-rw-r--r-- 1 robin robin 194363 Jul 27 10:32 ARCHITECTURE.md
+-rw-r--r-- 1 robin robin 187870 Jul 27 09:57 ARCHITECTURE.md.bak.20260727_095717
+-rw-r--r-- 1 robin robin 191656 Jul 27 10:27 ARCHITECTURE.md.bak.20260727_102721
+drwxrwxr-x 1 robin robin    192 Jul 27 17:15 CHECKLIST-HISTORY
+drwxr-xr-x 1 robin robin    490 Jul 27 17:16 REBOOT-PAK
+---REBOOT-PAK---
+total 256
+drwxr-xr-x 1 robin robin    490 Jul 27 17:16 .
+drwxrwxr-x 1 robin robin    224 Jul 27 17:15 ..
+-rw-r--r-- 1 robin robin 187870 Jul 26 18:44 ARCHITECTURE-ORIGINAL-PAK-20260726.md
+drwxr-xr-x 1 robin robin     38 Jul 26 18:40 audits
+-rw-r--r-- 1 robin robin  24064 Jul 26 18:43 CHECKLIST-ORIGINAL-PAK-20260726.md
+drwxrwxr-x 1 robin robin     64 Jul 27 03:35 .codegraph
+-rw-rw-r-- 1 robin robin   7136 Jul 27 06:40 CONVERSATION_THREAD_thinkspace-navigator_2026-07-26.md
+drwxr-xr-x 1 robin robin      0 Jul 26 18:20 diagrams
+-rw-r--r-- 1 robin robin   7433 Jul 26 18:41 KICKOFF-PROMPT.md
+-rw-r--r-- 1 robin robin   1032 Jul 26 18:45 PAK-MANIFEST.sha256
+-rw-r--r-- 1 robin robin   8632 Jul 26 18:38 PRD.md
+-rw-r--r-- 1 robin robin   1949 Jul 26 18:44 README.md
+drwxr-xr-x 1 robin robin      0 Jul 26 18:20 schemas
+-rw-r--r-- 1 robin robin   1555 Jul 26 18:40 SOURCE-GAPS.md
+drwxr-xr-x 1 robin robin    166 Jul 26 18:40 STITCH
+-rw-r--r-- 1 robin robin   1642 Jul 26 18:40 VENDOR-MANIFEST.md
+[0m
+I'll start by investigating the actual file layout and reading the relevant sections of the architecture document.
+[0m$ [0mwc -l DOCS/ARCHITECTURE.md DOCS/REBOOT-PAK/ARCHITECTURE.md 2>/dev/null; echo "---"; diff -q DOCS/ARCHITECTURE.md DOCS/REBOOT-PAK/ARCHITECTURE.md 2>/dev/null && echo "IDENTICAL" || echo "DIFFERENT or one missing"
+6451 DOCS/ARCHITECTURE.md
+  6451 total
+---
+DIFFERENT or one missing
+[0m
+`DOCS/ARCHITECTURE.md` is the live working copy (prior amendments already applied — the §7.1 Hash fix, etc.). The frozen pak original lives at `DOCS/REBOOT-PAK/ARCHITECTURE-ORIGINAL-PAK-20260726.md`. I'll edit the working copy in place. Let me locate all the sections I need to cross-check.
+[0m$ [0mgrep -n '^## 17\.\|^### 17\.\|^## 7\.1\|^### 7\.1\|^## 7\.2\|^### 7\.2\|^## 9\b\|^### 9\b\|^## 9\.\|^## 6\.\|^### 6\.\|^## 8\b\|^## 14\.\|^### 14\.4\|^## 16\.\|^### 16\.\|^## 21\b\|^## 24\.\|^### 24\.\|^## 25\.\|^### 25\.' DOCS/ARCHITECTURE.md
+545:## 6.1 SQLite rules
+570:## 6.2 Complete schema
+1285:## 6.3 Object store
+1316:## 6.4 Migrations
+1336:## 7.1 Rust identities
+1484:## 7.2 Exact traits
+1632:## 8.1 Pack identities
+1673:## 8.2 Catalog and transfer traits
+1828:## 8.3 Install plan
+1880:## 8.4 Durable install state machine
+1902:## 8.5 Transfer limits
+1923:## 9.1 Selector model
+2045:## 9.2 Resolution order
+2087:## 9.3 Annotation service
+2147:## 9.4 Sidecar CBOR
+2248:## 9.5 Signature traits
+2307:## 9.6 Sidecar import
+3214:## 14.1 IPC rules
+3276:## 14.2 Shared TypeScript entities
+3767:## 14.3 Command DTOs
+4100:## 14.4 Complete command registry
+4185:## 14.5 Remaining return DTOs
+4248:## 14.6 Event registry
+5051:## 16.1 Rust crates and modules
+5099:## 16.2 Rust public structs and enums
+5200:## 16.3 Rust traits and release implementations
+5223:## 16.4 SQL entities
+5290:## 16.5 TypeScript public entities
+5305:## 16.6 React components
+5378:## 16.7 Routes, storage keys and settings
+5417:## 16.8 CSS variables
+5434:## 17.1 Concern matrix
+5449:## 17.2 Platform port
+5503:## 17.3 Android
+5524:## 17.4 Linux
+5541:## 17.5 Windows
+5989:## 21.1 Reference hardware
+6021:## 21.2 Budgets
+6046:## 21.3 Measurement
+6301:## 24.1 Binding validation
+6346:## 25.1 Re-attestation (2026-07-27)
+[0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [offset=5434, limit=110][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [offset=1336, limit=160][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=150, offset=1484][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=130, offset=1923][0m
+Now let me read the style references (§7.2 traits, §9 AnnotationError), the schema §6.2, command registry §14.4, §24 bindings, §8 transfer policy, §21 perf, and §16.2 entity table.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=715, offset=570][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=150, offset=4100][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=65, offset=4185][0m
+Now the command registry, DTOs, §24 bindings, §8 transfer policy, and §21 performance. Let me read them in parallel.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=60, offset=6301][0m
+[0m✱ [0mGrep "CapabilityReport|StorageDestination|SystemReadiness|capability_probe|storage_roots_list"[90m in DOCS/ARCHITECTURE.md · 33 matches[0m
+The command registry returns DTOs named `CapabilityReport` and `StorageDestination` — distinct from the port types `PlatformCapabilityReport`/`PlatformStorageRoot`. I need the DTO definitions and the §24 component bindings to derive the port types faithfully. Let me find them.
+[0m✱ [0mGrep "SetupWizard|StoragePlanner|CapabilityReport|PowerState|NetworkState|PowerStatus|ThermalStatus|NetworkPolicy|metered|charging|battery|thermal"[90m in DOCS/ARCHITECTURE.md · 37 matches[0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=95, offset=1828][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=70, offset=2540][0m
+Now I'll read the concrete DTO definitions, the transfer/power policy context, and the component prop shapes that consume these types.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=120, offset=3650][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=110, offset=5099][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=45, offset=4500][0m
+I have the DTO and schema. Two tension points need resolving before I design: (1) the `StorageDestination` DTO is a 3-field projection but the task wants `PlatformStorageRoot` richer (total/free/removable/default), and (2) whether "is_default" is tracked anywhere. Let me read the component prop shapes, the §16.2/16.3 entity-table format, and search for default-root and power/network policy consumers.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=45, offset=4800][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=160, offset=1673][0m
+StoragePlanner and SetupWizard both consume the *DTOs* (`StorageDestination`, `CapabilityReport`), confirming the port types are the richer raw-probe layer the application projects down. Now I need the exact power/network/thermal states §8 and §21 reason about, plus the §8.2 transfer traits and §21 budgets.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=110, offset=5985][0m
+Now I need to verify the helper types I plan to reuse (`AcceleratorKind`) and confirm none of the five target types already exist elsewhere. Let me also check `AnnotationError` style since the task cites it.
+[0m
+[0m$ [0mgrep -n 'enum AcceleratorKind\|AcceleratorKind' DOCS/ARCHITECTURE.md | head -20; echo "===AnnotationError==="; grep -n 'enum AnnotationError' DOCS/ARCHITECTURE.md; echo "===confirm five types undefined==="; for t in PlatformError PlatformCapabilityReport PlatformStorageRoot 'enum PowerState' 'enum NetworkState' 'struct PowerState' 'struct NetworkState'; do echo "-- $t --"; grep -n "$t" DOCS/ARCHITECTURE.md; done
+2343:    pub accelerator: AcceleratorKind,
+2360:pub enum AcceleratorKind {
+2371:    pub accelerator: AcceleratorKind,
+5163:| `AcceleratorKind` | enum | `ports::inference` |
+===AnnotationError===
+2071:pub enum AnnotationError {
+===confirm five types undefined===
+-- PlatformError --
+5455:    async fn capability_report(&self) -> Result<PlatformCapabilityReport, PlatformError>;
+5456:    async fn storage_roots(&self) -> Result<Vec<PlatformStorageRoot>, PlatformError>;
+5460:    ) -> Result<PlatformFileToken, PlatformError>;
+5465:    ) -> Result<PlatformFileToken, PlatformError>;
+5469:    ) -> Result<Box<dyn tokio::io::AsyncRead + Unpin + Send>, PlatformError>;
+5474:    ) -> Result<Box<dyn tokio::io::AsyncWrite + Unpin + Send>, PlatformError>;
+5475:    async fn power_state(&self) -> Result<PowerState, PlatformError>;
+5476:    async fn network_state(&self) -> Result<NetworkState, PlatformError>;
+-- PlatformCapabilityReport --
+5455:    async fn capability_report(&self) -> Result<PlatformCapabilityReport, PlatformError>;
+-- PlatformStorageRoot --
+5456:    async fn storage_roots(&self) -> Result<Vec<PlatformStorageRoot>, PlatformError>;
+-- enum PowerState --
+-- enum NetworkState --
+-- struct PowerState --
+-- struct NetworkState --
+[0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=30, offset=2355][0m
+Confirmed: all five types exist only at their §17.2 use sites. Let me read `AcceleratorKind` (variants) and `AnnotationError` (style) to finalize my reuse decisions.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=22, offset=2069][0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=25, offset=5200][0m
+`AcceleratorKind` (Cpu/Gpu/Npu/Hybrid) is reusable; `AnnotationError`/`ZimError` confirm the error-enum style. Let me read §16.3 (traits table) to place things correctly and check whether `PlatformAdapter` is already registered there.
+[0m
+[0m$ [0mdate +%Y%m%d_%H%M%S
+20260727_172343
+[0m
+All reuse decisions verified. Now let me see the tail of the file (end of §25.1 and where §26 begins) so my amendment note lands correctly, then I'll make the backup and edits.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=95, offset=6356][0m
+[0m
+[0m$ [0mcp -p DOCS/ARCHITECTURE.md "DOCS/ARCHITECTURE.md.bak.$(date +%Y%m%d_%H%M%S)" && ls -la DOCS/ARCHITECTURE.md.bak.* | tail -1
+-rw-r--r-- 1 robin robin 194363 Jul 27 10:32 DOCS/ARCHITECTURE.md.bak.20260727_172541
+[0m
+I have everything I need. Plan is set. Let me make the timestamped backup, then apply the edits.
+Backup created. Now the main edit — §17.2 type definitions + prose.
+[0m← [0mEdit DOCS/ARCHITECTURE.md
+Index: /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+===================================================================
+--- /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
++++ /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+@@ -5447,9 +5447,108 @@
+ | share receive | `AndroidShareReceiver` | `DesktopOpenWithReceiver` | `DesktopOpenWithReceiver` |
+ 
+ ## 17.2 Platform port
+ 
++`PlatformAdapter` is the single port through which the application observes the
++device and obtains validated file grants. Its return types are **port-level
++observations**, not command DTOs: `PlatformCapabilityReport` and
++`PlatformStorageRoot` carry the raw facts the adapter measures, and the
++application layer projects them down to the persisted, UI-facing DTOs
++(`CapabilityReport`, `StorageDestination`) defined in §14. `PowerState` and
++`NetworkState` carry exactly the signals the §8 transfer policy and the
++§10.4 / §21 compute and thermal behaviour reason about — no more.
++
++`open_read` and `open_write` return `tokio::io::AsyncRead` / `AsyncWrite`
++handles. This is deliberate: the release async runtime is Tokio (Tauri 2), and
++the platform file implementations (`tokio::fs::File`, the Android SAF bridge,
++and the Linux / Windows native handles) produce Tokio async I/O directly. The
++`futures_core::Stream` abstraction used by `ZimEntryStream` (§7.2) and
++`TransferByteStream` (§8.2) is a different shape — a pull-based *item* stream —
++and does not govern byte-handle I/O. The two therefore coexist by design:
++`futures_core::Stream` for engine and transfer chunk streams,
++`tokio::io::AsyncRead` / `AsyncWrite` for platform file handles. Consequently
++`crates/ports` depends on `tokio` (with the `io-util` feature); this is
++expected, not a surprise.
++
+ ```rust
++use async_trait::async_trait;
++use serde::{Deserialize, Serialize};
++
++use crate::inference::AcceleratorKind;
++
++#[derive(Clone, Debug, thiserror::Error)]
++pub enum PlatformError {
++    #[error("permission denied: {0}")]
++    PermissionDenied(String),
++    #[error("capability unavailable: {0}")]
++    CapabilityUnavailable(String),
++    #[error("storage root unavailable: {0}")]
++    StorageRootUnavailable(String),
++    #[error("invalid or expired file grant: {0}")]
++    InvalidGrant(String),
++    #[error("cancelled by user")]
++    Cancelled,
++    #[error("unsupported on this platform: {0}")]
++    UnsupportedOnPlatform(String),
++    #[error("I/O error: {0}")]
++    Io(String),
++}
++
++#[derive(Clone, Debug, Serialize, Deserialize)]
++pub struct PlatformCapabilityReport {
++    pub cpu: String,
++    pub ram_bytes: u64,
++    pub free_storage_bytes: u64,
++    pub accelerators: Vec<AcceleratorKind>,
++    pub background_transfer_granted: bool,
++    pub notifications_granted: bool,
++    pub microphone_granted: bool,
++    pub inference_viable: bool,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(rename_all = "snake_case")]
++pub enum StorageRootKind {
++    AppPrivate,
++    UserSelected,
++    Removable,
++}
++
++#[derive(Clone, Debug, Serialize, Deserialize)]
++pub struct PlatformStorageRoot {
++    pub storage_root_id: String,
++    pub kind: StorageRootKind,
++    pub platform_locator: String,
++    pub display_name: String,
++    pub writable: bool,
++    pub capacity_bytes: Option<u64>,
++    pub free_bytes: Option<u64>,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(rename_all = "snake_case")]
++pub enum ThermalLoad {
++    Nominal,
++    Moderate,
++    Severe,
++}
++
++#[derive(Clone, Debug, Serialize, Deserialize)]
++pub struct PowerState {
++    pub on_charger: bool,
++    pub battery_percent: Option<u8>,
++    pub battery_saver: bool,
++    pub thermal_load: ThermalLoad,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
++#[serde(rename_all = "snake_case")]
++pub enum NetworkState {
++    Offline,
++    Metered,
++    Unmetered,
++}
++
+ #[async_trait]
+ pub trait PlatformAdapter: Send + Sync {
+     fn platform(&self) -> PlatformKind;
+     async fn capability_report(&self) -> Result<PlatformCapabilityReport, PlatformError>;
+
+[0m
+[0m← [0mEdit DOCS/ARCHITECTURE.md
+Index: /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+===================================================================
+--- /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
++++ /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+@@ -5598,8 +5598,28 @@
+ - never permit path traversal;
+ - expire after 15 minutes if non-persistable;
+ - are scoped to read or write.
+ 
++Storage roots and capability reports:
++
++- `PlatformStorageRoot` maps one-for-one to the `storage_roots` columns (§6.2).
++  Removability is `kind == StorageRootKind::Removable`, and the default
++  destination is `kind == StorageRootKind::AppPrivate`; neither is a separate
++  field, matching the table's `kind` CHECK constraint exactly.
++  `last_probed_at_ms`, `created_at_ms` and `updated_at_ms` are persistence
++  bookkeeping set by the storage layer on insert or probe, so the adapter does
++  not report them.
++- `PlatformCapabilityReport` is the raw device probe. The application combines
++  it with installed model and engine state to assemble the persisted
++  `CapabilityReport` DTO (§14) and its `warnings: ReadinessFinding[]`. The
++  three permission flags gate live subsystems directly:
++  `microphone_granted` → voice annotations (`AnnotationType::Voice`),
++  `background_transfer_granted` → background downloads (§8, §17.3), and
++  `notifications_granted` → user-task delivery. `inference_viable` is the
++  hardware assessment (RAM and an accelerator sufficient to run the release
++  model); the DTO's `inferenceReady` additionally requires a compatible model
++  to be installed.
++
+ ## 17.3 Android
+ 
+ Android minimum:
+ 
+
+[0m
+Now expand the post-block prose to document the storage-root encoding and capability-report projection.
+Now register the new public types in the §16.2 entity table.
+[0m← [0mEdit DOCS/ARCHITECTURE.md
+Index: /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+===================================================================
+--- /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
++++ /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+@@ -5192,8 +5192,15 @@
+ | `LoreError` | enum | `application::memory` |
+ | `ProviderEntitlementEvent` | struct | `ports::entitlement` |
+ | `EntitlementRefreshRequest` | struct | `ports::entitlement` |
+ | `EntitlementRestoreRequest` | struct | `ports::entitlement` |
++| `PlatformError` | enum | `ports::platform` |
++| `PlatformCapabilityReport` | struct | `ports::platform` |
++| `PlatformStorageRoot` | struct | `ports::platform` |
++| `StorageRootKind` | enum | `ports::platform` |
++| `PowerState` | struct | `ports::platform` |
++| `ThermalLoad` | enum | `ports::platform` |
++| `NetworkState` | enum | `ports::platform` |
+ | `CapabilityDecision` | struct | `domain::entitlement` |
+ | `CapabilityDecisionSource` | enum | `domain::entitlement` |
+ | `EntitlementError` | enum | `application::entitlement` |
+ 
+
+[0m
+Now append the amendment note to §25.1 (before the `---` separator, not touching §26).
+[0m← [0mEdit DOCS/ARCHITECTURE.md
+Index: /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+===================================================================
+--- /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
++++ /home/robin/forgejo/EnZIME-v4/DOCS/ARCHITECTURE.md
+@@ -6487,8 +6487,25 @@
+ **Attestation timestamp (ISO-8601, UTC):** `2026-07-27T14:31:47Z`
+ **Authoring agent:** model family `GLM`, version `5.2` (`glm-5.2`), harness
+ `opencode`.
+ 
++### Amendment — §17.2 platform types defined (2026-07-27)
++
++On 2026-07-27 the five types referenced only at their use sites inside the
++`PlatformAdapter` trait body were given their definitions in §17.2, and the
++§16.2 entity table was extended with their rows. The five types are:
++`PlatformError`, `PlatformCapabilityReport`, `PlatformStorageRoot`,
++`PowerState`, `NetworkState` (plus the two supporting enums their shapes
++require, `StorageRootKind` and `ThermalLoad`). With these definitions in place,
++the §25.1 entity-resolution claim — "every public entity named here resolves to
++exactly one definition" — now holds for the §17.2 platform port: a coder
++transcribing §17.2 produces code that compiles, with no undefined type
++references. `open_read` / `open_write` were confirmed to intend Tokio async I/O
++(`tokio::io::AsyncRead` / `AsyncWrite`), distinct from the `futures_core::Stream`
++used for §7.2 / §8.2 item streams; §17.2 prose now states this and the resulting
++`crates/ports` → `tokio` dependency. This note is appended; the attestation
++above is not rewritten.
++
+ ---
+ 
+ # 26. Amendments (append-only; SC1 SP-6)
+ 
+
+[0m
+All edits applied. Let me verify the result: confirm each of the five types now has exactly one definition, the §16.2 rows landed, §26 is untouched, and no forbidden placeholders were introduced.
+[0m$ [0mecho "=== definitions of the five (+supporting) types ==="; for t in 'enum PlatformError' 'struct PlatformCapabilityReport' 'struct PlatformStorageRoot' 'enum StorageRootKind' 'enum ThermalLoad' 'struct PowerState' 'enum NetworkState'; do printf '%-40s ' "$t"; grep -c "pub $t" DOCS/ARCHITECTURE.md; done
+echo "=== each name: count of 'pub <kind> Name' (must be 1) ==="
+for t in PlatformError PlatformCapabilityReport PlatformStorageRoot StorageRootKind ThermalLoad PowerState NetworkState; do printf '%-30s ' "$t"; grep -E "pub (enum|struct) $t\b" DOCS/ARCHITECTURE.md | wc -l; done
+echo "=== §16.2 platform rows ==="; grep -n 'ports::platform' DOCS/ARCHITECTURE.md
+echo "=== forbidden tokens in edited regions ==="; grep -niE 'TBD|FIXME|placeholder|coming soon|not implemented|lorem ipsum|stub' DOCS/ARCHITECTURE.md | head
+echo "=== §26 unchanged (still starts at same header) ==="; grep -n '^# 26\. Amendments' DOCS/ARCHITECTURE.md
+echo "=== §17.2 trait still intact (tokio retained) ==="; grep -n 'tokio::io::AsyncRead\|tokio::io::AsyncWrite\|pub trait PlatformAdapter' DOCS/ARCHITECTURE.md
+=== definitions of the five (+supporting) types ===
+enum PlatformError                       1
+struct PlatformCapabilityReport          1
+struct PlatformStorageRoot               1
+enum StorageRootKind                     1
+enum ThermalLoad                         1
+struct PowerState                        1
+enum NetworkState                        1
+=== each name: count of 'pub <kind> Name' (must be 1) ===
+PlatformError                  1
+PlatformCapabilityReport       1
+PlatformStorageRoot            1
+StorageRootKind                1
+ThermalLoad                    1
+PowerState                     1
+NetworkState                   1
+=== §16.2 platform rows ===
+5089:| `ports::platform` | module | native access |
+5196:| `PlatformError` | enum | `ports::platform` |
+5197:| `PlatformCapabilityReport` | struct | `ports::platform` |
+5198:| `PlatformStorageRoot` | struct | `ports::platform` |
+5199:| `StorageRootKind` | enum | `ports::platform` |
+5200:| `PowerState` | struct | `ports::platform` |
+5201:| `ThermalLoad` | enum | `ports::platform` |
+5202:| `NetworkState` | enum | `ports::platform` |
+=== forbidden tokens in edited regions ===
+17:> Product code MUST NOT contain a stub, mock-only path, bypass gate, dead-end
+18:> caption, disabled production control, or “implemented later” placeholder.
+4676:  placeholder: string;
+5876:It is not placeholder copy.
+6025:tools/release/verify-no-production-placeholders.sh
+6033:## 20.3 Placeholder gate
+6039:FIXME
+6040:stub
+6042:placeholder
+6043:coming soon
+=== §26 unchanged (still starts at same header) ===
+6510:# 26. Amendments (append-only; SC1 SP-6)
+=== §17.2 trait still intact (tokio retained) ===
+5467:`open_read` and `open_write` return `tokio::io::AsyncRead` / `AsyncWrite`
+5475:`tokio::io::AsyncRead` / `AsyncWrite` for platform file handles. Consequently
+5559:pub trait PlatformAdapter: Send + Sync {
+5575:    ) -> Result<Box<dyn tokio::io::AsyncRead + Unpin + Send>, PlatformError>;
+5580:    ) -> Result<Box<dyn tokio::io::AsyncWrite + Unpin + Send>, PlatformError>;
+6503:(`tokio::io::AsyncRead` / `AsyncWrite`), distinct from the `futures_core::Stream`
+[0m
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=22, offset=5193][0m
+All five types (+2 supporting enums) now resolve to exactly one definition each, §16.2 has the 7 rows, §26 is intact (shifted to line 6510, content untouched), and no banned placeholders were introduced. Let me do a final read of the edited §17.2 and §16.2 regions to confirm coherence.
+[0m→ [0mRead DOCS/ARCHITECTURE.md[90m [limit=150, offset=5449][0m
+Done. Edited `DOCS/ARCHITECTURE.md` in place; backup at `DOCS/ARCHITECTURE.md.bak.20260727_172541`. Each of the five types now resolves to exactly one definition, §16.2 carries the new rows, §26 is untouched, and no `TBD`/stub/placeholder was introduced.
+
+## Types defined (final shapes)
+
+- **`PlatformError`** — `#[derive(Clone, Debug, thiserror::Error)]` enum: `PermissionDenied(String)`, `CapabilityUnavailable(String)`, `StorageRootUnavailable(String)`, `InvalidGrant(String)`, `Cancelled`, `UnsupportedOnPlatform(String)`, `Io(String)`.
+- **`PlatformCapabilityReport`** — struct: `cpu: String`, `ram_bytes: u64`, `free_storage_bytes: u64`, `accelerators: Vec<AcceleratorKind>`, `background_transfer_granted: bool`, `notifications_granted: bool`, `microphone_granted: bool`, `inference_viable: bool`.
+- **`PlatformStorageRoot`** — struct: `storage_root_id: String`, `kind: StorageRootKind`, `platform_locator: String`, `display_name: String`, `writable: bool`, `capacity_bytes: Option<u64>`, `free_bytes: Option<u64>`.
+- **`PowerState`** — struct: `on_charger: bool`, `battery_percent: Option<u8>`, `battery_saver: bool`, `thermal_load: ThermalLoad`.
+- **`NetworkState`** — enum (`snake_case`): `Offline | Metered | Unmetered`.
+- Supporting (required by the above shapes): **`StorageRootKind`** enum `AppPrivate | UserSelected | Removable`; **`ThermalLoad`** enum `Nominal | Moderate | Severe`. All seven registered in §16.2.
+
+## Tokio-vs-futures decision
+
+**Kept `tokio::io::AsyncRead`/`AsyncWrite`** — §17.2 genuinely intends it. The release runtime is Tokio (Tauri 2) and platform file handles produce Tokio async I/O directly. `futures_core::Stream` (§7.2 `ZimEntryStream`, §8.2 `TransferByteStream`) is a *different abstraction* — a pull-based item stream — and does not govern byte-handle I/O; the two coexist by design. §17.2 prose now states this and the resulting `crates/ports → tokio` (`io-util`) dependency. No signature change was needed (the trait already said tokio).
+
+## Judgment calls the document did not settle
+
+1. **`PowerState` is a struct, not the "small enum" the prompt mused.** It must carry `on_charger` + `battery_percent` + `battery_saver` + `thermal_load` — all consumed by §8 transfer policy and §10.4/§21 — which a 2-variant enum cannot hold cleanly.
+2. **Thermal folded into `PowerState`.** §17.1 lists thermal as an adapter concern and §10.4 consumes it, but the trait has no `thermal_state()` method, so thermal rides on `power_state()`; I introduced `ThermalLoad` (3 levels mapping to `ComputePolicy.thermalBehavior` pause/reduce/continue).
+3. **`PlatformError::InvalidGrant`** added beyond the prompt's six variants — §17.2's own token rules (grants expire in 15 min; never allow path traversal) require `open_read`/`open_write` to signal an expired/malformed grant distinctly from `Io`/`PermissionDenied`.
+4. **Permission flags are port-level, not DTO fields.** `background_transfer_granted`/`notifications_granted`/`microphone_granted`/`inference_viable` are absent from the `CapabilityReport` DTO; they gate live subsystems (voice annotations, background downloads, task notifications) and surface to the UI via the DTO's `warnings`. Persisted in `capability_reports.report_json`.
+5. **Removability/default encoded via `StorageRootKind`** (matches the `storage_roots.kind` CHECK constraint), not separate booleans — no column, DTO or component consumes a standalone `is_default`, so a separate field would be scope creep. Omitted `last_probed_at_ms`/`created_at_ms`/`updated_at_ms` as persistence bookkeeping.
+6. **Reused `AcceleratorKind` (ports::inference)** for `accelerators` rather than inventing a Rust `AcceleratorReport`; presence denotes availability, application enriches name/detail on DTO projection.
+
+**Out-of-scope gaps observed but not fixed (per instructions):** `PlatformKind`/`PlatformFileToken` are defined in §17.2 but unregistered in §16.2, and `PlatformAdapter` is unregistered in §16.3 — all pre-existing, unrelated to the five-undefined-types defect. I did not add an AMD entry to §26 (explicit instruction); the change is recorded only in the appended §25.1 amendment note.

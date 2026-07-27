@@ -1,0 +1,12 @@
+Now I have enough context. Let me write the crate.Let me fix some issues — the placeholder `AuditEventBuilderExt` violates the no-placeholder rule. I need to expose a `pub(crate)` `place_string` properly, and clean up the awkward test helpers.Now rip out the placeholder `AuditEventBuilderExt` in quarantine.rs and use `place_string` directly:Now fix the brittle test in quarantine.rs and clean up bundle.rs's odd test helper:Now run `cargo check -p diagnostics`:All 23 tests pass; `cargo check -p diagnostics` is clean (the one remaining warning is in `domain`, not my crate).
+
+## What I implemented (P7-06)
+
+`crates/diagnostics/` now implements ARCHITECTURE.md §18.6 (Logging) and §18.7 (Quarantine) as a real, redact-by-default, user-inspectable diagnostic bundle:
+
+- **`redactor.rs`** — Typed [`Redactor`] with pass-through constructors for the §18.6 "may include" list (`entity_id`, `error_code`, `byte_count`, `duration_millis`, `state_transition`, `version`) and redacting constructors for the "excludes" list (`redact_text`, `redact_path`, `redact_url`). No `raw()` or `push_string()` exists — redaction is not an option the caller can forget to pass. §18.5 secrets have no constructor at all (no method accepts a token/key/coupon secret value).
+- **`bundle.rs`** — [`DiagnosticBundle`] with `push_*` methods typed to the §18.6 categories, plus three renderers (`to_markdown`, `to_text`, `to_json`) so the user reads exactly what would be shared.
+- **`audit.rs`** — [`AuditEvent`] mirroring the §6.2 `audit_events` row, plus [`AuditEventBuilder`] that only accepts redacted typed values into `detail_json`. A `pub(crate) place_string` exists for already-scrubbed strings internal to this crate.
+- **`quarantine.rs`** — [`QuarantineRecord`] (source/expected+actual digest/verifier error/audit_event_id/locator/deleted), [`QuarantineLocator`] whose only constructor is `outside_active_roots(audit_event_id)` (no "active roots" constructor exists, so no "use anyway" path), and `refuse_quarantined()` which always returns `Err`. Verifier error strings are scrubbed (`scrub_verifier_error`) before they reach any audit row, since Rust error displays sometimes embed paths.
+
+23 unit tests cover the binding behaviours: original user text/path bytes never reach any rendered output; URLs with query strings drop the query; refuse_quarantined is always `Err`; the locator rejects path-traversal in `audit_event_id`; `mark_deleted` flips the flag and emits the deletion audit row.

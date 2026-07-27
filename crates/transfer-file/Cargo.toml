@@ -4,3 +4,15 @@ version.workspace = true
 edition.workspace = true
 license-file.workspace = true
 authors.workspace = true
+
+[dependencies]
+ports = { path = "../ports" }
+async-trait = "0.1"
+bytes = { version = "1", features = ["serde"] }
+futures-core = "0.3"
+futures-util = "0.3"
+tokio = { version = "1", default-features = false, features = ["fs", "io-util"] }
+tokio-util = { version = "0.7", default-features = false, features = ["io"] }
+
+[dev-dependencies]
+tokio = { version = "1", default-features = false, features = ["macros", "rt", "fs"] }

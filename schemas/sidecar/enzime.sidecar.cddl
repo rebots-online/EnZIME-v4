@@ -1,0 +1,83 @@
+; CDDL schema for EnZIME sidecar artifacts.
+; Transcribed verbatim from ARCHITECTURE.md §9.4 (binding).
+; Canonicalization rules (ARCHITECTURE.md §9.4 "Canonicalization"):
+;   - RFC 8949 deterministic CBOR
+;   - map keys sorted by encoded key bytes
+;   - preferred integer encoding
+;   - no indefinite-length items
+;   - floating values forbidden
+;   - signature value omitted while signing
+;   - artifact_id is SHA-256 of canonical unsigned envelope
+;   - signature domain prefix is UTF-8 `enzime.sidecar.v1\0`
+
+enzime-sidecar-v1 = {
+  "schema": "enzime.sidecar.cbor.v1",
+  "artifact_id": tstr,
+  "created_at_ms": int,
+  "creator": device-ref,
+  "layer": layer,
+  "source_bindings": [* source-binding],
+  "annotations": [* annotation],
+  "notebooks": [* notebook],
+  "tags": [* tag],
+  "objects": [* object-ref],
+  "signature": signature
+}
+
+device-ref = {
+  "device_id": tstr,
+  "public_key": bstr .size 32
+}
+
+layer = {
+  "layer_id": tstr,
+  "name": tstr,
+  "visibility": "private" / "shared" / "imported"
+}
+
+source-binding = {
+  "pack_id": tstr,
+  "corpus_id": tstr,
+  "artifact_sha256": tstr
+}
+
+annotation = {
+  "annotation_id": tstr,
+  "annotation_type": "highlight" / "comment" / "ink" / "voice" / "bookmark_note",
+  "revision": uint,
+  "selector": any,
+  "body_text": tstr / null,
+  "style": any,
+  "notebook_id": tstr / null,
+  "tag_ids": [* tstr],
+  "asset_ids": [* tstr],
+  "created_at_ms": int,
+  "updated_at_ms": int
+}
+
+notebook = {
+  "notebook_id": tstr,
+  "parent_notebook_id": tstr / null,
+  "name": tstr,
+  "description": tstr
+}
+
+tag = {
+  "tag_id": tstr,
+  "name": tstr,
+  "color_token": tstr
+}
+
+object-ref = {
+  "object_sha256": tstr,
+  "mime_type": tstr,
+  "byte_length": uint,
+  "embedded_bytes": bstr / null
+}
+
+signature = {
+  "algorithm": "ed25519",
+  "key_id": tstr,
+  "signed_domain": "enzime.sidecar.v1",
+  "value": bstr .size 64
+}

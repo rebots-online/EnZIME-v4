@@ -5193,6 +5193,13 @@ Case and spelling are normative.
 | `ProviderEntitlementEvent` | struct | `ports::entitlement` |
 | `EntitlementRefreshRequest` | struct | `ports::entitlement` |
 | `EntitlementRestoreRequest` | struct | `ports::entitlement` |
+| `PlatformError` | enum | `ports::platform` |
+| `PlatformCapabilityReport` | struct | `ports::platform` |
+| `PlatformStorageRoot` | struct | `ports::platform` |
+| `StorageRootKind` | enum | `ports::platform` |
+| `PowerState` | struct | `ports::platform` |
+| `ThermalLoad` | enum | `ports::platform` |
+| `NetworkState` | enum | `ports::platform` |
 | `CapabilityDecision` | struct | `domain::entitlement` |
 | `CapabilityDecisionSource` | enum | `domain::entitlement` |
 | `EntitlementError` | enum | `application::entitlement` |
@@ -5448,7 +5455,106 @@ crate.
 
 ## 17.2 Platform port
 
+`PlatformAdapter` is the single port through which the application observes the
+device and obtains validated file grants. Its return types are **port-level
+observations**, not command DTOs: `PlatformCapabilityReport` and
+`PlatformStorageRoot` carry the raw facts the adapter measures, and the
+application layer projects them down to the persisted, UI-facing DTOs
+(`CapabilityReport`, `StorageDestination`) defined in §14. `PowerState` and
+`NetworkState` carry exactly the signals the §8 transfer policy and the
+§10.4 / §21 compute and thermal behaviour reason about — no more.
+
+`open_read` and `open_write` return `tokio::io::AsyncRead` / `AsyncWrite`
+handles. This is deliberate: the release async runtime is Tokio (Tauri 2), and
+the platform file implementations (`tokio::fs::File`, the Android SAF bridge,
+and the Linux / Windows native handles) produce Tokio async I/O directly. The
+`futures_core::Stream` abstraction used by `ZimEntryStream` (§7.2) and
+`TransferByteStream` (§8.2) is a different shape — a pull-based *item* stream —
+and does not govern byte-handle I/O. The two therefore coexist by design:
+`futures_core::Stream` for engine and transfer chunk streams,
+`tokio::io::AsyncRead` / `AsyncWrite` for platform file handles. Consequently
+`crates/ports` depends on `tokio` (with the `io-util` feature); this is
+expected, not a surprise.
+
 ```rust
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+
+use crate::inference::AcceleratorKind;
+
+#[derive(Clone, Debug, thiserror::Error)]
+pub enum PlatformError {
+    #[error("permission denied: {0}")]
+    PermissionDenied(String),
+    #[error("capability unavailable: {0}")]
+    CapabilityUnavailable(String),
+    #[error("storage root unavailable: {0}")]
+    StorageRootUnavailable(String),
+    #[error("invalid or expired file grant: {0}")]
+    InvalidGrant(String),
+    #[error("cancelled by user")]
+    Cancelled,
+    #[error("unsupported on this platform: {0}")]
+    UnsupportedOnPlatform(String),
+    #[error("I/O error: {0}")]
+    Io(String),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlatformCapabilityReport {
+    pub cpu: String,
+    pub ram_bytes: u64,
+    pub free_storage_bytes: u64,
+    pub accelerators: Vec<AcceleratorKind>,
+    pub background_transfer_granted: bool,
+    pub notifications_granted: bool,
+    pub microphone_granted: bool,
+    pub inference_viable: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum StorageRootKind {
+    AppPrivate,
+    UserSelected,
+    Removable,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PlatformStorageRoot {
+    pub storage_root_id: String,
+    pub kind: StorageRootKind,
+    pub platform_locator: String,
+    pub display_name: String,
+    pub writable: bool,
+    pub capacity_bytes: Option<u64>,
+    pub free_bytes: Option<u64>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ThermalLoad {
+    Nominal,
+    Moderate,
+    Severe,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PowerState {
+    pub on_charger: bool,
+    pub battery_percent: Option<u8>,
+    pub battery_saver: bool,
+    pub thermal_load: ThermalLoad,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NetworkState {
+    Offline,
+    Metered,
+    Unmetered,
+}
+
 #[async_trait]
 pub trait PlatformAdapter: Send + Sync {
     fn platform(&self) -> PlatformKind;
@@ -5499,6 +5605,26 @@ Opaque file tokens:
 - never permit path traversal;
 - expire after 15 minutes if non-persistable;
 - are scoped to read or write.
+
+Storage roots and capability reports:
+
+- `PlatformStorageRoot` maps one-for-one to the `storage_roots` columns (§6.2).
+  Removability is `kind == StorageRootKind::Removable`, and the default
+  destination is `kind == StorageRootKind::AppPrivate`; neither is a separate
+  field, matching the table's `kind` CHECK constraint exactly.
+  `last_probed_at_ms`, `created_at_ms` and `updated_at_ms` are persistence
+  bookkeeping set by the storage layer on insert or probe, so the adapter does
+  not report them.
+- `PlatformCapabilityReport` is the raw device probe. The application combines
+  it with installed model and engine state to assemble the persisted
+  `CapabilityReport` DTO (§14) and its `warnings: ReadinessFinding[]`. The
+  three permission flags gate live subsystems directly:
+  `microphone_granted` → voice annotations (`AnnotationType::Voice`),
+  `background_transfer_granted` → background downloads (§8, §17.3), and
+  `notifications_granted` → user-task delivery. `inference_viable` is the
+  hardware assessment (RAM and an accelerator sufficient to run the release
+  model); the DTO's `inferenceReady` additionally requires a compatible model
+  to be installed.
 
 ## 17.3 Android
 
@@ -6361,6 +6487,23 @@ was corrected. After that reconciliation:
 **Attestation timestamp (ISO-8601, UTC):** `2026-07-27T14:31:47Z`
 **Authoring agent:** model family `GLM`, version `5.2` (`glm-5.2`), harness
 `opencode`.
+
+### Amendment — §17.2 platform types defined (2026-07-27)
+
+On 2026-07-27 the five types referenced only at their use sites inside the
+`PlatformAdapter` trait body were given their definitions in §17.2, and the
+§16.2 entity table was extended with their rows. The five types are:
+`PlatformError`, `PlatformCapabilityReport`, `PlatformStorageRoot`,
+`PowerState`, `NetworkState` (plus the two supporting enums their shapes
+require, `StorageRootKind` and `ThermalLoad`). With these definitions in place,
+the §25.1 entity-resolution claim — "every public entity named here resolves to
+exactly one definition" — now holds for the §17.2 platform port: a coder
+transcribing §17.2 produces code that compiles, with no undefined type
+references. `open_read` / `open_write` were confirmed to intend Tokio async I/O
+(`tokio::io::AsyncRead` / `AsyncWrite`), distinct from the `futures_core::Stream`
+used for §7.2 / §8.2 item streams; §17.2 prose now states this and the resulting
+`crates/ports` → `tokio` dependency. This note is appended; the attestation
+above is not rewritten.
 
 ---
 

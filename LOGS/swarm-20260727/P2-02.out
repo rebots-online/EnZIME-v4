@@ -1,0 +1,31 @@
+Now I have a clear picture. Let me design and write the implementation. First, let me check the path validation patterns and compute the migration descriptor SHA-256.`storage-sqlite` already owns the SQL side of §6.4. So in `object-store` I'll implement §6.3 (the full commit algorithm) plus a §6.4-shaped migration framework and the v1 layout migration (the FS analogue). Writing now.Now the error module:Now the layout module:Now the digest module:Now the verifier module:Now the migration module:Now the main store module with the 11-step commit algorithm:Now the lib.rs:The workspace fails to resolve because of `entitlement`'s `serde_bytes = "0.12"` (which doesn't exist on crates.io — latest is `0.11.x`). This is not my crate's fault. Per the task ("A compile error elsewhere in the workspace is NOT yours — ignore it"), I'll verify my crate in isolation by copying it outside the workspace tree.Real issues found. Let me fix them in the actual workspace files:Now re-sync the standalone copy and re-check:Library compiles cleanly. Now run the full test suite to verify behaviour:Test-only issues. Let me fix the `layout::` reference (was via `self::layout`) and the slice `.clone()` calls:All 27 tests pass. Let me clean up the standalone scratch directory and confirm the workspace result:Done. Workspace resolution is blocked by pre-existing external breakages (`entitlement`'s `serde_bytes = "0.12"` doesn't exist on crates.io; `transfer-http` references a non-existent `reqwest` feature `rustls-tls`). Per the task spec these are not mine — I verified my crate by compiling and testing it in isolation against a fresh `domain` copy.
+
+## What I implemented in `crates/object-store/`
+
+| File | Contents |
+|---|---|
+| `src/lib.rs` | Module wiring + crate docs; `#![forbid(unsafe_code)]` |
+| `src/layout.rs` | §6.3 directory names, path builders (`enzime_root`, `objects_root`, `staging_root`, `quarantine_root`, …), `split_sha256_hex`, `object_relpath` (shard `ab`/`<62 hex>`), `validate_path_component` (A-05 path-traversal rejection) |
+| `src/digest.rs` | `StreamingSha256`, `hash_file` (re-reads flushed file — §6.3 step 4) |
+| `src/verifier.rs` | `ObjectFormatVerifier` trait + `AcceptRawBytes` + `MagicPrefixVerifier` |
+| `src/error.rs` | `ObjectStoreError`, `MigrationError`, `FormatRejection` |
+| `src/store.rs` | `ObjectStore::open/commit/read/contains/quarantine`; `CommitRequest`, `CommittedObject`; full §6.3 algorithm (steps 1–8, 11) with quarantine on any verification failure |
+| `src/migration.rs` | §6.4 framework — `Migration` struct with all 8 slots, `MigrationError`, marker-file analogue of `schema_migrations`, `run_pending`, v1 layout migration (preflight/apply/postflight) with tamper/future-version detection |
+| `Cargo.toml` | Adds `domain`, `sha2`, `hex`, `thiserror`, `serde`, `serde_json`, dev-dep `tempfile` |
+
+## §6.3 commit algorithm — verified behaviour (27/27 tests pass)
+
+- **Happy path**: stages → fsyncs → re-hashes from disk → compares length+digest → runs verifier → creates shard dir → atomic rename → removes staging dir.
+- **A-07 quarantine**: digest mismatch, length mismatch, max-size exceeded, format rejection, and stream errors each move `staging/<tx>/` into `quarantine/<audit-event-id>/` with the staged file intact and return the verification error.
+- **Immutability**: re-committing the same content is a no-op returning the existing path (no overwrite).
+- **Concurrency**: duplicate `transaction_id` rejected via `create_dir` exclusivity without clobbering the in-flight staging dir.
+- **A-05**: path-bearing `transaction_id` / `audit_event_id` rejected.
+- **§6.4**: marker tamper and future-version both halt `run_pending`; idempotent re-runs; layout postflight verifies all §6.3 sub-directories.
+
+## `cargo check -p object-store` result
+
+Fails at **workspace dependency resolution** because of pre-existing external defects:
+- `crates/entitlement/Cargo.toml`: `serde_bytes = "0.12"` (crates.io only has `0.11.x`)
+- `crates/transfer-http/Cargo.toml`: `reqwest` feature `rustls-tls` does not exist
+
+These are in other crates' manifests and outside my allowed file list. The object-store crate itself **compiles clean and all 27 unit tests pass** when checked in isolation (verified via a standalone copy outside the workspace tree, since cargo always resolves the full workspace).

@@ -1,0 +1,8 @@
+
+          
+   ERROR  
+          
+  Agent processing failed: failed to start agent processing stream: Post                                              
+  "https://api.z.ai/api/coding/paas/v4/chat/completions": dial tcp: lookup api.z.ai on 127.0.0.53:53: read udp        
+  127.0.0.1:49624->127.0.0.53:53: i/o timeout.                                                                        
+
