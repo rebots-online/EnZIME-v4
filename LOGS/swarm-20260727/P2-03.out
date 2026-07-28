@@ -1,1 +1,7 @@
-Let me peek at sibling application modules and existing crate styles to match conventions.
+Let me peek at sibling application modules and existing crate styles to match conventions.I have everything I need. The spec gives me: §8.3 InstallPlan (already in `ports::transfer`) + 6 planning failure conditions, §8.4's 8-state/12-edge mermaid machine, and the rule that activation handoff belongs to `install_transactions`. No new deps needed.Now I need `tokio` for the async tests. Let me check sibling crate patterns and add it as a dev-dependency.Now run `cargo check -p application` then the tests:Errors are all in `crates/ports/src/platform.rs` — explicitly the previous coder's escalation (`PowerState`, `NetworkState`, `PlatformError`, `PlatformStorageRoot`, `PlatformCapabilityReport` undefined). The task spec says: *"Errors in OTHER crates are not yours — ignore them."* Let me verify my own file has zero errors by filtering output:
+          
+   ERROR  
+          
+  Agent processing failed: failed to start agent processing stream: retry error: too many requests: Rate limit reached
+  for requests.                                                                                                       
+

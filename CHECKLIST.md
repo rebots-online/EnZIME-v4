@@ -96,7 +96,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: empty migration, FK check, index/trigger inventory pass.
   - Accept: schema identifiers equal §16.4.
 
-- [ ] **P1-09 Generate TypeScript contracts**
+- [/] **P1-09 Generate TypeScript contracts**
   - Allowed files: `packages/contracts/`, `tools/contract-gen/`, tests.
   - Do: generate exact §14 entities/DTOs/command/event/route unions.
   - Verify: Rust↔TS round-trip and registry equality pass.
@@ -143,19 +143,19 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: scripts/network/native bridge blocked; resources/links work.
   - Accept: untrusted article cannot invoke privileged code.
 
-- [ ] **P2-05 Implement reader search/navigation**
+- [/] **P2-05 Implement reader search/navigation**
   - Allowed files: application reader, reader repositories, tests.
   - Do: title search, open/main/internal navigation, history/position/bookmark.
   - Verify: real fixture search/navigation/restart tests pass.
   - Accept: reader works offline with no model.
 
-- [ ] **P2-06 Implement text annotation vertical slice**
+- [/] **P2-06 Implement text annotation vertical slice**
   - Allowed files: annotation service/resolver/repositories, tests.
   - Do: create/update/delete/restore/list highlight/comment with selector bundle.
   - Verify: restart/re-anchor/ambiguity/source-unavailable tests pass.
   - Accept: annotation outlives current article bytes.
 
-- [ ] **P2-07 Implement minimal complete Reader UI**
+- [/] **P2-07 Implement minimal complete Reader UI**
   - Allowed files: shell/home/library/reader components and stores used by slice.
   - Do: real import, pack card, search, reader, bookmark, highlight/comment UI.
   - Verify: component and Tauri E2E flow passes desktop/Android.
@@ -195,13 +195,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: process-kill resume repeats no verified chunk.
   - Accept: state transitions obey SQL guard.
 
-- [ ] **P3-05 Implement atomic candidate activation**
+- [/] **P3-05 Implement atomic candidate activation**
   - Allowed files: install service/repositories/object store, tests.
   - Do: staged verification then active pointer and retained prior.
   - Verify: failures at each transaction phase preserve last active.
   - Accept: `E2E-02-interrupted-download` passes.
 
-- [ ] **P3-06 Implement Library UI**
+- [/] **P3-06 Implement Library UI**
   - Allowed files: Library components/store/services/styles/tests from §16.6.
   - Do: installed/catalog/download/storage views and plan dialog.
   - Verify: §24 bindings and state/accessibility matrix pass.
@@ -223,7 +223,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: FK/delete/idempotence/filter tests pass.
   - Accept: cross-pack Note filters use canonical tables.
 
-- [ ] **P4-02 Implement ink and voice assets**
+- [/] **P4-02 Implement ink and voice assets**
   - Allowed files: annotation service/object store/platform audio/tests.
   - Do: chunked asset upload, digest commit, Opus voice and SVG ink.
   - Verify: size/hash/cancel/permission/process-death tests pass.
@@ -242,7 +242,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: valid/unsigned/invalid/duplicate/divergent matrix passes.
   - Accept: invalid signatures never activate.
 
-- [ ] **P4-05 Implement Annotation Workspace and Notes UI**
+- [/] **P4-05 Implement Annotation Workspace and Notes UI**
   - Allowed files: named annotation/notes components/stores/services/tests.
   - Do: every §15 component/action/state.
   - Verify: §24 binding, accessibility and source-unavailable tests pass.
@@ -270,7 +270,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: certified model fixture runs on Android and desktop.
   - Accept: runtime failure maps to `InferenceError`.
 
-- [ ] **P5-03 Implement desktop GGUF backend**
+- ✅ **P5-03 Implement desktop GGUF backend** — SUPERSEDED by §26 AMD-2, closed 2026-07-28. The GGUF *engine* (`crates/inference-gguf`) is retired: wllama3 is the sole local inference engine on every platform, so a separate desktop backend would violate AMD-1's single-composition rule. GGUF survives only as the model FILE FORMAT wllama3 consumes (`ModelFormat::Gguf`). No code is owed; building this row would build a retired engine.
   - Allowed files: `crates/inference-gguf/`, desktop composition/tests.
   - Do: exact backend/session trait for Linux/Windows.
   - Verify: desktop model fixture streams/cancels; Android graph excludes crate.
@@ -282,7 +282,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: deterministic chunking, FTS and model-replacement tests pass.
   - Accept: user primary data is not stored only in an index.
 
-- [ ] **P5-05 Implement hybrid retrieval/context**
+- [/] **P5-05 Implement hybrid retrieval/context**
   - Allowed files: retrieval crate/application ask/tests.
   - Do: lexical/vector merge, dedupe, rerank, diversity, §11.3 budget.
   - Verify: golden retrieval/context fixtures pass.
@@ -294,7 +294,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: known/unknown/zero-citation/failure/restart tests pass.
   - Accept: assistant success cannot contain invalid citation records.
 
-- [ ] **P5-07 Implement Ask UI**
+- [/] **P5-07 Implement Ask UI**
   - Allowed files: named Ask components/store/services/styles/tests.
   - Do: conversations, scope, backend status, stream/cancel/citation navigation,
     model-not-installed complete state.
@@ -329,7 +329,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: `CT-LORE-002` and revision/evidence tests pass.
   - Accept: deleted text is absent from Ask/diagnostics.
 
-- [ ] **P6-04 Implement Memory UI**
+- [/] **P6-04 Implement Memory UI**
   - Allowed files: named Memory components/store/services/styles/tests.
   - Do: inbox, graph, timeline, detail, accept/reject/correct/pin/delete.
   - Verify: §24 bindings and accessibility state matrix pass.
@@ -382,7 +382,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: secret/path/content redaction fixture passes.
   - Accept: support evidence needs no broad private content.
 
-- [ ] **P7-07 Implement Settings UI**
+- [/] **P7-07 Implement Settings UI**
   - Allowed files: named Settings components/store/services/styles/tests.
   - Do: network/compute/accessibility/entitlement/backup/diagnostics flows.
   - Verify: §24 bindings and UI matrix pass.
@@ -398,19 +398,19 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 8 — Complete UI and setup
 
-- [ ] **P8-01 Implement Home UI**
+- [/] **P8-01 Implement Home UI**
   - Allowed files: named Home components/store/services/styles/tests.
   - Do: populated/empty/loading/offline/error/readiness states.
   - Verify: §24 bindings, keyboard/screen-reader/mobile tests pass.
   - Accept: each task/readiness action routes to a real complete flow.
 
-- [ ] **P8-02 Implement Setup UI**
+- [/] **P8-02 Implement Setup UI**
   - Allowed files: named Setup components/store/services/styles/tests.
   - Do: probe/path/model/complete flows including Skip model.
   - Verify: each path reaches usable Home/Library; process restart resumes.
   - Accept: AI is not required or deceptively implied.
 
-- [ ] **P8-03 Apply Aurora Glass system**
+- [/] **P8-03 Apply Aurora Glass system**
   - Allowed files: design tokens, UI primitives, component styles/tests.
   - Do: implement exact §15.6 tokens and usage rules on all screens.
   - Verify: token inventory and contrast/scale/reduced-motion tests pass.
@@ -423,7 +423,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: entity names and §24 bindings unchanged.
   - Accept: visual drafts improve layout without altering contracts.
 
-- [ ] **P8-05 Validate full component binding manifest**
+- [/] **P8-05 Validate full component binding manifest**
   - Allowed files: contract-gen/binding manifest/tests.
   - Do: validate every §24 row.
   - Verify: tool exits zero; no undeclared component/entity/command/table/store.

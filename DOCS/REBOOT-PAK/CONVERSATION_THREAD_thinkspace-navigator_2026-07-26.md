@@ -1,5 +1,10 @@
 # Conversation Reconstruction — thinkspace-navigator.tsx → EnZIME Reboot PRD/Architecture
 
+> ⚠️ **QUARANTINED ARCHAEOLOGY — reference/intent only. Do NOT port.**
+> EnZIME-v4 is a **clean reboot**: its entire purpose is a fresh start *uncontaminated* by the prior attempts that became unfinishable. This document records **what features were being described** in the lost 26‑Jul ChatGPT thread — provenance and intent, nothing more.
+> - **Do not** copy old files, old thread text, old component code, or old scaffolding into the reboot. Spec each feature fresh into the new PRD/ARCHITECTURE from the *intent* below.
+> - **Pieces is passive DBus observation, not a file store.** The blobs in `Attachments/` are saved snippets, not project files. The real reboot tree lives on disk in this folder.
+
 **Source**: Pieces for Developers backing store (`couchbase.cblite2/db.sqlite3`), read **directly** via `sqlite3 -readonly` (CLAUDE.md §0.6 — MCP/LLM retrieval is unreliable). Material is the OCR text of the captured browser/vision screenshots; the actual screenshot *pixels* for 26 Jul were OCR'd and discarded by Pieces, but the **text** of every frame is intact.
 **Window of capture**: 2026-07-26 ~19:00 → 2026-07-27 ~07:10 (your "crossed 20h00" memory — the dense work ran into the early hours).
 **`rowid` / timestamp cites** refer to `kv_.workstream\Events` rows.

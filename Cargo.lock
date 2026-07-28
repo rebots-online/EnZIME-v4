@@ -79,11 +79,17 @@ name = "application"
 version = "1.0.52684"
 dependencies = [
  "async-trait",
+ "bytes",
  "domain",
+ "futures-core",
+ "futures-util",
+ "hex",
  "ports",
  "serde",
  "serde_json",
+ "sha2",
  "thiserror 2.0.19",
+ "tokio",
 ]
 
 [[package]]
