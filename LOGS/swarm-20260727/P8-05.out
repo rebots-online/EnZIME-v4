@@ -1,1 +1,1 @@
-The task's line range points to migration stages, not §24. Let me locate the actual §24 section.
+The task's line range points to migration stages, not §24. Let me locate the actual §24 section.Now let me look at §16.6 (component public names) and §26 AMD-4 (no CI):Now let me examine the existing `tools/contract-gen` crate and look at §26 AMD-4:

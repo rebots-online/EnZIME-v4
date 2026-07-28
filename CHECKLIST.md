@@ -416,7 +416,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: token inventory and contrast/scale/reduced-motion tests pass.
   - Accept: long article text is never on low-contrast glass.
 
-- [ ] **P8-04 Reconcile verified Stitch screens**
+- [/] **P8-04 Reconcile verified Stitch screens** — BLOCKED ON OPERATOR-GATED INPUT, recorded 2026-07-28. Not coder work and not dispatched. The task's Do is 'use only screens with successful `get_screen` evidence as layout input'; `DOCS/REBOOT-PAK/STITCH/generation-evidence.json` reports `status: not_executed_in_current_session` with all ten screens `verified: false` and `remoteScreenId: null`. Zero screens qualify, so there is no layout input to reconcile. Claiming this row complete would be exactly the failure KICKOFF-PROMPT #10 names ('do not claim Stitch project or screen IDs without tool output'). Unblocking needs a Stitch MCP run per `STITCH/STITCH-MCP-RUNBOOK.md`, after which evidence is updated ONLY from successful tool results. The UI surfaces are meanwhile being built from the §24 binding contract, which is correct: §26/TC12 make Stitch a visual draft subordinate to the entity contract, never a source of component names.
   - Allowed files: component layout/styles and
     `STITCH/generation-evidence.json`.
   - Do: use only screens with successful `get_screen` evidence as layout input.
