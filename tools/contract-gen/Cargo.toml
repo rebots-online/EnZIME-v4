@@ -1,0 +1,28 @@
+[package]
+name = "contract-gen"
+version = "1.0.52684"
+edition = "2021"
+license-file = "../../LICENSE"
+authors = ["Robin L. M. Cheung, MBA"]
+publish = false
+rust-version = "1.82"
+description = "Local §24.1 entity-to-UI binding validator (ARCHITECTURE.md AMD-4: local script, not CI)"
+
+[lib]
+name = "contract_gen"
+path = "src/lib.rs"
+
+[[bin]]
+name = "contract-gen"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# This crate is its own workspace root (not a member of the application
+# workspace). Per ARCHITECTURE.md AMD-4 the entity-table check is a local
+# script under tools/, never a CI gate, so it must compile independently.
+[workspace]

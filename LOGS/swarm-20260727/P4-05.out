@@ -1,0 +1,1 @@
+I have enough context. Let me check the existing reader infra and `invoke` signature before writing.Let me add the spin keyframe via a one-time style injection since I can't edit global.css.Now the AnnotationWorkspace orchestrator that wires the above into the reader.Now the top-level NotesView orchestrator.

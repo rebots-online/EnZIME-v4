@@ -81,7 +81,6 @@ dependencies = [
  "async-trait",
  "bytes",
  "domain",
- "futures-core",
  "futures-util",
  "hex",
  "ports",

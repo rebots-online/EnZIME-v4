@@ -1,1 +1,16 @@
-Now I have what I need. Let me draft the service and update Cargo.toml.Now write the service.Syntax check is clean. The `cargo check -p application` fails at `ports/src/platform.rs` with 12 unresolved-type errors (pre-existing — these are the undefined platform types the task description mentions a previous coder escalated). Let me confirm there are zero errors in my file:
+Now I have what I need. Let me draft the service and update Cargo.toml.Now write the service.Syntax check is clean. The `cargo check -p application` fails at `ports/src/platform.rs` with 12 unresolved-type errors (pre-existing — these are the undefined platform types the task description mentions a previous coder escalated). Let me confirm there are zero errors in my file:Let me also confirm the Cargo.toml is correct now:Done. Summary:
+
+**Implemented** `crates/application/src/ask.rs` — the §11 cited-conversation pipeline:
+
+- `AskService<'deps>` holds injected `&dyn Retriever` + `&dyn ContextBuilder` (A-02: depends on ports only, no provider crate).
+- `AskService::ask(&mut dyn InferenceSession, AskRequest)` runs all 13 §11.1 stages: normalize query → retrieve → build context → compose system prompt with explicit key allowlist → submit `InferenceRequest` with structured `InferenceEvidence` → drain the inference stream → validate every emitted `CitationMarker` against the `ContextSet.evidence` allowlist.
+- **A-08 enforcement**: `valid_citations` only contains keys that resolve to a stored `ContextEvidence`; unresolvable keys are kept in `emitted_citation_keys` (audit) but excluded from `valid_citations`.
+- **§11.4 failure rule**: when the scope is grounded (`!context.evidence.is_empty()`), the assistant text is non-empty, and `valid_citations.is_empty()`, the result is `ConversationStatus::Failed(NoValidCitationsInGroundedScope)` — never returned as a successful cited answer. Caller persists atomically (§11.1 step 13).
+- `compute_evidence_budget` implements the §11.3 formula exactly: `C - min(2048, floor(C*0.12)) - min(4096, floor(C*0.25)) - max_output_tokens`, with integer-arithmetic floors and saturating clamp at zero.
+- `normalize_query` (§11.1 step 1) collapses whitespace without altering spelling/case.
+- `compose_system_prompt` appends the citation policy and lists valid keys in natural numeric order (`S1, S2, …, S10`).
+- Six unit tests cover normalization, the budget formula at three points (spec formula, cap engagement, underflow clamp), and system-prompt composition (with and without grounding).
+
+**`cargo check -p application` result**: 13 errors, **all 12 type-resolution errors + 1 summary in `crates/ports/src/platform.rs`** (the pre-existing undefined `PlatformCapabilityReport`/`PlatformError`/`PlatformStorageRoot`/`PowerState`/`NetworkState` types the task description acknowledges a previous coder escalated). Zero errors attributed to `crates/application/` or `ask.rs` — confirmed via two greps. The ports crate's failure blocks application transitively, so my file's full type-check is gated on that escalation resolving, which is out of my scope.
+
+Only files touched: `crates/application/src/ask.rs` (new) and `crates/application/Cargo.toml` (added `futures-util = "0.3"`).

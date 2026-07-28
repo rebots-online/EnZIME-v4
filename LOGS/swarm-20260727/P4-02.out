@@ -1,0 +1,13 @@
+Now I'll create the module file and add the declaration to lib.rs.## Implemented P4-02 — Ink and voice annotation assets
+
+**File**: `crates/application/src/annotation_assets.rs` (new) + one-line `pub mod annotation_assets;` added to `lib.rs` (alphabetical slot, no other edits). No `Cargo.toml` change needed — every dep (`async-trait`, `bytes`, `hex`, `sha2`, `tokio` dev) was already present.
+
+**Design** (faithful to §9.3):
+- `AssetUploadSession` is a *pure value* held by the caller — the service holds no session map, no locks, no background tasks. The only side-effect on the annotation→asset link happens inside `AnnotationAssetService::commit`, which delegates to an injected `CommittedAssetSink`.
+- `begin` / `append_chunk` / `commit` / `abort` form the chunked state machine `Open → {Committed, Aborted}`; `append_chunk` consumes the session on size-limit breach so no partial bytes survive. `attach` is the single-shot §9.3 `attach_asset` path (validate → hash → sink).
+- **Digest-on-commit**: SHA-256 is computed from the fully-assembled buffer at commit time, passed to the sink as `declared_sha256`; the sink re-hashes and rejects on mismatch (defence in depth), then writes the object + inserts the `annotation_assets` row in one transaction.
+- **`CommittedAssetSink` is a local `I-10(b)` sentinel** — no equivalent port trait exists in `ports/` (verified by grep across `ports/` and `domain/`); marked for swap when the storage-side task lands.
+
+**Interruption invariants covered by tests** (19 tests, deterministic in-test sink that rehashes + records every call): zero-max rejection, MIME/asset_kind validation, exact-limit-then-breach, terminal-state guards, empty-buffer rejection, voice duration propagation, sink storage/sha failure propagation, abort-makes-no-sink-call, drop-mid-stream-makes-no-sink-call, and `chunked_commit_and_attach_produce_same_digest`.
+
+**Check result**: `cargo check -p application` is blocked by pre-existing upstream errors in `crates/ports/src/platform.rs:7-28` (`PlatformError`/`PlatformCapabilityReport`/`PowerState`/`NetworkState` not in scope — 12 errors, all in ports). I verified my module compiles cleanly in isolation by feeding it to `rustc --test --emit=metadata` against the real prebuilt `domain`, `bytes`, `sha2`, `hex`, `async_trait`, and `tokio` rlibs from `target/debug/deps/` — exit 0, zero warnings after the `#[allow(dead_code)]` annotation on the in-test `CapturedCall` diagnostic struct. Temp verification artifacts removed.

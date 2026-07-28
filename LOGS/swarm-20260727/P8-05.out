@@ -1,1 +1,24 @@
-The task's line range points to migration stages, not §24. Let me locate the actual §24 section.Now let me look at §16.6 (component public names) and §26 AMD-4 (no CI):Now let me examine the existing `tools/contract-gen` crate and look at §26 AMD-4:
+The task's line range points to migration stages, not §24. Let me locate the actual §24 section.Now let me look at §16.6 (component public names) and §26 AMD-4 (no CI):Now let me examine the existing `tools/contract-gen` crate and look at §26 AMD-4:Let me check what other inputs the validator would read (Rust commands, SQL migrations, store interfaces, TS entities):Let me check the LICENSE file location and confirm the workspace layout:Let me check the Stitch screen-manifest briefly to know if there's screen-prompt data to validate:I have all the inputs I need. Now I'll create the validator. Let me set up the todos and start writing:Now spec.rs with the verbatim §24 binding table and §16.6 component names:The validate.rs has a confused tail. Let me rewrite it cleanly:Let me look at my extract_store_interfaces carefully — there's a depth-tracking bug across lines:Let me rewrite the store extractor to track depth correctly across lines:Let me fix the green_field_stores helper to use the idiomatic Zustand form:Now the diagnostic.rs and main.rs:Let me clean up the dead code in diagnostic.rs:Now main.rs and lib.rs:Compiles clean. Let me silence the camelCase warnings (the JSON fields must match the manifest's wire format) and run tests:Several test compile errors. Let me rewrite the test helpers and the format string:Let me rewrite the entire validate_tests module to use String helpers and fix the format string:All tests pass. Let me add a test that runs against the REAL schema in the repo to ensure the schema matches §24, then verify the binary works end-to-end:Excellent — all 23 tests pass, including the real-schema check. Let me also verify the binary builds and runs end-to-end:Bug: `check_store_slice` returns `None` (no diagnostic) when the store is missing because of the `?` operator. Let me fix:All 23 tests pass. Let me verify no forbidden patterns (TODO/stub/mock/etc.) sneaked in:P8-05 delivered.
+
+## What I implemented
+
+**Standalone crate `tools/contract-gen/`** (its own `[workspace]` root per AMD-4 — local script, not a workspace member):
+
+| File | Role |
+|---|---|
+| `Cargo.toml` | deps: `anyhow`, `thiserror`, `serde`, `serde_json` |
+| `src/spec.rs` | §24 binding table (65 rows) + §16.6 component names (68) + TS builtins, transcribed verbatim from ARCHITECTURE.md lines 5316–5383 and 6359–6425 |
+| `src/extract.rs` | Conservative extractors: Rust `#[tauri::command]`→fn, TS `export {interface,type,enum,class,const}`, SQL `CREATE TABLE [IF NOT EXISTS]` (backtick-aware), Zustand `create<T>()((set,get) => ({…}))` top-level keys (cross-line depth tracking) |
+| `src/validate.rs` | All 6 §24.1 rules: undeclared entity, command missing from Rust, command missing from TypeScript, table missing from migration, store slice absent, component name ≠ §16.6, screen-prompt drift |
+| `src/diagnostic.rs` | CLI parser (hand-rolled, 5 flags) + input loader |
+| `src/lib.rs` | Public API surface |
+| `src/main.rs` | Binary entry; exit 0 on clean, 1 on §24.1 drift, 2 on CLI/IO error |
+
+## Check result
+
+```
+cargo check -p contract-gen      → clean, 0 warnings
+cargo test  -p contract-gen      → 23 passed, 0 failed
+```
+
+End-to-end run against the **real** tree (`schemas/sqlite/0001_initial.sql` + `DOCS/REBOOT-PAK/STITCH/screen-manifest.json`, empty Rust/TS/stores): exit 1 with **0** `TableMissingFromMigration` and **0** `ScreenPromptNameDrift` diagnostics — confirming the in-tree schema and screen manifest already satisfy §24. The remaining 377 diagnostics (124+124+64+65) are real §24.1 drift that will clear as P1–P7 implement the Rust commands, TS contracts, entities, and stores.

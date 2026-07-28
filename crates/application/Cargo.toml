@@ -10,7 +10,6 @@ domain = { path = "../domain" }
 ports = { path = "../ports" }
 async-trait = "0.1"
 bytes = "1"
-futures-core = "0.3"
 futures-util = "0.3"
 hex = "0.4"
 serde = { version = "1", features = ["derive"] }

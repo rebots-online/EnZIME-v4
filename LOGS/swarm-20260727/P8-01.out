@@ -1,0 +1,22 @@
+Now I have the picture. Empty dirs, placeholder `HomeView` in App.tsx (orchestrator-owned), strict TS. I'll create the home surface: service wrapper, Zustand store, and the 6 components bound by §15.1. Let me set up a task list and build.## P8-01 — Home surface: complete
+
+**Files created** (all under allowed paths):
+
+- `apps/reader/src/services/homeService.ts` — typed Tauri `invoke` wrapper, data types, error classifier (recoverable / non-recoverable / capability-denied)
+- `apps/reader/src/stores/homeStore.ts` — Zustand store with one slice per home data source, online/offline flag, accept/dismiss memory mutations
+- `apps/reader/src/components/home/shared.tsx` — `HomeStyles` (Aurora-Glass-scoped CSS, reduced-motion honoured), `resolveState`, `StatusBanner`, `SkeletonBlock`, `Progress`, `useOnlineSubscription`
+- `apps/reader/src/components/home/ContinueReadingCard.tsx`
+- `apps/reader/src/components/home/RecentPacksList.tsx`
+- `apps/reader/src/components/home/PackCard.tsx`
+- `apps/reader/src/components/home/TaskInbox.tsx`
+- `apps/reader/src/components/home/MemoryInboxCard.tsx`
+- `apps/reader/src/components/home/ReadinessPanel.tsx`
+- `apps/reader/src/components/home/HomeView.tsx` — container, mounts styles, wires offline banner, triggers `loadAll`
+
+**Build result**: `pnpm -C apps/reader build` → **zero TypeScript errors in any file under my scope** (`components/home/`, `services/homeService.ts`, `stores/homeStore.ts`). The remaining errors (`annotationService.ts` Buffer namespace, `components/annotation/sharedUi.tsx` JSX namespace) belong to a sibling coder and are explicitly out of my scope.
+
+**Notes for the orchestrator**:
+- `HomeView` is exported from `components/home/HomeView.tsx` for you to wire into `App.tsx`/`router.tsx` (you retained ownership of those).
+- All 7 declared states render for every component: loading skeleton, populated, complete-empty (with real next action → `/library`/`/memory`/`/settings`), recoverable error + retry, non-recoverable error + escape route, capability-denied, offline-empty.
+- Every visible control routes to a real declared route (`/library`, `/memory`, `/settings`, `/reader/:packId/:articleKey`, `/ask`) — no dead-ends.
+- Command names in `homeService.ts` follow the architecture's `home_*` Tauri convention; they will reject at runtime today, which is the specified behaviour.

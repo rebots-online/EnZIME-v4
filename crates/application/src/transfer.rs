@@ -23,10 +23,9 @@ use async_trait::async_trait;
 use bytes::Bytes;
 use futures_util::StreamExt;
 use ports::transfer::{
-    InstallPlan, TransferError, TransferMode, TransferRange, TransferSource,
-    TRANSFER_CHUNK_BYTES, TRANSFER_MAX_PARALLEL_CHUNKS_ANDROID,
-    TRANSFER_MAX_PARALLEL_CHUNKS_DESKTOP, TRANSFER_RETRY_BASE_MS,
-    TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+    InstallPlan, TransferError, TransferMode, TransferRange, TransferSource, TRANSFER_CHUNK_BYTES,
+    TRANSFER_MAX_PARALLEL_CHUNKS_ANDROID, TRANSFER_MAX_PARALLEL_CHUNKS_DESKTOP,
+    TRANSFER_RETRY_BASE_MS, TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -56,8 +55,8 @@ pub enum DownloadJobState {
 }
 
 impl DownloadJobState {
-    /// Initial state for a freshly created job. The state machine has exactly
-    /// one entry point (`[*] --> Planned`).
+    /// Initial state for a freshly created job. The state machine has
+    /// exactly one entry point (`[*] --> Planned`).
     pub const fn initial() -> Self {
         DownloadJobState::Planned
     }
@@ -96,7 +95,7 @@ impl DownloadJobState {
         }
     }
 
-    /// Terminal states per §8.4 — no outbound edges in the diagram.
+    /// Terminal state per §8.4 — `Completed` has no outbound edge.
     pub fn is_terminal(self) -> bool {
         matches!(self, DownloadJobState::Completed)
     }
@@ -188,9 +187,7 @@ pub fn plan_chunks(total_bytes: u64, mode: TransferMode) -> ChunkPlan {
             let mut offset = 0u64;
             let mut index = 0u32;
             while offset < total_bytes {
-                let end = offset
-                    .saturating_add(TRANSFER_CHUNK_BYTES)
-                    .min(total_bytes);
+                let end = offset.saturating_add(TRANSFER_CHUNK_BYTES).min(total_bytes);
                 chunks.push(ChunkDescriptor {
                     index,
                     range: TransferRange {
@@ -208,10 +205,13 @@ pub fn plan_chunks(total_bytes: u64, mode: TransferMode) -> ChunkPlan {
 }
 
 /// Exponential backoff delay for a retry attempt, per §8.5
-/// `transfer.retry_base_ms` and `transfer.retry_max_ms`. Attempt `0` is the
-/// first retry (i.e. the delay after the original attempt fails), so the
-/// sequence is `base, 2·base, 4·base, …` capped at `retry_max_ms`.
+/// `transfer.retry_base_ms` and `transfer.retry_max_ms`. `attempt` is the
+/// 1-based retry number, so the first retry waits `base`, the second waits
+/// `2·base`, and so on, capped at `transfer.retry_max_ms`.
 pub fn backoff_delay_ms(attempt: u32) -> u64 {
+    if attempt == 0 {
+        return TRANSFER_RETRY_BASE_MS;
+    }
     let shift = attempt.min(63);
     let multiplier = 1u64.checked_shl(shift).unwrap_or(u64::MAX);
     let raw = TRANSFER_RETRY_BASE_MS.saturating_mul(multiplier);
@@ -309,8 +309,11 @@ pub enum JobStoreError {
 /// immediately after a successful return must not lose data.
 #[async_trait]
 pub trait DownloadJobStore: Send + Sync {
-    /// Atomically create a new job in the [`DownloadJobState::Planned`]
-    /// state. Reject (Backend) if `job_id` already exists.
+    /// Atomically create a new job. Reject with
+    /// [`JobStoreError::Backend`] if `job_id` already exists. Implementations
+    /// that allow in-place metadata rewrites (e.g. for
+    /// [`DownloadWorker::approve_full_transfer`]) accept a row whose `job_id`
+    /// matches an existing row and overwrite it atomically.
     async fn create_job(&self, record: DownloadJobRecord) -> Result<(), JobStoreError>;
 
     /// Load the full durable record for a job.
@@ -334,11 +337,7 @@ pub trait DownloadJobStore: Send + Sync {
 
     /// Persist or update a chunk record. Called after [`append_chunk_bytes`]
     /// and [`seal_chunk`] so the row reflects reality on disk.
-    async fn upsert_chunk(
-        &self,
-        job_id: &str,
-        chunk: ChunkRecord,
-    ) -> Result<(), JobStoreError>;
+    async fn upsert_chunk(&self, job_id: &str, chunk: ChunkRecord) -> Result<(), JobStoreError>;
 
     /// List chunk records in ascending `index` order. Returns an empty vec
     /// for a job that has not started fetching.
@@ -354,8 +353,8 @@ pub trait DownloadJobStore: Send + Sync {
     ) -> Result<(), JobStoreError>;
 
     /// Finalize a chunk: record its final byte count and sha256 digest and
-    /// mark it verified. After this returns the bytes MUST be re-readable via
-    /// [`read_chunk_bytes`].
+    /// mark it verified. After this returns the bytes MUST be re-readable
+    /// via [`read_chunk_bytes`].
     async fn seal_chunk(
         &self,
         job_id: &str,
@@ -364,22 +363,19 @@ pub trait DownloadJobStore: Send + Sync {
         sha256_hex: &str,
     ) -> Result<(), JobStoreError>;
 
-    /// Re-read the full staged blob for a chunk. Used by the worker on resume
-    /// to confirm an existing chunk's digest and at the `Verifying` stage to
-    /// compute the file-level digest.
+    /// Re-read the full staged blob for a chunk. Used by the worker on
+    /// resume to confirm an existing chunk's digest and at the `Verifying`
+    /// stage to compute the file-level digest.
     async fn read_chunk_bytes(
         &self,
         job_id: &str,
         chunk_index: u32,
     ) -> Result<Vec<u8>, JobStoreError>;
 
-    /// Discard any staged bytes for a chunk and clear its record. Used before
-    /// re-fetching a chunk whose stored bytes failed digest verification.
-    async fn discard_chunk(
-        &self,
-        job_id: &str,
-        chunk_index: u32,
-    ) -> Result<(), JobStoreError>;
+    /// Discard any staged bytes for a chunk and clear its record. Used
+    /// before re-fetching a chunk whose stored bytes failed digest
+    /// verification.
+    async fn discard_chunk(&self, job_id: &str, chunk_index: u32) -> Result<(), JobStoreError>;
 }
 
 // ============================================================================
@@ -399,9 +395,7 @@ pub enum DownloadWorkerError {
     Store(#[from] JobStoreError),
     #[error("transfer error: {0}")]
     Transfer(#[from] TransferError),
-    #[error(
-        "chunk {chunk_index} failed after {attempts} attempts: {inner}"
-    )]
+    #[error("chunk {chunk_index} failed after {attempts} attempts: {inner}")]
     ChunkFailed {
         chunk_index: u32,
         attempts: u32,
@@ -422,17 +416,20 @@ pub enum DownloadWorkerError {
     #[error("file digest mismatch: expected {expected}, computed {computed}")]
     FileDigestMismatch { expected: String, computed: String },
     /// §8.5: a ranged request received an invalid response. The worker
-    /// surfaces this so the operator can decide whether to approve a bounded
-    /// full transfer via [`DownloadWorker::approve_full_transfer`].
-    #[error("ranged response invalid at chunk {chunk_index}; user may approve a bounded full transfer")]
+    /// surfaces this so the operator can decide whether to approve a
+    /// bounded full transfer via
+    /// [`DownloadWorker::approve_full_transfer`].
+    #[error(
+        "ranged response invalid at chunk {chunk_index}; user may approve a bounded full transfer"
+    )]
     RangeResponseInvalid { chunk_index: u32 },
     /// §8.5: the source does not accept ranges at all. Same user-decision
     /// path as [`Self::RangeResponseInvalid`].
     #[error("source does not accept ranges; user may approve a bounded full transfer")]
     RangeUnsupported,
-    /// The job is currently paused; the caller must invoke `resume` to drive
-    /// it forward. Distinct from an error so callers can distinguish
-    /// "paused" from "failed".
+    /// The job is currently paused; the caller must invoke `resume()` to
+    /// drive it forward. Returned (not returned as a hard error) so callers
+    /// can distinguish "paused" from "failed".
     #[error("job is paused; call resume() to continue: {0}")]
     Paused(String),
 }
@@ -476,6 +473,10 @@ impl Clock for SystemClock {
 
 /// Resumable download worker. Drives the §8.4 state machine for one or many
 /// jobs against an injected [`TransferSource`] and [`DownloadJobStore`].
+///
+/// The worker owns no per-job state — every transition is durably persisted
+/// via the store before the worker continues, so a process kill at any point
+/// resumes cleanly when `resume()` is next invoked.
 pub struct DownloadWorker {
     source: Arc<dyn TransferSource>,
     max_parallel_chunks: u32,
@@ -519,7 +520,7 @@ impl DownloadWorker {
     /// `create_job` and the first fetch still resumes cleanly.
     pub async fn start(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         plan: &InstallPlan,
         job_id: String,
     ) -> Result<String, DownloadWorkerError> {
@@ -550,13 +551,11 @@ impl DownloadWorker {
     ///   * `Paused` — operator action required.
     ///   * `Staged` — the install layer must call `begin_activation`.
     ///   * `Completed` — nothing to do.
-    ///   * `Failed` — operator must trigger a retry.
-    /// Returns `Ok(())` when the job reaches one of those quiescent states
-    /// and `Err(_)` only when an unrecoverable error puts the job into
-    /// `Failed`.
+    ///   * `Failed` — operator must trigger a retry (resume auto-retries
+    ///     once via the `Failed --> Fetching` edge).
     pub async fn resume(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await.map_err(|e| match e {
@@ -566,28 +565,22 @@ impl DownloadWorker {
 
         match record.state {
             DownloadJobState::Planned => {
-                self.transition_durably(store, job_id, record.state, DownloadJobState::Fetching)
+                self.transition_durably(&store, job_id, record.state, DownloadJobState::Fetching)
                     .await?;
                 self.drive_fetching(store, job_id).await
             }
             DownloadJobState::Fetching => self.drive_fetching(store, job_id).await,
             DownloadJobState::Paused => Err(DownloadWorkerError::Paused(job_id.to_string())),
             DownloadJobState::Failed => {
-                // §8.4 edge: Failed --> Fetching. Only the operator decides
-                // when to retry; resume() does not auto-retry a job that has
-                // already failed.
-                self.transition_durably(
-                    store,
-                    job_id,
-                    record.state,
-                    DownloadJobState::Fetching,
-                )
-                .await?;
+                // §8.4 edge: Failed --> Fetching.
+                self.transition_durably(&store, job_id, record.state, DownloadJobState::Fetching)
+                    .await?;
                 self.drive_fetching(store, job_id).await
             }
-            DownloadJobState::Verifying => self.drive_verifying(store, job_id).await,
-            DownloadJobState::Staged | DownloadJobState::Activating | DownloadJobState::Completed =>
-                Ok(()),
+            DownloadJobState::Verifying => self.drive_verifying(&store, job_id).await,
+            DownloadJobState::Staged
+            | DownloadJobState::Activating
+            | DownloadJobState::Completed => Ok(()),
         }
     }
 
@@ -597,110 +590,81 @@ impl DownloadWorker {
     /// next chunk and stops.
     pub async fn pause(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
-        self.transition_durably(
-            store,
-            job_id,
-            record.state,
-            DownloadJobState::Paused,
-        )
-        .await
+        self.transition_durably(&store, job_id, record.state, DownloadJobState::Paused)
+            .await
     }
 
     /// §8.5 fallback: the user has explicitly approved converting a stuck
-    /// ranged download into a bounded full transfer. Resets persisted chunk
-    /// state, rewrites the job's `transfer_mode` to `Full`, and re-enters
-    /// `Fetching`. The caller passes the maximum response size that was
-    /// approved (typically `plan.download_bytes`); the worker stamps the
-    /// record accordingly.
+    /// ranged download into a bounded full transfer. Discards any partial
+    /// ranged chunks, rewrites the job's `transfer_mode` to `Full`, and
+    /// re-enters `Fetching`.
     pub async fn approve_full_transfer(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let mut record = store.load_job(job_id).await?;
         record.transfer_mode = TransferMode::Full;
         record.updated_at_ms = self.clock.now_ms();
+
         // Discard any partial ranged chunks so the worker re-fetches as a
         // single full chunk.
         let chunks = store.list_chunks(job_id).await.unwrap_or_default();
         for chunk in chunks {
             store.discard_chunk(job_id, chunk.index).await?;
         }
-        // The store must accept the in-place metadata update; we expose it as
-        // a create_job overwrite since the row's identity does not change.
-        // If the implementation rejects overwrite, this surfaces as a Store
-        // error and the caller knows to escalate.
+
+        // §8.4 edges: Fetching/Paused/Failed can all move to Fetching (Paused
+        // and Failed directly; Fetching is already there).
         record.state = match record.state {
-            DownloadJobState::Fetching
-            | DownloadJobState::Paused
-            | DownloadJobState::Failed => DownloadJobState::Fetching,
+            DownloadJobState::Fetching => DownloadJobState::Fetching,
+            DownloadJobState::Paused | DownloadJobState::Failed => DownloadJobState::Fetching,
             other => other,
         };
-        store.create_job(record).await.map_err(|e| match e {
-            JobStoreError::Backend(msg) => {
-                DownloadWorkerError::Store(JobStoreError::Backend(format!(
-                    "full-transfer rewrite rejected by store: {msg}"
-                )))
-            }
-            other => DownloadWorkerError::Store(other),
-        })?;
+        // create_job with an existing id must overwrite per the trait contract.
+        store.create_job(record).await?;
         self.drive_fetching(store, job_id).await
     }
 
     /// Install-layer entry point: transition `Staged --> Activating`. The
-    /// actual activation work (atomic rename, install_transactions row
+    /// actual activation work (atomic rename, `install_transactions` row
     /// insert) is performed by the install layer between this call and
     /// [`complete_activation`].
     pub async fn begin_activation(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
-        self.transition_durably(
-            store,
-            job_id,
-            record.state,
-            DownloadJobState::Activating,
-        )
-        .await
+        self.transition_durably(&store, job_id, record.state, DownloadJobState::Activating)
+            .await
     }
 
     /// Install-layer completion: transition `Activating --> Completed`.
     pub async fn complete_activation(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
-        self.transition_durably(
-            store,
-            job_id,
-            record.state,
-            DownloadJobState::Completed,
-        )
-        .await
+        self.transition_durably(&store, job_id, record.state, DownloadJobState::Completed)
+            .await
     }
 
     /// Mark a job `Failed`. Valid from `Fetching`, `Verifying`, or
     /// `Activating` per §8.4.
     pub async fn fail(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
-        self.transition_durably(
-            store,
-            job_id,
-            record.state,
-            DownloadJobState::Failed,
-        )
-        .await
+        self.transition_durably(&store, job_id, record.state, DownloadJobState::Failed)
+            .await
     }
 
     // ------------------------------------------------------------------
@@ -724,7 +688,7 @@ impl DownloadWorker {
     /// parallelism, and once all are verified transition to `Verifying`.
     async fn drive_fetching(
         &self,
-        store: &dyn DownloadJobStore,
+        store: Arc<dyn DownloadJobStore>,
         job_id: &str,
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
@@ -750,22 +714,15 @@ impl DownloadWorker {
         let mut pending: Vec<ChunkDescriptor> = Vec::new();
         for descriptor in &plan.chunks {
             match persisted.get(&descriptor.index) {
-                Some(rec)
-                    if rec.verified
-                        && rec.stored_bytes == descriptor.expected_bytes =>
-                {
+                Some(rec) if rec.verified && rec.stored_bytes == descriptor.expected_bytes => {
                     // Verify the persisted bytes still hash to the recorded
                     // digest. If not, discard and re-fetch.
-                    let stored = store
-                        .read_chunk_bytes(job_id, descriptor.index)
-                        .await?;
+                    let stored = store.read_chunk_bytes(job_id, descriptor.index).await?;
                     let computed = hex::encode(Sha256::digest(&stored));
                     match &rec.sha256_hex {
                         Some(recorded) if recorded == &computed => continue,
                         _ => {
-                            store
-                                .discard_chunk(job_id, descriptor.index)
-                                .await?;
+                            store.discard_chunk(job_id, descriptor.index).await?;
                             pending.push(descriptor.clone());
                         }
                     }
@@ -777,35 +734,43 @@ impl DownloadWorker {
         if pending.is_empty() {
             // Nothing left to fetch — move to verifying.
             self.transition_durably(
-                store,
+                &store,
                 job_id,
                 DownloadJobState::Fetching,
                 DownloadJobState::Verifying,
             )
             .await?;
-            return self.drive_verifying(store, job_id).await;
+            return self.drive_verifying(&store, job_id).await;
         }
 
-        // Fetch under a semaphore bounded by max_parallel_chunks.
+        // Fetch under a semaphore bounded by max_parallel_chunks. Each chunk
+        // runs in its own task so transport concurrency is real; the store
+        // Arc is cloned into each task.
         let semaphore = Arc::new(tokio::sync::Semaphore::new(
             self.max_parallel_chunks as usize,
         ));
+        let source = self.source.clone();
+        let pause = self.pause.clone();
+        let expected_etag = record.expected_etag.clone();
+        let source_uri = record.source_uri.clone();
+
         let mut join = tokio::task::JoinSet::new();
         for descriptor in pending {
             let permit_sem = semaphore.clone();
-            let source = self.source.clone();
-            let pause = self.pause.clone();
-            let expected_etag = record.expected_etag.clone();
-            let store_ref: Arc<dyn DownloadJobStore + Send + Sync> = wrap_store(store);
-            let store_for_task = store_ref.clone();
+            let source = source.clone();
+            let store_for_task = store.clone();
+            let pause = pause.clone();
+            let expected_etag = expected_etag.clone();
+            let source_uri = source_uri.clone();
             let job_id_owned = job_id.to_string();
             join.spawn(async move {
                 let _permit = permit_sem.acquire_owned().await.ok()?;
                 fetch_one_chunk(
                     &*source,
                     &*store_for_task,
-                    &pause,
+                    &*pause,
                     &job_id_owned,
+                    &source_uri,
                     &descriptor,
                     expected_etag.as_deref(),
                 )
@@ -818,10 +783,7 @@ impl DownloadWorker {
             match res {
                 Ok(Ok(())) => {}
                 Ok(Err(e)) => {
-                    // Abort remaining tasks; the job is going to Failed.
                     join.shutdown().await;
-                    // Check whether this is the §8.5 "user may approve full
-                    // transfer" condition.
                     if matches!(
                         e,
                         DownloadWorkerError::RangeResponseInvalid { .. }
@@ -829,7 +791,7 @@ impl DownloadWorker {
                     ) {
                         let _ = self
                             .transition_durably(
-                                store,
+                                &store,
                                 job_id,
                                 DownloadJobState::Fetching,
                                 DownloadJobState::Failed,
@@ -837,14 +799,14 @@ impl DownloadWorker {
                             .await;
                         return Err(e);
                     }
-                    let _ = self.fail(store, job_id).await;
+                    let _ = self.fail(store.clone(), job_id).await;
                     return Err(e);
                 }
                 Err(join_err) => {
-                    let _ = self.fail(store, job_id).await;
-                    return Err(DownloadWorkerError::Store(JobStoreError::Backend(
-                        format!("worker task panicked: {join_err}"),
-                    )));
+                    let _ = self.fail(store.clone(), job_id).await;
+                    return Err(DownloadWorkerError::Store(JobStoreError::Backend(format!(
+                        "worker task panicked: {join_err}"
+                    ))));
                 }
             }
         }
@@ -858,13 +820,13 @@ impl DownloadWorker {
 
         // All chunks succeeded — move to verifying.
         self.transition_durably(
-            store,
+            &store,
             job_id,
             DownloadJobState::Fetching,
             DownloadJobState::Verifying,
         )
         .await?;
-        self.drive_verifying(store, job_id).await
+        self.drive_verifying(&store, job_id).await
     }
 
     /// Drive `Verifying`: concatenate chunk bytes in order, compute the
@@ -877,13 +839,8 @@ impl DownloadWorker {
     ) -> Result<(), DownloadWorkerError> {
         let record = store.load_job(job_id).await?;
         if record.state != DownloadJobState::Verifying {
-            self.transition_durably(
-                store,
-                job_id,
-                record.state,
-                DownloadJobState::Verifying,
-            )
-            .await?;
+            self.transition_durably(store, job_id, record.state, DownloadJobState::Verifying)
+                .await?;
         }
 
         let plan = plan_chunks(record.total_bytes, record.transfer_mode);
@@ -904,7 +861,7 @@ impl DownloadWorker {
                     other => DownloadWorkerError::Store(other),
                 })?;
             if bytes.len() as u64 != descriptor.expected_bytes {
-                let _ = self.fail(store, job_id).await;
+                let _ = self.fail_store_ref(store, job_id).await;
                 return Err(DownloadWorkerError::ChunkSizeMismatch {
                     chunk_index: descriptor.index,
                     expected: descriptor.expected_bytes,
@@ -916,7 +873,7 @@ impl DownloadWorker {
         }
 
         if total_seen != record.total_bytes {
-            let _ = self.fail(store, job_id).await;
+            let _ = self.fail_store_ref(store, job_id).await;
             return Err(DownloadWorkerError::ChunkSizeMismatch {
                 chunk_index: 0,
                 expected: record.total_bytes,
@@ -926,7 +883,7 @@ impl DownloadWorker {
 
         let computed = hex::encode(hasher.finalize());
         if computed != record.expected_sha256 {
-            let _ = self.fail(store, job_id).await;
+            let _ = self.fail_store_ref(store, job_id).await;
             return Err(DownloadWorkerError::FileDigestMismatch {
                 expected: record.expected_sha256.clone(),
                 computed,
@@ -941,50 +898,31 @@ impl DownloadWorker {
         )
         .await
     }
-}
 
-// ============================================================================
-// Internals: per-chunk fetch with retry, and store wrap for spawn safety
-// ============================================================================
-
-/// `Send + Sync` cloned handle for a borrowed `&dyn DownloadJobStore` so it
-/// can move into a spawned task. We deliberately do not require the store
-/// itself be `Clone`; the wrapper is a no-op pass-through.
-///
-/// SAFETY note: the `DownloadWorker`'s public methods are `&self`, and the
-/// spawned tasks live only for the duration of the awaited `JoinSet`. The
-/// borrow is dominated by the method's borrow of `store`, which the caller
-/// passed in. Because we only spawn tasks inside `drive_fetching` and we
-/// join them all before returning, no task can outlive `store`.
-fn wrap_store(store: &dyn DownloadJobStore) -> Arc<dyn DownloadJobStore + Send + Sync> {
-    // We cannot actually clone an arbitrary `&dyn`. The spawned tasks below
-    // must therefore NOT outlive the borrow — and they don't, because
-    // `drive_fetching` awaits the entire `JoinSet` before returning. We model
-    // the lifetime with a static cast that is sound only because of that
-    // join-before-return discipline.
-    //
-    // To keep the type system honest without burdening every provider with a
-    // `Clone` impl, we instead drive chunks sequentially-within-batch by
-    // awaiting each task in turn; the semaphore is still acquired across the
-    // batch so concurrency still happens at the source level. See note in
-    // `drive_fetching`.
-    unsafe fn extend_lifetime<'a>(s: &'a dyn DownloadJobStore) -> Arc<dyn DownloadJobStore + Send + Sync> {
-        // SAFETY: bound to drive_fetching's join discipline.
-        #[allow(clippy::missing_transmute_annotations)]
-        let extended: &'static dyn DownloadJobStore = std::mem::transmute::<
-            &'a dyn DownloadJobStore,
-            &'static dyn DownloadJobStore,
-        >(s);
-        // We never actually share the Arc across threads in a way that
-        // outlives `store` — see drive_fetching.
-        Arc::from(extended)
+    /// `fail()` against a borrowed store, used from internal helpers that
+    /// already hold `&dyn DownloadJobStore`.
+    async fn fail_store_ref(
+        &self,
+        store: &dyn DownloadJobStore,
+        job_id: &str,
+    ) -> Result<(), DownloadWorkerError> {
+        let record = store.load_job(job_id).await.ok();
+        if let Some(rec) = record {
+            // Best-effort transition to Failed. We swallow the error here
+            // because the caller already has the real error to surface.
+            if rec.state != DownloadJobState::Failed {
+                let _ = self
+                    .transition_durably(store, job_id, rec.state, DownloadJobState::Failed)
+                    .await;
+            }
+        }
+        Ok(())
     }
-    // The crate is `#![forbid(unsafe_code)]`, so the above is not actually
-    // usable. We instead require the caller of `DownloadWorker` to pass an
-    // `Arc<dyn DownloadJobStore>`-shaped borrowing contract by exposing the
-    // spawned work as sequential awaits. See the real implementation below.
-    panic!("wrap_store is unreachable; chunk work is driven sequentially-with-batch")
 }
+
+// ============================================================================
+// Internals: per-chunk fetch with retry
+// ============================================================================
 
 /// Fetch a single chunk with retries per §8.5 `transfer.retry_*`. The chunk
 /// is streamed straight into the durable store; on each permanent failure
@@ -994,39 +932,32 @@ async fn fetch_one_chunk(
     store: &dyn DownloadJobStore,
     pause: &dyn Pause,
     job_id: &str,
+    source_uri: &str,
     descriptor: &ChunkDescriptor,
     expected_etag: Option<&str>,
 ) -> Result<(), DownloadWorkerError> {
     let mut last_err: Option<TransferError> = None;
     for attempt in 0..=RETRY_COUNT {
         if attempt > 0 {
-            let delay = Duration::from_millis(backoff_delay_ms(attempt - 1));
+            let delay = Duration::from_millis(backoff_delay_ms(attempt));
             pause.pause(delay).await;
         }
 
-        match fetch_one_attempt(
-            source,
-            store,
-            job_id,
-            descriptor,
-            expected_etag,
-        )
-        .await
+        match fetch_one_attempt(source, store, job_id, source_uri, descriptor, expected_etag).await
         {
             Ok(()) => return Ok(()),
             Err(DownloadWorkerError::RangeResponseInvalid { .. })
             | Err(DownloadWorkerError::RangeUnsupported) => {
                 // Surface immediately — these need a user decision, not a
                 // retry.
-                return Err(last_err.map(DownloadWorkerError::Transfer).unwrap_or_else(|| {
-                    DownloadWorkerError::RangeResponseInvalid {
+                return Err(last_err
+                    .map(DownloadWorkerError::Transfer)
+                    .unwrap_or_else(|| DownloadWorkerError::RangeResponseInvalid {
                         chunk_index: descriptor.index,
-                    }
-                }));
+                    }));
             }
             Err(DownloadWorkerError::Transfer(e)) => {
                 last_err = Some(e);
-                // Discard any partial bytes before the next attempt.
                 let _ = store.discard_chunk(job_id, descriptor.index).await;
                 continue;
             }
@@ -1047,6 +978,7 @@ async fn fetch_one_attempt(
     source: &dyn TransferSource,
     store: &dyn DownloadJobStore,
     job_id: &str,
+    source_uri: &str,
     descriptor: &ChunkDescriptor,
     expected_etag: Option<&str>,
 ) -> Result<(), DownloadWorkerError> {
@@ -1054,11 +986,7 @@ async fn fetch_one_attempt(
     store.discard_chunk(job_id, descriptor.index).await?;
 
     let stream = source
-        .open_range(
-            &descriptor_range_uri_placeholder(job_id),
-            descriptor.range,
-            expected_etag,
-        )
+        .open_range(source_uri, descriptor.range, expected_etag)
         .await
         .map_err(map_open_range_error(descriptor.index))?;
 
@@ -1089,7 +1017,6 @@ async fn fetch_one_attempt(
         .seal_chunk(job_id, descriptor.index, total, &digest)
         .await?;
 
-    // Persist the chunk row so resume sees it.
     store
         .upsert_chunk(
             job_id,
@@ -1113,9 +1040,7 @@ async fn fetch_one_attempt(
 /// transfer provider surfaces both via `TransferError`; we map them to the
 /// worker's two user-decision errors so the operator can approve a bounded
 /// full transfer.
-fn map_open_range_error(
-    chunk_index: u32,
-) -> impl Fn(TransferError) -> DownloadWorkerError {
+fn map_open_range_error(chunk_index: u32) -> impl Fn(TransferError) -> DownloadWorkerError {
     move |e: TransferError| match e {
         TransferError::InvalidRangeResponse => {
             DownloadWorkerError::RangeResponseInvalid { chunk_index }
@@ -1125,9 +1050,7 @@ fn map_open_range_error(
     }
 }
 
-fn map_stream_error(
-    chunk_index: u32,
-) -> impl Fn(TransferError) -> DownloadWorkerError {
+fn map_stream_error(chunk_index: u32) -> impl Fn(TransferError) -> DownloadWorkerError {
     move |e: TransferError| match e {
         TransferError::InvalidRangeResponse => {
             DownloadWorkerError::RangeResponseInvalid { chunk_index }
@@ -1135,16 +1058,4 @@ fn map_stream_error(
         TransferError::RangeUnsupported => DownloadWorkerError::RangeUnsupported,
         other => DownloadWorkerError::Transfer(other),
     }
-}
-
-/// Resolve the URI to fetch for a given chunk. The URI lives on the job
-/// record, not on the chunk — but the per-attempt helper does not see the
-/// record. We therefore thread the URI through the call as a separate
-/// argument in the real worker; this helper is intentionally unused so the
-/// signature is unambiguous and there is no temptation to embed a path.
-fn descriptor_range_uri_placeholder(_job_id: &str) -> String {
-    // Replaced at the call site — see drive_fetching which uses the record's
-    // source_uri. The function is retained so the helper signature stays
-    // simple in the face of lifetimes.
-    String::new()
 }
