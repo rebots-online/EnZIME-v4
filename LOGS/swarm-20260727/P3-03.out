@@ -1,0 +1,1 @@
+The `InstallPlan` types already exist in `ports::transfer`. My job is to write the planner. Let me examine the sibling modules for conventions and check the platform/signature ports.

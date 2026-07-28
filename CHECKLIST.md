@@ -119,7 +119,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 2 — Real ZIM vertical slice
 
-- [X] **P2-01 Implement `AnZimmermanZimEngine`**
+- ✅ **P2-01 Implement `AnZimmermanZimEngine`** — glm-4.7/crush; orchestrator-attested 2026-07-28 by reading crates/zim-anzimmerman/src/cluster.rs `extract_blob`: blob_count is derived from `first_offset / 4 - 1` per the openZIM cluster format — NOT the upstream break-on-zero-offset bug (recorded in DOCS/ANZIMMERMANLIB-UPSTREAM-FIXES.md finding 1). §7 hard requirements hold: alignment check, index bounds, inverted-offset detection, MAX_BLOB_BYTES allocation cap and end-past-buffer check, each returning a declared ZimError variant rather than panicking.
   - Allowed files: `crates/zim-anzimmerman/`, ZIM fixtures/tests.
   - Do: bind exact `ZimEngine`/`ZimArchive` methods to vendored source.
   - Verify: all §7.4 legal and malicious fixtures pass.
@@ -131,13 +131,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: forced interruption/corruption/duplicate object tests pass.
   - Accept: unverified bytes cannot enter active objects.
 
-- [ ] **P2-03 Implement pack import/activation**
+- [/] **P2-03 Implement pack import/activation**
   - Allowed files: application library service, SQLite repositories, tests.
   - Do: local import plan, verify, `install_transactions`, active pointer.
   - Verify: valid import activates; corrupt import quarantines; previous stays.
   - Accept: A-04 and A-07 hold.
 
-- [ ] **P2-04 Implement safe article renderer**
+- [/] **P2-04 Implement safe article renderer**
   - Allowed files: reader service, sanitizer, scoped protocol, renderer tests.
   - Do: §7.3 pipeline/CSP/message validation.
   - Verify: scripts/network/native bridge blocked; resources/links work.
@@ -177,19 +177,19 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: signed/unsigned/malformed/offline fixture matrix passes.
   - Accept: UI sees only canonical `CatalogEntry`.
 
-- [X] **P3-02 Implement HTTP and file transfer adapters**
+- ✅ **P3-02 Implement HTTP and file transfer adapters** — glm-4.7/crush; orchestrator-attested 2026-07-28 by reading crates/transfer-http/src/lib.rs: §8.5 honoured — an HTTP 200 answering a Range request is REJECTED, never buffered as a chunk; it is reported as SourceChanged when an ETag was supplied and InvalidRangeResponse otherwise. 206 is required, Content-Range is required, and the returned range is verified to match the requested one.
   - Allowed files: transfer adapter crates, tests.
   - Do: bounded probe, valid ranges, full/local streams, retry/source-change.
   - Verify: ignored range, oversized response, ETag change tests pass.
   - Accept: no `200` range response is buffered as a chunk.
 
-- [ ] **P3-03 Implement install planner**
+- [/] **P3-03 Implement install planner**
   - Allowed files: application library planner, storage repository, tests.
   - Do: calculate final/temp/retained/free impact and verification plan.
   - Verify: fit/temporary-shortfall/untrusted-source matrices pass.
   - Accept: `InstallPlan` contains every Download Plan field.
 
-- [ ] **P3-04 Implement resumable download worker**
+- [/] **P3-04 Implement resumable download worker**
   - Allowed files: application job worker, download repositories, tests.
   - Do: persisted chunks, pause/resume/cancel/retry/verify.
   - Verify: process-kill resume repeats no verified chunk.
@@ -217,7 +217,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 4 — Rich annotations, Notes and sidecars
 
-- [ ] **P4-01 Implement notebook/tag/layer repositories**
+- [/] **P4-01 Implement notebook/tag/layer repositories**
   - Allowed files: storage repositories/application annotation service/tests.
   - Do: CRUD/query hierarchy/tags/layer visibility.
   - Verify: FK/delete/idempotence/filter tests pass.
@@ -229,14 +229,14 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: size/hash/cancel/permission/process-death tests pass.
   - Accept: no partial asset is referenced.
 
-- [X] **P4-03 Implement canonical sidecar codec/signing**
+- ✅ **P4-03 Implement canonical sidecar codec/signing** — glm-4.7/crush; orchestrator-attested 2026-07-28 by reading crates/sidecar/src/codec.rs and import.rs: signing and verification both prefix the payload with SIGNATURE_DOMAIN (`domain_prefix`), and verification rejects an envelope whose `signed_domain` differs — so a signature valid under one domain string does not verify under another, which is the §9.5 domain-separation requirement.
   - Allowed files: sidecar/signature crates, CDDL, golden fixtures/tests.
   - Do: deterministic CBOR, artifact ID, Ed25519 domain sign/verify.
   - Verify: golden bytes and domain-separation tests pass.
   - Accept: repeated export with same canonical input is byte-identical except
     declared creation-time input.
 
-- [ ] **P4-04 Implement sidecar plan/import/export**
+- [/] **P4-04 Implement sidecar plan/import/export**
   - Allowed files: application sidecar service, repositories, tests.
   - Do: choose/plan/conflict/idempotent import and explicit export.
   - Verify: valid/unsigned/invalid/duplicate/divergent matrix passes.
@@ -258,7 +258,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
 
 ## Phase 5 — Local inference and cited Ask
 
-- [ ] **P5-01 Implement model catalog/install lifecycle**
+- [/] **P5-01 Implement model catalog/install lifecycle**
   - Allowed files: model domain/repository/application/object-store tests.
   - Do: model manifests, plan, verify, install/select/remove.
   - Verify: corrupt/incompatible/insufficient-space/active-session tests pass.
@@ -288,7 +288,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: golden retrieval/context fixtures pass.
   - Accept: evidence list is bounded and locators exact.
 
-- [ ] **P5-06 Implement cited conversation service**
+- [/] **P5-06 Implement cited conversation service**
   - Allowed files: application ask, repositories, tests.
   - Do: conversation/message/run, stream events, cancel, citation validation.
   - Verify: known/unknown/zero-citation/failure/restart tests pass.

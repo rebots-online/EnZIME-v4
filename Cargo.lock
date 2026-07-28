@@ -77,6 +77,14 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 [[package]]
 name = "application"
 version = "1.0.52684"
+dependencies = [
+ "async-trait",
+ "domain",
+ "ports",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.19",
+]
 
 [[package]]
 name = "argon2"
