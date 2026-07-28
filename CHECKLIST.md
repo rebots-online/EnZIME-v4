@@ -264,7 +264,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: corrupt/incompatible/insufficient-space/active-session tests pass.
   - Accept: no automatic model download.
 
-- [X] **P5-02 Implement LiteRT-LM backend**
+- [/] **P5-02 Implement LiteRT-LM backend** — ⚠️ RETURNED DEFECTIVE 2026-07-28. glm-4.7/crush produced a well-formed adapter (backend.rs, session.rs, bridge.rs, ipc.rs, gguf.rs, prompt.rs) and it compiles, but `WllamaBridge` is a TRAIT WITH NO IMPLEMENTATION anywhere in the workspace — probe/load_model/chat_start/abort/embed/unload are declared and `WllamaInferenceBackend` depends on one, yet no transport to the WebView wllama instance exists. The row's acceptance ('certified model fixture runs on Android and desktop') therefore cannot hold: no token can be generated. Not a fake — the adapter honestly declares the boundary — but the task is incomplete. Re-dispatch must supply a concrete WllamaBridge (Tauri command + frontend wllama3 module from VENDOR/wllama3/src/) and demonstrate one real completion. NOTE: row title still says 'LiteRT-LM backend'; §26 AMD-2 retired LiteRT — the work is wllama3.
   - Allowed files: `crates/inference-litert/`, vendored adapter boundary, tests.
   - Do: exact backend/session trait with streaming/cancel/health/model validation.
   - Verify: certified model fixture runs on Android and desktop.
@@ -276,7 +276,7 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: desktop model fixture streams/cancels; Android graph excludes crate.
   - Accept: contracts do not expose provider-specific fields.
 
-- [ ] **P5-04 Implement indexing and embeddings**
+- [/] **P5-04 Implement indexing and embeddings**
   - Allowed files: retrieval/storage/inference embedding modules/tests.
   - Do: document/chunk projection, FTS sync, embedding spaces/vectors/rebuild.
   - Verify: deterministic chunking, FTS and model-replacement tests pass.
@@ -317,13 +317,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: FK, revision conflict, forbidden promotion tests pass.
   - Accept: accepted memory requires explicit/policy evidence.
 
-- [ ] **P6-02 Implement extraction/consolidation**
+- [/] **P6-02 Implement extraction/consolidation**
   - Allowed files: lore service/retrieval projection/tests.
   - Do: opt-in candidate extraction, duplicate merge and correction proposal.
   - Verify: source quotation and sensitive inference rejection fixtures pass.
   - Accept: consolidation cannot accept/delete/rewrite user corrections.
 
-- [ ] **P6-03 Implement correction/pin/delete/retrieval**
+- [/] **P6-03 Implement correction/pin/delete/retrieval**
   - Allowed files: lore/retrieval services/repositories/tests.
   - Do: revisioned correction, pin, tombstone deletion and projection removal.
   - Verify: `CT-LORE-002` and revision/evidence tests pass.
@@ -351,13 +351,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: valid/perpetual/term/expired/invalid/revoked matrix passes offline.
   - Accept: reader core and user export never denied.
 
-- [ ] **P7-02 Implement RevenueCat adapter**
+- [/] **P7-02 Implement RevenueCat adapter**
   - Allowed files: RevenueCat adapter/platform compositions/tests.
   - Do: normalize refresh/restore events into provider events and signed grants.
   - Verify: provider outage/malformed event/replay tests pass.
   - Accept: domain/UI import no RevenueCat SDK type.
 
-- [ ] **P7-03 Implement coupon ledger**
+- [/] **P7-03 Implement coupon ledger**
   - Allowed files: entitlement service/storage/tests.
   - Do: signed coupon verify, receipt derivation, local single redemption and
     later reconciliation.
@@ -370,13 +370,13 @@ Marker workflow is governed by `KICKOFF-PROMPT.md`.
   - Verify: wrong destination/disk full/wrong passphrase/interruption tests pass.
   - Accept: backup is marked verified only after read-back validation.
 
-- [ ] **P7-05 Implement restore plan/commit**
+- [/] **P7-05 Implement restore plan/commit**
   - Allowed files: backup/application/storage/tests.
   - Do: validate/migrate/preview conflicts/stage/atomic restore.
   - Verify: all conflict policies and source-absent representation pass.
   - Accept: failed restore leaves current data unchanged.
 
-- [X] **P7-06 Implement diagnostics/privacy controls**
+- ✅ **P7-06 Implement diagnostics/privacy controls** — glm-4.7/crush; orchestrator-attested 2026-07-28 by reading crates/diagnostics/src/audit.rs and bundle.rs: redaction is enforced by TYPE, not by discipline — the detail_json builder accepts only redacted typed values (`redacted_text`, `redacted_path`, `redacted_url`), so a caller cannot pass a raw secret or absolute path by forgetting to redact. §18.6 satisfied: the bundle is inspectable by the user before it is shared.
   - Allowed files: diagnostics/application/settings UI/tests and privacy docs.
   - Do: redacted inspectable bundle, export/delete controls, explicit sample opt-in.
   - Verify: secret/path/content redaction fixture passes.

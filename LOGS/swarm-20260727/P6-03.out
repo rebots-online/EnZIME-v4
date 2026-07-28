@@ -1,0 +1,7 @@
+I'll start by reading the specification and exploring the workspace.
+          
+   ERROR  
+          
+  Agent processing failed: failed to start agent processing stream: retry error: too many requests: Rate limit reached
+  for requests.                                                                                                       
+
