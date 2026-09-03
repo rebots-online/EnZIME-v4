@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useEffect, useId, useState, type CSSProperties } from "react";
 import type {
   AnnotationDraft,

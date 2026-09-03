@@ -1,65 +1,32 @@
 import type { JSX } from "react";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import {
+  ErrorBoundary,
+  EventBridge,
+  IpcProvider,
+  ThemeProvider,
+  ToastProvider,
+} from "./components/shell/providers";
 
-declare global {
-  const __APP_VERSION__: string;
-}
-
-const APP_VERSION: string = typeof __APP_VERSION__ !== "undefined"
-  ? __APP_VERSION__
-  : "1.0.52684";
-
-type ViewProps = {
-  readonly name: string;
-};
-
-function ViewHeading({ name }: ViewProps): JSX.Element {
+/**
+ * Root composition (§15.1):
+ *   ErrorBoundary ▸ ThemeProvider ▸ IpcProvider ▸ EventBridge ▸ ToastProvider ▸ AppRouter
+ * The AppShell — with its Aurora Glass chrome — is the layout element of the
+ * router, declared in `router.tsx`.
+ */
+export default function App(): JSX.Element {
   return (
-    <main className="view">
-      <h1>{name}</h1>
-    </main>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <IpcProvider>
+          <EventBridge>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </EventBridge>
+        </IpcProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
-
-export function SetupRoute(): JSX.Element {
-  return <ViewHeading name="SetupRoute" />;
-}
-
-export function HomeView(): JSX.Element {
-  return <ViewHeading name="HomeView" />;
-}
-
-export function LibraryView(): JSX.Element {
-  return <ViewHeading name="LibraryView" />;
-}
-
-export function ReaderView(): JSX.Element {
-  return <ViewHeading name="ReaderView" />;
-}
-
-export function AskView(): JSX.Element {
-  return <ViewHeading name="AskView" />;
-}
-
-export function NotesView(): JSX.Element {
-  return <ViewHeading name="NotesView" />;
-}
-
-export function MemoryView(): JSX.Element {
-  return <ViewHeading name="MemoryView" />;
-}
-
-export function SettingsView(): JSX.Element {
-  return <ViewHeading name="SettingsView" />;
-}
-
-export function App(): JSX.Element {
-  return (
-    <>
-      <div id="app-version" aria-label="application version">
-        EnZIME Reader v{APP_VERSION}
-      </div>
-    </>
-  );
-}
-
-export default App;

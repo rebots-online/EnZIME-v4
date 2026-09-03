@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type {
   AppErrorDto,

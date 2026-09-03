@@ -8,6 +8,8 @@
 //! the `schema_migrations` table defined by §6.2 itself (per §6.4).
 
 pub mod migration;
+pub mod query;
+pub mod write;
 
 pub use migration::{
     apply_pragmas, open_with_pragmas, sha256_hex, AppliedMigration, MigrationError,

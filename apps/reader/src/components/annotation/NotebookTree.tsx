@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import {Fragment, type CSSProperties, useId, useState} from "react";
 import type {NotebookNode, NotebookUpdateRequest, Ulid} from "../../services/annotationService";
 import {EzButton, EzIconButton} from "./sharedUi";

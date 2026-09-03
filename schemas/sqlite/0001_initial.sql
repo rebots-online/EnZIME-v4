@@ -1,6 +1,10 @@
 BEGIN IMMEDIATE;
 
-CREATE TABLE schema_migrations (
+-- Idempotent: the migration runner also bootstraps this table via
+-- ensure_schema_migrations_table() before executing this script, so the
+-- table already exists when this CREATE runs. IF NOT EXISTS keeps the §6.2
+-- "schema self-defines its bookkeeping table" design without colliding.
+CREATE TABLE IF NOT EXISTS schema_migrations (
   version INTEGER PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   sha256 TEXT NOT NULL CHECK(length(sha256) = 64),

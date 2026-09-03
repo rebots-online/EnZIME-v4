@@ -9,11 +9,12 @@ members = [
   "crates/inference-wllama", "crates/retrieval", "crates/lore",
   "crates/entitlement", "crates/revenuecat-adapter",
   "crates/platform-adapter", "crates/backup", "crates/diagnostics",
+  "crates/dyndon", "crates/zim-cluster-cache",
   "apps/reader/src-tauri",
 ]
 
 [workspace.package]
-version = "1.0.52684"
+version = "1.6.55832"
 edition = "2021"
 license-file = "LICENSE"
 authors = ["Robin L. M. Cheung, MBA"]

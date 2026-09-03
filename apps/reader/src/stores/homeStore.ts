@@ -77,70 +77,28 @@ export const useHomeStore = create<HomeState>((set, get) => ({
     set({ online });
   },
 
+  // The granular `home_load_*` commands are retired (not in §14.4). Home now
+  // loads via a single `home_snapshot` call (see `loadAll`). The per-slice
+  // loaders are kept because the components still bind to them as `reload`
+  // handlers; each simply re-runs the full snapshot fetch.
   loadContinueReading() {
-    set({ continueReading: startLoading(get().continueReading) });
-    return homeService
-      .loadContinueReading()
-      .then((data) => {
-        set({
-          continueReading: finishData(data),
-        });
-      })
-      .catch((error: ServiceError) => {
-        set({ continueReading: finishError(get().continueReading, error) });
-      });
+    return get().loadAll();
   },
 
   loadRecentPacks() {
-    set({ recentPacks: startLoading(get().recentPacks) });
-    return homeService
-      .loadRecentPacks()
-      .then((data) => {
-        set({
-          recentPacks: finishData(data),
-        });
-      })
-      .catch((error: ServiceError) => {
-        set({ recentPacks: finishError(get().recentPacks, error) });
-      });
+    return get().loadAll();
   },
 
   loadTaskInbox() {
-    set({ taskInbox: startLoading(get().taskInbox) });
-    return homeService
-      .loadTaskInbox()
-      .then((data) => {
-        set({ taskInbox: finishData(data) });
-      })
-      .catch((error: ServiceError) => {
-        set({ taskInbox: finishError(get().taskInbox, error) });
-      });
+    return get().loadAll();
   },
 
   loadMemoryInbox() {
-    set({ memoryInbox: startLoading(get().memoryInbox) });
-    return homeService
-      .loadMemoryInbox()
-      .then((data) => {
-        set({
-          memoryInbox: finishData(data),
-        });
-      })
-      .catch((error: ServiceError) => {
-        set({ memoryInbox: finishError(get().memoryInbox, error) });
-      });
+    return get().loadAll();
   },
 
   loadReadiness() {
-    set({ readiness: startLoading(get().readiness) });
-    return homeService
-      .loadReadiness()
-      .then((data) => {
-        set({ readiness: finishData(data) });
-      })
-      .catch((error: ServiceError) => {
-        set({ readiness: finishError(get().readiness, error) });
-      });
+    return get().loadAll();
   },
 
   runReadinessCheck() {
@@ -155,53 +113,71 @@ export const useHomeStore = create<HomeState>((set, get) => ({
       });
   },
 
+  // M1 DEBT: `home_accept_memory` / `home_dismiss_memory` are not in §14.4
+  // (memory accept/reject should route through `lore_accept` / `lore_reject`).
+  // For M1 the buttons stay: optimistically remove the row from the slice, then
+  // fire-and-forget the existing call with errors swallowed so the UI never
+  // blocks on (or surfaces) the not-yet-contracted command.
   acceptMemory(memoryId) {
-    const inbox = get().memoryInbox;
-    return homeService
-      .acceptMemory(memoryId)
-      .then(() => {
-        const current = get().memoryInbox;
-        if (current.data) {
-          set({
-            memoryInbox: {
-              ...current,
-              data: current.data.filter((m) => m.memoryId !== memoryId),
-            },
-          });
-        }
-      })
-      .catch((error: ServiceError) => {
-        set({ memoryInbox: finishError(inbox, error) });
+    const current = get().memoryInbox;
+    if (current.data) {
+      set({
+        memoryInbox: {
+          ...current,
+          data: current.data.filter((m) => m.memoryId !== memoryId),
+        },
       });
+    }
+    return homeService.acceptMemory(memoryId).catch(() => {
+      /* M1 debt: swallowed intentionally — see comment above. */
+    });
   },
 
   dismissMemory(memoryId) {
-    const inbox = get().memoryInbox;
-    return homeService
-      .dismissMemory(memoryId)
-      .then(() => {
-        const current = get().memoryInbox;
-        if (current.data) {
-          set({
-            memoryInbox: {
-              ...current,
-              data: current.data.filter((m) => m.memoryId !== memoryId),
-            },
-          });
-        }
-      })
-      .catch((error: ServiceError) => {
-        set({ memoryInbox: finishError(inbox, error) });
+    const current = get().memoryInbox;
+    if (current.data) {
+      set({
+        memoryInbox: {
+          ...current,
+          data: current.data.filter((m) => m.memoryId !== memoryId),
+        },
       });
+    }
+    return homeService.dismissMemory(memoryId).catch(() => {
+      /* M1 debt: swallowed intentionally — see comment above. */
+    });
   },
 
+  // Single source of truth for Home hydration: ONE `home_snapshot` call, fanned
+  // into the five slices. All slices share one loading window and one error
+  // path so a snapshot failure is reported consistently across cards.
   loadAll() {
-    return Promise.all([
-      get().loadContinueReading(),
-      get().loadRecentPacks(),
-      get().loadTaskInbox(),
-      get().loadMemoryInbox(),
-      get().loadReadiness(),
-    ]).then(() => undefined);
+    set((s) => ({
+      continueReading: startLoading(s.continueReading),
+      recentPacks: startLoading(s.recentPacks),
+      taskInbox: startLoading(s.taskInbox),
+      memoryInbox: startLoading(s.memoryInbox),
+      readiness: startLoading(s.readiness),
+    }));
+    return homeService
+      .homeSnapshot()
+      .then((snap) => {
+        set({
+          continueReading: finishData(snap.continueReading),
+          recentPacks: finishData(snap.recentPacks),
+          taskInbox: finishData(snap.taskInbox),
+          memoryInbox: finishData(snap.memoryInbox),
+          readiness: finishData(snap.readiness),
+        });
+      })
+      .catch((error: ServiceError) => {
+        set((s) => ({
+          continueReading: finishError(s.continueReading, error),
+          recentPacks: finishError(s.recentPacks, error),
+          taskInbox: finishError(s.taskInbox, error),
+          memoryInbox: finishError(s.memoryInbox, error),
+          readiness: finishError(s.readiness, error),
+        }));
+      });
   },
 }));

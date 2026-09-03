@@ -29,7 +29,7 @@ pub mod header;
 pub mod limits;
 pub mod sanitize;
 
-pub use archive::AnZimmermanZimArchive;
+pub use archive::{AnZimmermanZimArchive, ZimLayoutEntry, ZimLayoutSnapshot};
 
 use async_trait::async_trait;
 use ports::zim::{ZimArchive, ZimEngine, ZimError, ZimOpenRequest, ZimMetadata};

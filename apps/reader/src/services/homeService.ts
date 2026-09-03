@@ -1,11 +1,16 @@
 import { invoke } from "@tauri-apps/api/core";
 
+// M1 contract: Home binds to a SINGLE `home_snapshot` command (§14.4 / §24).
+// The granular `home_load_*` commands that previously lived here were NOT in the
+// §14.4 registry and have been retired. `home_snapshot` returns the full payload
+// in one round-trip; the store fans it into the existing slices.
+//
+// M1 DEBT: `home_accept_memory` / `home_dismiss_memory` are also NOT in §14.4
+// (memory accept/reject is `lore_accept` / `lore_reject`). They are retained
+// here only as fire-and-forget calls so the M1 UI buttons do not block; the
+// store swallows their errors. Replace with the `lore_*` commands in a later mile.
 const COMMANDS = {
-  loadContinueReading: "home_load_continue_reading",
-  loadRecentPacks: "home_load_recent_packs",
-  loadTaskInbox: "home_load_task_inbox",
-  loadMemoryInbox: "home_load_memory_inbox",
-  loadReadiness: "home_load_readiness",
+  snapshot: "home_snapshot",
   acceptMemory: "home_accept_memory",
   dismissMemory: "home_dismiss_memory",
   runReadinessCheck: "home_run_readiness_check",
@@ -70,6 +75,19 @@ export type ReadinessReport = {
   readonly checkedAt: string;
 };
 
+/**
+ * Single payload returned by the `home_snapshot` command. The shape mirrors the
+ * store slices one-to-one so the store can fan this object straight into them
+ * without any re-shaping.
+ */
+export type HomeSnapshot = {
+  readonly continueReading: ContinueReadingEntry | null;
+  readonly recentPacks: readonly PackSummary[];
+  readonly taskInbox: readonly TaskSummary[];
+  readonly memoryInbox: readonly MemoryInboxEntry[];
+  readonly readiness: ReadinessReport;
+};
+
 export type ServiceErrorKind =
   | "recoverable"
   | "non-recoverable"
@@ -114,21 +132,17 @@ async function call<T>(
 }
 
 export const homeService = {
-  loadContinueReading(): Promise<ContinueReadingEntry | null> {
-    return call<ContinueReadingEntry | null>(COMMANDS.loadContinueReading);
+  /**
+   * The single Home payload call. Replaces the five granular `home_load_*`
+   * commands that were not in the §14.4 registry. The Rust `home_snapshot`
+   * handler is implemented in parallel; the frontend calls it by this exact
+   * name and builds green against this type.
+   */
+  homeSnapshot(): Promise<HomeSnapshot> {
+    return call<HomeSnapshot>(COMMANDS.snapshot);
   },
-  loadRecentPacks(): Promise<readonly PackSummary[]> {
-    return call<readonly PackSummary[]>(COMMANDS.loadRecentPacks);
-  },
-  loadTaskInbox(): Promise<readonly TaskSummary[]> {
-    return call<readonly TaskSummary[]>(COMMANDS.loadTaskInbox);
-  },
-  loadMemoryInbox(): Promise<readonly MemoryInboxEntry[]> {
-    return call<readonly MemoryInboxEntry[]>(COMMANDS.loadMemoryInbox);
-  },
-  loadReadiness(): Promise<ReadinessReport> {
-    return call<ReadinessReport>(COMMANDS.loadReadiness);
-  },
+  // M1 DEBT: see file header — these two are not in §14.4 (lore_accept/lore_reject
+  // is the eventual contract). Kept fire-and-forget by the store for M1.
   acceptMemory(memoryId: string): Promise<void> {
     return call<void>(COMMANDS.acceptMemory, { memoryId });
   },

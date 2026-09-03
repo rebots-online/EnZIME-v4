@@ -6,13 +6,14 @@
 //! `ports` — never on a concrete provider crate (A-02).
 
 pub mod activation;
-pub mod annotation;
 pub mod annotation_assets;
 pub mod ask;
+pub mod bootstrap;
+pub mod home;
 pub mod install;
 pub mod library;
 pub mod model;
-pub mod reader;
+pub mod readiness;
 pub mod reader_nav;
 pub mod sidecar;
 pub mod transfer;

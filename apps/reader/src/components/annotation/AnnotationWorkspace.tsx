@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import {
   useCallback,
   useEffect,
@@ -366,7 +367,7 @@ interface ActiveToolSurfaceProps {
   localLayerAvailable: boolean;
 }
 
-function ActiveToolSurface(props: ActiveToolSurfaceProps): JSX.Element {
+function ActiveToolSurface(props: ActiveToolSurfaceProps): JSX.Element | null {
   if (props.tool === "select") {
     return (
       <p style={hintStyle}>

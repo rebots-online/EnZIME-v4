@@ -10,11 +10,10 @@ name = "enzime_reader_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [features]
-default = [
-  "dep:platform-adapter",
-  "dep:inference-wllama",
-  "dep:revenuecat-adapter",
-]
+default = ["platform-adapter", "inference-wllama", "revenuecat-adapter"]
+platform-adapter = ["dep:platform-adapter"]
+inference-wllama = ["dep:inference-wllama"]
+revenuecat-adapter = ["dep:revenuecat-adapter"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -26,3 +25,19 @@ serde_json = "1"
 platform-adapter = { path = "../../../crates/platform-adapter", optional = true }
 inference-wllama = { path = "../../../crates/inference-wllama", optional = true }
 revenuecat-adapter = { path = "../../../crates/revenuecat-adapter", optional = true }
+
+# M1 IPC bridge dependencies (Milestone-1 "produce a reading").
+ports = { path = "../../../crates/ports" }
+zim-anzimmerman = { path = "../../../crates/zim-anzimmerman" }
+zim-cluster-cache = { path = "../../../crates/zim-cluster-cache" }
+dyndon = { path = "../../../crates/dyndon" }
+transfer-file = { path = "../../../crates/transfer-file" }
+transfer-http = { path = "../../../crates/transfer-http" }
+domain = { path = "../../../crates/domain" }
+storage-sqlite = { path = "../../../crates/storage-sqlite" }
+rusqlite = { version = "0.32", features = ["bundled"] }
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+bytes = "1"
+futures-util = "0.3"
+libc = "0.2"

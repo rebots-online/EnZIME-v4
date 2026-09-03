@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useHomeStore } from "../../stores/homeStore";
 import { ContinueReadingCard } from "./ContinueReadingCard";
+import { OpenPackCard } from "./OpenPackCard";
 import { HomeStyles, useOnlineSubscription } from "./shared";
 import { MemoryInboxCard } from "./MemoryInboxCard";
 import { ReadinessPanel } from "./ReadinessPanel";
@@ -29,6 +30,7 @@ export function HomeView(): ReactNode {
   return (
     <main className="home-surface" aria-busy={anyLoading}>
       <HomeStyles />
+      <OpenPackCard />
       {!online ? (
         <p
           className="home-pill home-pill--warning"

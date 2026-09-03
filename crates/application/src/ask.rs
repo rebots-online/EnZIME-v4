@@ -76,7 +76,7 @@ pub struct AskRequest {
 /// [`ContextEvidence`]. Citations that do not resolve are excluded from
 /// this list (§11.4: "Unknown keys are rendered as invalid and excluded
 /// from `message_citations`").
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ValidCitation {
     pub citation_key: String,
     pub retrieval_chunk_id: String,

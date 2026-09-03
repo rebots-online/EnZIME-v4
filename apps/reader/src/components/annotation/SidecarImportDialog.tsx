@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useCallback, useId, useState, type CSSProperties, type ChangeEvent } from "react";
 import type {
   SidecarConflict,

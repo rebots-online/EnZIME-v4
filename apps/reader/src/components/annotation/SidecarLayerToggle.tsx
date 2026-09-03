@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { type CSSProperties, useId } from "react";
 import type { SidecarLayer, Ulid } from "../../services/annotationService";
 import { InlineStatus, trustStateText } from "./sharedUi";

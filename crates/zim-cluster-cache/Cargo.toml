@@ -1,0 +1,20 @@
+[package]
+name = "zim-cluster-cache"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+authors.workspace = true
+
+[dependencies]
+ports = { path = "../../crates/ports" }
+domain = { path = "../../crates/domain" }
+zim-anzimmerman = { path = "../../crates/zim-anzimmerman" }
+bytes = { version = "1", features = ["serde"] }
+async-trait = "0.1"
+async-stream = "0.3"
+futures-core = "0.3"
+futures-util = "0.3"
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+tokio = { version = "1", default-features = false, features = ["sync"] }
+tracing = "0.1"

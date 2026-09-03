@@ -403,7 +403,7 @@ pub fn normalize_search_text(raw: &str) -> String {
 /// came back full (`hits.len() == limit`) — a hint that another page is
 /// likely available at `offset + hits.len()`. A short page always sets
 /// `has_more = false`.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct SearchPage {
     pub hits: Vec<TitleSearchHit>,
     pub offset: u32,

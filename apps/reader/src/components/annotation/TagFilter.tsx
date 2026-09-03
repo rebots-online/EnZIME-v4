@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { type CSSProperties, useId, useState } from "react";
 import type { TagSummary, Ulid } from "../../services/annotationService";
 import { EzButton, resolveHighlightColor } from "./sharedUi";

@@ -1,5 +1,55 @@
+/* EnZIME Reader — global surface.
+ * §15.6 Aurora Glass design system tokens (--ez-*) + shell chrome.
+ * Component-private vars (e.g. --home-*) are governed by their owners (§16.8).
+ * Animation is the default experience; prefers-reduced-motion is the a11y
+ * override only (§15.6 rule 8 + accessibility.reduce_motion setting). */
+
 :root {
   color-scheme: dark;
+
+  /* §15.6 — colour */
+  --ez-color-bg-canvas: #090b13;
+  --ez-color-bg-elevated: #111521;
+  --ez-color-bg-glass: rgba(23, 28, 44, 0.72);
+  --ez-color-bg-glass-strong: rgba(28, 34, 54, 0.9);
+  --ez-color-border-subtle: rgba(189, 198, 255, 0.14);
+  --ez-color-border-focus: #7c8cff;
+  --ez-color-text-primary: #f4f6ff;
+  --ez-color-text-secondary: #b7bdd4;
+  --ez-color-text-muted: #7f879f;
+  --ez-color-primary: #7c8cff;
+  --ez-color-primary-hover: #91a0ff;
+  --ez-color-accent: #34e0d4;
+  --ez-color-success: #4ce3a4;
+  --ez-color-warning: #ffca6a;
+  --ez-color-danger: #ff6f91;
+
+  /* §15.6 — type */
+  --ez-font-ui: "Inter", system-ui, sans-serif;
+  --ez-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --ez-font-reader: "Literata", Georgia, serif;
+
+  /* §15.6 — shape + space (selected) */
+  --ez-radius-sm: 8px;
+  --ez-radius-md: 14px;
+  --ez-radius-lg: 22px;
+  --ez-space-1: 4px;
+  --ez-space-2: 8px;
+  --ez-space-3: 12px;
+  --ez-space-4: 16px;
+  --ez-space-5: 20px;
+  --ez-space-6: 24px;
+  --ez-space-8: 32px;
+  --ez-shadow-panel: 0 16px 48px rgba(0, 0, 0, 0.32);
+  --ez-blur-glass: 18px;
+  --ez-duration-fast: 120ms;
+  --ez-duration-normal: 200ms;
+  --ez-focus-ring: 0 0 0 3px rgba(124, 140, 255, 0.45);
+
+  /* Aurora shader palette (animated background) */
+  --ez-aurora-1: rgba(124, 140, 255, 0.22);
+  --ez-aurora-2: rgba(52, 224, 212, 0.16);
+  --ez-aurora-3: rgba(76, 227, 164, 0.12);
 }
 
 html,
@@ -11,16 +61,17 @@ body,
 }
 
 body {
-  background-color: #090B13;
-  color: #F4F6FF;
-  font-family: Inter, "JetBrains Mono", system-ui, -apple-system, "Segoe UI",
-    sans-serif;
+  background-color: var(--ez-color-bg-canvas);
+  color: var(--ez-color-text-primary);
+  font-family: var(--ez-font-ui);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
+/* Legacy centred-view helper retained for compatibility. */
 .view {
   display: flex;
   align-items: center;
@@ -28,7 +79,6 @@ body {
   min-height: 100vh;
   padding: 2rem;
 }
-
 .view h1 {
   margin: 0;
   font-weight: 600;
@@ -41,7 +91,627 @@ body {
   bottom: 0.5rem;
   font-size: 0.75rem;
   color: rgba(244, 246, 255, 0.55);
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--ez-font-mono);
   pointer-events: none;
   user-select: none;
+  z-index: 60;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* App shell — Aurora Glass chrome (§15.1 / §16.6 AppShell)                    */
+
+.ez-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--ez-shell-rail, 84px) 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "rail top"
+    "rail main";
+  height: 100vh;
+  width: 100vw;
+  isolation: isolate;
+}
+@media (max-width: 48rem) {
+  .ez-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "top"
+      "main";
+  }
+  .ez-shell__rail { display: none; }
+}
+
+/* Animated aurora background — the canvas is alive, not static. */
+.ez-shell__aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 12% 8%, var(--ez-aurora-1) 0%, transparent 55%),
+    radial-gradient(110% 80% at 92% 18%, var(--ez-aurora-2) 0%, transparent 60%),
+    radial-gradient(140% 120% at 70% 108%, var(--ez-aurora-3) 0%, transparent 62%),
+    var(--ez-color-bg-canvas);
+}
+.ez-shell__aurora::before,
+.ez-shell__aurora::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.ez-shell__aurora::before {
+  background: radial-gradient(circle, var(--ez-aurora-1), transparent 60%);
+  top: -20vmax;
+  left: -10vmax;
+  animation: ez-drift-a 26s ease-in-out infinite alternate;
+}
+.ez-shell__aurora::after {
+  background: radial-gradient(circle, var(--ez-aurora-2), transparent 60%);
+  bottom: -24vmax;
+  right: -12vmax;
+  animation: ez-drift-b 32s ease-in-out infinite alternate;
+}
+
+.ez-shell__topbar {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ez-space-4);
+  padding: var(--ez-space-3) var(--ez-space-5);
+  background: var(--ez-color-bg-glass);
+  backdrop-filter: blur(var(--ez-blur-glass));
+  -webkit-backdrop-filter: blur(var(--ez-blur-glass));
+  border-bottom: 1px solid var(--ez-color-border-subtle);
+  box-shadow: 0 0 24px rgba(124, 140, 255, 0.08);
+  z-index: 20;
+}
+/* §Mandatory App Chrome: brand affordance opens Help | About. It is a real
+   <button> (tab-stop + AT-visible) but styled to read as plain brand chrome. */
+.ez-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ez-space-3);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border-radius: var(--ez-radius-sm);
+  transition: box-shadow var(--ez-duration-normal) ease,
+    transform var(--ez-duration-fast) ease;
+}
+.ez-shell__brand:hover { transform: translateY(-1px); }
+.ez-shell__brand:focus-visible {
+  outline: none;
+  box-shadow: var(--ez-focus-ring);
+}
+.ez-shell__brand-text { white-space: nowrap; }
+.ez-shell__brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ez-radius-sm);
+  color: var(--ez-color-bg-canvas);
+  background: linear-gradient(135deg, var(--ez-color-primary), var(--ez-color-accent));
+  box-shadow: 0 0 18px rgba(124, 140, 255, 0.45);
+  font-family: var(--ez-font-mono);
+  font-weight: 800;
+}
+.ez-shell__search {
+  flex: 1 1 auto;
+  max-width: 32rem;
+  display: flex;
+  align-items: center;
+  gap: var(--ez-space-2);
+  padding: var(--ez-space-2) var(--ez-space-4);
+  border-radius: 999px;
+  border: 1px solid var(--ez-color-border-subtle);
+  background: rgba(17, 21, 33, 0.6);
+  color: var(--ez-color-text-muted);
+  font-size: 0.9rem;
+  transition: border-color var(--ez-duration-normal) ease,
+    box-shadow var(--ez-duration-normal) ease;
+}
+.ez-shell__search:hover { border-color: rgba(124, 140, 255, 0.4); }
+.ez-shell__search:focus-visible {
+  outline: none;
+  border-color: var(--ez-color-border-focus);
+  box-shadow: var(--ez-focus-ring);
+}
+.ez-shell__top-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ez-space-2);
+}
+
+.ez-shell__rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ez-space-2);
+  padding: var(--ez-space-4) var(--ez-space-2);
+  background: var(--ez-color-bg-glass);
+  backdrop-filter: blur(var(--ez-blur-glass));
+  -webkit-backdrop-filter: blur(var(--ez-blur-glass));
+  border-right: 1px solid var(--ez-color-border-subtle);
+  z-index: 15;
+}
+
+.ez-nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--ez-space-3) var(--ez-space-1);
+  border-radius: var(--ez-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ez-color-text-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--ez-duration-normal) ease,
+    background-color var(--ez-duration-normal) ease,
+    border-color var(--ez-duration-normal) ease,
+    transform var(--ez-duration-fast) ease;
+}
+.ez-nav-item:hover {
+  color: var(--ez-color-text-primary);
+  background: rgba(124, 140, 255, 0.08);
+}
+.ez-nav-item:focus-visible {
+  outline: none;
+  box-shadow: var(--ez-focus-ring);
+  border-color: var(--ez-color-border-focus);
+}
+.ez-nav-item:active { transform: translateY(1px); }
+.ez-nav-item--active {
+  color: var(--ez-color-primary);
+  background: rgba(124, 140, 255, 0.14);
+  border-color: rgba(124, 140, 255, 0.3);
+}
+.ez-nav-item--active::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--ez-color-primary);
+  box-shadow: 0 0 12px var(--ez-color-primary);
+}
+.ez-nav-item--scheduled {
+  opacity: 0.45;
+  cursor: default;
+}
+.ez-nav-item--scheduled:hover { background: transparent; color: var(--ez-color-text-muted); }
+.ez-nav-item__glyph {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.ez-shell__main {
+  grid-area: main;
+  position: relative;
+  overflow: auto;
+  z-index: 1;
+}
+.ez-route-outlet {
+  padding: clamp(1rem, 2.5vw, 2.25rem);
+  animation: ez-route-in var(--ez-duration-normal) ease both;
+}
+
+/* Compact job strip pinned under the top bar. */
+.ez-job-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--ez-space-3);
+  padding: var(--ez-space-2) var(--ez-space-4);
+  font-size: 0.8rem;
+  color: var(--ez-color-text-secondary);
+}
+.ez-job-strip__empty { color: var(--ez-color-text-muted); }
+.ez-job-strip__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ez-space-2);
+  padding: 3px var(--ez-space-3);
+  border-radius: 999px;
+  border: 1px solid var(--ez-color-border-subtle);
+  background: rgba(17, 21, 33, 0.6);
+  font-family: var(--ez-font-mono);
+  font-size: 0.72rem;
+}
+.ez-job-strip__pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ez-color-accent);
+  box-shadow: 0 0 10px var(--ez-color-accent);
+  animation: ez-pulse 1.6s ease-in-out infinite;
+}
+
+/* Readiness indicator (top bar). */
+.ez-readiness {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ez-space-2);
+  padding: 4px var(--ez-space-3);
+  border-radius: 999px;
+  border: 1px solid var(--ez-color-border-subtle);
+  background: rgba(17, 21, 33, 0.6);
+  font-size: 0.78rem;
+  font-family: var(--ez-font-mono);
+  color: var(--ez-color-text-secondary);
+}
+.ez-readiness__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ez-color-text-muted);
+}
+.ez-readiness--ready    .ez-readiness__dot { background: var(--ez-color-success); box-shadow: 0 0 10px var(--ez-color-success); }
+.ez-readiness--warning  .ez-readiness__dot { background: var(--ez-color-warning); box-shadow: 0 0 10px var(--ez-color-warning); }
+.ez-readiness--degraded .ez-readiness__dot { background: var(--ez-color-warning); }
+.ez-readiness--unavailable .ez-readiness__dot { background: var(--ez-color-danger); box-shadow: 0 0 10px var(--ez-color-danger); }
+.ez-readiness--loading .ez-readiness__dot { animation: ez-pulse 1.4s ease-in-out infinite; }
+
+/* Toast region. */
+.ez-toast-region {
+  position: fixed;
+  right: var(--ez-space-5);
+  bottom: var(--ez-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ez-space-2);
+  z-index: 80;
+}
+.ez-toast {
+  padding: var(--ez-space-3) var(--ez-space-4);
+  border-radius: var(--ez-radius-md);
+  background: var(--ez-color-bg-glass-strong);
+  backdrop-filter: blur(var(--ez-blur-glass));
+  border: 1px solid var(--ez-color-border-subtle);
+  box-shadow: var(--ez-shadow-panel);
+  color: var(--ez-color-text-primary);
+  animation: ez-toast-in var(--ez-duration-normal) ease both;
+}
+
+/* Error boundary fallback. */
+.ez-error-boundary {
+  margin: clamp(2rem, 8vw, 6rem) auto;
+  max-width: 40rem;
+  padding: var(--ez-space-6);
+  border-radius: var(--ez-radius-lg);
+  background: var(--ez-color-bg-glass);
+  backdrop-filter: blur(var(--ez-blur-glass));
+  border: 1px solid rgba(255, 111, 145, 0.3);
+  box-shadow: var(--ez-shadow-panel);
+}
+.ez-error-boundary h1 { margin-top: 0; color: var(--ez-color-danger); }
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* §Mandatory App Chrome — Splash launch overlay (R-BOOT).                      */
+/* Animation is the default; prefers-reduced-motion neutralises it below.      */
+
+.ez-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100; /* above toasts (80), app-version (60), shell chrome */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--ez-color-bg-canvas);
+  transition: opacity 320ms ease, transform 320ms ease;
+  will-change: opacity, transform;
+}
+.ez-splash--fading {
+  opacity: 0;
+  transform: scale(1.04); /* slight scale-up as it fades, per spec */
+  pointer-events: none;
+}
+
+/* Animated aurora planes — reuse the --ez-aurora-* palette + the same drift
+   language as the shell aurora (ez-drift-a/b), on splash-local layers so the
+   splash owns its own stacking/pacing. */
+.ez-splash__aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 12% 8%, var(--ez-aurora-1) 0%, transparent 55%),
+    radial-gradient(110% 80% at 92% 18%, var(--ez-aurora-2) 0%, transparent 60%),
+    radial-gradient(140% 120% at 70% 108%, var(--ez-aurora-3) 0%, transparent 62%),
+    var(--ez-color-bg-canvas);
+}
+.ez-splash__aurora-a,
+.ez-splash__aurora-b {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.ez-splash__aurora-a {
+  background: radial-gradient(circle, var(--ez-aurora-1), transparent 60%);
+  top: -20vmax;
+  left: -10vmax;
+  animation: ez-drift-a 26s ease-in-out infinite alternate;
+}
+.ez-splash__aurora-b {
+  background: radial-gradient(circle, var(--ez-aurora-2), transparent 60%);
+  bottom: -24vmax;
+  right: -12vmax;
+  animation: ez-drift-b 32s ease-in-out infinite alternate;
+}
+
+.ez-splash__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ez-space-2);
+  padding: var(--ez-space-8);
+  text-align: center;
+}
+
+/* Brand mark — large "Z" in an aurora radial-gradient circle with a soft glow
+   (echoes .ez-shell__brand-mark, scaled up for the launch moment). The glow
+   pulses so the surface reads as alive, not static. */
+.ez-splash__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  color: var(--ez-color-bg-canvas);
+  background: radial-gradient(circle at 35% 30%,
+    var(--ez-color-primary-hover) 0%,
+    var(--ez-color-primary) 38%,
+    var(--ez-color-accent) 100%);
+  box-shadow:
+    0 0 48px rgba(124, 140, 255, 0.55),
+    0 0 96px rgba(52, 224, 212, 0.28),
+    inset 0 0 24px rgba(255, 255, 255, 0.12);
+  font-family: var(--ez-font-mono);
+  font-weight: 800;
+  font-size: 4.5rem;
+  line-height: 1;
+  animation: ez-pulse 2.4s ease-in-out infinite;
+}
+
+.ez-splash__title {
+  margin: var(--ez-space-4) 0 0;
+  font-family: var(--ez-font-reader);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.01em;
+  color: var(--ez-color-text-primary);
+  text-shadow: 0 0 24px rgba(124, 140, 255, 0.25);
+}
+.ez-splash__version {
+  font-family: var(--ez-font-mono);
+  font-size: 0.95rem;
+  color: var(--ez-color-text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* Loading affordance — a shimmer sweep across a subtle track. The track also
+   carries the ez-pulse glow so the loading state is never frozen. */
+.ez-splash__shimmer {
+  position: relative;
+  width: 220px;
+  max-width: 60vw;
+  height: 4px;
+  margin-top: var(--ez-space-4);
+  border-radius: 999px;
+  background: rgba(124, 140, 255, 0.16);
+  overflow: hidden;
+}
+.ez-splash__shimmer-bar {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ez-color-accent) 50%,
+    transparent 100%);
+  box-shadow: 0 0 12px var(--ez-color-accent);
+  animation: ez-shimmer 1.6s ease-in-out infinite;
+}
+
+.ez-splash__copyright {
+  margin-top: var(--ez-space-5);
+  font-size: 0.85rem;
+  color: var(--ez-color-text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* §Mandatory App Chrome — Help | About dialog (R-BOOT).                       */
+
+.ez-about__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 85; /* above app-version (60) and toast region (80); below splash */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ez-space-6);
+  background: rgba(5, 7, 13, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: ez-route-in var(--ez-duration-normal) ease both;
+}
+.ez-about {
+  position: relative;
+  width: min(30rem, 100%);
+  padding: clamp(var(--ez-space-6), 4vw, var(--ez-space-8));
+  border-radius: var(--ez-radius-lg);
+  background: var(--ez-color-bg-glass-strong);
+  backdrop-filter: blur(var(--ez-blur-glass));
+  -webkit-backdrop-filter: blur(var(--ez-blur-glass));
+  border: 1px solid var(--ez-color-border-subtle);
+  box-shadow: var(--ez-shadow-panel), 0 0 48px rgba(124, 140, 255, 0.12);
+  text-align: center;
+  animation: ez-about-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ez-about__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--ez-space-4);
+  border-radius: 50%;
+  color: var(--ez-color-bg-canvas);
+  background: radial-gradient(circle at 35% 30%,
+    var(--ez-color-primary-hover) 0%,
+    var(--ez-color-primary) 38%,
+    var(--ez-color-accent) 100%);
+  box-shadow: 0 0 28px rgba(124, 140, 255, 0.5);
+  font-family: var(--ez-font-mono);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+}
+.ez-about__title {
+  margin: 0 0 var(--ez-space-3);
+  font-family: var(--ez-font-reader);
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--ez-color-text-primary);
+}
+.ez-about__meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ez-space-2);
+  margin: 0 0 var(--ez-space-4);
+  padding: 0;
+  font-family: var(--ez-font-mono);
+  font-size: 0.9rem;
+}
+.ez-about__meta-key {
+  color: var(--ez-color-text-muted);
+}
+.ez-about__meta-val {
+  margin: 0; /* override default <dd> margin */
+  color: var(--ez-color-text-secondary);
+}
+.ez-about__line {
+  margin: var(--ez-space-1) 0;
+  color: var(--ez-color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.ez-about__line--muted { color: var(--ez-color-text-muted); font-size: 0.82rem; }
+.ez-about__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--ez-space-6);
+}
+.ez-about__close {
+  padding: var(--ez-space-2) var(--ez-space-5);
+  border-radius: 999px;
+  border: 1px solid var(--ez-color-border-subtle);
+  background: rgba(124, 140, 255, 0.14);
+  color: var(--ez-color-text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color var(--ez-duration-normal) ease,
+    box-shadow var(--ez-duration-normal) ease,
+    background-color var(--ez-duration-normal) ease;
+}
+.ez-about__close:hover {
+  border-color: var(--ez-color-border-focus);
+  background: rgba(124, 140, 255, 0.22);
+}
+.ez-about__close:focus-visible {
+  outline: none;
+  border-color: var(--ez-color-border-focus);
+  box-shadow: var(--ez-focus-ring);
+}
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/* Keyframes — the motion language of Aurora Glass.                            */
+
+@keyframes ez-route-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ez-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.82); }
+}
+@keyframes ez-toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ez-drift-a {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to   { transform: translate3d(8vmax, 6vmax, 0) rotate(25deg); }
+}
+@keyframes ez-drift-b {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to   { transform: translate3d(-7vmax, -5vmax, 0) rotate(-20deg); }
+}
+/* §Mandatory App Chrome — loading shimmer sweep (splash loading bar). */
+@keyframes ez-shimmer {
+  0%   { transform: translateX(-130%); }
+  100% { transform: translateX(330%); }
+}
+/* §Mandatory App Chrome — about dialog entrance. */
+@keyframes ez-about-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* a11y fallback ONLY: neutralise motion when the user asks for it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .ez-shell__aurora::before,
+  .ez-shell__aurora::after { animation: none !important; }
+  /* §Mandatory App Chrome: freeze splash drift/shimmer/pulse + about entrance
+     for reduced-motion users; the surfaces remain legible when static. */
+  .ez-splash__aurora-a,
+  .ez-splash__aurora-b,
+  .ez-splash__mark,
+  .ez-splash__shimmer-bar { animation: none !important; }
+  .ez-splash--fading {
+    opacity: 0; /* still dismiss, just without the transition */
+    transform: none;
+  }
 }
