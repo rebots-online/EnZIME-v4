@@ -179,6 +179,9 @@ const READER_STYLE_TEXT = `
 }
 .reader-pane__error,
 .reader-pane__empty {
+  color: var(--reader-fg);
+  background: var(--ez-color-bg-canvas, #111521);
+  min-height: 50vh;
   padding: clamp(1.5rem, 4vw, 3rem);
 }
 

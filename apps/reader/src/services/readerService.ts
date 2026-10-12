@@ -16,7 +16,7 @@ import { invoke } from "@tauri-apps/api/core";
 export type OpenPackResponse = {
   readonly packId: string;
   readonly title: string;
-  readonly mainPageKey: string;
+  readonly mainPageKey: string | null;
 };
 
 export type ArticleResponse = {

@@ -123,12 +123,8 @@ export function ReaderView(): ReactNode {
   // loop).
   useEffect(() => {
     if (!routePackId || !routeArticleKey) return;
-    let key = routeArticleKey;
-    try {
-      key = decodeURIComponent(routeArticleKey);
-    } catch {
-      // keep raw if malformed
-    }
+    // React Router has already decoded this path segment.
+    const key = routeArticleKey;
     const samePosition =
       currentPackId === routePackId && currentArticleKey === key;
     if (samePosition) return;

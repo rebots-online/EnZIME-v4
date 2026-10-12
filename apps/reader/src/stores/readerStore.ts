@@ -127,6 +127,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
     return readerService
       .readerOpen(packId)
       .then((res) => {
+        if (!res.mainPageKey?.trim()) throw { kind: "recoverable", message: "This pack has no readable main page.", cause: null } satisfies ServiceError;
         set({
           currentPackId: res.packId,
           currentPackTitle: res.title,
