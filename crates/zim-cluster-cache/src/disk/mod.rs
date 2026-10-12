@@ -1,3 +1,9 @@
+mod catalog;
+mod catalog_budget;
+mod catalog_discovery;
+mod catalog_schema;
+pub use catalog::{DiskEntryCatalog, OfflineCatalogProgress};
+pub use catalog_discovery::discover_offline_entries;
 mod blob;
 mod manifest;
 mod plan;
@@ -20,9 +26,18 @@ pub async fn open_disk_archive(
         .await
         .map_err(|e| e.to_string())?,
     );
-    let seed = store.manifest()?.metadata;
+    let catalog = DiskEntryCatalog::new(store.clone(), index.header().clone())?;
+    let mut seed = store.manifest()?.metadata;
+    let progress = store.catalog_progress()?;
+    seed.article_count = progress.readable_articles;
+    seed.media_count = progress.readable_resources;
+    let catalog = if store.manifest()?.policy.offline {
+        catalog
+    } else {
+        catalog.with_remote(index)
+    };
     Ok(Arc::new(
-        RangeZimArchive::open(index, store, seed, RangeReadLimits::default())
+        RangeZimArchive::open_index(Arc::new(catalog), store, seed, RangeReadLimits::default())
             .await
             .map_err(|e| e.to_string())?,
     ))

@@ -1,3 +1,4 @@
+use super::catalog_budget::directory_bytes;
 use super::{DiskPackManifest, PinnedTransferSource};
 use anzimmerman::range::ClusterByteRange;
 use bytes::Bytes;
@@ -30,22 +31,10 @@ pub(crate) fn now() -> i64 {
         .as_millis()
         .min(i64::MAX as u128) as i64
 }
-fn file_bytes(path: &Path) -> u64 {
+pub(super) fn file_bytes(path: &Path) -> u64 {
     std::fs::metadata(path).map(|m| m.len()).unwrap_or(0)
 }
-fn directory_bytes(path: &Path) -> Result<u64, String> {
-    let mut n = 0u64;
-    for item in std::fs::read_dir(path).map_err(err)? {
-        let item = item.map_err(err)?;
-        if item.file_type().map_err(err)?.is_file() {
-            n = n
-                .checked_add(item.metadata().map_err(err)?.len())
-                .ok_or("integer_overflow")?;
-        }
-    }
-    Ok(n)
-}
-fn digest_file(path: &Path) -> Result<String, String> {
+pub(super) fn digest_file(path: &Path) -> Result<String, String> {
     let mut file = std::fs::File::open(path).map_err(err)?;
     let mut hash = Sha256::new();
     let mut buf = [0u8; 65536];
@@ -66,7 +55,8 @@ pub struct DiskPackStore {
     source: Option<Arc<dyn TransferSource>>,
     pub(crate) source_len: u64,
     pub(super) cluster_gate: Arc<AsyncMutex<()>>,
-    metadata_gate: AsyncMutex<()>,
+    pub(super) metadata_gate: AsyncMutex<()>,
+    pub(super) catalog_gate: Arc<AsyncMutex<()>>,
 }
 impl DiskPackStore {
     pub fn manifest(&self) -> Result<DiskPackManifest, String> {
@@ -139,6 +129,7 @@ impl DiskPackStore {
             }
         }
         store.conn.lock().map_err(err)?.execute("UPDATE jobs SET state='paused',bytes_stored=(SELECT COALESCE(SUM(byte_length),0) FROM clusters WHERE state='complete') WHERE state='fetching'",[]).map_err(err)?;
+        super::catalog_schema::reconcile_payload(&store)?;
         store.save_manifest().await?;
         Ok(store)
     }
@@ -156,6 +147,23 @@ impl DiskPackStore {
         CREATE TABLE IF NOT EXISTS pages(page_index INTEGER PRIMARY KEY,byte_length INTEGER NOT NULL,stored_sha256 TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS jobs(job_id TEXT PRIMARY KEY,state TEXT NOT NULL,bytes_stored INTEGER NOT NULL DEFAULT 0,error TEXT);
         CREATE TABLE IF NOT EXISTS policy(key TEXT PRIMARY KEY,value TEXT NOT NULL);").map_err(err)?;
+        let budget = manifest.policy.metadata_budget_bytes;
+        let page_bytes = directory_bytes(&root.join("pages"))?;
+        let db_bytes = file_bytes(&root.join("pack-index.sqlite"));
+        if page_bytes
+            .saturating_add(db_bytes.saturating_mul(2))
+            .saturating_add(131072)
+            > budget
+        {
+            return Err("budget_exceeded: existing metadata exceeds partition".into());
+        }
+        conn.pragma_update(
+            None,
+            "max_page_count",
+            (budget - page_bytes - 131072) / 8192,
+        )
+        .map_err(err)?;
+        super::catalog_schema::ensure_catalog_schema(&conn)?;
         Ok(Self {
             source_len: manifest.identity.size_bytes,
             root,
@@ -164,6 +172,7 @@ impl DiskPackStore {
             source,
             cluster_gate: Arc::new(AsyncMutex::new(())),
             metadata_gate: AsyncMutex::new(()),
+            catalog_gate: Arc::new(AsyncMutex::new(())),
         })
     }
     async fn save_manifest(&self) -> Result<(), String> {
@@ -205,39 +214,12 @@ impl DiskPackStore {
         }
         Ok(n)
     }
-    pub(crate) fn reserve_metadata(&self, extra: u64) -> Result<(), String> {
-        let budget = self.manifest()?.policy.metadata_budget_bytes;
-        loop {
-            let page_bytes = directory_bytes(&self.root.join("pages"))?;
-            let db = file_bytes(&self.root.join("pack-index.sqlite"));
-            // Reserve a full rollback journal plus bounded manifest staging.
-            let needed = page_bytes
-                .checked_add(db.checked_mul(2).ok_or("integer_overflow")?)
-                .and_then(|n| n.checked_add(extra))
-                .and_then(|n| n.checked_add(131072))
-                .ok_or("integer_overflow")?;
-            if needed <= budget {
-                let max_pages = (budget - page_bytes - extra - 131072) / 2 / 4096;
-                self.conn
-                    .lock()
-                    .map_err(err)?
-                    .pragma_update(None, "max_page_count", max_pages)
-                    .map_err(err)?;
-                return Ok(());
-            }
-            let conn = self.conn.lock().map_err(err)?;
-            let victim:Option<i64>=conn.query_row("SELECT page_index FROM pages WHERE NOT EXISTS(SELECT 1 FROM policy WHERE key='pin.page.'||page_index) ORDER BY COALESCE((SELECT CAST(value AS INTEGER) FROM policy WHERE key='lru.page.'||page_index),0),page_index LIMIT 1",[],|r|r.get(0)).optional().map_err(err)?;
-            let Some(victim) = victim else {
-                return Err("budget_exceeded: pinned metadata partition".into());
-            };
-            std::fs::remove_file(self.root.join("pages").join(victim.to_string())).map_err(err)?;
-            conn.execute("DELETE FROM pages WHERE page_index=?1", [victim])
-                .map_err(err)?;
-            conn.execute("DELETE FROM policy WHERE key='lru.page.'||?1", [victim])
-                .map_err(err)?;
-        }
-    }
-    pub(crate) async fn read_page(&self, index: u64, pinned: bool) -> Result<Bytes, String> {
+    pub(crate) async fn read_page(
+        &self,
+        index: u64,
+        pinned: bool,
+        catalog: bool,
+    ) -> Result<Bytes, String> {
         let _guard = self.metadata_gate.lock().await;
         let start = index.checked_mul(65536).ok_or("integer_overflow")?;
         if start >= self.source_len {
@@ -278,7 +260,10 @@ impl DiskPackStore {
         let _ = std::fs::remove_file(stale);
         self.reserve_metadata(length)?;
         let part = self.root.join("pages").join(format!("{index}.part"));
-        let hash = self.fetch_file(start, length, &part).await?;
+        if catalog {
+            self.reserve_catalog_transfer(length)?;
+        }
+        let hash = self.fetch_file(start, length, &part, catalog).await?;
         tokio::fs::rename(&part, &path).await.map_err(err)?;
         self.conn
             .lock()
@@ -307,7 +292,13 @@ impl DiskPackStore {
         .map_err(err)?;
         Ok(())
     }
-    async fn fetch_file(&self, start: u64, length: u64, path: &Path) -> Result<String, String> {
+    async fn fetch_file(
+        &self,
+        start: u64,
+        length: u64,
+        path: &Path,
+        catalog: bool,
+    ) -> Result<String, String> {
         let manifest = self.manifest()?;
         let source = self.source.as_ref().ok_or("offline_source_unavailable")?;
         let mut stream = source
@@ -332,6 +323,9 @@ impl DiskPackStore {
                     .ok_or("integer_overflow")?;
                 if count > length {
                     return Err("range_length_exceeded".into());
+                }
+                if catalog {
+                    self.record_catalog_received(bytes.len() as u64)?;
                 }
                 for block in bytes.chunks(65536) {
                     file.write_all(block).await.map_err(err)?;
@@ -365,6 +359,7 @@ impl DiskPackStore {
         range: ClusterByteRange,
         pinned: bool,
     ) -> Result<PathBuf, String> {
+        let _metadata = self.metadata_gate.lock().await;
         if range.length == 0
             || range
                 .start
@@ -440,7 +435,10 @@ impl DiskPackStore {
         self.verify_weak_identity().await?;
         self.conn.lock().map_err(err)?.execute("INSERT INTO jobs(job_id,state) VALUES('download','fetching') ON CONFLICT(job_id) DO UPDATE SET state='fetching',error=NULL",[]).map_err(err)?;
         let part = self.root.join("clusters").join(format!("{index}.part"));
-        let hash = match self.fetch_file(range.start, range.length, &part).await {
+        let hash = match self
+            .fetch_file(range.start, range.length, &part, false)
+            .await
+        {
             Ok(h) => h,
             Err(e) => {
                 self.conn

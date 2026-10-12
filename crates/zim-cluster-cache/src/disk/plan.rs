@@ -41,6 +41,7 @@ pub async fn plan_disk_fit(
     intent: SelectionIntent,
     pinned_clusters: &[u32],
 ) -> Result<PlanSummary, String> {
+    let _catalog = store.catalog_gate.lock().await;
     let count = index.header().cluster_count;
     let planning = RemoteZimIndex::open(
         Arc::new(DiskRangeSource::new_for_planning(store.clone())),
@@ -66,6 +67,7 @@ pub async fn plan_disk_fit(
         for id in start..end {
             batch.push((id, planning.cluster_range(id).await.map_err(err)?));
         }
+        let _metadata = store.metadata_gate.lock().await;
         store.reserve_metadata(128 * 1024)?;
         let mut conn = store.conn.lock().map_err(err)?;
         conn.execute(
@@ -79,6 +81,7 @@ pub async fn plan_disk_fit(
         }
         tx.commit().map_err(err)?;
     }
+    let _metadata = store.metadata_gate.lock().await;
     select_candidates(&store, &intent, pinned_clusters)
 }
 /// Global grouping/filtering is performed on disk before bounded greedy batches.
@@ -190,6 +193,17 @@ fn select_candidates(
     summary(store, skipped)
 }
 impl DiskPackStore {
+    pub fn planned_summary(&self) -> Result<PlanSummary, String> {
+        let skipped = self
+            .conn
+            .lock()
+            .map_err(err)?
+            .query_row("SELECT COUNT(*) FROM clusters WHERE selected=0", [], |r| {
+                r.get(0)
+            })
+            .map_err(err)?;
+        summary(self, skipped)
+    }
     /// Complete stored payload bytes, excluding metadata and decode workspace.
     /// This accounting does not certify the digest of the original full archive.
     pub fn retained_bytes(&self) -> Result<u64, String> {
@@ -205,6 +219,15 @@ impl DiskPackStore {
     }
 }
 pub async fn install_selected(store: Arc<DiskPackStore>) -> Result<PlanSummary, String> {
+    let _catalog = store.catalog_gate.lock().await;
+    let bootstrap = RemoteZimIndex::open(
+        Arc::new(DiskRangeSource::new(store.clone())),
+        RangeReadLimits::default(),
+    )
+    .await
+    .map_err(err)?;
+    super::DiskEntryCatalog::new(store.clone(), bootstrap.header().clone())?
+        .validate_planned_main()?;
     let mut after = -1i64;
     loop {
         let row = {

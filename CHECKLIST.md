@@ -1505,7 +1505,7 @@ Source pushes remain integrator-owned GitHub code publication under outage instr
 ## OI — Offline entry catalog repair
 
 - ✅ OI-01 Canonical pluggable entry index (3 sparse catalog +9 range access tests, parent reviewed and independently executed).
-- [ ] OI-02 Durable bounded catalog.
+- ✅ OI-02 Durable bounded catalog: `cargo test -p zim-cluster-cache --offline` passed 16 tests (9 catalog, 6 disk-range, 1 planner); parent reviewed quota, persistence and availability paths. Packaged Kiwix validation remains separate.
 - [ ] OI-03 Native plan/activation coverage.
 
 # DynDon offline entry catalog

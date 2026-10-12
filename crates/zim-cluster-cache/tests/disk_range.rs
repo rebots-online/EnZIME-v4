@@ -167,7 +167,7 @@ async fn canonical_fixture_installs_and_reopens_offline_with_resource() {
     };
     let plan = plan_disk_fit(
         store.clone(),
-        index,
+        index.clone(),
         dyndon::SelectionIntent {
             domains: vec![],
             breadth_limit: None,
@@ -179,6 +179,9 @@ async fn canonical_fixture_installs_and_reopens_offline_with_resource() {
     .await
     .unwrap();
     assert!(plan.selected_count >= 2);
+    discover_offline_entries(store.clone(), index)
+        .await
+        .unwrap();
     install_selected(store.clone()).await.unwrap();
     let archive = open_disk_archive(store.clone()).await.unwrap();
     let article = archive.article(&ArticleKey("A/Café".into())).await.unwrap();

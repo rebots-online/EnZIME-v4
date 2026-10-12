@@ -84,6 +84,7 @@ impl TransferSource for PinnedTransferSource {
 pub struct DiskRangeSource {
     store: Arc<DiskPackStore>,
     pinned: bool,
+    catalog: bool,
     len: u64,
 }
 impl DiskRangeSource {
@@ -92,6 +93,16 @@ impl DiskRangeSource {
         Self {
             store,
             pinned: true,
+            catalog: false,
+            len,
+        }
+    }
+    pub fn new_for_catalog(store: Arc<DiskPackStore>) -> Self {
+        let len = store.source_len;
+        Self {
+            store,
+            pinned: false,
+            catalog: true,
             len,
         }
     }
@@ -100,6 +111,7 @@ impl DiskRangeSource {
         Self {
             store,
             pinned: false,
+            catalog: false,
             len,
         }
     }
@@ -119,7 +131,7 @@ impl RandomAccessSource for DiskRangeSource {
             let page = at / 65536;
             let bytes = self
                 .store
-                .read_page(page, self.pinned)
+                .read_page(page, self.pinned, self.catalog)
                 .await
                 .map_err(ZimError::Io)?;
             let start = (at % 65536) as usize;
