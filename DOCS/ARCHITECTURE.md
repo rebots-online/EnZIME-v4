@@ -501,7 +501,7 @@ EnZIME/
 | `crates/application` | complete use cases and orchestration |
 | `crates/storage-sqlite` | migrations and repository implementations |
 | `crates/object-store` | staging, verification, atomic object activation |
-| `crates/zim-anzimmerman` | `ZimEngine` implementation over vendored library |
+| `crates/zim-anzimmerman` | Current location of AnZimmermanLib's Rust implementation and EnZIME `ZimEngine` integration; ownership and consolidation follow AMD-5 |
 | `crates/annotations` | selector capture, resolution and revision services |
 | `crates/sidecar` | canonical CBOR, signing, import/export |
 | `crates/retrieval` | lexical/vector retrieval, budgeting and citation map |
@@ -6592,3 +6592,29 @@ Operator-directed global rule.
   copied from `~/Admin-Manual/versioning/update-version.sh`), never a manual
   edit. MAJOR=4. Artifacts are staged in the canonical checkout's tracked
   `dist/`, slug-first: `enzime-reader-v<MAJOR.MINOR.BUILD>-<qualifier>`.
+
+## AMD-5 (2026-10-12) — One AnZimmermanLib across languages
+
+Operator-directed. AnZimmermanLib is one maintained library with language
+implementations, including Rust. Translation from another implementation does
+not establish a separate product, competing library, or independent maintenance
+line. EnZIME consumes AnZimmermanLib through its application ports.
+
+- Incorporate the existing Rust implementation currently located at
+  `crates/zim-anzimmerman` into AnZimmermanLib's maintained source tree. Preserve
+  working behavior and provenance. Application-specific port adapters remain
+  in EnZIME; archive-format logic belongs to the library.
+- If another Rust implementation exists in AnZimmermanLib, reconcile both into
+  one canonical Rust implementation, incorporating useful improvements instead
+  of maintaining duplicate parsers or selecting a permanent application fork.
+- Assess correctness, format support, validation, and bounded-I/O improvements
+  across the other language implementations. Propagate the applicable behavior
+  and shared regression fixtures; language-specific runtime and UI bindings
+  remain specific to their language or application.
+- DynDon uses this maintained library for archive metadata and cluster access.
+  Extending range-based access must reuse its existing parsing and codec logic.
+  A complete local ZIM or a whole-archive in-memory representation is not a
+  prerequisite for browsing or acquiring selected clusters.
+- This decision establishes ownership and integration direction. It does not
+  attest that consolidation, cross-language parity, DynDon integration, or
+  reader runtime verification has already been completed.
