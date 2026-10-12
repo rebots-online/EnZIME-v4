@@ -14,7 +14,7 @@ pub(super) struct Inner {
 #[derive(Default)]
 struct ClusterCache {
     index: Option<u32>,
-    decompressed: Option<Arc<Vec<u8>>>,
+    decompressed: Option<(Arc<Vec<u8>>, u8)>,
 }
 
 impl Inner {
@@ -230,19 +230,12 @@ impl Inner {
         let start = *self.cluster_ptrs.get(cluster_idx as usize).ok_or_else(|| {
             ZimError::EntryNotFound(format!("cluster index {} out of range", cluster_idx))
         })?;
-        let end = if (cluster_idx as usize + 1) < self.cluster_ptrs.len() {
-            self.cluster_ptrs[cluster_idx as usize + 1]
-        } else if self.header.checksum_pos > start && self.header.checksum_pos <= self.size {
-            self.header.checksum_pos
-        } else {
-            self.size
-        };
-        if start >= end || end > self.size {
-            return Err(ZimError::InvalidHeader(format!(
-                "cluster {} has invalid byte range [{}, {} > {})",
-                cluster_idx, start, end, self.size
-            )));
-        }
+        let end = crate::header::cluster_end(
+            &self.header,
+            start,
+            self.cluster_ptrs.get(cluster_idx as usize + 1).copied(),
+            self.size,
+        )?;
         let span = end - start;
         if span > MAX_COMPRESSED_CLUSTER_BYTES {
             return Err(ZimError::AllocationLimit);
@@ -275,7 +268,7 @@ impl Inner {
     pub(super) fn get_or_decompress_cluster(
         &self,
         cluster_idx: u32,
-    ) -> Result<Arc<Vec<u8>>, ZimError> {
+    ) -> Result<(Arc<Vec<u8>>, u8), ZimError> {
         if let Some(cached) = self.cluster_cache_lock_match(cluster_idx) {
             return Ok(cached);
         }
@@ -286,11 +279,12 @@ impl Inner {
             .lock()
             .map_err(|_| ZimError::Io("cluster cache mutex poisoned".into()))?;
         guard.index = Some(cluster_idx);
-        guard.decompressed = Some(decompressed.clone());
-        Ok(decompressed)
+        let width = crate::cluster::cluster_encoding(compression)?.1;
+        guard.decompressed = Some((decompressed.clone(), width));
+        Ok((decompressed, width))
     }
 
-    pub(super) fn cluster_cache_lock_match(&self, cluster_idx: u32) -> Option<Arc<Vec<u8>>> {
+    pub(super) fn cluster_cache_lock_match(&self, cluster_idx: u32) -> Option<(Arc<Vec<u8>>, u8)> {
         let guard = self.cluster_cache.lock().ok()?;
         if guard.index == Some(cluster_idx) {
             guard.decompressed.clone()
@@ -300,9 +294,22 @@ impl Inner {
     }
 
     pub(super) fn blob_bytes(&self, entry: &ArticleEntry) -> Result<Bytes, ZimError> {
-        let cluster = self.get_or_decompress_cluster(entry.cluster_number)?;
-        let blob = extract_blob(&cluster, entry.blob_number)?;
-        Ok(Bytes::copy_from_slice(blob))
+        let (cluster, width) = self.get_or_decompress_cluster(entry.cluster_number)?;
+        if width == 4 {
+            return Ok(Bytes::copy_from_slice(extract_blob(
+                &cluster,
+                entry.blob_number,
+            )?));
+        }
+        crate::cluster_stream::read_cluster_blob(
+            &mut std::io::Cursor::new(cluster.as_slice()),
+            crate::cluster_stream::DecodedCluster {
+                length: cluster.len() as u64,
+                offset_width: width,
+            },
+            entry.blob_number,
+            crate::limits::MAX_BLOB_BYTES,
+        )
     }
 
     pub(super) fn build_entry_descriptor(
@@ -382,9 +389,11 @@ impl Inner {
     }
 
     pub(super) fn blob_len(&self, entry: &ArticleEntry) -> Result<u64, ZimError> {
-        let cluster = self.get_or_decompress_cluster(entry.cluster_number)?;
-        let blob = extract_blob(&cluster, entry.blob_number)?;
-        Ok(blob.len() as u64)
+        let (cluster, width) = self.get_or_decompress_cluster(entry.cluster_number)?;
+        if width == 4 {
+            return Ok(extract_blob(&cluster, entry.blob_number)?.len() as u64);
+        }
+        Ok(self.blob_bytes(entry)?.len() as u64)
     }
 }
 

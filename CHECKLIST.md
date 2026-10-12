@@ -999,8 +999,8 @@ RC-01 schema clarification: `RendererParentMessageV1` additionally includes `foc
 
 ## DD-RANGE — Remote DynDon acquisition (2026-10-12)
 
-- [ ] **DD-RANGE-01 Canonical library lazy range reader and streaming cluster decoding**
-  - Allowed files: canonical R/src/range/**, R/src/cluster_stream.rs, R/src/{lib,cluster,header}.rs, R/src/archive/** for shared helper factoring, R/tests/{range_access,cluster_stream}.rs, R/Cargo.toml, Cargo.lock; existing canonical models/parsers/tests read-only except narrow helper visibility needed. R is defined in embedded contract below.
+- ✅ **DD-RANGE-01 Canonical library lazy range reader and streaming cluster decoding**
+  - Allowed files: canonical R/src/range/**, R/src/cluster_stream.rs, R/src/{lib,cluster,header}.rs, R/src/archive/** for shared helper factoring, R/tests/{range_access,cluster_stream}.rs and R/tests/range_access/**, R/Cargo.toml, Cargo.lock; existing canonical models/parsers/tests read-only except narrow helper visibility needed. R is defined in embedded contract below.
   - Do: implement the exact library contract below; preserve local APIs, use original canonical parsing, add no app-specific dependencies.
   - Verify: `cargo test -p anzimmerman --test range_access --test cluster_stream`; `cargo test -p anzimmerman`; `cargo test -p zim-anzimmerman`.
   - Accept: all pass; virtual1TiB sparse test proves bounded requests/cache, lazy lookup and blob read; streaming limits and codec/error cases tested.
@@ -1038,7 +1038,7 @@ Reuse canonical Rust AnZimmerman header/directory/cluster parsers. Extend storag
 | range exports | R/src/range/mod.rs:1 and R/src/lib.rs | Export all above types; public `range` and `cluster_stream` modules |
 | `header::cluster_end` | R/src/header.rs:1 | `pub fn cluster_end(header:&ZimHeader,start:u64,next_cluster:Option<u64>,source_len:u64)->Result<u64,ZimError>`; shared canonical boundary used by local and range readers |
 | common cluster helpers | R/src/cluster.rs | Factor shared compression-tag/offset validation into `pub(crate) fn cluster_encoding(tag:u8)->Result<(u8,u8),ZimError>` and `pub(crate) fn validate_blob_offsets(start:u64,end:u64,table_bytes:u64,total_bytes:u64,maximum_bytes:u64)->Result<(),ZimError>`; reuse both existing in-memory and streaming paths |
-| range tests | R/tests/range_access.rs:1 | Synthetic sparse ranged source + deterministic library fixture; no HTTP dependency |
+| range tests | R/tests/range_access.rs:1 and R/tests/range_access/** | Synthetic sparse ranged source + deterministic library fixture; no HTTP dependency |
 | streaming tests | R/tests/cluster_stream.rs:1 | Real codec and offset tests; synthetic bounded reader/writer; temp files |
 
 ### Required library behavior
@@ -1180,6 +1180,8 @@ prepare_dyndon_install resolves stored KiwixEntry through client.resolve, tries 
 
 Additional Verify: cargo test -p storage-sqlite --test dyndon_migration; cargo test -p storage-sqlite; existing DD03 commands. UI tests cover budget bytes conversion, unknown digests, retained-progress truth, live catalog error/cache and pagination.
 
+DD02 native decode orchestration may live in `C/src/disk/blob.rs` to keep modules below500lines. It only calls canonical streaming decoder APIs. Public `DiskPackStore::manifest(&self)->Result<DiskPackManifest,String>` returns a cloned bounded manifest for DD03 integration. No parser or library ownership changes.
+
 ## RC-04 — Local dictated text and saved voice through existing wllama
 
 - [ ] **RC-04 Verified local dictation service and capture card**
@@ -1191,3 +1193,5 @@ Additional Verify: cargo test -p storage-sqlite --test dyndon_migration; cargo t
   - Exact entities: AudioCaptureSession {stop():Promise<{wav:Uint8Array,durationMs:number}>,cancel():void}; startAudioCapture(onElapsed:(ms:number)=>void):Promise<AudioCaptureSession> in audioCapture.ts. Parent getUserMedia audio, AudioContext bounded PCM capture maximum60s, release every track/node/context. Resample to16kHz mono using OfflineAudioContext then emit WAV with real RIFF lengths, saturating16bit samples. Zero gain to output avoids feedback; signal energy silence error permits retry. Capture callbacks after unmount ignored. Import audio recording <=16MiB and<=60sec accepted through same decode/resample path for accessibility and real fixture verification.
   - Exact entities: DictationCaptureResult {text:string,bytes:Uint8Array,mimeType:'audio/wav',durationMs:number}; DictationCapture props {onCapture(result:DictationCaptureResult):Promise<void>,onDiscard():void}. UI states model preparation/download/error, Ready to dictate, Recording, Transcribing, Review editable text plus audio playback, Saving/error. Retain WAV and edited transcript until successful durable save or explicit discard, prevent double-save, revoke object URLs and stop mic on cleanup, cancel model work on discard. No label dictation without actual transcription. Default retains voice+editable transcript per parent stated assumption; RC03 capture composes annotation type voice or comment with bodyText, asset kind file audio/wav (never mislabeledvoice_opus).
   - Verify: pnpm --dir apps/reader exec tsc --noEmit; pnpm --dir apps/reader run test:reader. Unit tests real hash/size/truncation, WAV encoding/duration/resampling boundaries, offline cache withoutfetch, cancellation and error retention. Runtime protocol: actual wllama model transcribes committed public-domain JFK audio fixture offline, expected words 'ask not what your country can do for you' present; record elapsedtime/model/runtime/build and compare actual text. Then native dictated capture/save/restart/replay oncanvas required before goal complete. Mocks cannot establish speech capability.
+
+DD02 test-only reads may reuse canonical `AnZimmermanLib/tests/fixtures/rust-consolidation.zim` and `rust/tests/support/mod.rs` ZimBuilder. Add its existing flate2/tempfile dependencies in native cache dev-dependencies; production remains canonical parser-only.

@@ -10,7 +10,7 @@ use std::io::Read;
 
 use crate::model::ZimError;
 
-use crate::limits::{DECOMPRESS_CHUNK_BYTES, MAX_BLOB_BYTES, MAX_DECOMPRESSED_CLUSTER_BYTES};
+use crate::limits::MAX_BLOB_BYTES;
 
 /// Compression codes from the openZIM specification.
 pub const COMPRESSION_DEFAULT: u8 = 0;
@@ -28,86 +28,43 @@ pub const COMPRESSION_EXTENDED: u8 = 0xFF;
 /// `compression` is the first byte of the cluster; `payload` is the cluster
 /// body that follows the compression byte.
 pub fn decompress_cluster(compression: u8, payload: &[u8]) -> Result<Vec<u8>, ZimError> {
-    match compression {
-        COMPRESSION_DEFAULT | COMPRESSION_NONE => {
-            enforce_allocation(payload.len() as u64)?;
-            Ok(payload.to_vec())
-        }
-        COMPRESSION_ZLIB => decode_zlib(payload),
-        COMPRESSION_ZSTD => decode_zstd(payload),
-        COMPRESSION_LZMA => Err(ZimError::UnsupportedFeature(
-            "LZMA cluster codec not wired in this build".into(),
-        )),
-        COMPRESSION_BZIP2 => Err(ZimError::UnsupportedFeature(
-            "bzip2 cluster codec is deprecated by ZIM and not supported".into(),
-        )),
-        COMPRESSION_EXTENDED => Err(ZimError::UnsupportedFeature(
-            "extended 4-byte cluster compression tags are not supported".into(),
-        )),
-        other => Err(ZimError::UnsupportedFeature(format!(
-            "unknown cluster compression byte 0x{:02X}",
-            other
-        ))),
-    }
+    let mut input = std::io::Cursor::new([compression]).chain(payload);
+    let mut output = Vec::new();
+    crate::cluster_stream::decode_cluster_to(
+        &mut input,
+        &mut output,
+        crate::cluster_stream::ClusterDecodeLimits::default(),
+    )?;
+    Ok(output)
 }
-
-#[inline]
-fn enforce_allocation(byte_count: u64) -> Result<(), ZimError> {
-    if byte_count > MAX_DECOMPRESSED_CLUSTER_BYTES {
-        return Err(ZimError::DecompressionLimit);
+pub(crate) fn cluster_encoding(tag: u8) -> Result<(u8, u8), ZimError> {
+    if tag & 0xe0 != 0 {
+        return Err(ZimError::UnsupportedFeature(format!(
+            "unknown cluster flag {tag:#x}"
+        )));
+    }
+    let codec = tag & 15;
+    if !matches!(codec, 0 | 1 | 2 | 4 | 5) {
+        return Err(ZimError::UnsupportedFeature(format!(
+            "cluster codec {codec}"
+        )));
+    }
+    Ok((codec, if tag & 0x10 != 0 { 8 } else { 4 }))
+}
+pub(crate) fn validate_blob_offsets(
+    start: u64,
+    end: u64,
+    table_bytes: u64,
+    total_bytes: u64,
+    maximum_bytes: u64,
+) -> Result<(), ZimError> {
+    if start < table_bytes || start > end || end > total_bytes {
+        return Err(ZimError::InvalidHeader("invalid blob endpoints".into()));
+    }
+    if end - start > maximum_bytes {
+        return Err(ZimError::AllocationLimit);
     }
     Ok(())
-}
-
-fn decode_zlib(payload: &[u8]) -> Result<Vec<u8>, ZimError> {
-    // ZIM ZLIB clusters store raw DEFLATE bytes (no zlib header); this is
-    // confirmed against the vendored AnZimmermanLib reference and against
-    // libzim's zstd/zlib writer. DeflateDecoder matches that exactly.
-    use flate2::read::DeflateDecoder;
-    let mut out = Vec::new();
-    let mut dec = DeflateDecoder::new(payload);
-    let mut chunk = [0u8; DECOMPRESS_CHUNK_BYTES];
-    loop {
-        match dec.read(&mut chunk) {
-            Ok(0) => break,
-            Ok(n) => {
-                out.extend_from_slice(&chunk[..n]);
-                enforce_allocation(out.len() as u64)?;
-            }
-            Err(e) => {
-                return Err(ZimError::InvalidHeader(format!(
-                    "zlib decompression failed: {}",
-                    e
-                )));
-            }
-        }
-    }
-    Ok(out)
-}
-
-fn decode_zstd(payload: &[u8]) -> Result<Vec<u8>, ZimError> {
-    let dec = zstd::stream::Decoder::new(payload)
-        .map_err(|e| ZimError::InvalidHeader(format!("zstd decoder init: {}", e)))?;
-    let dec = dec.single_frame();
-    let mut reader = dec;
-    let mut out = Vec::new();
-    let mut chunk = [0u8; DECOMPRESS_CHUNK_BYTES];
-    loop {
-        match reader.read(&mut chunk) {
-            Ok(0) => break,
-            Ok(n) => {
-                out.extend_from_slice(&chunk[..n]);
-                enforce_allocation(out.len() as u64)?;
-            }
-            Err(e) => {
-                return Err(ZimError::InvalidHeader(format!(
-                    "zstd decompression failed: {}",
-                    e
-                )));
-            }
-        }
-    }
-    Ok(out)
 }
 
 /// Extracts one blob from a decompressed cluster buffer.
@@ -118,7 +75,7 @@ pub fn extract_blob(decompressed: &[u8], blob_number: u32) -> Result<&[u8], ZimE
         ));
     }
     let first_offset = le_u32(decompressed, 0) as usize;
-    if first_offset == 0 || first_offset % 4 != 0 {
+    if first_offset < 8 || first_offset % 4 != 0 || first_offset > decompressed.len() {
         return Err(ZimError::InvalidHeader(format!(
             "cluster blob table is mis-aligned: first offset {} is not a positive multiple of 4",
             first_offset
@@ -135,25 +92,13 @@ pub fn extract_blob(decompressed: &[u8], blob_number: u32) -> Result<&[u8], ZimE
     }
     let start = read_offset(decompressed, blob_idx)?;
     let end = read_offset(decompressed, blob_idx + 1)?;
-    if start > end {
-        return Err(ZimError::InvalidHeader(format!(
-            "cluster blob {} has inverted offsets [{}, {})",
-            blob_idx, start, end
-        )));
-    }
-    let len = end - start;
-    if len as u64 > MAX_BLOB_BYTES {
-        return Err(ZimError::AllocationLimit);
-    }
-    if end > decompressed.len() {
-        return Err(ZimError::InvalidHeader(format!(
-            "cluster blob {} extends past decompressed buffer [{}, {} > {})",
-            blob_idx,
-            start,
-            end,
-            decompressed.len()
-        )));
-    }
+    validate_blob_offsets(
+        start as u64,
+        end as u64,
+        first_offset as u64,
+        decompressed.len() as u64,
+        MAX_BLOB_BYTES,
+    )?;
     Ok(&decompressed[start..end])
 }
 
@@ -192,36 +137,35 @@ pub fn decompress_cluster_blobs(raw: &[u8]) -> Result<Vec<Vec<u8>>, ZimError> {
             "cluster payload is empty (missing compression byte)".into(),
         ));
     }
-    let compression = raw[0];
-    let payload = &raw[1..];
-    let decompressed = decompress_cluster(compression, payload)?;
-
-    // The decompressed buffer begins with a `u32` offset table; the first
-    // offset both marks the start of blob data and encodes the table length
-    // (see module header). We re-derive blob_count exactly as `extract_blob`
-    // does, then walk every blob.
-    if decompressed.len() < 4 {
-        return Err(ZimError::InvalidHeader(
-            "decompressed cluster too short for blob offset table".into(),
-        ));
+    let (_, width) = cluster_encoding(raw[0])?;
+    let decompressed = decompress_cluster(raw[0], &raw[1..])?;
+    let mut input = std::io::Cursor::new(&decompressed);
+    let mut first = [0; 8];
+    input
+        .read_exact(&mut first[..width as usize])
+        .map_err(|e| ZimError::InvalidHeader(e.to_string()))?;
+    let table = u64::from_le_bytes(first);
+    if table < 2 * width as u64 || table % width as u64 != 0 || table > decompressed.len() as u64 {
+        return Err(ZimError::InvalidHeader("invalid blob table".into()));
     }
-    let first_offset = le_u32(&decompressed, 0) as usize;
-    if first_offset == 0 || first_offset % 4 != 0 {
-        return Err(ZimError::InvalidHeader(format!(
-            "cluster blob table is mis-aligned: first offset {} is not a positive multiple of 4",
-            first_offset
-        )));
-    }
-    let offset_count = first_offset / 4;
-    let blob_count = offset_count - 1;
-
-    let mut out = Vec::with_capacity(blob_count);
-    for idx in 0..blob_count {
-        // `extract_blob` already enforces every per-blob invariant (inverted
-        // offsets, out-of-range, MAX_BLOB_BYTES, etc.) — re-use it verbatim
-        // by indexing through the same offset-table semantics.
-        let blob = extract_blob(&decompressed, idx as u32)?;
-        out.push(blob.to_vec());
+    let mut out = Vec::new();
+    for idx in 0..table / width as u64 - 1 {
+        if width == 4 {
+            out.push(extract_blob(&decompressed, idx as u32)?.to_vec());
+            continue;
+        }
+        out.push(
+            crate::cluster_stream::read_cluster_blob(
+                &mut input,
+                crate::cluster_stream::DecodedCluster {
+                    length: decompressed.len() as u64,
+                    offset_width: width,
+                },
+                idx as u32,
+                MAX_BLOB_BYTES,
+            )?
+            .to_vec(),
+        );
     }
     Ok(out)
 }

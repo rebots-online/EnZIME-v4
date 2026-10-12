@@ -67,7 +67,7 @@ pub struct AnZimmermanZimArchive {
     inner: Arc<Inner>,
 }
 
-fn classify_kind(namespace: u8, mime: &str) -> ZimEntryKind {
+pub(crate) fn classify_kind(namespace: u8, mime: &str) -> ZimEntryKind {
     if namespace == b'M' {
         ZimEntryKind::Metadata
     } else if namespace == b'A' || mime.starts_with("text/html") {
@@ -84,3 +84,5 @@ mod traits;
 use inner::Inner;
 use io::*;
 pub use layout::{ZimLayoutEntry, ZimLayoutSnapshot};
+
+pub(crate) use traits::{score_title, sha256_digest};

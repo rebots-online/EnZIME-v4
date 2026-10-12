@@ -29,7 +29,7 @@ Reuse canonical Rust AnZimmerman header/directory/cluster parsers. Extend storag
 | range exports | R/src/range/mod.rs:1 and R/src/lib.rs | Export all above types; public `range` and `cluster_stream` modules |
 | `header::cluster_end` | R/src/header.rs:1 | `pub fn cluster_end(header:&ZimHeader,start:u64,next_cluster:Option<u64>,source_len:u64)->Result<u64,ZimError>`; shared canonical boundary used by local and range readers |
 | common cluster helpers | R/src/cluster.rs | Factor shared compression-tag/offset validation into `pub(crate) fn cluster_encoding(tag:u8)->Result<(u8,u8),ZimError>` and `pub(crate) fn validate_blob_offsets(start:u64,end:u64,table_bytes:u64,total_bytes:u64,maximum_bytes:u64)->Result<(),ZimError>`; reuse both existing in-memory and streaming paths |
-| range tests | R/tests/range_access.rs:1 | Synthetic sparse ranged source + deterministic library fixture; no HTTP dependency |
+| range tests | R/tests/range_access.rs:1 and R/tests/range_access/** | Synthetic sparse ranged source + deterministic library fixture; no HTTP dependency |
 | streaming tests | R/tests/cluster_stream.rs:1 | Real codec and offset tests; synthetic bounded reader/writer; temp files |
 
 ### Required library behavior
@@ -132,3 +132,7 @@ Kiwix catalog entity search_kiwix_catalog(state:&AppState,query:&str,language:Op
 prepare_dyndon_install resolves stored KiwixEntry through client.resolve, tries HTTPS mirrors with bounded probe failures, pins exact probe length matching exact Metalink size when supplied (not rounded OPDSlength), preserves upstream digest optional. Probe method injectable for synthetic tests, no external Kiwix necessary. Existing reader_open should accept pack_id and optional legacy path parameter; frontend sends selected packId, result path compatibility retained. Startup restore offline without network; subsequent online reader resource use may instantiate pinned source after explicit online state but retained content must read even when online request fails. Persist plan reference in new app_data/dyndon-plans/<planId>.json with destination ID and relative root, no full directory or selected vector; validate references resolve only under registered destination root. Tests all native paths use actual schema2.
 
 Additional Verify: cargo test -p storage-sqlite --test dyndon_migration; cargo test -p storage-sqlite; existing DD03 commands. UI tests cover budget bytes conversion, unknown digests, retained-progress truth, live catalog error/cache and pagination.
+
+DD02 native decode orchestration may live in `C/src/disk/blob.rs` to keep modules below500lines. It only calls canonical streaming decoder APIs. Public `DiskPackStore::manifest(&self)->Result<DiskPackManifest,String>` returns a cloned bounded manifest for DD03 integration. No parser or library ownership changes.
+
+DD02 test-only reads may reuse canonical `AnZimmermanLib/tests/fixtures/rust-consolidation.zim` and `rust/tests/support/mod.rs` ZimBuilder. Add its existing flate2/tempfile dependencies in native cache dev-dependencies; production remains canonical parser-only.

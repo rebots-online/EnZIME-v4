@@ -160,3 +160,37 @@ fn le_u64(buf: &[u8], at: usize) -> u64 {
         buf[at + 7],
     ])
 }
+
+/// Conservative cluster end shared by local and random-access readers.
+pub fn cluster_end(
+    header: &ZimHeader,
+    start: u64,
+    next_cluster: Option<u64>,
+    source_len: u64,
+) -> Result<u64, ZimError> {
+    if start >= source_len || next_cluster.is_some_and(|n| n <= start || n > source_len) {
+        return Err(ZimError::InvalidHeader("invalid cluster boundary".into()));
+    }
+    let mut end = next_cluster.unwrap_or(source_len);
+    for boundary in [
+        header.path_ptr_pos,
+        header.title_ptr_pos,
+        header.cluster_ptr_pos,
+        header.mime_list_pos,
+        header.checksum_pos,
+        source_len,
+    ] {
+        if boundary > source_len {
+            return Err(ZimError::InvalidHeader(
+                "metadata boundary beyond source".into(),
+            ));
+        }
+        if boundary > start {
+            end = end.min(boundary);
+        }
+    }
+    if end <= start {
+        return Err(ZimError::InvalidHeader("empty cluster range".into()));
+    }
+    Ok(end)
+}

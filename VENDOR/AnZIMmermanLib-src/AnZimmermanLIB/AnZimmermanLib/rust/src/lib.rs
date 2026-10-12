@@ -63,3 +63,5 @@ pub mod model;
 pub use error::ZimError;
 pub use identity::*;
 pub use model::*;
+pub mod cluster_stream;
+pub mod range;

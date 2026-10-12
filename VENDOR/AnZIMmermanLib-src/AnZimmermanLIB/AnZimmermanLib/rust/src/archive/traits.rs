@@ -250,7 +250,7 @@ impl ZimArchive for AnZimmermanZimArchive {
     }
 }
 
-fn score_title(needle: &str, haystack_lower: &str) -> f32 {
+pub(crate) fn score_title(needle: &str, haystack_lower: &str) -> f32 {
     if haystack_lower == needle {
         return 1.0;
     }
@@ -270,7 +270,7 @@ fn score_title(needle: &str, haystack_lower: &str) -> f32 {
     0.0
 }
 
-fn sha256_digest(bytes: &Bytes) -> ContentDigest {
+pub(crate) fn sha256_digest(bytes: &Bytes) -> ContentDigest {
     let mut hasher = Sha256::new();
     hasher.update(bytes);
     let hash = hasher.finalize();
