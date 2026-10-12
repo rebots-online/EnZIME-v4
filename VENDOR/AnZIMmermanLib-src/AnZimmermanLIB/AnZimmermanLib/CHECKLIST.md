@@ -310,3 +310,10 @@ The redirect peek (`0xFFFF`) also never matched because it compared a 4-byte val
 ---
 
 *Last updated: 2026-01-04T18:05:00Z*
+
+## Rust consolidation
+
+- ✅ Adopt existing Rust archive implementation into `rust/`, with library-owned types.
+- ✅ Retain EnZIME adapter and portable shared fixture; canonical 27 tests and adapter 27 tests pass; reader check succeeds (2026-10-12).
+- [ ] Run portable fixture across TypeScript, Python, Go and PHP; propagate applicable fixes based on results.
+- [ ] Verify extended offsets and codec framing against independently produced real archives.

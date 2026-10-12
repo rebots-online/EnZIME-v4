@@ -501,7 +501,8 @@ EnZIME/
 | `crates/application` | complete use cases and orchestration |
 | `crates/storage-sqlite` | migrations and repository implementations |
 | `crates/object-store` | staging, verification, atomic object activation |
-| `crates/zim-anzimmerman` | Current location of AnZimmermanLib's Rust implementation and EnZIME `ZimEngine` integration; ownership and consolidation follow AMD-5 |
+| `crates/zim-anzimmerman` | Thin EnZIME `ZimEngine` adapter to canonical AnZimmermanLib Rust; no independent parser |
+| `VENDOR/AnZIMmermanLib-src/AnZimmermanLIB/AnZimmermanLib/rust` | Canonical AnZimmermanLib Rust implementation alongside its other languages (AMD-5) |
 | `crates/annotations` | selector capture, resolution and revision services |
 | `crates/sidecar` | canonical CBOR, signing, import/export |
 | `crates/retrieval` | lexical/vector retrieval, budgeting and citation map |

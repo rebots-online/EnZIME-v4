@@ -93,6 +93,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
+name = "anzimmerman"
+version = "1.0.0"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "bytes",
+ "ego-tree",
+ "flate2",
+ "futures-core",
+ "futures-util",
+ "hex",
+ "scraper",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "zstd",
+]
+
+[[package]]
 name = "application"
 version = "1.8.21560"
 dependencies = [
@@ -5968,22 +5990,20 @@ dependencies = [
 name = "zim-anzimmerman"
 version = "1.8.21560"
 dependencies = [
- "async-stream",
+ "anzimmerman",
  "async-trait",
  "bytes",
  "domain",
- "ego-tree",
  "flate2",
- "futures-core",
  "futures-util",
  "hex",
  "ports",
- "scraper",
  "serde",
+ "serde_json",
  "sha2",
  "tempfile",
  "tokio",
- "zstd",
+ "toml 0.8.2",
 ]
 
 [[package]]

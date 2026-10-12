@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "VENDOR/AnZIMmermanLib-src/AnZimmermanLIB/AnZimmermanLib/rust",
   "crates/domain", "crates/ports", "crates/application",
   "crates/storage-sqlite", "crates/object-store",
   "crates/zim-anzimmerman", "crates/catalog-openzim",

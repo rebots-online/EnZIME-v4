@@ -255,3 +255,26 @@ incorrect header layout that:
 - `src/services/zimService.ts` — EnZIM application service (same fixes)
 
 **Status:** TypeScript implementation fixed. Python, Go, and PHP implementations still need the same fix applied.
+
+## Canonical Rust implementation (2026-10-12)
+
+`rust/` is the maintained Rust implementation of this multilingual AnZimmermanLib.
+It incorporates the existing EnZIME Rust implementation into the library rather
+than maintaining a second ZIM library. `crates/zim-anzimmerman` in EnZIME is only
+an application-port and identity adapter. Byte parsing, archive I/O, codecs and
+read-only HTML text/link projection live here. That projection is not a security
+sanitizer. This is a local maintained addition; the original vendor lock has not
+been rewritten to claim upstream provenance.
+
+Run `cargo test -p anzimmerman` from the EnZIME workspace. The portable fixture
+`tests/fixtures/rust-consolidation.zim` and adjacent expected JSON preserve MIME
+width, Unicode paths, redirect indices, payloads and SHA256. Regenerate explicitly
+with `cargo run -p anzimmerman --example generate_shared_fixture`; tests never
+rewrite the fixture. Existing TypeScript MIME-width corrections are preserved.
+
+Cross-language follow-up: apply this fixture to Python, Go and PHP before changing
+those readers; verify magic/header offsets, cluster-level decompression and
+redirect bounds against the same bytes. Extended-offset flags and codec framing
+need independent real-archive verification. In particular, historical raw-DEFLATE
+comments are not sufficient evidence to propagate codec assumptions. No parity
+claim for those languages is made by this Rust consolidation.

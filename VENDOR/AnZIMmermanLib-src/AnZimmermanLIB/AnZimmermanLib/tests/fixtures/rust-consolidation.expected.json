@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "key": "A/Café",
+      "mime": "text/html",
+      "payload": "<p>Library fixture</p>",
+      "title": "Café"
+    },
+    {
+      "key": "A/Home",
+      "mime": "",
+      "redirect": "A/Café",
+      "title": "Home"
+    },
+    {
+      "key": "I/pixel.txt",
+      "mime": "text/plain",
+      "payload": "pixel",
+      "title": "pixel.txt"
+    }
+  ],
+  "main_page": "A/Home",
+  "sha256": "4f58d62aa5986ffec605e075f30c17198e1256c956fb5989f968b77333ecb4f6",
+  "uuid": "00000000000000000000000000000000"
+}

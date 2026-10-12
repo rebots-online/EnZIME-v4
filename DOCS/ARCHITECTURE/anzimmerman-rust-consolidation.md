@@ -22,9 +22,9 @@ New file line anchors use `:1` as insertion anchor; existing modules retain publ
 | `model` | R/src/model.rs:1 | Exact library-owned types below |
 | `error::ZimError` | R/src/error.rs:1 | Exact error variants below |
 | `identity::{ArticleKey,EntryKey,ContentDigest,DigestAlgorithm,DigestError}` | R/src/identity.rs:1 | Exact value contracts below |
-| `archive::AnZimmermanZimArchive` | R/src/archive.rs:1 | Move current concrete archive, `Inner` and all file/pointer/directory/cache implementation; implement library `ZimArchive` |
-| `archive::open_archive` | R/src/archive.rs:1 | `pub async fn open_archive(request: &model::ZimOpenRequest) -> Result<AnZimmermanZimArchive, error::ZimError>` |
-| `archive::{ZimLayoutEntry,ZimLayoutSnapshot}` | R/src/archive.rs:1 | Move exact existing fields, replacing domain/port types with library-owned equivalents; preserve `layout_snapshot(&self) -> Result<ZimLayoutSnapshot,ZimError>` |
+| `archive::AnZimmermanZimArchive` | R/src/archive/mod.rs:1 | Public archive wrapper; `Inner` in archive/inner.rs, file helpers in archive/io.rs, layout types/snapshot in archive/layout.rs, library `ZimArchive` implementation in archive/traits.rs |
+| `archive::open_archive` | R/src/archive/mod.rs:1 | `pub async fn open_archive(request: &model::ZimOpenRequest) -> Result<AnZimmermanZimArchive, error::ZimError>` |
+| `archive::{ZimLayoutEntry,ZimLayoutSnapshot}` | R/src/archive/mod.rs:1 | Definitions in R/src/archive/layout.rs, reexported from archive/mod.rs; exact existing fields with library-owned types; preserve `layout_snapshot(&self) -> Result<ZimLayoutSnapshot,ZimError>` |
 | `header::{ZimHeader,Uuid,parse_header,validate_header_offsets}` | R/src/header.rs:1 | Move existing public structs/constants/functions with identical fields/signatures except library error |
 | `directory::{RawEntry,ArticleEntry,RedirectEntry,LinktargetEntry,DeletedEntry,parse_entry}` | R/src/directory.rs:1 | Move current definitions/accessors and `parse_entry(&[u8])->Result<(RawEntry,usize),ZimError>` |
 | `cluster::{decompress_cluster,extract_blob,decompress_cluster_blobs}` | R/src/cluster.rs:1 | Move all existing codec/blob implementations and private helpers; preserve public signatures except error type |
@@ -45,7 +45,7 @@ New file line anchors use `:1` as insertion anchor; existing modules retain publ
 | `convert::projection` | A/src/convert.rs:1 | `pub(crate) fn projection(anzimmerman::sanitize::ArticleProjection)->crate::sanitize::ArticleProjection` |
 | `convert::layout` | A/src/convert.rs:1 | `pub(crate) fn layout(anzimmerman::archive::ZimLayoutSnapshot)->crate::archive::ZimLayoutSnapshot` |
 | compatibility `header`, `directory`, `cluster`, `limits`, `sanitize` | A/src/{header,directory,cluster,limits,sanitize}.rs:1 | Public reexports for unchanged values; wrappers map library errors and projection types; no parsing/decompression bodies |
-| canonical conformance | R/tests/conformance.rs:1 and R/tests/support/mod.rs:1 | Copy existing generic conformance suite/builders, change imports to canonical types; retain adapter suite |
+| canonical conformance | R/tests/conformance.rs:1, R/tests/conformance/{cases_1,cases_2,cases_3}.rs:1 and R/tests/support/mod.rs:1 | Copy existing generic conformance suite/builders, change imports to canonical types; retain adapter suite |
 | adapter parity | A/tests/library_adapter.rs:1 | Same fixture through canonical and adapter APIs; assert document/metadata/layout/error equality |
 | dependency boundary | A/tests/library_boundary.rs:1 | Parse canonical manifest using `toml` dev dependency; assert absence of domain/ports/tauri dependencies and expected adapter path |
 
