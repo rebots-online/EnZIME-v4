@@ -1,5 +1,6 @@
 mod ipc;
 mod state;
+mod reader_resources;
 
 use std::path::PathBuf;
 
@@ -25,7 +26,7 @@ fn resolve_db_path(app: &tauri::App) -> Result<PathBuf, Box<dyn std::error::Erro
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    reader_resources::register(tauri::Builder::default())
         .setup(|app| {
             let db_path = resolve_db_path(app)?;
             let conn = storage_sqlite::open_with_pragmas(&db_path)
@@ -70,6 +71,7 @@ pub fn run() {
             ipc::job_list,
             // Annotation vertical (§14.4 notes contract) — multimodal-notes USP.
             ipc::annotations::annotation_list,
+            reader_resources::annotation_assets_list,
             ipc::annotations::annotation_create,
             ipc::annotations::annotation_update,
             ipc::annotations::annotation_delete,
