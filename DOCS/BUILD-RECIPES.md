@@ -1,5 +1,29 @@
 # EnZIME Reader — Build Recipes
 
+## Current operator command — every platform, one build set
+
+```bash
+bash scripts/build-all.sh
+```
+
+Commit intended source before invocation. The script snapshots that commit,
+stamps one fresh version, prepares the frontend once, and attempts every platform
+with bounded concurrent jobs. Optional `--jobs N` controls concurrency;
+`--source-ref REF` selects a committed source revision. There is no platform-only
+option. Historical recipes below describe the internal commands and prior evidence.
+
+Open `dist/index.html` for the current attempt, including its Windows NSIS row.
+`dist/current-build-manifest.json` contains artifact hashes and lane results.
+Failed targets never link older versions. The complete-build pointer advances
+only when the complete matrix passes; MSI/MSIX require a configured native Windows
+executor. The process exits nonzero for any missing/failed required output.
+
+Android signing uses the existing production keystore and
+`ENZIME_KEYSTORE_PASSWORD`/`ENZIME_KEY_PASSWORD`, with optional
+`ENZIME_KEYSTORE_PATH` and `ENZIME_KEYSTORE_ALIAS`. The native Windows interface is
+`ENZIME_WINDOWS_BUILD_EXECUTOR`; see `DOCS/ARCHITECTURE/unified-build.md`.
+No upload, git commit, push, or CI invocation occurs inside the build script.
+
 Manual builds only. No CI until public-release operator signoff (§26 AMD-4).
 Every recipe below is recorded **after it actually worked**, with the errors
 hit on the way, so the next run does not rediscover them.
