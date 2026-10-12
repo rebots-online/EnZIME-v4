@@ -1,3 +1,4 @@
+import type { SelectorBundle } from "../../services/annotationService";
 import type { JSX, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -10,14 +11,14 @@ export interface AnnotationDrawerProps {
   packId: string;
   articleKey: string;
   title: string;
+  selection?: SelectorBundle;
 }
 
 const COLLAPSED_LABEL = "Notes & media";
 
 /// The reader-page annotation surface: one workspace instance bound to the
 /// currently-open article. All modalities (comment, ink, voice, film) anchor
-/// to the article itself; text-selection anchoring arrives with the
-/// highlighter bridge (ArticleContent iframe postMessage).
+/// to the active article or the validated selector supplied by ArticleContent.
 export function AnnotationDrawer(props: AnnotationDrawerProps): ReactNode {
   const [open, setOpen] = useState(true);
   const [activeTool, setActiveTool] = useState<AnnotationTool>("select");
@@ -60,6 +61,7 @@ export function AnnotationDrawer(props: AnnotationDrawerProps): ReactNode {
     <aside aria-label="Article annotations" style={asideStyle}>
       <AnnotationWorkspaceForArticle
         article={articleContext}
+        selection={props.selection}
         activeTool={activeTool}
         onToolChange={setActiveTool}
         onClose={() => setOpen(false)}
@@ -70,6 +72,7 @@ export function AnnotationDrawer(props: AnnotationDrawerProps): ReactNode {
 
 function AnnotationWorkspaceForArticle(props: {
   article: { packId: string; articleKey: string; title: string };
+  selection?: SelectorBundle;
   activeTool: AnnotationTool;
   onToolChange: (tool: AnnotationTool) => void;
   onClose: () => void;
@@ -81,6 +84,7 @@ function AnnotationWorkspaceForArticle(props: {
   return (
     <AnnotationWorkspace
       article={props.article}
+      selection={props.selection}
       annotations={annotations}
       activeTool={props.activeTool}
       onToolChange={props.onToolChange}

@@ -34,6 +34,7 @@ export function AnnotationPanel({
   onDelete,
   onRestore,
 }: AnnotationPanelProps): JSX.Element {
+  const reduced = useReducedMotion();
   if (annotations.length === 0) {
     return (
       <section
@@ -78,7 +79,7 @@ export function AnnotationPanel({
                 aria-label={`Open annotation ${annotation.annotationId}: ${previewText(
                   annotation,
                 )}`}
-                style={rowButtonStyle(useReducedMotion())}
+                style={rowButtonStyle(reduced)}
               >
                 <span style={previewStyle}>
                   {previewText(annotation) || "Annotation"}

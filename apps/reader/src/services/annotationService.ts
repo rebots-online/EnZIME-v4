@@ -477,15 +477,16 @@ export async function uploadAnnotationAsset(params: {
     durationMs: params.durationMs,
   });
   const chunkSize = begin.maximumChunkBytes;
-  const base64 = base64FromBytes(params.bytes);
-  const chunkCharCount = Math.max(1, Math.floor((chunkSize * 4) / 3));
+  if (!Number.isSafeInteger(chunkSize) || chunkSize <= 0) {
+    throw new Error("The asset service returned an invalid chunk size.");
+  }
   let sequenceNo = 0;
-  for (let offset = 0; offset < base64.length; offset += chunkCharCount) {
+  for (let offset = 0; offset < params.bytes.byteLength; offset += chunkSize) {
     sequenceNo += 1;
     await annotationService.assetChunk({
       uploadToken: begin.uploadToken,
       sequenceNo,
-      bytesBase64: base64.slice(offset, offset + chunkCharCount),
+      bytesBase64: base64FromBytes(params.bytes.subarray(offset, Math.min(offset + chunkSize, params.bytes.byteLength))),
     });
   }
   return annotationService.assetCommit({

@@ -11,7 +11,7 @@
 // The article surface is OPAQUE and quiet (Literata via --ez-font-reader);
 // Aurora Glass is reserved for the chrome (AppShell, toolbar, breadcrumb).
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useReaderStore, setRouteNavigator } from "../../stores/readerStore";
 import {
@@ -23,6 +23,9 @@ import {
 import { BreadcrumbNav } from "./BreadcrumbNav";
 import { ArticleToolbar } from "./ArticleToolbar";
 import { ArticleContent } from "./ArticleContent";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { useAnnotationStore } from "../../stores/annotationStore";
+import type { SelectorBundle } from "../../services/annotationService";
 import { AnnotationDrawer } from "./AnnotationDrawer";
 
 const READER_STYLE_TEXT = `
@@ -240,16 +243,7 @@ const READER_STYLE_TEXT = `
 }
 `;
 
-let readerStyleMounted = false;
-
-function ReaderStyles(): ReactNode {
-  const [mounted, setMounted] = useState(readerStyleMounted);
-  useEffect(() => {
-    if (readerStyleMounted) return;
-    readerStyleMounted = true;
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
+export function ReaderStyles(): ReactNode {
   return <style aria-hidden="true">{READER_STYLE_TEXT}</style>;
 }
 
@@ -259,6 +253,18 @@ export function ReaderView(): ReactNode {
   const routeArticleKey = params.articleKey ?? "";
 
   const navigate = useNavigate();
+  const [selection, setSelection] = useState<SelectorBundle>();
+  const annotations = useAnnotationStore(s => s.annotations);
+  const selectedAnnotationId = useAnnotationStore(s => s.selectedAnnotationId);
+  const resources = useMemo(() => {
+    const base = convertFileSrc("", "enzime-resource").replace(/\/$/, "");
+    const url = new URL(base);
+    return {
+      urlForEntry: (packId: string, entryKey: string) => `${base}/pack/${encodeURIComponent(packId)}/${entryKey.split("/").map(encodeURIComponent).join("/")}`,
+      cspSources: [url.protocol === "http:" || url.protocol === "https:" ? url.origin : "enzime-resource:"],
+    };
+  }, []);
+  useEffect(() => { setSelection(undefined); }, [routePackId, routeArticleKey]);
 
   const currentPackId = useReaderStore((s) => s.currentPackId);
   const currentPackTitle = useReaderStore((s) => s.currentPackTitle);
@@ -316,12 +322,17 @@ export function ReaderView(): ReactNode {
   } else if (state === "populated" && article) {
     pane = (
       <>
-        <ArticleContent article={article} packId={routePackId} />
+        <ArticleContent article={article} packId={routePackId} articleKey={currentArticleKey ?? routeArticleKey}
+          resources={resources} annotations={annotations} selectedAnnotationId={selectedAnnotationId}
+          onSelectionChange={setSelection}
+          onOpenArticle={(key, fragment) => navigate(`/reader/${encodeURIComponent(routePackId)}/${encodeURIComponent(key)}${fragment ? `#${encodeURIComponent(fragment)}` : ""}`)} />
         {currentArticleKey ? (
           <AnnotationDrawer
             packId={routePackId}
             articleKey={currentArticleKey}
             title={article.title}
+            selection={selection}
+            key={`${routePackId}/${currentArticleKey}`}
           />
         ) : null}
       </>

@@ -57,6 +57,7 @@ export function VideoRecorderSelfManaged(
   const [playbackUrl, setPlaybackUrl] = useState<string | undefined>();
   const [errorText, setErrorText] = useState<string | undefined>();
   const bundleRef = useRef<RecorderBundle | null>(null);
+  const uploading = useRef(false);
   const captureRef = useRef<VideoCapture | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<number | undefined>(undefined);
@@ -191,9 +192,11 @@ export function VideoRecorderSelfManaged(
   }, [props, stopTimer]);
 
   const handleCommit = useCallback(async () => {
-    if (!captureRef.current) {
+    if (!captureRef.current || uploading.current) {
       return;
     }
+    uploading.current = true;
+    setErrorText(undefined);
     setState("uploading");
     try {
       await props.onCapture(captureRef.current);
@@ -210,7 +213,7 @@ export function VideoRecorderSelfManaged(
         err instanceof Error ? `Upload failed: ${err.message}` : "Upload failed.",
       );
       setState("review");
-    }
+    } finally { uploading.current = false; }
   }, [playbackUrl, props]);
 
   const handleDiscard = useCallback(() => {

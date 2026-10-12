@@ -1,60 +1,8 @@
-// ArticleContent — the §7.3 rendering boundary.
-//
-// ZIM `rawHtml` is NEVER injected into the privileged React DOM. It is rendered
-// inside a sandboxed <iframe> with NO `allow-scripts` token, so article scripts
-// cannot execute. Internal article links are rewritten parent-side to reader
-// routes and given `target="_top"`; combined with the
-// `allow-top-navigation-by-user-activation` sandbox token, a user-initiated
-// click on an internal link performs a route change (no scripts involved). The
-// iframe is also denied `allow-same-origin`, so it runs at an opaque origin
-// isolated from the parent origin's storage.
-//
-// Defence in depth:
-//   1. Parent-side sanitisation (DOMParser; regex fallback): strips <script>,
-//      <iframe>/<object>/<embed>/<form>/<link>/<base>, all `on*=` attributes,
-//      and `javascript:`/`vbscript:`/`data:text/html` URLs.
-//   2. A strict §18.3 Content-Security-Policy injected as a <meta> inside the
-//      sandbox document (`default-src 'none'`, `connect-src 'none'`, etc.).
-//   3. The `sandbox` token set never grants `allow-scripts` — the decisive
-//      guard. Article CSS still renders via the injected <style>.
-//
-// Note for the architect: article images currently reference relative paths and
-// will not resolve until the Rust layer rewrites them to scoped
-// `enzime-resource://` URLs (§7.3 step 4). The Literata webfont is passed via
-// `font-family` with a serif fallback; hosting it under `enzime-resource:` is a
-// post-M1 task.
-
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ArticleResponse } from "../../services/readerService";
-import { normalizeArticleKey } from "../../stores/readerStore";
+import type { AnnotationRecord, SelectorBundle } from "../../services/annotationService";
+import { buildRendererBridgeScript, resolveZimReference, validateRendererMessage, type ReaderResourceContext } from "./rendererBridge";
 
-/**
- * Sandbox tokens. `allow-scripts` and `allow-same-origin` are deliberately
- * absent: article scripts cannot run and the sandbox doc gets an opaque
- * origin. `allow-top-navigation-by-user-activation` lets a user-initiated click
- * on a rewritten internal link navigate the app route.
- */
-const SANDBOX_TOKENS = "allow-top-navigation-by-user-activation";
-
-/**
- * §18.3 Article sandbox CSP. `style-src 'unsafe-inline'` permits the injected
- * reading CSS plus any inline article styling; every other capability is
- * locked down.
- */
-const ARTICLE_CSP = [
-  "default-src 'none'",
-  "img-src enzime-resource: data:",
-  "media-src enzime-resource:",
-  "style-src 'unsafe-inline' enzime-resource:",
-  "font-src enzime-resource:",
-  "connect-src 'none'",
-  "frame-src 'none'",
-  "object-src 'none'",
-  "form-action 'none'",
-  "base-uri 'none'",
-].join("; ");
-
-/** Quiet, opaque reading surface — Literata via --ez-font-reader (with fallbacks). */
 const READER_CSS = `
   :root { color-scheme: light dark; }
   html, body {
@@ -88,145 +36,141 @@ const READER_CSS = `
   }
 `;
 
-const FORBIDDEN_SELECTORS =
-  "script, iframe, object, embed, form, link, base, meta[http-equiv]";
 
-function stripDangerousAttributes(root: ParentNode): void {
-  root.querySelectorAll("*").forEach((el) => {
-    // Snapshot via Array.from — NamedNodeMap is live.
-    for (const attr of Array.from(el.attributes)) {
-      const name = attr.name.toLowerCase();
-      const value = attr.value.trim();
-      if (name.startsWith("on")) {
-        el.removeAttribute(attr.name);
-        continue;
-      }
-      if (
-        (name === "href" ||
-          name === "src" ||
-          name === "xlink:href" ||
-          name === "action" ||
-          name === "formaction" ||
-          name === "poster") &&
-        /^(javascript:|vbscript:|data:text\/html)/i.test(value)
-      ) {
-        el.setAttribute(attr.name, "#");
-      }
-    }
+function rewriteCss(css: string, articleKey: string, packId: string, resources: ReaderResourceContext): string {
+  // Decode escapes before recognizing URLs. Unsupported/dynamic URL constructs
+  // fail closed; CSP independently denies network and active content.
+  const decoded = css.replace(/\\([0-9a-f]{1,6})\s?/gi, (_, hex: string) => String.fromCodePoint(Math.min(parseInt(hex, 16), 0x10ffff))).replace(/\\(.)/g, "$1").replace(/\/\*[\s\S]*?\*\//g, "");
+  if (/image-set|expression|behavior|binding|[<>]/i.test(decoded)) return "";
+  const withImports = decoded.replace(/@import\s+(?:url\(\s*["']?([^"')]+)["']?\s*\)|"([^"]+)"|'([^']+)')\s*([^;]*);/gi, (_, url: string, quoted: string, single: string, media: string) => {
+    const target = resolveZimReference(articleKey, (url ?? quoted ?? single).trim());
+    if (!target || /[^a-z0-9():.\s,-]/i.test(media)) return "";
+    return `@import "${resources.urlForEntry(packId, target.entryKey)}" ${media};`;
+  });
+  return withImports.replace(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/gi, (_, a: string, b: string, c: string) => {
+    const target = resolveZimReference(articleKey, (a ?? b ?? c ?? "").trim());
+    return target ? `url("${resources.urlForEntry(packId, target.entryKey).replace(/["\\\n\r]/g, "")}")` : 'url("")';
   });
 }
 
-function rewriteInternalLinks(root: ParentNode, packId: string): void {
-  if (!packId) return;
-  root.querySelectorAll("a[href]").forEach((a) => {
-    const href = a.getAttribute("href") ?? "";
-    const key = normalizeArticleKey(href);
-    if (!key) return;
-    a.setAttribute("href", `/reader/${packId}/${key}`);
-    a.setAttribute("target", "_top");
-    a.setAttribute("data-internal", "true");
-    a.setAttribute("rel", "noopener");
-  });
-}
-
-/** Regex fallback used only if DOMParser is unavailable or throws. */
-function regexSanitize(rawHtml: string): string {
-  let html = rawHtml;
-  html = html.replace(
-    /<\s*(script|iframe|object|embed|form|link|base)[\s\S]*?<\/\s*\1\s*>/gi,
-    "",
-  );
-  html = html.replace(
-    /<\s*(script|iframe|object|embed|form|link|base|meta)[^>]*>/gi,
-    "",
-  );
-  html = html.replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
-  html = html.replace(
-    /(href|src|xlink:href|action)\s*=\s*("javascript:[^"]*"|'javascript:[^']*'|javascript:[^\s>]+)/gi,
-    '$1="#"',
-  );
-  return html;
-}
-
-function buildSandboxedDoc(rawHtml: string, packId: string): string {
-  const hasDomParser =
-    typeof DOMParser !== "undefined" && typeof document !== "undefined";
-
-  if (hasDomParser) {
-    try {
-      const doc = new DOMParser().parseFromString(rawHtml, "text/html");
-      doc.querySelectorAll(FORBIDDEN_SELECTORS).forEach((el) => el.remove());
-      stripDangerousAttributes(doc);
-      rewriteInternalLinks(doc, packId);
-
-      const head = doc.querySelector("head");
-      if (head) {
-        head
-          .querySelectorAll("meta[http-equiv], meta[charset]")
-          .forEach((m) => m.remove());
-        const csp = doc.createElement("meta");
-        csp.setAttribute("http-equiv", "Content-Security-Policy");
-        csp.setAttribute("content", ARTICLE_CSP);
-        const charset = doc.createElement("meta");
-        charset.setAttribute("charset", "utf-8");
-        head.prepend(csp);
-        head.insertBefore(charset, csp);
-        const style = doc.createElement("style");
-        style.setAttribute("data-ez-reader", "true");
-        style.textContent = READER_CSS;
-        head.appendChild(style);
+export function buildSandboxedDoc(rawHtml: string, packId: string, articleKey: string, channel: string, nonce: string, resources: ReaderResourceContext): string {
+  try {
+    const doc = new DOMParser().parseFromString(rawHtml, "text/html");
+    doc.querySelectorAll("script,iframe,frame,frameset,object,embed,form,base,meta,svg,math,template,portal,input,button,textarea,select,noscript").forEach(el => el.remove());
+    const passiveData = (value: string) => value.length <= 1024 * 1024 && /^data:image\/(png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(value);
+    const resource = (value: string, el: Element): string | undefined => {
+      if (passiveData(value) && el.tagName === "IMG") return value;
+      const target = resolveZimReference(articleKey, value);
+      if (!target) return;
+      el.setAttribute("data-ez-resource", target.entryKey);
+      return resources.urlForEntry(packId, target.entryKey) + (target.fragment ? `#${encodeURIComponent(target.fragment)}` : "");
+    };
+    const safeAttrs = new Set("id class title lang dir role hidden alt width height colspan rowspan scope datetime controls preload muted loop loading decoding type rel style href src srcset poster".split(" "));
+    for (const el of Array.from(doc.querySelectorAll("*"))) {
+      for (const attr of Array.from(el.attributes)) {
+        const name = attr.name.toLowerCase();
+        if (!safeAttrs.has(name) && !name.startsWith("aria-")) el.removeAttribute(attr.name);
       }
-      return "<!DOCTYPE html>" + doc.documentElement.outerHTML;
-    } catch {
-      // fall through to regex path
+      if (el.tagName === "LINK" && el.getAttribute("rel")?.toLowerCase() !== "stylesheet") { el.remove(); continue; }
+      const href = el.getAttribute("href");
+      if (href !== null) {
+        el.removeAttribute("href");
+        if (el.tagName === "A") {
+          const target = resolveZimReference(articleKey, href);
+          if (target) {
+            el.setAttribute("href", "#"); el.setAttribute("data-ez-entry", target.entryKey);
+            if (target.fragment !== undefined) el.setAttribute("data-ez-fragment", target.fragment);
+          }
+        } else if (el.tagName === "LINK") {
+          const url = resource(href, el); if (url) el.setAttribute("href", url); else el.remove();
+        }
+      }
+      for (const name of ["src", "poster"]) {
+        const value = el.getAttribute(name); if (value === null) continue;
+        const url = resource(value, el); if (url) el.setAttribute(name, url); else el.removeAttribute(name);
+      }
+      const srcset = el.getAttribute("srcset");
+      if (srcset !== null) {
+        // Data URLs are deliberately excluded from srcset's comma grammar.
+        const sources = srcset.split(",").map(candidate => {
+          const [url, descriptor, ...extra] = candidate.trim().split(/\s+/);
+          if (!url || extra.length || (descriptor && !/^\d+(?:\.\d+)?[wx]$/.test(descriptor))) return "";
+          const rewritten = resource(url, el);
+          return rewritten ? `${rewritten}${descriptor ? ` ${descriptor}` : ""}` : "";
+        }).filter(Boolean);
+        if (sources.length) el.setAttribute("srcset", sources.join(", ")); else el.removeAttribute("srcset");
+      }
+      const style = el.getAttribute("style");
+      if (style !== null) el.setAttribute("style", rewriteCss(style, articleKey, packId, resources));
+      if (el.tagName === "STYLE") el.textContent = rewriteCss(el.textContent ?? "", articleKey, packId, resources);
     }
+    const sources = resources.cspSources.filter(source => /^(?:enzime-resource:|https?:\/\/[a-z0-9.-]+(?::[0-9]+)?)$/i.test(source)).join(" ");
+    const policy = `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline' ${sources}; img-src ${sources} data:; media-src ${sources}; font-src ${sources}; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'`;
+    const csp = doc.createElement("meta"); csp.httpEquiv = "Content-Security-Policy"; csp.content = policy; doc.head.prepend(csp);
+    const style = doc.createElement("style"); style.textContent = READER_CSS; doc.head.append(style);
+    const bridge = doc.createElement("script"); bridge.setAttribute("nonce", nonce); bridge.dataset.ezBridge = "true";
+    bridge.textContent = buildRendererBridgeScript(channel, { packId, articleKey }); doc.body.append(bridge);
+    return "<!DOCTYPE html>" + doc.documentElement.outerHTML;
+  } catch {
+    // No regex sanitizer: a parser failure must never enable original markup.
+    return `<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'"></head><body><p>Article could not be rendered safely.</p></body></html>`;
   }
-
-  const sanitized = regexSanitize(rawHtml);
-  const head = `<meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${ARTICLE_CSP}"><style>${READER_CSS}</style>`;
-  return `<!DOCTYPE html><html><head>${head}</head><body>${sanitized}</body></html>`;
 }
 
 export interface ArticleContentProps {
   readonly article: ArticleResponse;
   readonly packId: string;
+  readonly articleKey: string;
+  readonly resources: ReaderResourceContext;
+  readonly annotations: readonly AnnotationRecord[];
+  readonly onSelectionChange: (selection?: SelectorBundle) => void;
+  readonly onOpenArticle: (articleKey: string, fragment?: string) => void;
+  readonly selectedAnnotationId?: string;
 }
 
-export function ArticleContent({
-  article,
-  packId,
-}: ArticleContentProps): ReactNode {
-  const sandboxedDoc = useMemo(
-    () => buildSandboxedDoc(article.rawHtml, packId),
-    [article.rawHtml, packId],
-  );
-
-  const isHtml =
-    article.mimeType.length === 0 || /html|xml|xhtml/i.test(article.mimeType);
-
-  if (!isHtml) {
-    // Non-HTML payload — present as preformatted text, never as markup.
-    return (
-      <pre className="reader-article__fallback" role="article">
-        {article.rawHtml}
-      </pre>
-    );
+export function ArticleContent(props: ArticleContentProps): ReactNode {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [resourceError, setResourceError] = useState<string>();
+  const [placement, setPlacement] = useState<Record<string, "resolved" | "ambiguous" | "orphaned">>({});
+  const session = useMemo(() => ({ channel: crypto.randomUUID(), nonce: crypto.randomUUID() }), [props.packId, props.articleKey, props.article.rawHtml]);
+  const doc = useMemo(() => buildSandboxedDoc(props.article.rawHtml, props.packId, props.articleKey, session.channel, session.nonce, props.resources), [props.article.rawHtml, props.packId, props.articleKey, session, props.resources]);
+  const latest = useRef(props); latest.current = props;
+  function sendAnnotations() {
+    const annotations = latest.current.annotations.filter(record => record.selector.article.packId === props.packId && record.selector.article.articleKey === props.articleKey && !!record.selector.textQuote?.exact).slice(0, 2000).map(record => ({ annotationId: record.annotationId, selector: record.selector, colorToken: record.style.colorToken }));
+    frame.current?.contentWindow?.postMessage({ kind: "annotations_changed", annotations, schemaVersion: 1, channel: session.channel }, "*");
   }
-
-  return (
-    <div className="reader-article">
-      {article.internalLinks.length > 0 ? (
-        <span className="reader-sr-only">
-          Article contains {article.internalLinks.length} internal link
-          {article.internalLinks.length === 1 ? "" : "s"}.
-        </span>
-      ) : null}
-      <iframe
-        className="reader-article__frame"
-        sandbox={SANDBOX_TOKENS}
-        srcDoc={sandboxedDoc}
-        title={article.title}
-      />
-    </div>
-  );
+  useEffect(() => {
+    setResourceError(undefined); setPlacement({}); latest.current.onSelectionChange(undefined);
+    const receive = (event: MessageEvent) => {
+      if (event.source !== frame.current?.contentWindow) return;
+      const message = validateRendererMessage(event.data, session.channel, { packId: props.packId, articleKey: props.articleKey });
+      if (!message) return;
+      if (message.kind === "ready") {
+        sendAnnotations();
+        let fragment = window.location.hash.slice(1);
+        try { fragment = decodeURIComponent(fragment); } catch { fragment = ""; }
+        if (fragment.length <= 4096) frame.current?.contentWindow?.postMessage({ kind: "focus_fragment", fragment, schemaVersion: 1, channel: session.channel }, "*");
+      }
+      if (message.kind === "selection_changed") latest.current.onSelectionChange(message.selector);
+      if (message.kind === "open_article") latest.current.onOpenArticle(message.articleKey, message.fragment);
+      if (message.kind === "annotation_resolution" && latest.current.annotations.some(record => record.annotationId === message.annotationId && record.selector.article.packId === props.packId && record.selector.article.articleKey === props.articleKey)) {
+        setPlacement(current => current[message.annotationId] === message.state ? current : { ...current, [message.annotationId]: message.state });
+      }
+      if (message.kind === "resource_failed") setResourceError(message.reason);
+    };
+    window.addEventListener("message", receive); return () => window.removeEventListener("message", receive);
+  }, [session, props.packId, props.articleKey]);
+  useEffect(() => { sendAnnotations(); }, [props.annotations, session]);
+  useEffect(() => {
+    if (props.selectedAnnotationId) frame.current?.contentWindow?.postMessage({ kind: "focus_annotation", annotationId: props.selectedAnnotationId, schemaVersion: 1, channel: session.channel }, "*");
+  }, [props.selectedAnnotationId, session]);
+  if (props.article.mimeType && !/html|xml|xhtml/i.test(props.article.mimeType)) return <pre className="reader-article__fallback" role="article">{props.article.rawHtml}</pre>;
+  const active = props.annotations.filter(record => record.selector.article.packId === props.packId && record.selector.article.articleKey === props.articleKey);
+  const ambiguous = active.filter(record => placement[record.annotationId] === "ambiguous").length;
+  const orphaned = active.filter(record => placement[record.annotationId] === "orphaned").length;
+  return <div className="reader-article">
+    {ambiguous || orphaned ? <p role="status">Annotation placement: {ambiguous} ambiguous, {orphaned} unavailable in this article. Saved annotations are unchanged.</p> : null}
+    {resourceError ? <p role="status">{resourceError}</p> : null}
+    <iframe ref={frame} key={session.channel} className="reader-article__frame" sandbox="allow-scripts" srcDoc={doc} title={props.article.title} />
+  </div>;
 }

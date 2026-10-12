@@ -139,6 +139,7 @@ export interface AnnotationStoreState {
     annotationId: Ulid,
     bytes: Uint8Array,
     durationMs: number,
+    mimeType: string,
   ) => Promise<AnnotationRecord | undefined>;
   uploadVideo: (
     annotationId: Ulid,
@@ -253,13 +254,13 @@ export const useAnnotationStore = create<AnnotationStoreState>((set, get) => ({
       const created = await annotationService.create(draft);
       // Local apply + one cheap tree refresh (notebook counts changed);
       // the previous 4-command refetch per mutation is gone.
-      const notebooks = await annotationService.notebookTree();
       set((current) => ({
         annotations: upsertAnnotation(current.annotations, created),
-        notebooks,
         status: { kind: "loaded" },
         mutation: { kind: "idle" },
       }));
+      // A committed annotation remains successful even if count refresh fails.
+      void annotationService.notebookTree().then(notebooks => set({ notebooks })).catch(() => undefined);
       return created;
     } catch (error) {
       set({ mutation: classifyMutation(error, "create") });
@@ -292,14 +293,13 @@ export const useAnnotationStore = create<AnnotationStoreState>((set, get) => ({
     set({ mutation: { kind: "busy", operation: "delete" } });
     try {
       await annotationService.delete(annotationId, expectedRevision);
-      const notebooks = await annotationService.notebookTree();
       set((current) => ({
         annotations: current.annotations.filter(
           (annotation) => annotation.annotationId !== annotationId,
         ),
-        notebooks,
         mutation: { kind: "idle" },
       }));
+      void annotationService.notebookTree().then(notebooks => set({ notebooks })).catch(() => undefined);
       return true;
     } catch (error) {
       set({ mutation: classifyMutation(error, "delete") });
@@ -311,12 +311,11 @@ export const useAnnotationStore = create<AnnotationStoreState>((set, get) => ({
     set({ mutation: { kind: "busy", operation: "restore" } });
     try {
       const restored = await annotationService.restore(annotationId);
-      const notebooks = await annotationService.notebookTree();
       set((current) => ({
         annotations: upsertAnnotation(current.annotations, restored),
-        notebooks,
         mutation: { kind: "idle" },
       }));
+      void annotationService.notebookTree().then(notebooks => set({ notebooks })).catch(() => undefined);
       return restored;
     } catch (error) {
       set({ mutation: classifyMutation(error, "restore") });
@@ -324,7 +323,7 @@ export const useAnnotationStore = create<AnnotationStoreState>((set, get) => ({
     }
   },
 
-  async uploadInk(annotationId, svg, colorToken, strokeWidth) {
+  async uploadInk(annotationId, svg, _colorToken, _strokeWidth) {
     set({ mutation: { kind: "busy", operation: "asset_upload" } });
     try {
       const bytes = new TextEncoder().encode(svg);
@@ -336,62 +335,33 @@ export const useAnnotationStore = create<AnnotationStoreState>((set, get) => ({
         bytes,
         sha256Hex: digest,
       });
-      const updated = await annotationService.update(record.annotationId, record.revision, {
-        annotationType: record.annotationType,
-        selector: record.selector,
-        bodyText: record.bodyText,
-        style: {
-          colorToken,
-          emphasis: record.style.emphasis,
-          strokeWidth,
-        },
-        notebookId: record.notebookId,
-        tagIds: record.tags.map((tag) => tag.tagId),
-        sidecarLayerId: record.sidecarLayerId,
-      });
-      const lists = await refreshLists();
-      set({
-        annotations: lists.annotations,
-        notebooks: lists.notebooks,
-        tags: lists.tags,
-        layers: lists.layers,
-        status:
-          applyFilter(lists.annotations, get().filter).length === 0
-            ? { kind: "empty" }
-            : { kind: "loaded" },
-        mutation: { kind: "idle" },
-      });
-      return updated;
+      // Style is already part of the created draft. The committed asset is
+      // authoritative; an auxiliary refresh cannot turn it into upload failure.
+      set(current => ({ annotations: upsertAnnotation(current.annotations, record), status: { kind: "loaded" }, mutation: { kind: "idle" } }));
+      return record;
     } catch (error) {
       set({ mutation: classifyMutation(error, "asset_upload") });
       return undefined;
     }
   },
 
-  async uploadVoice(annotationId, bytes, durationMs) {
+  async uploadVoice(annotationId, bytes, durationMs, mimeType) {
+    if (!/^audio\/(ogg|webm);\s*codecs=opus$/i.test(mimeType) || bytes.byteLength > 32 * 1024 * 1024) {
+      set({ mutation: classifyMutation(new Error("Unsupported Opus MIME or voice capture exceeds 32 MiB."), "asset_upload") });
+      return undefined;
+    }
     set({ mutation: { kind: "busy", operation: "asset_upload" } });
     try {
       const digest = await sha256Hex(bytes);
       const record = await uploadAnnotationAsset({
         annotationId,
         assetKind: "voice_opus",
-        mimeType: "audio/ogg",
+        mimeType,
         bytes,
         sha256Hex: digest,
         durationMs,
       });
-      const lists = await refreshLists();
-      set({
-        annotations: lists.annotations,
-        notebooks: lists.notebooks,
-        tags: lists.tags,
-        layers: lists.layers,
-        status:
-          applyFilter(lists.annotations, get().filter).length === 0
-            ? { kind: "empty" }
-            : { kind: "loaded" },
-        mutation: { kind: "idle" },
-      });
+      set(current => ({ annotations: upsertAnnotation(current.annotations, record), status: { kind: "loaded" }, mutation: { kind: "idle" } }));
       return record;
     } catch (error) {
       set({ mutation: classifyMutation(error, "asset_upload") });

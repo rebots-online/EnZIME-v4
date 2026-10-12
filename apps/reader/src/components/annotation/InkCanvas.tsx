@@ -20,7 +20,7 @@ export interface InkCanvasProps {
   enabled: boolean;
   colorToken: string;
   strokeWidth: number;
-  onCommitSvg: (svg: string) => void;
+  onCommitSvg: (svg: string) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -50,6 +50,9 @@ export function InkCanvas({
 }: InkCanvasProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [strokes, setStrokes] = useState<InkStroke[]>([]);
+  const saving = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
   // In-flight stroke lives in a ref and renders through direct canvas 2D
   // ops: a state update per pointermove re-rendered the whole component and
   // rebuilt the full SVG path per sample (O(n²) per stroke at 60-120 Hz).
@@ -101,7 +104,7 @@ export function InkCanvas({
 
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      if (!enabled) {
+      if (!enabled || saving.current || error) {
         return;
       }
       event.preventDefault();
@@ -121,7 +124,7 @@ export function InkCanvas({
       }
       drawSegment(liveCanvasRef.current, point, point, strokeWidth, resolveColorToken(colorToken));
     },
-    [colorToken, enabled, strokeWidth, toPoint],
+    [colorToken, enabled, strokeWidth, toPoint, error],
   );
 
   const handlePointerMove = useCallback(
@@ -204,14 +207,15 @@ export function InkCanvas({
     }
   }, []);
 
-  const commit = useCallback(() => {
-    if (strokes.length === 0) {
-      return;
-    }
+  const commit = useCallback(async () => {
+    if (!strokes.length || saving.current) return;
+    saving.current = true; setBusy(true);
     const svg = renderSvg(strokes, dimensions.width, dimensions.height);
-    onCommitSvg(svg);
-    setStrokes([]);
-    activeRef.current = null;
+    try {
+      await onCommitSvg(svg);
+      setStrokes([]); activeRef.current = null; setError(undefined);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Drawing could not be saved. Retry or discard."); }
+    finally { saving.current = false; setBusy(false); }
   }, [dimensions.height, dimensions.width, onCommitSvg, strokes]);
 
   const liveStrokes = strokes;
@@ -282,11 +286,12 @@ export function InkCanvas({
       >
         {description}
       </p>
+      {error ? <p role="alert">{error}</p> : null}
       <footer style={footerStyle}>
         <EzIconButton
           ariaLabel="Undo last stroke"
           onClick={undo}
-          disabled={strokes.length === 0}
+          disabled={busy || !!error || strokes.length === 0}
           title="Undo"
         >
           ↺
@@ -294,7 +299,7 @@ export function InkCanvas({
         <EzIconButton
           ariaLabel="Clear all strokes"
           onClick={clear}
-          disabled={strokes.length === 0}
+          disabled={busy || !!error || strokes.length === 0}
           title="Clear"
         >
           ✕
@@ -302,6 +307,7 @@ export function InkCanvas({
         <span style={{ flex: 1 }} />
         <EzButton
           variant="ghost"
+          disabled={busy}
           onClick={onCancel}
           ariaLabel="Cancel ink annotation"
         >
@@ -309,7 +315,7 @@ export function InkCanvas({
         </EzButton>
         <EzButton
           onClick={commit}
-          disabled={strokes.length === 0}
+          disabled={busy || strokes.length === 0}
           ariaLabel="Save ink annotation"
         >
           Save ink
