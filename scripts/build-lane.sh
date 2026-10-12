@@ -128,12 +128,12 @@ try:
         run(['cargo', 'tauri', 'build', '--bundles', 'deb,appimage,rpm', '--config', config, '--', '--locked'])
         bundle = target / 'release/bundle'
         deb = one(bundle / 'deb', '*.deb')
-        for field, expected in [('Package', 'enzime-reader'), ('Version', version), ('Architecture', 'amd64')]:
+        for field, expected in [('Package', 'en-zime-reader'), ('Version', version), ('Architecture', 'amd64')]:
             if run(['dpkg-deb', '--field', deb, field], capture=True) != expected:
                 fail(f'Debian {field} mismatch')
         rpm = one(bundle / 'rpm', '*.rpm')
         actual = run(['rpm', '-qp', '--queryformat', '%{NAME}\n%{VERSION}\n%{ARCH}', rpm], capture=True)
-        if actual.splitlines() != ['enzime-reader', version, 'x86_64']:
+        if actual.splitlines() != ['en-zime-reader', version, 'x86_64']:
             fail('RPM identity/version/architecture mismatch')
         appimage = one(bundle / 'appimage', '*.AppImage')
         if not os.access(appimage, os.X_OK):

@@ -42,7 +42,7 @@ New-file line anchors are line 1 until implementation freezes exact positions.
 
 ## Required matrix and concrete recipes
 
-All names start `enzime-reader-v<VERSION>-`. Collection reads only that lane's empty-at-start output and verifies exactly one matching result. Unstamped raw tool output stays inside target workspaces.
+All names start `enzime-reader-v<VERSION>-`. Collection reads only that lane's empty-at-start output and verifies exactly one matching result. Unstamped raw tool output stays inside target workspaces. The existing Tauri product name `EnZIME Reader` yields internal Debian/RPM package identity `en-zime-reader`; validate that exact identity while retaining the established external artifact filename prefix.
 
 | Artifact ID | Qualifier | Recipe / verification |
 |---|---|---|
