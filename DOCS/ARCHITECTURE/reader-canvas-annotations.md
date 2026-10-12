@@ -1,0 +1,166 @@
+# Reader canvas annotation integration
+
+Status: proposed implementation contract, 2026-10-12. No implementation or verification is claimed by this document. Authority: master architecture §§7.3, 9, 18.3; user requirement to download via DynDon and annotate in the reader. Preserve the current reader and annotation UI. This is an integration repair, not a new visual design.
+
+Archive parsing belongs exclusively to the canonical AnZimmermanLib Rust library. `crates/zim-anzimmerman` remains its application adapter. This feature does not introduce a parser or download whole archives.
+
+## Scope and boundaries
+
+The privileged React shell owns annotation persistence and routing. The article remains in an opaque-origin iframe with no Tauri API, same-origin permission, top navigation, forms, popups or downloads. A first-party bridge implements the already specified `RendererMessageV1`. Original archive scripts never execute. Highlight marks appear on the article canvas; existing comments, ink and voice tools remain in the adjacent annotation workspace. This contract does not misrepresent the existing separate ink drawing panel as a freehand overlay on article pixels.
+
+Remote downloads remain native/backend work; CORS is not a reason to weaken the article sandbox. Parent supplies a scoped resource URL builder. It must resolve only installed/registered packs and permitted archive entries. Backend resource delivery must work through the canonical library and bounded DynDon cluster store, with explicit missing-cluster errors. No filesystem paths appear in renderer messages.
+
+## Exact entity table
+
+Line numbers below are observed anchors for existing entities; new files start at line 1. Edits may move anchors, names remain binding.
+
+| Entity | Target | Role and exact contract |
+|---|---|---|
+| `ReaderResourceContext` | `apps/reader/src/routes/reader/rendererBridge.ts:1` (new) | `{ urlForEntry: (packId: string, entryKey: string) => string; cspSources: readonly string[] }`; trusted parent injection, never populated from article content |
+| `RendererMessageV1` | same new file | Discriminated union with `schemaVersion: 1`, `channel: string`; kinds `ready`, `open_article` (`articleKey`, optional `fragment`), `selection_changed` (`selector?: SelectorBundle`), `resource_failed` (`entryKey`, `reason`), `scroll_position` (`scrollAnchor`, `progressFraction`) |
+| `RendererParentMessageV1` | same | Version/channel plus kinds `annotations_changed` (`annotations: readonly RendererHighlight[]`), `focus_annotation` (`annotationId: string`) |
+| `RendererHighlight` | same | `{ annotationId: string; selector: SelectorBundle; colorToken: string }`; filtered to active article in parent |
+| `resolveZimReference` | same | `(articleKey: string, reference: string) => { entryKey: string; fragment?: string } \| undefined`; reject external/active schemes, credentials, backslashes and root escape; support archive namespace, nested paths, Unicode and fragment-only links |
+| `validateRendererMessage` | same | `(value: unknown, channel: string, article: { packId: string; articleKey: string }) => RendererMessageV1 \| undefined`; no coercion, bounded strings and safe integer offsets, active article binding |
+| `buildRendererBridgeScript` | same | `(channel: string, article: { packId: string; articleKey: string }) => string`; static audited first-party script with JSON-serialized configuration escaped for script terminators |
+| `buildSandboxedDoc` | `apps/reader/src/routes/reader/ArticleContent.tsx:151` | Export for tests; `(rawHtml: string, packId: string, articleKey: string, channel: string, nonce: string, resources: ReaderResourceContext) => string` |
+| `ArticleContentProps` | same:190 | Existing `article`, `packId`; add required `articleKey`, `resources: ReaderResourceContext`, `annotations: readonly AnnotationRecord[]`, `onSelectionChange: (selection?: SelectorBundle) => void`, `onOpenArticle: (articleKey: string, fragment?: string) => void`; optional `selectedAnnotationId: string` |
+| `ReaderView` | `apps/reader/src/routes/reader/ReaderView.tsx:256` | Own selection per pack/article, pass renderer callbacks and actual parent backend resource context; pass selected annotation ID and article-filtered records |
+| `ReaderStyles` | same:245 | Pure stylesheet component; remove module-level mounted flag so remount never loses CSS |
+| `AnnotationDrawerProps` | `apps/reader/src/routes/reader/AnnotationDrawer.tsx:9` | Add `selection?: SelectorBundle`; forward through `AnnotationWorkspaceForArticle` to existing workspace selection prop |
+| `handleCreateComment`, `handleCreateHighlight`, `handleCommitInk`, `handleVoiceCapture`, `handleFilmCapture` | `apps/reader/src/components/annotation/AnnotationWorkspace.tsx:163` | Await real persistence; no success callbacks or clearing before committed success; disable duplicate submits; retain failed media bytes/strokes and committed annotation ID for retry |
+| `InkCanvasProps.onCommitSvg` | `apps/reader/src/components/annotation/InkCanvas.tsx:19` | Change to `(svg: string) => Promise<void>`; local busy/error state; clear strokes only on resolution, retain on rejection |
+| `VoiceCapture` | `apps/reader/src/components/annotation/VoiceRecorder.tsx:30` | Export `{ bytes: Uint8Array; durationMs: number; mimeType: string }`; used by captureRef and `VoiceRecorderSelfManagedProps.onCapture: (capture: VoiceCapture) => Promise<void>` |
+| `useAnnotationStore.create` | `apps/reader/src/stores/annotationStore.ts:250` | Preserve existing return type; committed create is applied and returned before optional notebook refresh; refresh error cannot convert committed create to failure |
+| `useAnnotationStore.uploadVoice` | same:371 and its interface declaration | `(annotationId: Ulid, bytes: Uint8Array, durationMs: number, mimeType: string) => Promise<AnnotationRecord \| undefined>`; transmit actual supported MIME through existing `uploadAnnotationAsset` |
+| `AnnotationPanel` | `apps/reader/src/components/annotation/AnnotationPanel.tsx:30` | Call `useReducedMotion` once at component top, before empty return; do not invoke hooks inside changing annotation list |
+| `reader-canvas.test.tsx` | `apps/reader/src/routes/reader/reader-canvas.test.tsx:1` (new) | DOM integration/sanitizer/message/path/selection fixtures |
+| `annotation-save.test.tsx` | `apps/reader/src/components/annotation/annotation-save.test.tsx:1` (new) | Save failures, retry, hooks, MIME and media retained-state integration tests |
+| `vitest.config.ts` | `apps/reader/vitest.config.ts:1` (new) | Explicit jsdom test environment and local test includes; new infrastructure, not an existing project runner |
+
+Imports reuse `SelectorBundle`, `AnnotationRecord`, `AnnotationDraft`, and `Ulid` from `services/annotationService.ts`. Do not create conflicting annotation wire types.
+
+## Isolation and resource rules
+
+1. Generate independent cryptographically random nonce and channel per article document. React rerenders or annotation updates do not recreate the document; a new article does. Ignore old-document messages after navigation.
+2. DOMParser sanitation removes scripts, frames, objects, embeds, forms, base, refresh/CSP meta, all event attributes, original nonce attributes, active URLs, arbitrary targets and non-stylesheet links. Do not enable scripting on the old regex fallback: parser failure produces a safe plain-text error document.
+3. Insert CSP before article content, preserving §18.3 restrictions and adding only `script-src 'nonce-<generated>'` for the injected first-party bridge. `sandbox="allow-scripts"` only. Never add `allow-same-origin` or `allow-top-navigation-by-user-activation`.
+4. Resource URL/CSP sources come from trusted `ReaderResourceContext`. A protocol mapping to HTTP on a platform must use an exact scoped source, never `http:`/`https:` wildcards. Strip remote images/media/CSS URLs. Permit bounded passive image data URLs only; reject SVG data URLs unless separately sanitized. Rewrite src, srcset, poster and stylesheet href plus CSS imports/url references; backend stylesheet rewriting may own CSS parsing, but must be specified and verified before claiming resource support. Inline CSS cannot weaken CSP.
+5. Internal links retain data entry keys and optional fragments; prevent default navigation in bridge, send validated request to parent. Fragment-only links scroll locally. External links cannot navigate iframe or shell; adding an external-link UX is outside this repair.
+6. Parent accepts only messages whose source is the current iframe window, exact channel and schema match. Origin is opaque `null`, which is insufficient authentication alone. Bridge accepts parent messages only from `window.parent` with matching channel/schema. Do not send arbitrary invoke names, paths, or HTML in the protocol.
+7. Bound article selection to 16,384 UTF-16 code units, context to 128 each side, entry keys to 4,096 characters, error reasons to 512, and parent highlight updates to 2,000 records. Reject nonfinite/fractional/negative offsets, inverted ranges, wrong article identity, unknown fields capable of altering authority and oversized payloads.
+
+## Selection and highlights
+
+Build a normalized text stream from article text nodes excluding script/style/hidden bridge nodes. Collapse whitespace consistently and retain a mapping from normalized UTF-16 offsets back to DOM node offsets. Capture a selection spanning nodes against that mapping; store exact quote, prefix/suffix, normalized offsets and active article identity. Both capture and replay use the same normalization. Emoji/surrogate pairs must not be split.
+
+Replay first checks offsets against exact quote; otherwise resolve quote plus prefix/suffix. A unique match may render; zero/multiple matches produce unresolved/ambiguous state, never silently select the first occurrence. Use controlled DOM Range marks with fixed allowlisted colors, not raw HTML. Reapplying marks is idempotent: unwrap previous marks, normalize text nodes and rebuild mapping. An annotation update must not reset scroll or clear the user's pending selection. Deletion removes its marks. Clicking a list entry focuses the corresponding mark. Durable records are loaded from the existing store after restart, not reconstructed from DOM marks.
+
+## Save and retry semantics
+
+Creation and asset attachment are distinct committed stages. On successful create, remember its annotation ID for the current draft immediately. Subsequent upload retry reuses that ID; it must not create another empty annotation. Lock edits while upload is in flight. A user modifying a failed draft starts a new operation only after explicit discard/reset of the pending attachment. Failures retain the comment/drawing/recording until successful persistence or explicit discard. This is in-session failure retention; unsaved capture recovery across process termination is not claimed.
+
+Store helpers currently return undefined on failure. Workspace callers must turn that result into a rejected capture promise, because the recorder clears bytes on promise resolution. Existing mutation error UI remains visible. Do not conflate optional notebook-count refresh failure with unsuccessful annotation creation. Apply the same success boundary to ink/voice/video upload and preserve committed record results if a later list refresh fails.
+
+Voice uses an explicitly supported Opus recording MIME selected with `MediaRecorder.isTypeSupported`: prefer `audio/ogg;codecs=opus`, then `audio/webm;codecs=opus`. Pass the recorder's actual MIME with captured bytes. If neither is available, show an unsupported-recording state; do not silently label another codec Opus. Keep existing `voice_opus` asset kind because Opus in Ogg/WebM is its content, with the true container MIME recorded. Native asset handling must accept these MIME forms or return a clear unsupported error. Recording must stop before exceeding the backend 32 MiB asset limit; chunk accounting bounds retained capture bytes. Saved playback requires durable asset resource delivery and is a native integration dependency; transient blob playback alone is insufficient evidence.
+
+## Self-contained checklist insertion text
+
+### RC-01 Trusted renderer bridge and canvas highlights
+
+**Depends:** parent-approved native `ReaderResourceContext` provider backed by AnZimmermanLib/DynDon; this document's entities. No implementation may guess a backend URL or create a second archive parser.
+
+**Files:** `apps/reader/src/routes/reader/rendererBridge.ts`, `ArticleContent.tsx`, `ReaderView.tsx`, `AnnotationDrawer.tsx`, `reader-canvas.test.tsx`; `apps/reader/vitest.config.ts`, `apps/reader/package.json`, root `pnpm-lock.yaml`.
+
+**Do:** Implement the exact entities, isolation/resource rules and normalized capture/replay above. Reuse current reader/annotation layout and existing store/service types. Remove ReaderStyles mount flag. Add `vitest`, `jsdom`, `@testing-library/react` as development test dependencies using the existing pnpm workspace; add `test:reader` script `vitest run --config vitest.config.ts`. Tests exercise exported functions and mounted components with mocked native services; no network, live archive, generated binary or device required. DOM tests must not claim browser sandbox enforcement.
+
+**Verify:** `pnpm --dir apps/reader exec tsc --noEmit`; `pnpm --dir apps/reader run test:reader`.
+
+**Accept:** TypeScript command exits 0; deterministic tests pass for nested/Unicode/fragment paths, hostile URLs and parser failure; source/channel/article mismatch rejection; cross-node and emoji selection; repeated quote ambiguity; highlight save/reload/delete and article switch without stale marks; repeated renderer mounts retain style. Security fixtures assert one authorized bridge, no original scripts/handlers/nonces/targets, exact CSP and sandbox token set. Browser sandbox enforcement remains separate operator protocol below.
+
+### RC-02 Reliable annotation save, retry and voice MIME
+
+**Depends:** RC-01 test runner; existing annotation service and native persistence.
+
+**Files:** `apps/reader/src/components/annotation/AnnotationWorkspace.tsx`, `InkCanvas.tsx`, `VoiceRecorder.tsx`, `VideoRecorder.tsx`, `AnnotationPanel.tsx`, `annotation-save.test.tsx`; `apps/reader/src/stores/annotationStore.ts`, `apps/reader/src/services/annotationService.ts` (only propagation of actual MIME if needed).
+
+**Do:** Implement save/retry semantics and exact callback/signature changes above. Propagate async InkCanvas callback through ActiveToolSurface. Keep one pending created annotation ID per active media draft; retry only its failed upload. Preserve committed store records despite auxiliary refresh errors. Call useReducedMotion once at top of AnnotationPanel. Carry MIME in VoiceCapture and uploadVoice; select supported Opus container and enforce capture byte budget. Preserve existing video behavior except correcting premature successful save/clear and retry duplication.
+
+**Verify:** `pnpm --dir apps/reader exec tsc --noEmit`; `pnpm --dir apps/reader run test:reader`.
+
+**Accept:** Both commands exit 0. Tests inject create failure, successful-create/refresh-failure, upload failure and later retry. Comment/strokes/capture survive failure; success clears exactly once; retry uses same annotation ID; second clicks during save do not duplicate; unsupported MIME rejected honestly; actual MIME/bytes reach assetBegin; capture limit prevents oversized retained recording; zero-to-one annotation list transition does not change hook order.
+
+## Operator native verification protocol (not CHECKLIST Accept)
+
+Use a built native artifact and a genuinely downloaded partial ZIM registered by DynDon. Record build/commit, source archive identity and selected disk/RAM budgets; use an isolated app data profile so evidence is reproducible without deleting user data.
+
+1. Open downloaded article with retained image and stylesheet; follow nested internal link then fragment. Verify the app does not reload or lose archive registry. Disconnect network and repeat against retained clusters; missing content must explicitly report unavailable.
+2. Select text across formatting nodes; highlight and add comment. Capture canvas marks and notes. Navigate away/back and restart application; verify persisted records and marks retain article identity. Repeat with repeated quote and Unicode.
+3. Save ink and Opus voice, restart, reopen and play/view saved assets. Inject a controlled local persistence/upload failure; verify draft retention, visible error and successful retry without duplicate annotation.
+4. Load hostile archive fixture containing scripts/events/navigation/forms and forged bridge messages. Verify no original script executes, shell navigation or Tauri calls occur, and trusted selection still works. Prove this on native WebKit/WebView, not solely jsdom.
+5. Exercise reader→library→reader and narrow desktop width. Capture build-specific screenshots/video and process memory during reading. Do not claim whole-product release from this bounded protocol.
+
+## Review gates
+
+This document is ready for parent review and checklist insertion; implementation remains unstarted. Resource delivery and persisted media playback must be connected to the actual backend before the goal is complete. Parent must reconcile the nonce bridge extension with master §18.3 explicitly: it authorizes only application-owned script in an opaque origin, never archive script capability.
+
+## Required scope amendment: all modalities on the article canvas
+
+The user's subsequent explicit correction supersedes the earlier scope paragraph limiting ink and media to the adjacent workspace. Completion requires offline reading **and on-canvas drawing, typing, dictating, photographing, video clipping and annotation**. RC-01/02 remain necessary prerequisites, but cannot alone satisfy the goal. The notes drawer may remain a secondary index; it cannot be the sole creation or rendering surface.
+
+### Observed feasibility and missing implementation
+
+- `InkCanvas` exists, but is a separate fixed 320×240/resize panel; it is not an article overlay.
+- `AnnotationWorkspace` has comments/highlights/ink/voice/film controls. It does not implement camera photographs or speech-to-text.
+- `VideoRecorderSelfManaged` already captures camera plus microphone to a short clip and preserves actual MIME in `VideoCapture`. This is the established meaning of video clipping. No source-media trim or in/out editor was found; the build must describe this honestly as recording video clips, not claim editing imported video.
+- CodeGraph and targeted app/crate searches found no Whisper/Vosk/Sherpa/SpeechRecognition transcription path. A microphone recording is not dictation. Offline speech-to-text is a new native integration dependency.
+- Persisted asset rows exist: `crates/storage-sqlite/src/annotations.rs:705` `annotation_assets(conn, annotation_id)`, and domain `AnnotationAssetRecord` exists at `crates/domain/src/annotation.rs:158`. Frontend `AnnotationRecord` has no assets collection. Durable read/playback wiring is missing from this surface.
+
+### Additional exact entities
+
+| Entity | Target | Contract |
+|---|---|---|
+| `ReaderCanvasTool` | `apps/reader/src/routes/reader/rendererBridge.ts:1` | Union `select \| highlight \| draw \| type \| dictate \| photo \| video`; explicit toolbar modes |
+| `RendererCanvasAnnotation` | same | `{ annotationId: string; annotationType: AnnotationRecord['annotationType']; selector: SelectorBundle; bodyText?: string; colorToken: string; assets: readonly ReaderAnnotationAsset[] }` |
+| `ReaderAnnotationAsset` | `apps/reader/src/services/annotationService.ts:1` | `{ annotationAssetId: string; annotationId: string; assetKind: string; mimeType: string; byteLength: number; durationMs?: number; resourceUrl: string }`; trusted native-generated resource URL only |
+| `RendererMessageV1` additions | `rendererBridge.ts` | `canvas_type_commit` (`selector`, `bodyText`, `draftId`); `canvas_ink_commit` (`selector`, `strokes`, `width`, `height`, `draftId`); `canvas_capture_request` (`selector`, `captureKind: 'dictate' \| 'photo' \| 'video'`, `draftId`); first-party bridge creates messages only after user action |
+| `RendererParentMessageV1` additions | same | `tool_changed` (`tool`), `canvas_annotations_changed` (`annotations`), `draft_result` (`draftId`, `saved: boolean`, optional `error`); frame retains unsaved content until matching successful result |
+| `ReaderCanvasTools` | `apps/reader/src/routes/reader/ReaderCanvasTools.tsx:1` (new) | Props `{ tool: ReaderCanvasTool; onToolChange(tool: ReaderCanvasTool): void; busy: boolean }`; renders toolbar within reader canvas region, existing visual tokens |
+| `ReaderCanvasCapture` | `apps/reader/src/routes/reader/ReaderCanvasCapture.tsx:1` (new) | Props `{ kind: 'dictate' \| 'photo' \| 'video'; selector: SelectorBundle; onSaved(annotation: AnnotationRecord): void; onCancel(): void }`; privileged floating capture card over reading surface, keyed to draft and article |
+| `PhotoCapture` | `apps/reader/src/components/annotation/PhotoCapture.tsx:1` (new) | Export `{ bytes: Uint8Array; mimeType: 'image/jpeg'; width: number; height: number }` |
+| `PhotoCaptureSelfManaged` | same | Props `{ onCapture(capture: PhotoCapture): Promise<void>; onDiscard(): void }`; getUserMedia camera preview, shutter, review/retake/save; JPEG via canvas.toBlob, ≤4096 per dimension and ≤16 MiB; retain bytes on failure |
+| `DictationCapture` | `apps/reader/src/components/annotation/DictationCapture.tsx:1` (new) | Props `{ onCommit(text: string): Promise<void>; onDiscard(): void }`; microphone→local transcription→editable text→saved comment; recording and dictated text distinct states |
+| `transcribeAnnotationPcm` | `apps/reader/src/services/annotationService.ts:1` | `(pcm16: Int16Array, sampleRate: 16000, language?: string) => Promise<{ text: string; language: string }>`; invokes native `annotation_transcribe_pcm`; mono PCM, maximum 60 seconds, no cloud dependency |
+| `annotationAssets` | same | `(annotationId: Ulid) => Promise<ReaderAnnotationAsset[]>`; invoke `annotation_assets_list` |
+| `annotation_assets_list` | `apps/reader/src-tauri/src/ipc/annotations.rs:1` | Tauri async command `(state: State<'_, AppState>, annotation_id: String) -> Result<Vec<ReaderAnnotationAsset>, String>`; existing DB asset rows and object store authority, reject inaccessible/deleted annotation |
+| `reader_resources.rs` | `apps/reader/src-tauri/src/reader_resources.rs:1` (new) | Native scoped custom-protocol registration for pack resources and annotation assets; canonical library supplies `ZimArchive::resource`, never alternate parser; stream/limit bytes and allow only passive MIME, exact object lookup rather than filesystem paths |
+
+`annotation_transcribe_pcm` is an explicit native speech-engine integration dependency, not an implemented command or an approved choice of speech library/model. Parent must assign its exact native provider, packaged/offline model and command registration before dictation coder dispatch. That missing provider contract cannot be replaced with browser cloud SpeechRecognition or a stub success response. This is the remaining architectural feasibility decision, rather than an assertion that the app already supports dictation.
+
+### On-canvas mechanics
+
+Place the toolbar above the iframe within the reading surface. Trusted bridge creates an annotation layer inside its document. Selection or a click resolves an article anchor using existing text quote/position/domPath selectors. For drawing on an image use existing imageRegion fractions; otherwise use the closest text/block anchor. Draft ink canvas and editable typing card appear at that anchor on the actual article, not in the notes drawer. Persist ink as generated passive SVG asset with bounded numeric points and allowlisted stroke colors; parent generates SVG from validated strokes rather than accepting iframe-provided markup. Limit 100,000 total points, 1,000 strokes and 8 MiB serialized draft. Saved ink is displayed at its resolved block/image anchor using SVG as an image resource. Existing text quote/position selectors suffice; no schema change for arbitrary absolute page pixels is introduced.
+
+On-canvas typed comments render as textContent in anchored cards. Photography/video/dictation requests open the privileged capture card over the reading canvas; microphone and camera privileges never belong to the article iframe. After save, cards containing photo, video controls, dictated text or ink appear at the original article anchor. Photo/video assets use existing annotation type `comment` with asset kinds `image`/existing video asset convention; no invented domain enum values. Saved assets load from native metadata and protocol after restart. Unresolved anchors remain visibly unresolved in an on-canvas annotations section with explanatory text; never disappear into only the drawer.
+
+Playback uses scoped object-store responses with true MIME and byte range support for seeking. The resource handler verifies annotation ownership and stored asset ID; requests cannot provide arbitrary object hashes or filesystem paths. Archive SVG remains passive image content. The renderer script never receives camera streams or microphone PCM. Failed capture upload retains source bytes until explicit discard or successful save; never delete imported source files. Navigation with unsaved draft requires an explicit save/discard choice, not implicit loss.
+
+### RC-03 Drawing, typing, photographs and video clips on canvas with offline reopen
+
+**Depends:** RC-01/02. This task implements the native resource protocol and excludes only speech-to-text engine integration, tracked separately below. Existing voice recording remains available and must be labelled recording, never dictation.
+
+**Files:** new `ReaderCanvasTools.tsx`, `ReaderCanvasCapture.tsx`, `PhotoCapture.tsx`, `apps/reader/src-tauri/src/reader_resources.rs`; existing `rendererBridge.ts`, `ArticleContent.tsx`, `ReaderView.tsx`, `reader-canvas.test.tsx`, `annotation-save.test.tsx`, `VideoRecorder.tsx`, `annotationService.ts`, `apps/reader/src-tauri/src/ipc/annotations.rs`, `apps/reader/src-tauri/src/lib.rs` (module/protocol/command registration), native `state.rs` only for required resource service ownership.
+
+**Do:** Implement exact added entities and on-canvas mechanics above. Use existing storage `annotation_assets` and domain asset records. Route archive resource bytes through existing `ports::zim::ZimArchive::resource`; original AnZimmermanLib implementation remains archive authority. Register trusted URL builder in ReaderView and native protocol. Implement still camera capture and reviewed image upload, existing camera video clips, typed notes and freehand drawing on article anchors. Persist and restore all modalities on the article canvas. Reuse existing styles while adding only necessary canvas placement and controls. Preserve captures and drafts on failure/navigation; remove success messaging until the corresponding commit succeeds.
+
+**Verify:** `pnpm --dir apps/reader exec tsc --noEmit`; `pnpm --dir apps/reader run test:reader`; `cargo check -p reader`; `cargo test -p reader --lib`. The observed native package name is `reader`, its library is `enzime_reader_lib`.
+
+**Accept:** Frontend commands exit 0; deterministic tests exercise each toolbar mode, article anchor persistence/replay, photo shutter bytes→image asset, video clip true MIME→playback metadata, retries and unsaved-navigation retention. Resource handler tests reject unknown/inaccessible asset IDs, path traversal, active MIME and out-of-bounds ranges; passive resource and partial byte requests return correct bytes/MIME. Native cargo commands exit 0. Dictation has its separate admission gate below and does not delay implementation of these modalities.
+
+### Expanded operator protocol
+
+With network disconnected after selecting/downloads, use the packaged native reader to draw directly over a paragraph/image, type directly at a selected anchor, dictate a sentence and correct its transcript, take a photograph, record a video clip, highlight and annotate. Save every modality, close the entire app, restart offline and verify each on-canvas object, image and video/voice playback. Seek in saved video. Record camera/microphone permission denial and retry behavior, media failure retention, article reflow and missing-cluster states. A notes list, mock backend, audio recording without transcription, or text-only smoke test cannot satisfy this goal.
+
+### Dictation admission gate (separate from RC-03)
+
+Parent is resolving whether dictation retains voice plus editable transcript or transcript alone. AMD-2 names wllama as the sole local inference path; no arbitrary additional speech inference stack is authorized by this document. `DictationCapture` and `transcribeAnnotationPcm` are reserved interface contracts, not stubs to register now. Parent must reconcile the local speech provider/model with AMD-2, name exact native files/signatures and test commands, and then issue its independent checklist task. Tests must transcribe an actual prerecorded speech fixture offline with expected words; mocks alone cannot establish dictation. Regardless of choice, existing voice recording is not labelled dictation. This unresolved speech decision does not block RC-01/02/03. The final user goal remains incomplete until actual dictated text and the selected voice-retention behavior work in the native on-canvas flow.
