@@ -1651,4 +1651,4 @@ Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCod
 
 **Do:** Root owns build-lane.sh config/env/call and contract updates; delegated worker owns only new collect-android-symbols.py helper, no overlapping edits. Preserve other workers. **Verify:** bash parsing, Python compile; helper rejects existing1.11 libraries without DWARF (use semantic stagingoutput, never overwrite historicalartifact); run actual complete `bash scripts/build-all.sh` after commit. **Accept:** all4currentpackageELFs match symbolinputs, extracteddebugsections+mappingnonempty, APK/AAB embeddedversionCode equalsfrozenvalue, symbolsZIPiscollectedandhashed. Whole-build completion remains dependent on everyrequiredtarget; no one-offbuild.
 
-- [ ] UB02 Android frozen version and full native symbols.
+- [X] UB02 Android frozen version and full native symbols implemented; shell/Python parse passed and actual prior no-DWARF libraries rejected without creating an artifact. Positive four-ABI package/symbol acceptance awaits the next complete-script execution.

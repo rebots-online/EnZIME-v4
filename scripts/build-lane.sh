@@ -53,10 +53,16 @@ if not (frontend / 'index.html').is_file():
     fail('Prepared frontend is absent')
 config = target / 'prepared-tauri.json'
 config.write_text(json.dumps({'build': {'beforeBuildCommand': 'echo Using prepared frontend',
-                                       'frontendDist': str(frontend)}}))
+                                       'frontendDist': str(frontend)},
+                              'bundle': {'android': {
+                                  'versionCode': version_data['versionCode'],
+                                  'autoIncrementVersionCode': False}}}))
 env = os.environ.copy()
 env['CARGO_TARGET_DIR'] = str(target)
 env.setdefault('CARGO_BUILD_JOBS', '2')
+if lane == 'android':
+    env['CARGO_PROFILE_RELEASE_DEBUG'] = '2'
+    env['CARGO_PROFILE_RELEASE_STRIP'] = 'none'
 if lane == 'android' and not env.get('NDK_HOME'):
     sdk = Path(env.get('ANDROID_HOME', env.get('ANDROID_SDK_ROOT', str(Path.home() / 'Android/Sdk'))))
     known_ndk = sdk / 'ndk/27.0.12077973'
@@ -198,13 +204,12 @@ try:
             manifest.attrib.get(ns + 'versionCode') != str(version_data['versionCode']) or
             manifest.attrib.get('package') != config_data['identifier']):
             fail('AAB manifest identity/version mismatch')
-        symbols = one(android / 'native-debug-symbols', '**/native-debug-symbols.zip')
-        require_abis(symbols, '')
-        mapping = one(android / 'mapping', '**/release/mapping.txt')
         symbol_out = output / (prefix + 'android-native-debug-symbols.zip')
-        shutil.copy2(symbols, symbol_out)
-        with zipfile.ZipFile(symbol_out, 'a', compression=zipfile.ZIP_DEFLATED) as archive:
-            archive.write(mapping, 'mapping.txt')
+        run([sys.executable, snapshot / 'scripts/collect-android-symbols.py',
+             '--target-dir', target, '--android-output-dir', android,
+             '--apk', signed_apk, '--aab', signed_aab, '--output', symbol_out,
+             '--ndk', env.get('NDK_HOME', ''), '--version', version])
+        require_abis(symbol_out, '')
         emit(signed_apk, 'android-apk', 'android', 'apk', 'android-universal-release-signed.apk', 'verified')
         emit(signed_aab, 'android-aab', 'android', 'aab', 'android-universal-release-signed.aab', 'verified')
         emit(symbol_out, 'android-symbols', 'android', 'symbols', 'android-native-debug-symbols.zip')
