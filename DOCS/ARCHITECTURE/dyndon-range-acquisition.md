@@ -136,3 +136,16 @@ Additional Verify: cargo test -p storage-sqlite --test dyndon_migration; cargo t
 DD02 native decode orchestration may live in `C/src/disk/blob.rs` to keep modules below500lines. It only calls canonical streaming decoder APIs. Public `DiskPackStore::manifest(&self)->Result<DiskPackManifest,String>` returns a cloned bounded manifest for DD03 integration. No parser or library ownership changes.
 
 DD02 test-only reads may reuse canonical `AnZimmermanLib/tests/fixtures/rust-consolidation.zim` and `rust/tests/support/mod.rs` ZimBuilder. Add its existing flate2/tempfile dependencies in native cache dev-dependencies; production remains canonical parser-only.
+
+DD-RANGE-02 SQLite spill clarification (authorized parent): `disk/plan.rs::stage_candidates(conn: &Connection, intent: &SelectionIntent) -> Result<(), String>` constructs persistent `plan_eligible`, `plan_groups`, `plan_domains`, and `plan_priorities` tables before bounded inserts. `plan_eligible_rank` orders priority DESC/article_count DESC/cluster_index ASC; `plan_groups_rank` orders score DESC/domain_present ASC/domain ASC/topic_present ASC/topic ASC. Nullable grouping uses explicit presence flags so None and empty string stay distinct. Per-row indexed upserts aggregate group scores; indexed scans choose breadth/depth without GROUP BY, DISTINCT, or temporary sort B-trees. `CANDIDATE_SCAN`, `GROUP_SCAN`, and `PRIORITY_SCAN` constants are the actual production scans, with EXPLAIN QUERY PLAN unit coverage rejecting TEMP B-TREE. Main-database indices/journals remain covered by metadata reservation/max_page_count. `tests/disk_range.rs` covers many distinct groups under the physical quota.
+
+### DD03 approved implementation helper entities
+
+| Entity | Target | Contract |
+|---|---|---|
+| ProbedRangeSource | apps/reader/src-tauri/src/ipc/dyndon/prepare.rs | Temporary bounded metadata reader; pinned probe, exact <=64 KiB reads before persistent identity creation. |
+| AppState::new_with_transfer | apps/reader/src-tauri/src/state.rs | `(Connection, PathBuf, Arc<dyn TransferSource>) -> Result<Self,String>`; native source injection and shared stores/restore errors. |
+| DynDon persistence helpers | apps/reader/src-tauri/src/ipc/dyndon/persistence.rs | Bounded persisted plan/root resolution; no archive payload or directory serialization. |
+| Existing IPC module split | apps/reader/src-tauri/src/ipc/{dto,rows,home,library,reader}.rs | Existing DTOs/query helpers/commands moved without independent behavior changes. |
+
+DD-RANGE-02 progress accessor clarification: `disk/plan.rs` adds `impl DiskPackStore { pub fn retained_bytes(&self) -> Result<u64, String> }`, querying `SELECT COALESCE(SUM(byte_length),0) FROM clusters WHERE state='complete'`. The value counts complete stored payload bytes, excludes metadata/workspace, and does not claim full archive verification. DD03 uses it for acquisition progress.

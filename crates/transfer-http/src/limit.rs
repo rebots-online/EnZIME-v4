@@ -47,10 +47,7 @@ where
 {
     type Item = Result<Bytes, TransferError>;
 
-    fn poll_next(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-    ) -> Poll<Option<Self::Item>> {
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         if self.terminated {
             return Poll::Ready(None);
         }
@@ -62,9 +59,7 @@ where
                 this.terminated = true;
                 if let Some(expected) = this.expected_total {
                     if this.received != expected {
-                        return Poll::Ready(Some(Err(
-                            TransferError::InvalidRangeResponse,
-                        )));
+                        return Poll::Ready(Some(Err(TransferError::InvalidRangeResponse)));
                     }
                 }
                 Poll::Ready(None)
@@ -140,7 +135,10 @@ mod tests {
         let first = s.next().await.unwrap().unwrap();
         assert_eq!(first.as_ref(), b"ab");
         let end = s.next().await;
-        assert!(matches!(end, Some(Err(TransferError::InvalidRangeResponse))));
+        assert!(matches!(
+            end,
+            Some(Err(TransferError::InvalidRangeResponse))
+        ));
         assert!(s.next().await.is_none());
     }
 

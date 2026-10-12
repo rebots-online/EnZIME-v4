@@ -1059,7 +1059,7 @@ Tests must assert a virtual1TiB archive with valid tiny sparse metadata opens/lo
 Library task is implementable independently. Native source/provider and application installation are successor tasks and do not change these signatures without explicit contract update.
 
 
-- [ ] **DD-RANGE-02 Native durable range source, disk clusters and bounded DynDon planning**
+- ✅ **DD-RANGE-02 Native durable range source, disk clusters and bounded DynDon planning**
   - Do/Allowed files: exact DD-RANGE-02 contract embedded below. Depends on01 signatures.
   - Verify: `cargo test -p transfer-http`; `cargo test -p zim-cluster-cache --test disk_range`; `cargo test -p zim-cluster-cache`.
   - Accept: exact range/source identity errors, quota accounting, planner equivalence and offline restart tests pass.
@@ -1199,3 +1199,5 @@ DD-RANGE-02 SQLite spill clarification (authorized parent): `disk/plan.rs::stage
 DD-RANGE-03 approved implementation helper paths: `apps/reader/src-tauri/src/ipc/dyndon/{mod,prepare,install,persistence}.rs` (`ProbedRangeSource`, `prepare_dyndon_install`, `run_dyndon_install`, `restore_dyndon_archives`); focused existing-command splits `ipc/{dto,rows,home,library,reader}.rs`; `AppState::new_with_transfer(Connection, PathBuf, Arc<dyn TransferSource>) -> Result<Self,String>` with shared `transfer_source`, `dyndon_stores`, `restore_errors`.
 
 DD-RANGE-02 progress accessor clarification: `disk/plan.rs` adds `impl DiskPackStore { pub fn retained_bytes(&self) -> Result<u64, String> }`, querying `SELECT COALESCE(SUM(byte_length),0) FROM clusters WHERE state='complete'`. The value counts complete stored payload bytes, excludes metadata/workspace, and does not claim full archive verification. DD03 uses it for acquisition progress.
+
+DD02 parent verification: `cargo test -p zim-cluster-cache -p transfer-http` passed26 tests (7 disk/planner,19 HTTP). Parent reviewed durable store, quota reservations, indexed planning, bounded decode workspace and exact HTTP identity/range validation. Component evidence does not establish live Kiwix/native artifact acceptance; DD03 and native rubric remain open.
