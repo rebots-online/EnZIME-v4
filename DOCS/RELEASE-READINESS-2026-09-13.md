@@ -404,3 +404,20 @@ Opening the installed tile FAILED: PackGrid hardcoded /A; the reader showed I/O 
 Evidence: /home/robin/Admin-Manual/LOGS/EnZIME-v4/enzime-v1.13.63942-kiwix-native-trial.mp4; isolated profile and screenshots under /home/robin/Admin-Manual/.staging/enzime/native-trial-v1.13.63942/. The AppImage emitted GStreamer appsink missing; host gst-inspect finds appsink but AppImage GST_PLUGIN_SYSTEM_PATH_1_0 points to a nonexistent bundled gstreamer-1.0 directory. Native recording/playback remains unverified and packaging needs investigation. Offline reading and annotation restart are not passed by this trial.
 
 UI truthfulness frontier: Library catalog, plan and completed acquisition were live. Shell Ready/Idle and historical Home M1 readiness copy are not verified capability indicators; remaining Home cards/navigation require a visible-surface data-provenance audit before claiming all screens are connected. Surge remains static-host compatible only; no functional browser reader or deployment has been delivered.
+
+### Visible-screen provenance audit — 2026-10-12 16:35 EDT
+
+Bounded audit of Library handoff, Home and shell using CodeGraph (PROJECT_INDEX.md absent). This is not an all-screen clean bill of health.
+
+| Surface | Actual source | Finding / next correction |
+|---|---|---|
+| Library catalog, plan, download, installed count | Live Kiwix HTTP plus persisted native cluster/catalog databases; observed AppImage trial above | Connected. Main-page tile correction pushed after runtime failure; rebuilt native reading still pending. |
+| Shell Idle | components/shell/JobStrip.tsx:9 literal empty items array | Fabricated idle state. Connect actual libraryStore.downloads; initial unknown/loading/error cannot imply no jobs. |
+| Shell search | components/shell/AppShell.tsx:47 button without handler | Disconnected control. Implement defined search flow or explicitly mark unavailable; do not masquerade as working global search. |
+| Shell/Home readiness | src-tauri/src/ipc/dto.rs:27 build_readiness checks schema only, returns M1 baseline met, empty checked_at and no flags when schema exists | Narrow to actual storage/bootstrap check or implement real capability checks; cannot claim system readiness. Home ReadinessPanel additionally says no outstanding configuration issues. |
+| Home local ZIM opener | components/home/OpenPackCard.tsx:65 passes selected path to store.open, whose native command expects installed packId; plugin is not registered by this component | Obsolete disconnected journey; restore intended Library acquisition entry rather than promise unsupported local import. |
+| Home memory inbox | src-tauri/src/ipc/home.rs:84 fixed empty Vec; homeService.ts:8 documents unregistered accept/dismiss commands | Absence of rows is not a real empty inbox. Clearly identify unavailable feature until its backend contract is implemented. |
+| Ask, Memory, Settings rail | components/shell/NavigationRail.tsx:20-23 built:false | Unimplemented destinations are visually disabled. Do not count as delivered screens. |
+| Home recent/history/tasks | home_snapshot queries actual SQLite rows | Backend source is real; DTO alignment, mutation paths and displayed behavior require separate verification. |
+
+ENTRY-01 verification after repair: all 80 frontend tests passed; TypeScript check passed. Source commit ffd4be2, verified GitHub bde0c5a on codex/reader-dyndon. Current 1.13 build is immutable source d18aaa0 and does not include this later repair. Native artifact acceptance, offline restart and all media tools remain incomplete.
