@@ -1,7 +1,7 @@
 // DownloadQueue — the live download queue panel on the Library route.
 //
 // Reads the `downloads` slice and renders one row per `DownloadJob` with its
-// state badge and a `Progress` bar driven by `bytesVerified / expectedSizeBytes`.
+// state badge, retained bytes for partial packs and verified progress for full packs.
 // Re-runs `loadDownloads()` on a slow interval so the queue advances without
 // the user nudging it; the interval pauses when the tab is hidden.
 
@@ -20,14 +20,12 @@ import {
 const REFRESH_MS = 4000;
 
 export function DownloadQueue(): ReactNode {
-  const online = useLibraryStore((s) => s.online);
   const slice = useLibraryStore((s) => s.downloads);
   const reload = useLibraryStore((s) => s.loadDownloads);
 
   // Gentle polling: the queue is a background concern, so refresh on a slow
   // cadence. Pause while the tab is hidden to avoid wasted Tauri round-trips.
   useEffect(() => {
-    if (typeof document !== "undefined" && document.hidden) return;
     const handle = setInterval(() => {
       if (typeof document === "undefined" || !document.hidden) {
         void reload();
@@ -36,7 +34,7 @@ export function DownloadQueue(): ReactNode {
     return () => clearInterval(handle);
   }, [reload]);
 
-  const state = resolveState(online, slice, (data) => data.length > 0);
+  const state = resolveState(true, slice, (data) => data.length > 0);
   const jobs = slice.data ?? [];
 
   let body: ReactNode;
@@ -116,9 +114,11 @@ export function DownloadQueue(): ReactNode {
 }
 
 function JobRow({ job }: { job: DownloadJob }): ReactNode {
+  const retained = job.transferScope === "partial";
+  const progressBytes = retained ? job.bytesRetained : job.bytesVerified;
   const ratio =
-    job.expectedSizeBytes > 0
-      ? job.bytesVerified / job.expectedSizeBytes
+    !retained && job.expectedSizeBytes > 0
+      ? progressBytes / job.expectedSizeBytes
       : 0;
   const ratioClamped = Math.max(0, Math.min(1, ratio));
   const pct = Math.round(ratioClamped * 100);
@@ -141,12 +141,14 @@ function JobRow({ job }: { job: DownloadJob }): ReactNode {
       >
         <StateBadge state={job.state} />
         <span className="lib-queue__meta">
-          {formatBytes(job.bytesVerified)} / {formatBytes(job.expectedSizeBytes)}
+          {formatBytes(progressBytes)} {retained ? "retained locally" : `verified / ${formatBytes(job.expectedSizeBytes)}`}
         </span>
       </div>
+      {retained ? <p className="lib-queue__meta">Partial pack · {job.state === "completed" ? "retained content available offline" : "completed clusters kept for retry"}</p> : null}
+      {job.errorDetail ? <p role="alert">{job.errorDetail}</p> : null}
       <Progress
         value={ratioClamped}
-        indeterminate={isActive && job.expectedSizeBytes === 0}
+        indeterminate={isActive && (retained || job.expectedSizeBytes === 0)}
       />
       <div className="lib-queue__meta">
         <span title={job.downloadJobId}>{shortId(job.downloadJobId)}</span>

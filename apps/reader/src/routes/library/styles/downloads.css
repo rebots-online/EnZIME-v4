@@ -1,0 +1,95 @@
+/* ─── Dialog ────────────────────────────────────────────────────────────── */
+.lib-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(5, 7, 13, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  animation: lib-fade-in var(--ez-duration-normal) ease both;
+}
+.lib-dialog {
+  width: min(40rem, 100%);
+  max-height: min(40rem, 88vh);
+  overflow: auto;
+  background: var(--lib-glass-strong);
+  border: 1px solid var(--lib-border-strong);
+  border-radius: var(--ez-radius-lg);
+  box-shadow: var(--ez-shadow-panel);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  animation: lib-dialog-in var(--ez-duration-normal) ease both;
+}
+.lib-dialog:focus { outline: none; }
+.lib-dialog__head { display: flex; flex-direction: column; gap: 0.2rem; }
+.lib-dialog__title { margin: 0; font-size: 1.1em; font-weight: 700; }
+.lib-dialog__sub { margin: 0; color: var(--lib-fg-muted); font-size: 0.9em; }
+.lib-dialog__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+/* ─── Queue ─────────────────────────────────────────────────────────────── */
+.lib-queue__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--ez-radius-sm);
+  border: 1px solid var(--lib-border);
+  background: rgba(17, 21, 33, 0.5);
+}
+.lib-queue__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8em;
+  color: var(--lib-fg-muted);
+  font-family: var(--ez-font-mono);
+}
+
+.lib-section-intro {
+  color: var(--lib-fg-muted);
+  font-size: 0.9em;
+  line-height: 1.45;
+}
+
+@keyframes lib-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(76,227,164,0.45); }
+  50% { transform: scale(1.035); box-shadow: 0 0 26px rgba(76,227,164,0.7); }
+}
+@keyframes lib-stripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 0.9rem 0; }
+}
+@keyframes lib-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes lib-dialog-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-button,
+  .lib-tile,
+  .lib-row,
+  .lib-bar__seg,
+  .lib-fit-badge--fits,
+  .lib-bar__seg--temp,
+  .lib-dialog,
+  .lib-dialog__backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+}

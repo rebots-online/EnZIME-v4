@@ -1,6 +1,6 @@
-mod ipc;
-mod state;
+pub mod ipc;
 mod reader_resources;
+pub mod state;
 
 use std::path::PathBuf;
 
@@ -34,6 +34,7 @@ pub fn run() {
             storage_sqlite::MigrationRunner::new(&conn)
                 .apply_initial()
                 .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            storage_sqlite::apply_dyndon_schema(&conn)?;
             // The app-data directory is the M1 default storage root when the
             // `storage_roots` table has no user-chosen root yet. Resolve it
             // from the Tauri path API; fall back to the DB's parent dir for
@@ -53,6 +54,7 @@ pub fn run() {
                 .annotations
                 .ensure_local_layer()
                 .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            tauri::async_runtime::block_on(ipc::dyndon::restore_dyndon_archives(&state))?;
             app.manage(state);
             Ok(())
         })
@@ -68,6 +70,7 @@ pub fn run() {
             ipc::catalog_search,
             ipc::install_plan,
             ipc::install_start,
+            ipc::install_cancel,
             ipc::job_list,
             // Annotation vertical (§14.4 notes contract) — multimodal-notes USP.
             ipc::annotations::annotation_list,

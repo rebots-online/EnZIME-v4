@@ -15,14 +15,22 @@ import {
   SkeletonBlock,
   StatusBanner,
   formatBytes,
-  resolveState,
 } from "../../components/home/shared";
 
 const DEBOUNCE_MS = 280;
 const INITIAL_QUERY = "";
+export function catalogLanguage(value: string): string | undefined {
+  const language = value.trim().toLowerCase();
+  const common: Record<string, string> = { en: "eng", fr: "fra", de: "deu", es: "spa", pt: "por", zh: "zho", ja: "jpn", ar: "ara", ru: "rus" };
+  return common[language] ?? (/^[a-z]{3}$/.test(language) ? language : undefined);
+}
 
 export function CatalogBrowser(): ReactNode {
-  const online = useLibraryStore((s) => s.online);
+  const source = useLibraryStore(s => s.catalogSource);
+  const notice = useLibraryStore(s => s.catalogNotice);
+  const total = useLibraryStore(s => s.catalogTotal);
+  const nextOffset = useLibraryStore(s => s.catalogNextOffset);
+  const loadMore = useLibraryStore(s => s.loadMoreCatalog);
   const slice = useLibraryStore((s) => s.catalogEntries);
   const searchCatalog = useLibraryStore((s) => s.searchCatalog);
   const setActiveCatalogEntry = useLibraryStore(
@@ -38,10 +46,11 @@ export function CatalogBrowser(): ReactNode {
   // Rust side is expected to return a default ranking when no term is given.
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (language.trim() && !catalogLanguage(language)) return;
     debounceRef.current = setTimeout(() => {
       void searchCatalog({
         query: query.trim(),
-        languageBcp47: language.trim() || undefined,
+        languageBcp47: catalogLanguage(language),
       });
     }, DEBOUNCE_MS);
     return () => {
@@ -49,20 +58,11 @@ export function CatalogBrowser(): ReactNode {
     };
   }, [query, language, searchCatalog]);
 
-  const state = resolveState(online, slice, (data) => data.length > 0);
+  const state = slice.status === "error" ? (slice.error?.kind ?? "recoverable") : (slice.data?.length ?? 0) > 0 ? "populated" : slice.status === "loading" || slice.status === "idle" ? "loading" : "empty";
   const entries = slice.data ?? [];
 
   let body: ReactNode;
-  if (state === "offline-empty") {
-    body = (
-      <StatusBanner
-        tone="offline"
-        icon="!"
-        title="Catalog offline"
-        detail="Reconnect to search the DynDon catalog."
-      />
-    );
-  } else if (state === "loading") {
+  if (state === "loading") {
     body = <SkeletonBlock lines={4} />;
   } else if (state === "populated") {
     body = (
@@ -85,7 +85,7 @@ export function CatalogBrowser(): ReactNode {
         detail={
           query.trim()
             ? `Nothing in the catalog matches "${query.trim()}".`
-            : "Start typing to search the catalog."
+            : "No entries are available for these filters."
         }
       />
     );
@@ -101,7 +101,7 @@ export function CatalogBrowser(): ReactNode {
             onClick={() =>
               searchCatalog({
                 query: query.trim(),
-                languageBcp47: language.trim() || undefined,
+                languageBcp47: catalogLanguage(language),
               })
             }
             label="Retry search"
@@ -135,7 +135,7 @@ export function CatalogBrowser(): ReactNode {
         <h2 className="lib-card__title" id="lib-catalog-heading">
           Catalog
         </h2>
-        <span className="lib-card__hint">DynDon</span>
+        <span className="lib-card__hint">Kiwix · {source === "cache" ? "cached results" : source === "live" ? "live catalog" : "catalog"}</span>
       </header>
 
       <div className="lib-search">
@@ -151,15 +151,21 @@ export function CatalogBrowser(): ReactNode {
         <input
           className="lib-input"
           type="text"
-          placeholder="lang (en, fr, …)"
+          placeholder="eng, fra, deu…"
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          aria-label="Filter by language"
+          aria-label="Filter by language (ISO 639-3)"
           style={{ flex: "0 0 8rem" }}
         />
       </div>
 
+      <p className="lib-section-intro">Language uses ISO 639-3 (eng, fra). Common two-letter codes such as en and fr are also accepted.</p>
+      {language.trim() && !catalogLanguage(language) ? <p role="alert">Enter a three-letter language code, or a supported common two-letter code.</p> : null}
+      {notice ? <p role="status">{notice}</p> : null}
+      {source === "cache" ? <p role="status">Cached catalog results. Availability may have changed; installation requires a reachable source.</p> : null}
       {body}
+      {total !== null ? <p>{entries.length} of {total} catalog entries</p> : entries.length > 0 ? <p>{entries.length} entries loaded</p> : null}
+      {nextOffset !== null ? <button className="lib-button lib-button--ghost" type="button" disabled={slice.status === "loading"} onClick={() => void loadMore()}>{slice.status === "loading" ? "Loading more…" : "Load more"}</button> : null}
     </section>
   );
 }
@@ -174,7 +180,7 @@ function CatalogRow({
   const meta = [
     entry.publisher,
     entry.category,
-    formatBytes(entry.artifactSizeBytes),
+    entry.artifactSizeBytes > 0 ? `${formatBytes(entry.artifactSizeBytes)} full archive (advertised)` : "Full size not advertised",
     entry.languageBcp47,
   ]
     .filter(Boolean)

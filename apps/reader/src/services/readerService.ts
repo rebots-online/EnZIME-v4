@@ -1,7 +1,7 @@
 // readerService — Tauri bridge for the Reader vertical (§24 binding).
 //
 // Frozen M1 contract (DOCS/ARCHITECTURE.md §24 + task spec):
-//   readerOpen(path)      → invoke("reader_open",    { path })            :: OpenPackResponse
+//   readerOpen(packId)      → invoke("reader_open",    { packId })            :: OpenPackResponse
 //   readerArticle(packId, articleKey)
 //                         → invoke("reader_article", { packId, articleKey }) :: ArticleResponse
 //
@@ -70,9 +70,9 @@ async function call<T>(
 }
 
 export const readerService = {
-  /** Opens (or attaches to) a ZIM pack at `path`; returns its id/title/main page. */
-  readerOpen(path: string): Promise<OpenPackResponse> {
-    return call<OpenPackResponse>("reader_open", { path });
+  /** Opens (or attaches to) a ZIM pack by its installed `packId`; returns its id/title/main page. */
+  readerOpen(packId: string): Promise<OpenPackResponse> {
+    return call<OpenPackResponse>("reader_open", { packId });
   },
   /** Fetches a rendered article payload for a given pack + article key. */
   readerArticle(packId: string, articleKey: string): Promise<ArticleResponse> {

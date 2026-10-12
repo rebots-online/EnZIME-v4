@@ -218,4 +218,3 @@ const READER_STYLE_TEXT = `
 export function ReaderStyles(): ReactNode {
   return <style aria-hidden="true">{READER_STYLE_TEXT}</style>;
 }
-

@@ -16,3 +16,5 @@ pub use migration::{
     apply_pragmas, open_with_pragmas, sha256_hex, AppliedMigration, MigrationError,
     MigrationRunner, INITIAL_NAME, INITIAL_SQL, INITIAL_VERSION,
 };
+pub mod dyndon_migration;
+pub use dyndon_migration::{apply_dyndon_schema,DYNDON_VERSION,DYNDON_NAME,DYNDON_SQL};

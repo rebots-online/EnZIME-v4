@@ -56,3 +56,6 @@ impl ZimEngine for AnZimmermanZimEngine {
         Ok(Arc::new(archive))
     }
 }
+
+pub mod range_adapter;
+pub use range_adapter::RangeArchiveAdapter;

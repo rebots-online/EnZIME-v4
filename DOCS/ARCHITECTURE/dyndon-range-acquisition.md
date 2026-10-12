@@ -149,3 +149,8 @@ DD-RANGE-02 SQLite spill clarification (authorized parent): `disk/plan.rs::stage
 | Existing IPC module split | apps/reader/src-tauri/src/ipc/{dto,rows,home,library,reader}.rs | Existing DTOs/query helpers/commands moved without independent behavior changes. |
 
 DD-RANGE-02 progress accessor clarification: `disk/plan.rs` adds `impl DiskPackStore { pub fn retained_bytes(&self) -> Result<u64, String> }`, querying `SELECT COALESCE(SUM(byte_length),0) FROM clusters WHERE state='complete'`. The value counts complete stored payload bytes, excludes metadata/workspace, and does not claim full archive verification. DD03 uses it for acquisition progress.
+
+| cancel_dyndon_install | apps/reader/src-tauri/src/ipc/dyndon/install.rs | `(&AppState,&str)->Result<(),String>`; durable cancellation, retained complete clusters, installation future dropped at cancellation poll, no false completion. |
+| install_cancel | apps/reader/src-tauri/src/ipc/library.rs | Tauri `(State<AppState>,install_plan_id:String)->Result<(),String>` delegates cancellation. |
+
+DD03 edition identity refinement: deterministic version hash combines source_identity_sha256, canonical SelectionIntent and budget; pack_versions schema2 unique key `(pack_id,upstream_version,artifact_sha256,edition_manifest_sha256)` preserves separate editions. Edition manifest digest is SHA256 of exact bounded `install-plan.json`; mutable disk offline policy is excluded. Canonical-root keyed shared store handles prevent independent cache gates. Restore sets offline before index open; prior active locations become retained transactionally.

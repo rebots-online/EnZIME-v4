@@ -70,6 +70,13 @@ export interface LibraryState {
   storageRoots: Slice<readonly StorageDestination[]>;
   packs: Slice<readonly PackManifest[]>;
   catalogEntries: Slice<readonly CatalogEntry[]>;
+  catalogSource: "live" | "cache" | null;
+  catalogNotice: string | null;
+  catalogTotal: number | null;
+  catalogNextOffset: number | null;
+  catalogRequest: CatalogSearchRequest | null;
+  loadMoreCatalog: () => Promise<void>;
+  installStarting: boolean;
   installPlan: Slice<InstallPlan | null>;
   downloads: Slice<readonly DownloadJob[]>;
 
@@ -92,11 +99,12 @@ export interface LibraryState {
   computePlan: (
     catalogEntryId: string,
     storageRootId: string,
+    budgetBytes?: number,
   ) => Promise<void>;
 
   /** Starts the install for a computed plan, then refreshes the download
    *  queue so the new job appears immediately. */
-  startInstall: (installPlanId: string) => Promise<void>;
+  startInstall: (installPlanId: string) => Promise<boolean>;
 
   clearInstallPlan: () => void;
   loadAll: () => Promise<void>;
@@ -116,12 +124,17 @@ function unwrap<T>(page: { items?: readonly T[] } | null | undefined): T[] {
   return Array.isArray(page.items) ? [...page.items] : [];
 }
 
+let catalogGeneration = 0;
+let planGeneration = 0;
+let pageLoading = false;
+
 export const useLibraryStore = create<LibraryState>((set, get) => ({
   online: initialOnline(),
 
   storageRoots: emptySlice<readonly StorageDestination[]>(),
   packs: emptySlice<readonly PackManifest[]>(),
   catalogEntries: emptySlice<readonly CatalogEntry[]>(),
+  catalogSource: null, catalogNotice: null, catalogTotal: null, catalogNextOffset: null, catalogRequest: null, installStarting: false,
   installPlan: emptySlice<InstallPlan | null>(),
   downloads: emptySlice<readonly DownloadJob[]>(),
 
@@ -134,11 +147,15 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
   },
 
   setSelectedStorageRoot(storageRootId) {
-    set({ selectedStorageRootId: storageRootId });
+    if (get().installStarting || get().selectedStorageRootId === storageRootId) return;
+    planGeneration++;
+    set({ selectedStorageRootId: storageRootId, installPlan: emptySlice<InstallPlan | null>() });
   },
 
   setActiveCatalogEntry(catalogEntryId) {
-    set({ activeCatalogEntryId: catalogEntryId });
+    if (get().installStarting) return;
+    planGeneration++;
+    set({ activeCatalogEntryId: catalogEntryId, installPlan: emptySlice<InstallPlan | null>() });
   },
 
   loadStorageRoots() {
@@ -177,23 +194,40 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
       });
   },
 
-  searchCatalog(request) {
-    set({ catalogEntries: startLoading(get().catalogEntries) });
-    return libraryService
-      .catalogSearch({ ...request, limit: request.limit ?? DEFAULT_PAGE_LIMIT })
-      .then((page) => {
-        set({
-          catalogEntries: finishData<readonly CatalogEntry[]>(unwrap(page)),
-        });
-      })
-      .catch((error: ServiceError) => {
-        set({ catalogEntries: finishError(get().catalogEntries, error) });
-      });
+  async searchCatalog(request) {
+    const generation = ++catalogGeneration; pageLoading = false;
+    const query = { ...request, offset: 0, limit: request.limit ?? DEFAULT_PAGE_LIMIT };
+    set({ catalogRequest: query, catalogEntries: startLoading(emptySlice()), catalogNextOffset: null, catalogTotal: null, catalogSource: null, catalogNotice: null });
+    try {
+      const page = await libraryService.catalogSearch(query);
+      if (generation !== catalogGeneration) return;
+      set({ catalogEntries: finishData(unwrap(page)), catalogSource: page.source, catalogNotice: page.notice ?? null, catalogTotal: page.total ?? null, catalogNextOffset: page.nextOffset ?? null });
+    } catch (error) {
+      if (generation === catalogGeneration) set({ catalogEntries: finishError(get().catalogEntries, error as ServiceError) });
+    }
   },
 
-  computePlan(catalogEntryId, storageRootId) {
+  async loadMoreCatalog() {
+    const state = get(), request = state.catalogRequest, offset = state.catalogNextOffset;
+    if (!request || offset === null || pageLoading) return;
+    const generation = catalogGeneration; pageLoading = true;
+    set({ catalogEntries: startLoading(state.catalogEntries) });
+    try {
+      const page = await libraryService.catalogSearch({ ...request, offset });
+      if (generation !== catalogGeneration) return;
+      const items = new Map((get().catalogEntries.data ?? []).map(entry => [entry.catalogEntryId, entry]));
+      for (const entry of page.items) items.set(entry.catalogEntryId, entry);
+      set({ catalogEntries: finishData([...items.values()]), catalogSource: page.source, catalogNotice: page.notice ?? null, catalogTotal: page.total ?? null, catalogNextOffset: page.nextOffset ?? null });
+    } catch (error) {
+      if (generation === catalogGeneration) set({ catalogEntries: finishError(get().catalogEntries, error as ServiceError) });
+    } finally { if (generation === catalogGeneration) pageLoading = false; }
+  },
+
+  computePlan(catalogEntryId, storageRootId, budgetBytes) {
+    if (get().installStarting) return Promise.resolve();
+    const generation = ++planGeneration;
     set({
-      installPlan: startLoading(get().installPlan),
+      installPlan: startLoading(emptySlice()),
       activeCatalogEntryId: catalogEntryId,
       selectedStorageRootId: storageRootId,
     });
@@ -201,33 +235,36 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
       .installPlan({
         catalogEntryId,
         destinationStorageRootId: storageRootId,
+        budgetBytes,
       })
       .then((plan) => {
+        if (generation !== planGeneration) return;
         set({ installPlan: finishData<InstallPlan | null>(plan) });
       })
       .catch((error: ServiceError) => {
-        set({ installPlan: finishError(get().installPlan, error) });
+        if (generation === planGeneration) set({ installPlan: finishError(get().installPlan, error) });
       });
   },
 
-  startInstall(installPlanId) {
-    // Optimistically flip the plan slice to loading so the button reflects
-    // the in-flight call, then start the job and refresh the queue so the new
-    // job row appears without an extra manual reload.
-    set({ installPlan: startLoading(get().installPlan) });
-    return libraryService
-      .installStart({ installPlanId })
-      .then(() => get().loadDownloads())
-      .finally(() => {
-        // Clear the plan slice so a subsequent open of the dialog starts fresh.
-        set({ installPlan: emptySlice<InstallPlan | null>() });
-      })
-      .catch((error: ServiceError) => {
-        set({ installPlan: finishError(get().installPlan, error) });
-      });
+  async startInstall(installPlanId) {
+    const state = get();
+    if (state.installStarting || state.installPlan.data?.installPlanId !== installPlanId || state.installPlan.data.destination.storageRootId !== state.selectedStorageRootId) return false;
+    set({ installStarting: true, installPlan: startLoading(state.installPlan) });
+    try {
+      await libraryService.installStart({ installPlanId });
+      await Promise.all([get().loadDownloads(), get().loadPacks()]);
+      set({ installPlan: emptySlice<InstallPlan | null>() });
+      return true;
+    } catch (error) {
+      set({ installPlan: finishError(state.installPlan, error as ServiceError) });
+      await get().loadDownloads();
+      return false;
+    } finally { set({ installStarting: false }); }
   },
 
   clearInstallPlan() {
+    if (get().installStarting) return;
+    planGeneration++;
     set({
       installPlan: emptySlice<InstallPlan | null>(),
       activeCatalogEntryId: null,
