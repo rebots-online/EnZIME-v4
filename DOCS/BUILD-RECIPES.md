@@ -22,6 +22,9 @@ Android signing uses the existing production keystore and
 `ENZIME_KEYSTORE_PASSWORD`/`ENZIME_KEY_PASSWORD`, with optional
 `ENZIME_KEYSTORE_PATH` and `ENZIME_KEYSTORE_ALIAS`. The native Windows interface is
 `ENZIME_WINDOWS_BUILD_EXECUTOR`; see `DOCS/ARCHITECTURE/unified-build.md`.
+The optional ignored `signing/build-credentials.json` supplies these four signing
+variables when they are absent from the environment; `ENZIME_SIGNING_CONFIG` can
+select another private JSON file. Credentials are excluded from source archives.
 No upload, git commit, push, or CI invocation occurs inside the build script.
 
 Manual builds only. No CI until public-release operator signoff (§26 AMD-4).
@@ -230,18 +233,18 @@ the real error.
 # created once, per BUILD_CONVENTIONS
 keytool -genkey -v -keystore signing/production.keystore -alias upload \
   -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity 25000 \
-  -storepass 'Ch4n3l.C3351' -keypass 'Ch4n3l.C3351' \
+  -storepass "$ENZIME_KEYSTORE_PASSWORD" -keypass "$ENZIME_KEY_PASSWORD" \
   -dname 'CN=EnZIME Reader Upload, O=Robin L M Cheung MBA, C=CA'
 
 # APK -> apksigner
 $ANDROID_HOME/build-tools/36.1.0/apksigner sign \
   --ks signing/production.keystore --ks-key-alias upload \
-  --ks-pass pass:Ch4n3l.C3351 --key-pass pass:Ch4n3l.C3351 \
+  --ks-pass env:ENZIME_KEYSTORE_PASSWORD --key-pass env:ENZIME_KEY_PASSWORD \
   --out dist/<slug>-v<VER>-android-universal-release-signed.apk <unsigned.apk>
 
 # AAB -> jarsigner (apksigner does not sign bundles)
-jarsigner -keystore signing/production.keystore -storepass 'Ch4n3l.C3351' \
-  -keypass 'Ch4n3l.C3351' -sigalg SHA256withRSA -digestalg SHA-256 \
+jarsigner -keystore signing/production.keystore -storepass "$ENZIME_KEYSTORE_PASSWORD" \
+  -keypass "$ENZIME_KEY_PASSWORD" -sigalg SHA256withRSA -digestalg SHA-256 \
   dist/<slug>-v<VER>-android-universal-release-signed.aab upload
 ```
 

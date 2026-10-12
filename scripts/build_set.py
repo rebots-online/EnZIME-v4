@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tarfile
 import threading
+import tomllib
 
 SCHEMA = "mba.robin.enzime.build-set.v1"
 TARGETS = {
@@ -56,7 +57,7 @@ def report(lane, line):
         print(f"[{lane}] {line.rstrip()}", flush=True)
 
 
-def run(command, cwd, log, lane, env=None):
+def run(command, cwd, log, lane, env=None, echo=True):
     if STOP.is_set():
         raise RuntimeError("build interrupted")
     with log.open("a") as output:
@@ -70,7 +71,8 @@ def run(command, cwd, log, lane, env=None):
             for line in process.stdout:
                 output.write(line)
                 output.flush()
-                report(lane, line)
+                if echo:
+                    report(lane, line)
             code = process.wait()
         finally:
             with PROCESS_LOCK:
@@ -132,6 +134,8 @@ class BuildSet:
 def excluded(name):
     parts = Path(name).parts
     return (not parts or parts[0] in {"dist", "target", "signing", "CREDENTIALS"}
+            or name.startswith("apps/reader/dist/") or name == "apps/reader/dist"
+            or any(part in {"signing", "CREDENTIALS", "target"} for part in parts)
             or any(part in {"node_modules", ".git"} for part in parts)
             or any(part.startswith(".env") and part != ".env.example" for part in parts)
             or name == "release.lock")
@@ -211,9 +215,15 @@ def prepare_snapshot(repo, source_ref):
         run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         run(["pnpm", "exec", "vite", "build"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         # Cargo resolves workspace package version changes once; lanes consume this lock.
-        with (logs / "cargo-metadata.json").open("w") as output:
-            subprocess.run(["cargo", "metadata", "--no-deps", "--format-version", "1"],
-                           cwd=build.snapshot, stdout=output, check=True)
+        run(["cargo", "metadata", "--no-deps", "--format-version", "1"], build.snapshot,
+            logs / "cargo-metadata.json", "preparation", echo=False)
+        packages = tomllib.loads((build.snapshot / "Cargo.lock").read_text())["package"]
+        if not any(p["name"] == "reader" and p["version"] == build.version for p in packages):
+            run(["cargo", "generate-lockfile", "--offline"], build.snapshot,
+                Path(result.log_path), "preparation")
+            packages = tomllib.loads((build.snapshot / "Cargo.lock").read_text())["package"]
+        if not any(p["name"] == "reader" and p["version"] == build.version for p in packages):
+            raise RuntimeError("Cargo lock does not contain stamped reader version")
         if (repo / "Cargo.lock").read_bytes() != originals["Cargo.lock"]:
             raise RuntimeError("Concurrent Cargo.lock change")
         shutil.copy2(build.snapshot / "Cargo.lock", repo / "Cargo.lock")
@@ -256,13 +266,22 @@ def run_lane(build, lane):
     result = LaneResult(lane, log_path=str(build.logs / (lane + ".log")))
     lane_root = build.workspace / "lanes" / lane
     output = build.workspace / "output" / lane
-    output.mkdir(parents=True)
     target = build.root / "target/build-set-cache" / lane
-    target.mkdir(parents=True, exist_ok=True)
     try:
+        output.mkdir(parents=True)
+        target.mkdir(parents=True, exist_ok=True)
         lane_root.parent.mkdir(parents=True, exist_ok=True)
-        subprocess.run(["cp", "-a", "--reflink=auto", str(build.snapshot), str(lane_root)], check=True)
+        run(["cp", "-a", "--reflink=auto", str(build.snapshot), str(lane_root)],
+            build.root, Path(result.log_path), lane)
         env = os.environ.copy()
+        credentials = Path(env.get("ENZIME_SIGNING_CONFIG", str(build.root / "signing/build-credentials.json")))
+        if credentials.is_file():
+            values = json.loads(credentials.read_text())
+            for key in ("ENZIME_KEYSTORE_PASSWORD", "ENZIME_KEY_PASSWORD", "ENZIME_KEYSTORE_PATH", "ENZIME_KEYSTORE_ALIAS"):
+                if key in values:
+                    if not isinstance(values[key], str):
+                        raise ValueError("Signing configuration values must be strings")
+                    env.setdefault(key, values[key])
         env["ENZIME_PREPARED_SOURCE_ARCHIVE"] = str(build.workspace / build.source_archive_filename)
         env.setdefault("ENZIME_KEYSTORE_PATH", str(build.root / "signing/production.keystore"))
         env.setdefault("CARGO_BUILD_JOBS", "2")
@@ -294,7 +313,14 @@ def run_lane(build, lane):
 def run_lanes(build, jobs):
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
         futures = {pool.submit(run_lane, build, lane): lane for lane in TARGETS if lane != "preparation"}
-        return [future.result() for future in concurrent.futures.as_completed(futures)]
+        results = []
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                results.append(future.result())
+            except Exception as error:
+                lane = futures[future]
+                results.append(LaneResult(lane, reason=str(error), log_path=str(build.logs / (lane + ".log"))))
+        return results
 
 
 def finalize(build, results):
@@ -308,8 +334,14 @@ def finalize(build, results):
     path = build.artifact_dir / f"enzime-reader-v{build.version}-build-manifest.json"
     # A preparation failure before stamping must not overwrite an earlier attempt.
     if path.exists():
-        path = build.logs / path.name
+        path = build.artifact_dir / f"enzime-reader-v{build.version}-attempt-{build.workspace.name}-build-manifest.json"
     atomic_json(path, manifest)
+    verified = subprocess.run([sys.executable, str(build.root / "scripts/verify-build-set.py"), str(path)]).returncode == 0
+    if not verified:
+        complete = False
+        manifest["status"] = "incomplete"
+        manifest["verification_error"] = "Build manifest failed independent verification; inspect lane logs"
+        atomic_json(path, manifest)
     atomic_json(build.artifact_dir / "current-build-manifest.json", manifest)
     checksum = build.artifact_dir / f"enzime-reader-v{build.version}-sha256sums.txt"
     if not checksum.exists():
@@ -354,7 +386,11 @@ def main(argv):
             parser.error("Another unified build holds this repository's build lock")
         signal.signal(signal.SIGINT, stop)
         signal.signal(signal.SIGTERM, stop)
-        build, preparation = prepare_snapshot(repo, args.source_ref)
+        try:
+            build, preparation = prepare_snapshot(repo, args.source_ref)
+        except Exception as error:
+            report("preparation", f"Could not start build attempt: {error}")
+            return 1
         if preparation.status == "success":
             results = [preparation, *run_lanes(build, args.jobs)]
         else:
