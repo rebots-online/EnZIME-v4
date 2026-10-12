@@ -43,6 +43,7 @@ beforeEach(() => {
   vi.stubGlobal("Blob", ReadableBlob);
   vi.stubGlobal("PointerEvent", MouseEvent);
   vi.stubGlobal("MediaRecorder", FakeRecorder);
+  vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
   FakeRecorder.isTypeSupported.mockImplementation(mime => mime.includes("opus"));
   stopTrack = vi.fn();
   Object.defineProperty(navigator, "mediaDevices", { configurable: true, value: { getUserMedia: vi.fn(async () => ({ getTracks: () => [{ stop: stopTrack }] })) } });

@@ -132,6 +132,19 @@ export interface AnnotationResolution {
   explanation: string;
 }
 
+export interface ReaderAnnotationAsset {
+  annotationAssetId: string;
+  annotationId: string;
+  assetKind: "ink_svg" | "voice_opus" | "image" | "file";
+  mimeType: string;
+  byteLength: number;
+  durationMs?: number | null;
+  resourceUrl: string;
+}
+export async function annotationAssets(annotationId: Ulid): Promise<ReaderAnnotationAsset[]> {
+  return invoke<ReaderAnnotationAsset[]>("annotation_assets_list", { annotationId });
+}
+
 export interface AnnotationRecord {
   annotationId: Ulid;
   annotationType:

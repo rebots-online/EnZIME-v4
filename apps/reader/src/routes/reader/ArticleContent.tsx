@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ArticleResponse } from "../../services/readerService";
 import type { AnnotationRecord, SelectorBundle } from "../../services/annotationService";
-import { buildRendererBridgeScript, resolveZimReference, validateRendererMessage, type ReaderResourceContext } from "./rendererBridge";
+import { buildRendererBridgeScript, resolveZimReference, validateRendererMessage, type ReaderResourceContext, type CanvasDraftMessage, type RendererCanvasAnnotation } from "./rendererBridge";
+
+import type { ReaderCanvasTool } from "./ReaderCanvasTools";
+import { loadCanvasAssets } from "./canvasPersistence";
+export type CanvasDraftReply = { kind: "draft_result"; draftId: string; saved: boolean; error?: string };
 
 const READER_CSS = `
   :root { color-scheme: light dark; }
@@ -126,15 +130,36 @@ export interface ArticleContentProps {
   readonly onSelectionChange: (selection?: SelectorBundle) => void;
   readonly onOpenArticle: (articleKey: string, fragment?: string) => void;
   readonly selectedAnnotationId?: string;
+  readonly tool?: ReaderCanvasTool;
+  readonly discardDraftId?: string;
+  readonly onCanvasMessage?: (message: CanvasDraftMessage, reply: (result: CanvasDraftReply) => void) => void;
 }
 
 export function ArticleContent(props: ArticleContentProps): ReactNode {
   const frame = useRef<HTMLIFrameElement>(null);
   const [resourceError, setResourceError] = useState<string>();
+  const [canvasRecords, setCanvasRecords] = useState<RendererCanvasAnnotation[]>([]);
+  const [assetError, setAssetError] = useState<string>();
+  const canvasRecordsRef = useRef(canvasRecords); canvasRecordsRef.current = canvasRecords;
   const [placement, setPlacement] = useState<Record<string, "resolved" | "ambiguous" | "orphaned">>({});
   const session = useMemo(() => ({ channel: crypto.randomUUID(), nonce: crypto.randomUUID() }), [props.packId, props.articleKey, props.article.rawHtml]);
   const doc = useMemo(() => buildSandboxedDoc(props.article.rawHtml, props.packId, props.articleKey, session.channel, session.nonce, props.resources), [props.article.rawHtml, props.packId, props.articleKey, session, props.resources]);
   const latest = useRef(props); latest.current = props;
+  useEffect(() => {
+    let cancelled = false;
+    const records = props.annotations.filter(record => record.selector.article.packId === props.packId && record.selector.article.articleKey === props.articleKey).slice(0, 2000);
+    const initial: RendererCanvasAnnotation[] = records.map(record => ({ annotationId: record.annotationId, annotationType: record.annotationType, selector: record.selector, bodyText: record.bodyText, colorToken: record.style.colorToken, assets: [] }));
+    setCanvasRecords(initial); setAssetError(undefined);
+    void loadCanvasAssets(records, props.resources.urlForEntry(props.packId, "A/Home"), () => cancelled).then(assets => {
+      if (!cancelled) setCanvasRecords(initial.map(record => ({ ...record, assets: assets.get(record.annotationId) ?? [] })));
+    }).catch(() => { if (!cancelled) setAssetError("Some saved annotation attachments could not be loaded. Reopen the article to retry."); });
+    return () => { cancelled = true; };
+  }, [props.annotations, props.packId, props.articleKey, props.resources]);
+  function sendCanvas() {
+    frame.current?.contentWindow?.postMessage({ kind: "canvas_annotations_changed", annotations: canvasRecordsRef.current, schemaVersion: 1, channel: session.channel }, "*");
+    frame.current?.contentWindow?.postMessage({ kind: "tool_changed", tool: latest.current.tool ?? "select", schemaVersion: 1, channel: session.channel }, "*");
+  }
+
   function sendAnnotations() {
     const annotations = latest.current.annotations.filter(record => record.selector.article.packId === props.packId && record.selector.article.articleKey === props.articleKey && !!record.selector.textQuote?.exact).slice(0, 2000).map(record => ({ annotationId: record.annotationId, selector: record.selector, colorToken: record.style.colorToken }));
     frame.current?.contentWindow?.postMessage({ kind: "annotations_changed", annotations, schemaVersion: 1, channel: session.channel }, "*");
@@ -146,10 +171,14 @@ export function ArticleContent(props: ArticleContentProps): ReactNode {
       const message = validateRendererMessage(event.data, session.channel, { packId: props.packId, articleKey: props.articleKey });
       if (!message) return;
       if (message.kind === "ready") {
-        sendAnnotations();
+        sendAnnotations(); sendCanvas();
         let fragment = window.location.hash.slice(1);
         try { fragment = decodeURIComponent(fragment); } catch { fragment = ""; }
         if (fragment.length <= 4096) frame.current?.contentWindow?.postMessage({ kind: "focus_fragment", fragment, schemaVersion: 1, channel: session.channel }, "*");
+      }
+      if (message.kind === "canvas_type_commit" || message.kind === "canvas_ink_commit" || message.kind === "canvas_capture_request" || message.kind === "canvas_draft_state") {
+        const target = frame.current?.contentWindow;
+        latest.current.onCanvasMessage?.(message, result => target?.postMessage({ ...result, schemaVersion: 1, channel: session.channel }, "*"));
       }
       if (message.kind === "selection_changed") latest.current.onSelectionChange(message.selector);
       if (message.kind === "open_article") latest.current.onOpenArticle(message.articleKey, message.fragment);
@@ -161,6 +190,8 @@ export function ArticleContent(props: ArticleContentProps): ReactNode {
     window.addEventListener("message", receive); return () => window.removeEventListener("message", receive);
   }, [session, props.packId, props.articleKey]);
   useEffect(() => { sendAnnotations(); }, [props.annotations, session]);
+  useEffect(() => { sendCanvas(); }, [canvasRecords, props.tool, session]);
+  useEffect(() => { if (props.discardDraftId) frame.current?.contentWindow?.postMessage({ kind: "discard_draft", draftId: props.discardDraftId, schemaVersion: 1, channel: session.channel }, "*"); }, [props.discardDraftId, session]);
   useEffect(() => {
     if (props.selectedAnnotationId) frame.current?.contentWindow?.postMessage({ kind: "focus_annotation", annotationId: props.selectedAnnotationId, schemaVersion: 1, channel: session.channel }, "*");
   }, [props.selectedAnnotationId, session]);
@@ -170,6 +201,7 @@ export function ArticleContent(props: ArticleContentProps): ReactNode {
   const orphaned = active.filter(record => placement[record.annotationId] === "orphaned").length;
   return <div className="reader-article">
     {ambiguous || orphaned ? <p role="status">Annotation placement: {ambiguous} ambiguous, {orphaned} unavailable in this article. Saved annotations are unchanged.</p> : null}
+    {assetError ? <p role="status">{assetError}</p> : null}
     {resourceError ? <p role="status">{resourceError}</p> : null}
     <iframe ref={frame} key={session.channel} className="reader-article__frame" sandbox="allow-scripts" srcDoc={doc} title={props.article.title} />
   </div>;

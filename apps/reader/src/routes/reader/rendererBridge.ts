@@ -1,4 +1,6 @@
-import type { SelectorBundle } from "../../services/annotationService";
+import { installCanvasBridge } from "./canvasBridge";
+import type { ReaderCanvasTool } from "./ReaderCanvasTools";
+import type { AnnotationRecord, ReaderAnnotationAsset, SelectorBundle } from "../../services/annotationService";
 
 export interface ReaderResourceContext {
   urlForEntry: (packId: string, entryKey: string) => string;
@@ -9,8 +11,19 @@ export interface RendererHighlight {
   selector: SelectorBundle;
   colorToken: string;
 }
+export interface CanvasPoint { x: number; y: number }
+export interface CanvasStroke { points: CanvasPoint[]; colorToken: string; width: number }
+export interface RendererCanvasAnnotation {
+  annotationId: string; annotationType: AnnotationRecord["annotationType"]; selector: SelectorBundle;
+  bodyText?: string; colorToken: string; assets: readonly ReaderAnnotationAsset[];
+}
+export type CanvasDraftMessage =
+  | { kind: "canvas_type_commit"; selector: SelectorBundle; bodyText: string; draftId: string }
+  | { kind: "canvas_ink_commit"; selector: SelectorBundle; strokes: CanvasStroke[]; width: number; height: number; draftId: string }
+  | { kind: "canvas_capture_request"; selector: SelectorBundle; captureKind: "photo" | "video" | "voice"; draftId: string }
+  | { kind: "canvas_draft_state"; draftId: string; dirty: boolean };
 type Envelope = { schemaVersion: 1; channel: string };
-export type RendererMessageV1 = Envelope & (
+export type RendererMessageV1 = Envelope & (CanvasDraftMessage
   | { kind: "ready" }
   | { kind: "open_article"; articleKey: string; fragment?: string }
   | { kind: "selection_changed"; selector?: SelectorBundle }
@@ -22,6 +35,10 @@ export type RendererParentMessageV1 = Envelope & (
   | { kind: "annotations_changed"; annotations: readonly RendererHighlight[] }
   | { kind: "focus_annotation"; annotationId: string }
   | { kind: "focus_fragment"; fragment: string }
+  | { kind: "tool_changed"; tool: ReaderCanvasTool }
+  | { kind: "canvas_annotations_changed"; annotations: readonly RendererCanvasAnnotation[] }
+  | { kind: "draft_result"; draftId: string; saved: boolean; error?: string }
+  | { kind: "discard_draft"; draftId: string }
 );
 
 export function resolveZimReference(articleKey: string, reference: string): { entryKey: string; fragment?: string } | undefined {
@@ -67,6 +84,40 @@ export function validateRendererMessage(value: unknown, channel: string, article
       if (!Number.isSafeInteger(p.normalizedStart) || !Number.isSafeInteger(p.normalizedEnd) || (p.normalizedStart as number) < 0 || (p.normalizedEnd as number) - (p.normalizedStart as number) !== q.exact.length) return;
       break;
     }
+    case "canvas_type_commit":
+    case "canvas_ink_commit":
+    case "canvas_capture_request":
+    case "canvas_draft_state": {
+      if (!text(value.draftId, 128) || !value.draftId.length) return;
+      if (value.kind === "canvas_draft_state") {
+        if (!fields(value, [...base, "draftId", "dirty"]) || typeof value.dirty !== "boolean") return;
+        break;
+      }
+      const selector = value.selector;
+      if (!object(selector) || !fields(selector, ["article", "textQuote", "textPosition", "imageRegion", "capturedContext"]) || !object(selector.article) || !fields(selector.article, ["packId", "articleKey"]) || selector.article.packId !== article.packId || selector.article.articleKey !== article.articleKey || !text(selector.capturedContext, 16640)) return;
+      if (selector.imageRegion !== undefined) {
+        if (selector.textQuote !== undefined || selector.textPosition !== undefined) return;
+        const r = selector.imageRegion;
+        if (!object(r) || !fields(r, ["resourceEntryKey", "xFraction", "yFraction", "widthFraction", "heightFraction"]) || !text(r.resourceEntryKey, 4096) || !r.resourceEntryKey.length || resolveZimReference(article.articleKey, "/" + r.resourceEntryKey.split("/").map(encodeURIComponent).join("/"))?.entryKey !== r.resourceEntryKey) return;
+        for (const key of ["xFraction", "yFraction", "widthFraction", "heightFraction"]) if (typeof r[key] !== "number" || !Number.isFinite(r[key]) || (r[key] as number) < 0 || (r[key] as number) > 1) return;
+        if ((r.widthFraction as number) <= 0 || (r.heightFraction as number) <= 0 || (r.xFraction as number) + (r.widthFraction as number) > 1 || (r.yFraction as number) + (r.heightFraction as number) > 1) return;
+      } else if (!validateRendererMessage({ schemaVersion: 1, channel, kind: "selection_changed", selector }, channel, article)) return;
+      if (value.kind === "canvas_type_commit") {
+        if (!fields(value, [...base, "draftId", "selector", "bodyText"]) || !text(value.bodyText, 16384) || !value.bodyText.trim()) return;
+      } else if (value.kind === "canvas_capture_request") {
+        if (!fields(value, [...base, "draftId", "selector", "captureKind"]) || !["photo", "video", "voice"].includes(value.captureKind as string)) return;
+      } else {
+        if (!fields(value, [...base, "draftId", "selector", "strokes", "width", "height"]) || ![value.width, value.height].every(n => typeof n === "number" && Number.isFinite(n) && n >= 1 && n <= 4096) || !Array.isArray(value.strokes) || !value.strokes.length || value.strokes.length > 1000) return;
+        let points = 0;
+        for (const stroke of value.strokes) {
+          if (!object(stroke) || !fields(stroke, ["points", "colorToken", "width"]) || !["highlight-blue", "highlight-yellow", "highlight-pink", "highlight-mint"].includes(stroke.colorToken as string) || typeof stroke.width !== "number" || !Number.isFinite(stroke.width) || stroke.width < 0.5 || stroke.width > 32 || !Array.isArray(stroke.points) || !stroke.points.length) return;
+          points += stroke.points.length; if (points > 100000) return;
+          for (const point of stroke.points) if (!object(point) || !fields(point, ["x", "y"]) || typeof point.x !== "number" || typeof point.y !== "number" || !Number.isFinite(point.x) || !Number.isFinite(point.y) || point.x < 0 || point.y < 0 || point.x > (value.width as number) || point.y > (value.height as number)) return;
+        }
+        if (JSON.stringify(value).length > 8 * 1024 * 1024) return;
+      }
+      break;
+    }
     case "annotation_resolution":
       if (!fields(value, [...base, "annotationId", "state"]) || !text(value.annotationId, 128) || !value.annotationId.length || !["resolved", "ambiguous", "orphaned"].includes(value.state as string)) return;
       break;
@@ -83,7 +134,7 @@ export function validateRendererMessage(value: unknown, channel: string, article
 
 // Self-contained: serialized into the opaque document; no imports, native API,
 // eval, HTML injection or references to the privileged shell are available.
-function rendererRuntime(channel: string, article: { packId: string; articleKey: string }) {
+function rendererRuntime(channel: string, article: { packId: string; articleKey: string }, canvasRuntime: typeof installCanvasBridge) {
   const send = (payload: object) => window.parent.postMessage({ schemaVersion: 1, channel, ...payload }, "*");
   type Point = { node: Text; offset: number; end: number };
   function stream() {
@@ -93,7 +144,7 @@ function rendererRuntime(channel: string, article: { packId: string; articleKey:
     let node: Node | null;
     while ((node = walker.nextNode())) {
       const t = node as Text;
-      if (t.parentElement?.closest("script,style,[hidden],[aria-hidden='true'],[data-ez-bridge]")) continue;
+      if (t.parentElement?.closest("script,style,[hidden],[aria-hidden='true'],[data-ez-bridge],[data-ez-canvas]")) continue;
       for (let i = 0; i < t.data.length; i++) {
         const c = t.data[i]!;
         if (/\s/u.test(c)) {
@@ -109,7 +160,9 @@ function rendererRuntime(channel: string, article: { packId: string; articleKey:
   function capture(): SelectorBundle | undefined {
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed || !selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
+    return rangeSelector(selection.getRangeAt(0));
+  }
+  function rangeSelector(range: Range): SelectorBundle | undefined {
     if (!document.body.contains(range.commonAncestorContainer)) return;
     const { text, points } = stream();
     let start = -1, end = -1;
@@ -224,10 +277,11 @@ function rendererRuntime(channel: string, article: { packId: string; articleKey:
       for (const mark of document.querySelectorAll<HTMLElement>("mark[data-ez-annotation]")) if (mark.dataset.ezAnnotation === m.annotationId) { mark.scrollIntoView({ block: "center" }); break; }
     }
   });
+  canvasRuntime(channel, article, { stream, locate, rangeSelector });
   send({ kind: "ready" });
 }
 
 export function buildRendererBridgeScript(channel: string, article: { packId: string; articleKey: string }): string {
   const safe = (v: unknown) => JSON.stringify(v).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
-  return `(${rendererRuntime.toString()})(${safe(channel)},${safe(article)});`;
+  return `(${rendererRuntime.toString()})(${safe(channel)},${safe(article)},${installCanvasBridge.toString()});`;
 }

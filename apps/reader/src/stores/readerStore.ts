@@ -115,6 +115,8 @@ export interface ReaderState {
   clearArticle: () => void;
 }
 
+let articleLoadGeneration = 0;
+
 export const useReaderStore = create<ReaderState>((set, get) => ({
   currentPackId: null,
   currentPackTitle: null,
@@ -141,6 +143,8 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
   },
 
   loadArticle(packId, articleKey) {
+    const generation = ++articleLoadGeneration;
+    const isCurrent = () => generation === articleLoadGeneration && get().currentPackId === packId && get().currentArticleKey === articleKey;
     set({
       currentArticle: startLoading(get().currentArticle),
       currentArticleKey: articleKey,
@@ -149,12 +153,14 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
     return readerService
       .readerArticle(packId, articleKey)
       .then((data) => {
+        if (!isCurrent()) return;
         set({
           currentArticle: finishData(data),
           currentArticleKey: articleKey,
         });
       })
       .catch((error: ServiceError) => {
+        if (!isCurrent()) return;
         set({
           currentArticle: finishError(get().currentArticle, error),
           currentArticleKey: articleKey,
@@ -178,6 +184,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
   },
 
   clearArticle() {
+    articleLoadGeneration++;
     set({
       currentArticle: emptySlice<ArticleResponse>(),
       currentArticleKey: null,

@@ -11,8 +11,8 @@
 // The article surface is OPAQUE and quiet (Literata via --ez-font-reader);
 // Aurora Glass is reserved for the chrome (AppShell, toolbar, breadcrumb).
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useNavigate, useParams, useBlocker } from "react-router-dom";
 import { useReaderStore, setRouteNavigator } from "../../stores/readerStore";
 import {
   resolveState,
@@ -22,230 +22,18 @@ import {
 } from "../../components/home/shared";
 import { BreadcrumbNav } from "./BreadcrumbNav";
 import { ArticleToolbar } from "./ArticleToolbar";
-import { ArticleContent } from "./ArticleContent";
+import { ArticleContent, type CanvasDraftReply } from "./ArticleContent";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useAnnotationStore } from "../../stores/annotationStore";
 import type { SelectorBundle } from "../../services/annotationService";
+import { ReaderCanvasTools, type ReaderCanvasTool } from "./ReaderCanvasTools";
+import { ReaderCanvasCapture } from "./ReaderCanvasCapture";
+import { saveCanvasDraft, type CanvasSaveSession } from "./canvasPersistence";
+import type { CanvasDraftMessage } from "./rendererBridge";
 import { AnnotationDrawer } from "./AnnotationDrawer";
 
-const READER_STYLE_TEXT = `
-.reader-surface {
-  --reader-fg: var(--ez-color-text-primary);
-  --reader-fg-muted: var(--ez-color-text-secondary);
-  --reader-fg-faint: var(--ez-color-text-muted);
-  --reader-glass: var(--ez-color-bg-glass);
-  --reader-glass-strong: var(--ez-color-bg-glass-strong);
-  --reader-border: var(--ez-color-border-subtle);
-  --reader-border-strong: rgba(189, 198, 255, 0.24);
-  --reader-accent: var(--ez-color-primary);
-  --reader-accent-fg: var(--ez-color-bg-canvas);
-  --reader-surface-bg: #f7f8fc;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 64rem;
-  margin: 0 auto;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
-  display: grid;
-  gap: var(--ez-space-3);
-  font-size: clamp(0.92rem, 1vw, 1rem);
-}
-.reader-surface *,
-.reader-surface *::before,
-.reader-surface *::after { box-sizing: border-box; }
-
-.reader-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--ez-radius-md);
-  background: var(--reader-glass);
-  backdrop-filter: blur(var(--ez-blur-glass));
-  -webkit-backdrop-filter: blur(var(--ez-blur-glass));
-  border: 1px solid var(--reader-border);
-  font-size: 0.85rem;
-}
-.reader-breadcrumb__slot {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-width: 0;
-}
-.reader-breadcrumb__sep {
-  color: var(--reader-fg-faint);
-  user-select: none;
-}
-.reader-crumb {
-  display: inline-flex;
-  align-items: center;
-  max-width: 22rem;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-  background: transparent;
-  color: var(--reader-fg);
-  font: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: background-color var(--ez-duration-fast) ease,
-    border-color var(--ez-duration-fast) ease;
-}
-.reader-crumb:hover { background: rgba(124, 140, 255, 0.12); }
-.reader-crumb:focus-visible {
-  outline: none;
-  box-shadow: var(--ez-focus-ring);
-  border-color: var(--ez-color-border-focus);
-}
-.reader-crumb--muted { color: var(--reader-fg-muted); cursor: default; }
-.reader-crumb--muted:hover { background: transparent; }
-.reader-crumb--current {
-  color: var(--reader-accent);
-  background: rgba(124, 140, 255, 0.14);
-  cursor: default;
-  font-weight: 600;
-}
-.reader-crumb--current:hover { background: rgba(124, 140, 255, 0.14); }
-
-.reader-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ez-space-3);
-  flex-wrap: wrap;
-  padding: 0.45rem 0.6rem;
-  border-radius: var(--ez-radius-md);
-  background: var(--reader-glass);
-  backdrop-filter: blur(var(--ez-blur-glass));
-  -webkit-backdrop-filter: blur(var(--ez-blur-glass));
-  border: 1px solid var(--reader-border);
-}
-.reader-toolbar__meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-.reader-toolbar__actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.reader-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.12em 0.55em;
-  font-size: 0.74rem;
-  font-family: var(--ez-font-mono);
-  border-radius: 999px;
-  border: 1px solid var(--reader-border);
-  color: var(--reader-fg-muted);
-  background: rgba(17, 21, 33, 0.45);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 18rem;
-}
-.reader-pill--muted { color: var(--reader-fg-faint); }
-.reader-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  padding: 0.32em 0.8em;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background: var(--reader-accent);
-  color: var(--reader-accent-fg);
-  cursor: pointer;
-  transition: background-color var(--ez-duration-fast) ease,
-    transform var(--ez-duration-fast) ease;
-}
-.reader-chip:hover { background: var(--ez-color-primary-hover); }
-.reader-chip:focus-visible {
-  outline: none;
-  box-shadow: var(--ez-focus-ring);
-}
-.reader-chip:active { transform: translateY(1px); }
-.reader-chip--ghost {
-  background: transparent;
-  color: var(--reader-fg);
-  border-color: var(--reader-border-strong);
-}
-.reader-chip--ghost:hover { background: rgba(124, 140, 255, 0.12); }
-
-.reader-pane {
-  position: relative;
-  border-radius: var(--ez-radius-lg);
-  border: 1px solid var(--reader-border);
-  background: var(--reader-surface-bg);
-  box-shadow: var(--ez-shadow-panel);
-  overflow: hidden;
-  min-height: 50vh;
-}
-.reader-pane[aria-busy="true"]::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(124, 140, 255, 0.04) 0%,
-    transparent 40%
-  );
-  pointer-events: none;
-}
-.reader-pane__loading {
-  padding: clamp(1.5rem, 4vw, 3rem);
-  display: grid;
-  gap: 0.8rem;
-}
-.reader-pane__error,
-.reader-pane__empty {
-  padding: clamp(1.5rem, 4vw, 3rem);
-}
-
-.reader-article {
-  width: 100%;
-}
-.reader-article__frame {
-  width: 100%;
-  min-height: 70vh;
-  border: 0;
-  display: block;
-  background: var(--reader-surface-bg);
-}
-.reader-article__fallback {
-  margin: 0;
-  padding: clamp(1rem, 4vw, 2rem);
-  font-family: var(--ez-font-mono);
-  font-size: 0.85rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: var(--ez-color-text-primary);
-  background: var(--reader-surface-bg);
-}
-.reader-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-`;
-
-export function ReaderStyles(): ReactNode {
-  return <style aria-hidden="true">{READER_STYLE_TEXT}</style>;
-}
+import { ReaderStyles } from "./ReaderStyles";
+export { ReaderStyles } from "./ReaderStyles";
 
 export function ReaderView(): ReactNode {
   const params = useParams<{ packId: string; articleKey: string }>();
@@ -256,6 +44,56 @@ export function ReaderView(): ReactNode {
   const [selection, setSelection] = useState<SelectorBundle>();
   const annotations = useAnnotationStore(s => s.annotations);
   const selectedAnnotationId = useAnnotationStore(s => s.selectedAnnotationId);
+  const [tool, setTool] = useState<ReaderCanvasTool>("select");
+  const [dirtyDraftId, setDirtyDraftId] = useState<string>();
+  const dirtyRef = useRef<string | undefined>(undefined);
+  const [canvasBusy, setCanvasBusy] = useState(false);
+  const busyRef = useRef(false);
+  const [canvasError, setCanvasError] = useState<string>();
+  const [discardDraftId, setDiscardDraftId] = useState<string>();
+  const [requestedTool, setRequestedTool] = useState<ReaderCanvasTool>();
+  const [reloadRequested, setReloadRequested] = useState(false);
+  const [capture, setCapture] = useState<{ kind: "photo" | "video" | "voice"; selector: SelectorBundle; draftId: string; reply: (result: CanvasDraftReply) => void }>();
+  const saves = useRef<CanvasSaveSession>({ pending: new Map(), busy: new Set() });
+  const blocker = useBlocker(!!dirtyDraftId || canvasBusy);
+  function setSaving(value: boolean) { busyRef.current = value; setCanvasBusy(value); }
+  function discardCanvas() {
+    if (busyRef.current) return;
+    const id = dirtyRef.current;
+    if (id) { setDiscardDraftId(id); saves.current.pending.delete(id); }
+    dirtyRef.current = undefined; setDirtyDraftId(undefined); setCapture(undefined); setCanvasError(undefined);
+  }
+  useEffect(() => {
+    if (!dirtyDraftId && !canvasBusy) return;
+    const guard = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", guard); return () => window.removeEventListener("beforeunload", guard);
+  }, [dirtyDraftId, canvasBusy]);
+  async function onCanvasMessage(message: CanvasDraftMessage, reply: (result: CanvasDraftReply) => void) {
+    if (message.kind === "canvas_draft_state") {
+      if (message.dirty && !dirtyRef.current) { dirtyRef.current = message.draftId; setDirtyDraftId(message.draftId); }
+      if (!message.dirty && dirtyRef.current === message.draftId && !busyRef.current) { dirtyRef.current = undefined; setDirtyDraftId(undefined); }
+      return;
+    }
+    if (message.draftId !== dirtyRef.current || busyRef.current) return;
+    if (message.kind === "canvas_capture_request") {
+      setCapture({ kind: message.captureKind, selector: message.selector, draftId: message.draftId, reply }); return;
+    }
+    setSaving(true); setCanvasError(undefined);
+    try {
+      await saveCanvasDraft(saves.current, message.kind === "canvas_type_commit" ? { kind: "type", draftId: message.draftId, selector: message.selector, bodyText: message.bodyText } : { kind: "draw", draftId: message.draftId, selector: message.selector, strokes: message.strokes, width: message.width, height: message.height });
+      reply({ kind: "draft_result", draftId: message.draftId, saved: true });
+      if (dirtyRef.current === message.draftId) { dirtyRef.current = undefined; setDirtyDraftId(undefined); }
+    } catch (cause) { const error = cause instanceof Error ? cause.message : String(cause); setCanvasError(error); reply({ kind: "draft_result", draftId: message.draftId, saved: false, error }); }
+    finally { setSaving(false); }
+  }
+  async function saveHighlight() {
+    if (!selection || busyRef.current) return;
+    setSaving(true); setCanvasError(undefined);
+    try { await saveCanvasDraft(saves.current, { kind: "highlight", draftId: crypto.randomUUID(), selector: selection }); }
+    catch (cause) { setCanvasError(cause instanceof Error ? cause.message : String(cause)); }
+    finally { setSaving(false); }
+  }
+
   const resources = useMemo(() => {
     const base = convertFileSrc("", "enzime-resource").replace(/\/$/, "");
     const url = new URL(base);
@@ -303,11 +141,12 @@ export function ReaderView(): ReactNode {
     loadArticle,
   ]);
 
-  const state = resolveState(
+  const routeMatchesArticle = currentPackId === routePackId && currentArticleKey === routeArticleKey;
+  const state = routeMatchesArticle ? resolveState(
     true,
     currentArticle,
     (data) => data.rawHtml.trim().length > 0,
-  );
+  ) : "loading";
   const article = currentArticle.data;
 
   const goHome = () => navigate("/");
@@ -324,6 +163,7 @@ export function ReaderView(): ReactNode {
       <>
         <ArticleContent article={article} packId={routePackId} articleKey={currentArticleKey ?? routeArticleKey}
           resources={resources} annotations={annotations} selectedAnnotationId={selectedAnnotationId}
+          tool={tool} discardDraftId={discardDraftId} onCanvasMessage={(message, reply) => void onCanvasMessage(message, reply)}
           onSelectionChange={setSelection}
           onOpenArticle={(key, fragment) => navigate(`/reader/${encodeURIComponent(routePackId)}/${encodeURIComponent(key)}${fragment ? `#${encodeURIComponent(fragment)}` : ""}`)} />
         {currentArticleKey ? (
@@ -441,9 +281,26 @@ export function ReaderView(): ReactNode {
         mimeType={article?.mimeType ?? ""}
         onHome={goHome}
         onReload={() =>
-          void loadArticle(routePackId, routeArticleKey || "")
+          dirtyDraftId || canvasBusy ? setReloadRequested(true) : void loadArticle(routePackId, routeArticleKey || "")
         }
       />
+      <ReaderCanvasTools tool={tool} busy={canvasBusy} onToolChange={next => { if (dirtyDraftId) setRequestedTool(next); else setTool(next); }} />
+      {tool !== "select" && tool !== "highlight" ? <p>Click a passage or image to {tool === "draw" ? "draw over it" : tool === "type" ? "type an anchored note" : "attach a capture"}.</p> : null}
+      {tool === "highlight" ? <button className="reader-chip" type="button" disabled={!selection || canvasBusy} onClick={() => void saveHighlight()}>Save selected highlight</button> : null}
+      {canvasError ? <p role="alert">{canvasError}</p> : null}
+      {(blocker.state === "blocked" || requestedTool || reloadRequested) ? <section role="dialog" aria-modal="true" aria-label="Unsaved article annotation" style={{ padding: "1rem", background: "var(--ez-color-bg-elevated)", border: "1px solid var(--ez-color-border-subtle)" }}>
+        <p>{canvasBusy ? "Annotation is saving. Stay here until it finishes." : "This article has an unfinished annotation. Stay to finish it, or discard the draft."}</p>
+        <button type="button" onClick={() => { if (blocker.state === "blocked") blocker.reset(); setRequestedTool(undefined); setReloadRequested(false); }}>Stay</button>
+        <button type="button" disabled={canvasBusy} onClick={() => {
+          discardCanvas();
+          if (blocker.state === "blocked") blocker.proceed();
+          if (requestedTool) { setTool(requestedTool); setRequestedTool(undefined); }
+          if (reloadRequested) { setReloadRequested(false); void loadArticle(routePackId, routeArticleKey || ""); }
+        }}>Discard &amp; {blocker.state === "blocked" ? "leave" : requestedTool ? "switch tool" : "reload"}</button>
+      </section> : null}
+      {capture ? <ReaderCanvasCapture key={capture.draftId} kind={capture.kind} selector={capture.selector} draftId={capture.draftId} onBusyChange={setSaving} onCancel={discardCanvas} onSaved={() => {
+        capture.reply({ kind: "draft_result", draftId: capture.draftId, saved: true }); setCapture(undefined); dirtyRef.current = undefined; setDirtyDraftId(undefined);
+      }} /> : null}
       <div className="reader-pane" aria-busy={busy}>
         {pane}
       </div>
