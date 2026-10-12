@@ -1,4 +1,4 @@
-use super::{ClusterBlobSource, IndexedEntry, RangeReadLimits, RemoteZimIndex};
+use super::{ClusterBlobSource, IndexedEntry, RangeReadLimits, RemoteZimIndex, ZimEntryIndex};
 use crate::{
     archive::{classify_kind, score_title, sha256_digest},
     directory::RawEntry,
@@ -7,12 +7,13 @@ use crate::{
     sanitize,
 };
 use async_trait::async_trait;
+use futures_util::StreamExt;
 use std::sync::{
     atomic::{AtomicU64, Ordering},
     Arc,
 };
 pub struct RangeZimArchive {
-    index: Arc<RemoteZimIndex>,
+    index: Arc<dyn ZimEntryIndex>,
     blobs: Arc<dyn ClusterBlobSource>,
     metadata: ZimMetadata,
     limits: RangeReadLimits,
@@ -21,6 +22,14 @@ pub struct RangeZimArchive {
 impl RangeZimArchive {
     pub async fn open(
         index: Arc<RemoteZimIndex>,
+        blobs: Arc<dyn ClusterBlobSource>,
+        metadata: ZimMetadata,
+        limits: RangeReadLimits,
+    ) -> Result<Self, ZimError> {
+        Self::open_index(index, blobs, metadata, limits).await
+    }
+    pub async fn open_index(
+        index: Arc<dyn ZimEntryIndex>,
         blobs: Arc<dyn ClusterBlobSource>,
         mut metadata: ZimMetadata,
         limits: RangeReadLimits,
@@ -36,11 +45,11 @@ impl RangeZimArchive {
             checked: Arc::new(AtomicU64::new(0)),
         })
     }
-    pub fn index(&self) -> &Arc<RemoteZimIndex> {
+    pub fn index(&self) -> &Arc<dyn ZimEntryIndex> {
         &self.index
     }
     async fn descriptor(
-        index: &RemoteZimIndex,
+        index: &dyn ZimEntryIndex,
         e: IndexedEntry,
     ) -> Result<ZimEntryDescriptor, ZimError> {
         let (kind, redirect_target) = match &e.raw {
@@ -117,7 +126,7 @@ impl ZimArchive for RangeZimArchive {
             .find_entry(key)
             .await?
             .ok_or_else(|| ZimError::EntryNotFound(key.0.clone()))?;
-        let result = Self::descriptor(&self.index, e).await?;
+        let result = Self::descriptor(self.index.as_ref(), e).await?;
         self.checked.fetch_add(1, Ordering::Relaxed);
         Ok(result)
     }
@@ -161,7 +170,9 @@ impl ZimArchive for RangeZimArchive {
         let capacity = offset + limit;
         let needle = query.text.trim().to_lowercase();
         let mut hits = Vec::new();
-        for i in 0..self.index.header().entry_count {
+        let mut entries = self.index.clone().entries().await?;
+        let mut i = 0u64;
+        while let Some(entry) = entries.next().await {
             // Even an immediately-ready memory source must permit cancellation.
             if i % 128 == 0 {
                 let mut yielded = false;
@@ -176,7 +187,8 @@ impl ZimArchive for RangeZimArchive {
                 })
                 .await;
             }
-            let e = self.index.entry_at(i).await?;
+            i += 1;
+            let e = entry?;
             self.checked.fetch_add(1, Ordering::Relaxed);
             if !matches!(e.raw, RawEntry::Article(_))
                 || classify_kind(e.raw.namespace(), e.mime_type.as_deref().unwrap_or(""))
@@ -208,11 +220,14 @@ impl ZimArchive for RangeZimArchive {
     async fn entries(&self) -> Result<ZimEntryStream, ZimError> {
         let index = self.index.clone();
         let checked = self.checked.clone();
-        Ok(Box::pin(
-            async_stream::try_stream! {for i in 0..index.header().entry_count {
-             let descriptor=Self::descriptor(&index,index.entry_at(i).await?).await?;checked.fetch_add(1,Ordering::Relaxed);yield descriptor;
-            }},
-        ))
+        Ok(Box::pin(async_stream::try_stream! {
+            let mut entries = index.clone().entries().await?;
+            while let Some(entry) = entries.next().await {
+                let descriptor = Self::descriptor(index.as_ref(), entry?).await?;
+                checked.fetch_add(1, Ordering::Relaxed);
+                yield descriptor;
+            }
+        }))
     }
     async fn verify_structure(&self) -> Result<ZimVerificationReport, ZimError> {
         Ok(ZimVerificationReport {valid:true,engine_id:crate::ENGINE_ID.into(),engine_version:crate::ENGINE_VERSION.into(),checked_entries:self.checked.load(Ordering::Relaxed),warnings:vec![ZimVerificationFinding {code:"partial_metadata_validation".into(),entry_key:None,detail:"Only accessed metadata validated; checked_entries counts successful entry accesses, not distinct entries. Unread entries and payloads are not verified.".into()}],errors:vec![]})

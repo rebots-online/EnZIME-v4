@@ -18,6 +18,11 @@ pub struct IndexedEntry {
     pub raw: RawEntry,
     pub mime_type: Option<String>,
 }
+#[derive(Clone, Debug)]
+pub struct CanonicalEntryRecord {
+    pub entry: IndexedEntry,
+    pub raw_bytes: bytes::Bytes,
+}
 pub struct RemoteZimIndex {
     reader: PagedRangeReader,
     header: ZimHeader,
@@ -131,6 +136,9 @@ impl RemoteZimIndex {
         Ok(u64::from_le_bytes(bytes[..].try_into().unwrap()))
     }
     pub async fn entry_at(&self, index: u32) -> Result<IndexedEntry, ZimError> {
+        Ok(self.entry_record(index).await?.entry)
+    }
+    pub async fn entry_record(&self, index: u32) -> Result<CanonicalEntryRecord, ZimError> {
         if index >= self.header.entry_count {
             return Err(ZimError::EntryNotFound(format!("entry index {index}")));
         }
@@ -139,7 +147,8 @@ impl RemoteZimIndex {
             return Err(invalid("directory pointer outside source"));
         }
         let length = (self.reader.len() - ptr).min(self.limits.max_entry_bytes as u64) as usize;
-        let (raw, _) = parse_entry(&self.reader.read_exact(ptr, length).await?)?;
+        let bytes = self.reader.read_exact(ptr, length).await?;
+        let (raw, consumed) = parse_entry(&bytes)?;
         let mime_type = match &raw {
             RawEntry::Article(a) => {
                 if a.cluster_number >= self.header.cluster_count {
@@ -155,11 +164,14 @@ impl RemoteZimIndex {
             _ => None,
         };
         let key = EntryKey(crate::archive::entry_key_string(raw.namespace(), raw.url()));
-        Ok(IndexedEntry {
-            index,
-            key,
-            raw,
-            mime_type,
+        Ok(CanonicalEntryRecord {
+            entry: IndexedEntry {
+                index,
+                key,
+                raw,
+                mime_type,
+            },
+            raw_bytes: bytes::Bytes::copy_from_slice(&bytes[..consumed]),
         })
     }
     pub async fn find_entry(&self, key: &EntryKey) -> Result<Option<IndexedEntry>, ZimError> {
@@ -194,31 +206,48 @@ impl RemoteZimIndex {
             length: end - start,
         })
     }
-    async fn resolve_index(
+    pub async fn resolve_records(
         &self,
-        mut entry: IndexedEntry,
+        index: u32,
         max_hops: u8,
-    ) -> Result<IndexedEntry, ZimError> {
-        let max_hops = max_hops.min(self.limits.max_redirect_hops);
+    ) -> Result<Vec<CanonicalEntryRecord>, ZimError> {
+        let max_hops = max_hops.min(self.limits.max_redirect_hops).min(32);
+        let mut records = Vec::with_capacity(max_hops as usize + 1);
         let mut visited = HashSet::new();
+        let mut index = index;
         for hop in 0..=max_hops {
-            match entry.raw {
-                RawEntry::Redirect(ref r) => {
-                    if visited.contains(&entry.index) {
-                        return Err(ZimError::RedirectCycle);
-                    }
-                    if hop == max_hops {
-                        return Err(ZimError::UnsupportedFeature(
-                            "redirect hop limit exceeded".into(),
-                        ));
-                    }
-                    visited.insert(entry.index);
-                    entry = self.entry_at(r.redirect_index).await?;
+            if !visited.insert(index) {
+                return Err(ZimError::RedirectCycle);
+            }
+            let record = self.entry_record(index).await?;
+            let target = match &record.entry.raw {
+                RawEntry::Redirect(r) => Some(r.redirect_index),
+                _ => None,
+            };
+            records.push(record);
+            match target {
+                None => return Ok(records),
+                Some(_) if hop == max_hops => {
+                    return Err(ZimError::UnsupportedFeature(
+                        "redirect hop limit exceeded".into(),
+                    ))
                 }
-                _ => return Ok(entry),
+                Some(next) => index = next,
             }
         }
         unreachable!()
+    }
+    async fn resolve_index(
+        &self,
+        entry: IndexedEntry,
+        max_hops: u8,
+    ) -> Result<IndexedEntry, ZimError> {
+        Ok(self
+            .resolve_records(entry.index, max_hops)
+            .await?
+            .pop()
+            .unwrap()
+            .entry)
     }
     pub async fn resolve_entry(
         &self,
