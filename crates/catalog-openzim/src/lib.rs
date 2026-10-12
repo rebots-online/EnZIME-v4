@@ -24,6 +24,11 @@
 
 pub mod enzime_json;
 pub mod openzim_xml;
+pub mod kiwix;
+pub use kiwix::{
+    parse_kiwix_metalink, parse_kiwix_opds, KiwixAcquisition, KiwixCatalogClient,
+    KiwixEntry, KiwixPage, KiwixQuery, PublishedDigest,
+};
 mod store;
 mod validate;
 

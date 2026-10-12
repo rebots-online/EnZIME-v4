@@ -112,6 +112,11 @@ pub enum QuarantineReason {
     ArtifactIdMismatch { reported: String, recomputed: String },
     InvalidSignature { detail: String },
     ObjectDigestMismatch { object_sha256: String, expected: String, actual: String },
+    /// `signature.key_id` is not in the trusted set. The envelope's own
+    /// embedded creator key is deliberately NOT used as a fallback: any
+    /// attacker can self-sign with their own key, so an unknown key must
+    /// quarantine exactly like an invalid signature (§9.6).
+    UnknownKey { key_id: String },
 }
 
 #[derive(Debug)]
@@ -170,10 +175,10 @@ pub struct UnsignedDecision {
     pub artifact_id: String,
 }
 
-/// Classify an incoming sidecar artifact against `index` using the public
-/// key resolved from the envelope creator (and, if provided, a back-list of
-/// trusted verifying keys by `key_id`). Returns the verdict the caller
-/// must act on; performs no storage mutation.
+/// Classify an incoming sidecar artifact against `index`, verifying the
+/// signature against the trusted verifying key registered for
+/// `signature.key_id`. Returns the verdict the caller must act on; performs
+/// no storage mutation.
 pub fn classify_import(
     env: &SidecarV1,
     index: &ImportIndex,
@@ -189,6 +194,7 @@ pub fn classify_import(
     // 2. Validate envelope metadata (algorithm, signed_domain, public key
     //    length) — produces the verifying key bytes for signature check.
     let local_pubkey = validate_envelope_metadata(env)?;
+    debug_assert_eq!(local_pubkey.len(), 32);
 
     // 3. Artifact_id must match SHA-256(unsigned signing form).
     let recomputed_artifact_id = artifact_id(env);
@@ -212,16 +218,19 @@ pub fn classify_import(
         });
     }
 
-    // 5. Invalid signatures are quarantined. The signature is checked
-    //    against the public key registered for `signature.key_id`, falling
-    //    back to the envelope's embedded creator public key if the key_id
-    //    is not in the trust list.
+    // 5. The signature is checked against the public key registered for
+    //    `signature.key_id`. An unknown key quarantines — trusting the
+    //    envelope's own embedded creator key would let self-signed
+    //    artifacts pass as authentic.
     let pubkey_bytes = match trusted_keys.get(&env.signature.key_id) {
         Some(vk) => vk.to_bytes(),
         None => {
-            let mut arr = [0u8; 32];
-            arr.copy_from_slice(&local_pubkey);
-            arr
+            return Ok(ImportVerdict::Quarantined {
+                artifact_id: env.artifact_id.clone(),
+                reason: QuarantineReason::UnknownKey {
+                    key_id: env.signature.key_id.clone(),
+                },
+            });
         }
     };
     let verifying_key = VerifyingKey::from_bytes(&pubkey_bytes)
@@ -236,7 +245,7 @@ pub fn classify_import(
         return Ok(ImportVerdict::Quarantined {
             artifact_id: env.artifact_id.clone(),
             reason: QuarantineReason::InvalidSignature {
-                detail: "signature did not validate against trusted or embedded public key"
+                detail: "signature did not validate against the trusted public key"
                     .to_string(),
             },
         });
@@ -605,13 +614,35 @@ mod tests {
         env.signature.value[0] ^= 0x01;
 
         let index = ImportIndex::new();
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         match classify_import(&env, &index, &trusted).unwrap() {
             ImportVerdict::Quarantined {
                 reason: QuarantineReason::InvalidSignature { .. },
                 ..
             } => {}
             other => panic!("expected Quarantined(InvalidSignature), got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn unknown_key_id_is_quarantined_not_accepted() {
+        // The envelope is validly signed by its own creator, but that key
+        // is not in the trust set. The embedded creator key must NOT be
+        // used as a fallback: a self-signed hostile artifact quarantines.
+        let mut rng = OsRng;
+        let signing = SigningKey::generate(&mut rng);
+        let mut env = unsigned_envelope(&signing);
+        finalize_signed_envelope(&mut env, "device-1", &signing).unwrap();
+
+        let index = ImportIndex::new();
+        let trusted = HashMap::new();
+        match classify_import(&env, &index, &trusted).unwrap() {
+            ImportVerdict::Quarantined {
+                reason: QuarantineReason::UnknownKey { key_id },
+                ..
+            } => assert_eq!(key_id, "device-1"),
+            other => panic!("expected Quarantined(UnknownKey), got {:?}", other),
         }
     }
 
@@ -645,7 +676,8 @@ mod tests {
         finalize_signed_envelope(&mut env, "device-1", &signing).unwrap();
 
         let index = ImportIndex::new();
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         match classify_import(&env, &index, &trusted).unwrap() {
             ImportVerdict::Quarantined {
                 reason: QuarantineReason::ObjectDigestMismatch { .. },
@@ -666,7 +698,8 @@ mod tests {
         // Seed with the identical annotation.
         index.insert_annotation(&env.annotations[0]);
 
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         let verdict = classify_import(&env, &index, &trusted).unwrap();
         match verdict {
             ImportVerdict::Accepted {
@@ -699,7 +732,8 @@ mod tests {
         existing.revision = 0;
         index.insert_annotation(&existing);
 
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         let verdict = classify_import(&env, &index, &trusted).unwrap();
         match verdict {
             ImportVerdict::Accepted {
@@ -730,7 +764,8 @@ mod tests {
         existing.revision = 5;
         index.insert_annotation(&existing);
 
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         let verdict = classify_import(&env, &index, &trusted).unwrap();
         match verdict {
             ImportVerdict::Accepted {
@@ -762,7 +797,8 @@ mod tests {
         divergent.selector = text_map(&[("exact", Value::Text("DIFFERENT".to_string()))]);
         index.insert_annotation(&divergent);
 
-        let trusted = HashMap::new();
+        let mut trusted = HashMap::new();
+        trusted.insert("device-1".to_string(), signing.verifying_key());
         let verdict = classify_import(&env, &index, &trusted).unwrap();
         match verdict {
             ImportVerdict::Accepted {

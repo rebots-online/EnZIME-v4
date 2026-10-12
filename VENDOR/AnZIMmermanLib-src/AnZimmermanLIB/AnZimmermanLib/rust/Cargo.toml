@@ -1,0 +1,29 @@
+[package]
+name = "anzimmerman"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.82"
+license-file = "../LICENSE"
+authors = ["Robin L. M. Cheung, MBA"]
+publish = false
+
+[dependencies]
+thiserror = "1"
+async-trait = "0.1"
+async-stream = "0.3"
+bytes = { version = "1", features = ["serde"] }
+futures-core = "0.3"
+futures-util = "0.3"
+ego-tree = "0.6"
+scraper = "0.20"
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+hex = "0.4"
+flate2 = "1.0"
+zstd = "0.13"
+xz2 = "0.1"
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt"] }
+serde_json = "1"

@@ -1,5 +1,6 @@
-mod ipc;
-mod state;
+pub mod ipc;
+mod reader_resources;
+pub mod state;
 
 use std::path::PathBuf;
 
@@ -25,7 +26,7 @@ fn resolve_db_path(app: &tauri::App) -> Result<PathBuf, Box<dyn std::error::Erro
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    reader_resources::register(tauri::Builder::default())
         .setup(|app| {
             let db_path = resolve_db_path(app)?;
             let conn = storage_sqlite::open_with_pragmas(&db_path)
@@ -33,6 +34,7 @@ pub fn run() {
             storage_sqlite::MigrationRunner::new(&conn)
                 .apply_initial()
                 .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            storage_sqlite::apply_dyndon_schema(&conn)?;
             // The app-data directory is the M1 default storage root when the
             // `storage_roots` table has no user-chosen root yet. Resolve it
             // from the Tauri path API; fall back to the DB's parent dir for
@@ -44,7 +46,16 @@ pub fn run() {
                     .map(|p| p.to_path_buf())
                     .unwrap_or_else(|| PathBuf::from(".")),
             };
-            app.manage(AppState::new(conn, app_data_dir));
+            let state = AppState::new(conn, app_data_dir)
+                .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            // The local private layer must exist before the first note is
+            // taken; creating it at boot keeps every command path simple.
+            state
+                .annotations
+                .ensure_local_layer()
+                .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            tauri::async_runtime::block_on(ipc::dyndon::restore_dyndon_archives(&state))?;
+            app.manage(state);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -59,7 +70,26 @@ pub fn run() {
             ipc::catalog_search,
             ipc::install_plan,
             ipc::install_start,
+            ipc::install_cancel,
             ipc::job_list,
+            // Annotation vertical (§14.4 notes contract) — multimodal-notes USP.
+            ipc::annotations::annotation_list,
+            reader_resources::annotation_assets_list,
+            ipc::annotations::annotation_create,
+            ipc::annotations::annotation_update,
+            ipc::annotations::annotation_delete,
+            ipc::annotations::annotation_restore,
+            ipc::annotations::annotation_asset_begin,
+            ipc::annotations::annotation_asset_chunk,
+            ipc::annotations::annotation_asset_commit,
+            ipc::annotations::notebook_tree,
+            ipc::annotations::notebook_create,
+            ipc::annotations::notebook_update,
+            ipc::annotations::tag_list,
+            ipc::annotations::tag_create,
+            ipc::annotations::sidecar_layers,
+            ipc::annotations::sidecar_import_plan,
+            ipc::annotations::sidecar_import_commit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running EnZIME Reader");

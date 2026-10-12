@@ -237,6 +237,11 @@ mod tests {
         tokio::fs::create_dir_all(&dir)
             .await
             .expect("create test dir");
+        // The source adapter (correctly) rejects relative paths, and
+        // CARGO_TARGET_TMPDIR is unset for unit tests — absolutize.
+        let dir = tokio::fs::canonicalize(&dir)
+            .await
+            .expect("absolute test dir");
         let path = dir.join("fixture.bin");
         let payload: Vec<u8> = (0u32..4096).flat_map(|n| n.to_le_bytes().to_vec()).collect();
         tokio::fs::write(&path, &payload)

@@ -37,6 +37,7 @@ android {
             }
         }
         getByName("release") {
+            ndk.debugSymbolLevel = "FULL"
             isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }

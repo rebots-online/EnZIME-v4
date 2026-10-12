@@ -559,9 +559,9 @@ mod tests {
     }
 
     fn digest(n: u8) -> ContentDigest {
-        ContentDigest::sha256_from_hex(std::iter::repeat_n(
-            (b'a' + (n % 26)) as char, 64,
-        ))
+        ContentDigest::sha256_from_hex(
+            std::iter::repeat_n((b'a' + (n % 6)) as char, 64).collect::<String>(),
+        )
         .expect("64 lowercase hex chars")
     }
 
@@ -774,7 +774,7 @@ mod tests {
             for _ in 0..max_hops {
                 match self.redirects.get(&current) {
                     Some(next) => {
-                        if next == &key {
+                        if next == key {
                             return Err(ZimError::RedirectCycle);
                         }
                         current = next.clone();

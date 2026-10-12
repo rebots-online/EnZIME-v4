@@ -12,3 +12,6 @@ apps/*/dist/
 
 # VENDOR/ trees are ASSIMILATED plain source in our tree (INC-15) — not
 # submodules, no embedded .git. They are tracked and committed.
+
+# Local build signing values; never enter snapshots or source publication.
+/signing/build-credentials.json

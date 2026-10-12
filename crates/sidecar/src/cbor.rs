@@ -84,7 +84,15 @@ pub enum CborError {
     UnsortedMap,
     #[error("trailing bytes after top-level value")]
     Trailing,
+    #[error("CBOR nesting exceeds the maximum depth of {0}")]
+    DepthLimit(usize),
 }
+
+/// Maximum nesting depth the decoder will traverse for arrays and maps. The
+/// sidecar CDDL defines structures at most a handful of levels deep; the cap
+/// exists so hostile input (e.g. thousands of nested `0x81` array headers)
+/// cannot overflow the stack on import.
+pub const MAX_DEPTH: usize = 64;
 
 /// Encode `value` into `out` using canonical RFC 8949 deterministic rules.
 ///
@@ -177,7 +185,7 @@ pub fn text_map(entries: &[(&str, Value)]) -> Value {
 /// duplicate keys).
 pub fn decode(input: &[u8]) -> Result<Value, CborError> {
     let mut pos = 0usize;
-    let v = decode_one(input, &mut pos)?;
+    let v = decode_one(input, &mut pos, 0)?;
     if pos != input.len() {
         return Err(CborError::Trailing);
     }
@@ -204,7 +212,10 @@ fn encode_arg(major: u8, arg: u128, out: &mut Vec<u8>) {
     }
 }
 
-fn decode_one(input: &[u8], pos: &mut usize) -> Result<Value, CborError> {
+fn decode_one(input: &[u8], pos: &mut usize, depth: usize) -> Result<Value, CborError> {
+    if depth > MAX_DEPTH {
+        return Err(CborError::DepthLimit(MAX_DEPTH));
+    }
     if *pos >= input.len() {
         return Err(CborError::Truncated);
     }
@@ -242,7 +253,7 @@ fn decode_one(input: &[u8], pos: &mut usize) -> Result<Value, CborError> {
             let n = usize::try_from(arg).map_err(|_| CborError::Truncated)?;
             let mut items = Vec::with_capacity(n.min(1024));
             for _ in 0..n {
-                items.push(decode_one(input, pos)?);
+                items.push(decode_one(input, pos, depth + 1)?);
             }
             Ok(Value::Array(items))
         }
@@ -250,8 +261,8 @@ fn decode_one(input: &[u8], pos: &mut usize) -> Result<Value, CborError> {
             let n = usize::try_from(arg).map_err(|_| CborError::Truncated)?;
             let mut entries: Vec<(Value, Value)> = Vec::with_capacity(n.min(1024));
             for _ in 0..n {
-                let k = decode_one(input, pos)?;
-                let v = decode_one(input, pos)?;
+                let k = decode_one(input, pos, depth + 1)?;
+                let v = decode_one(input, pos, depth + 1)?;
                 entries.push((k, v));
             }
             // Reject non-canonical ordering and duplicate keys at decode time.
@@ -500,5 +511,36 @@ mod tests {
         let bytes = encode_to_vec(&nested);
         let back = decode(&bytes).unwrap();
         assert_eq!(back, nested);
+    }
+
+    #[test]
+    fn nesting_up_to_max_depth_round_trips() {
+        // A chain of exactly MAX_DEPTH nested arrays (levels 0..MAX_DEPTH)
+        // must still decode — the cap accommodates legal CDDL structures.
+        let mut v = Value::Unsigned(1);
+        for _ in 0..MAX_DEPTH {
+            v = Value::Array(vec![v]);
+        }
+        let bytes = encode_to_vec(&v);
+        assert_eq!(decode(&bytes).unwrap(), v);
+    }
+
+    #[test]
+    fn nesting_beyond_max_depth_is_rejected() {
+        // One level past the cap must fail without recursing further.
+        let mut v = Value::Unsigned(1);
+        for _ in 0..(MAX_DEPTH + 1) {
+            v = Value::Array(vec![v]);
+        }
+        let bytes = encode_to_vec(&v);
+        assert!(matches!(decode(&bytes), Err(CborError::DepthLimit(_))));
+    }
+
+    #[test]
+    fn hostile_deeply_nested_input_hits_depth_limit() {
+        // ~100k nested array headers: pre-fix this overflowed the stack;
+        // now the depth budget rejects it long before.
+        let hostile = vec![0x81u8; 100_000];
+        assert!(matches!(decode(&hostile), Err(CborError::DepthLimit(_))));
     }
 }

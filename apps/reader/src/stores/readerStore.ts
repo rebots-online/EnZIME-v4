@@ -2,7 +2,7 @@
 //
 // Exposes:
 //   currentArticle   — Slice<ArticleResponse> (status/data/error/lastUpdated)
-//   open(path)       — opens a ZIM file via readerService.readerOpen, remembers
+//   open(packId)       — opens an installed pack via readerService.readerOpen, remembers
 //                       the pack, and eagerly loads its main page article.
 //   loadArticle(id)  — fetches a specific article by (packId, articleKey).
 //   navigate(href)   — resolves an internal ZIM article link (relative path,
@@ -108,12 +108,14 @@ export interface ReaderState {
   currentArticleKey: string | null;
   currentArticle: Slice<ArticleResponse>;
 
-  open: (path: string) => Promise<OpenPackResponse | null>;
+  open: (packId: string) => Promise<OpenPackResponse | null>;
   loadArticle: (packId: string, articleKey: string) => Promise<void>;
   resolveArticleRoute: (href: string) => string | null;
   navigate: (href: string) => void;
   clearArticle: () => void;
 }
+
+let articleLoadGeneration = 0;
 
 export const useReaderStore = create<ReaderState>((set, get) => ({
   currentPackId: null,
@@ -121,10 +123,11 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
   currentArticleKey: null,
   currentArticle: emptySlice<ArticleResponse>(),
 
-  open(path) {
+  open(packId) {
     return readerService
-      .readerOpen(path)
+      .readerOpen(packId)
       .then((res) => {
+        if (!res.mainPageKey?.trim()) throw { kind: "recoverable", message: "This pack has no readable main page.", cause: null } satisfies ServiceError;
         set({
           currentPackId: res.packId,
           currentPackTitle: res.title,
@@ -141,6 +144,8 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
   },
 
   loadArticle(packId, articleKey) {
+    const generation = ++articleLoadGeneration;
+    const isCurrent = () => generation === articleLoadGeneration && get().currentPackId === packId && get().currentArticleKey === articleKey;
     set({
       currentArticle: startLoading(get().currentArticle),
       currentArticleKey: articleKey,
@@ -149,12 +154,14 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
     return readerService
       .readerArticle(packId, articleKey)
       .then((data) => {
+        if (!isCurrent()) return;
         set({
           currentArticle: finishData(data),
           currentArticleKey: articleKey,
         });
       })
       .catch((error: ServiceError) => {
+        if (!isCurrent()) return;
         set({
           currentArticle: finishError(get().currentArticle, error),
           currentArticleKey: articleKey,
@@ -178,6 +185,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
   },
 
   clearArticle() {
+    articleLoadGeneration++;
     set({
       currentArticle: emptySlice<ArticleResponse>(),
       currentArticleKey: null,

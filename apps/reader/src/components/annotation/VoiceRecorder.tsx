@@ -27,6 +27,13 @@ interface RecorderBundle {
   readonly chunks: BlobPart[];
 }
 
+export interface VoiceCapture { bytes: Uint8Array; durationMs: number; mimeType: string }
+export const MAX_VOICE_BYTES = 32 * 1024 * 1024;
+export function pickVoiceMimeType(): string | undefined {
+  if (typeof MediaRecorder === "undefined" || !MediaRecorder.isTypeSupported) return;
+  return ["audio/ogg;codecs=opus", "audio/webm;codecs=opus"].find(type => MediaRecorder.isTypeSupported(type));
+}
+
 export interface VoiceRecorderSelfManagedProps {
   /** Receives a notification once the recording is uploaded. */
   onStart?: () => void;
@@ -39,7 +46,7 @@ export interface VoiceRecorderSelfManagedProps {
    * annotation store). The recorder treats a resolved promise as success
    * and a rejected promise as a recoverable error.
    */
-  onCapture: (capture: { bytes: Uint8Array; durationMs: number }) => Promise<void>;
+  onCapture: (capture: VoiceCapture) => Promise<void>;
 }
 
 function formatElapsed(ms: number): string {
@@ -128,19 +135,21 @@ export function VoiceRecorderSelfManaged(
   const [errorText, setErrorText] = useState<string | undefined>(undefined);
   const [denied, setDenied] = useState(false);
   const bundleRef = useRef<RecorderBundle | null>(null);
-  const captureRef = useRef<{ bytes: Uint8Array; durationMs: number } | null>(null);
+  const captureRef = useRef<VoiceCapture | null>(null);
+  const uploading = useRef(false);
+  const starting = useRef(false);
+  const mounted = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    mounted.current = true;
     return () => {
-      stopTimer();
-      if (playbackUrl) {
-        URL.revokeObjectURL(playbackUrl);
-      }
-      teardownBundle(bundleRef.current);
-      bundleRef.current = null;
+      mounted.current = false; stopTimer();
+      const bundle = bundleRef.current; bundleRef.current = null;
+      teardownBundle(bundle); captureRef.current = null;
     };
-  }, [playbackUrl]);
+  }, []);
+  useEffect(() => () => { if (playbackUrl) URL.revokeObjectURL(playbackUrl); }, [playbackUrl]);
 
   function stopTimer() {
     if (timerRef.current) {
@@ -152,16 +161,20 @@ export function VoiceRecorderSelfManaged(
   const captureFromBundle = useCallback(
     async (bundle: RecorderBundle, durationMs: number) => {
       const blob = new Blob(bundle.chunks, {
-        type: bundle.recorder.mimeType || "audio/webm",
+        type: bundle.recorder.mimeType,
       });
       const arrayBuffer = await blob.arrayBuffer();
       const bytes = new Uint8Array(arrayBuffer);
-      captureRef.current = { bytes, durationMs };
+      if (bytes.byteLength > MAX_VOICE_BYTES) throw new Error("Voice exceeds the 32 MiB limit.");
+      if (mounted.current) captureRef.current = { bytes, durationMs, mimeType: bundle.recorder.mimeType };
     },
     [],
   );
 
   const handleStart = useCallback(async () => {
+    if (starting.current || bundleRef.current || captureRef.current) return;
+    const mimeType = pickVoiceMimeType();
+    if (!mimeType) { setDenied(true); setErrorText("Opus recording in Ogg or WebM is not supported on this device."); return; }
     setErrorText(undefined);
     setDenied(false);
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
@@ -173,8 +186,12 @@ export function VoiceRecorderSelfManaged(
     }
     let stream: MediaStream;
     try {
+      starting.current = true;
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      starting.current = false;
+      if (!mounted.current) { stream.getTracks().forEach(track => track.stop()); return; }
     } catch (err) {
+      starting.current = false;
       setDenied(true);
       setErrorText(
         err instanceof Error
@@ -192,7 +209,7 @@ export function VoiceRecorderSelfManaged(
     const chunks: BlobPart[] = [];
     let recorder: MediaRecorder;
     try {
-      recorder = new MediaRecorder(stream);
+      recorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 64_000 });
     } catch (err) {
       stream.getTracks().forEach((track) => track.stop());
       setDenied(true);
@@ -203,71 +220,64 @@ export function VoiceRecorderSelfManaged(
       );
       return;
     }
+    let retainedBytes = 0;
     recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunks.push(event.data);
+      if (event.data.size <= 0) return;
+      if (retainedBytes + event.data.size > MAX_VOICE_BYTES) {
+        // Never retain an over-budget chunk or offer a truncated container as
+        // valid audio. Stop devices and release the bounded pending capture.
+        chunks.length = 0; retainedBytes = MAX_VOICE_BYTES;
+        bundleRef.current = null; captureRef.current = null;
+        if (recorder.state !== "inactive") recorder.stop();
+        stream.getTracks().forEach(track => track.stop()); stopTimer();
+        setErrorText("Recording reached the 32 MiB limit. Record a shorter voice note."); setState("idle");
+        return;
+      }
+      retainedBytes += event.data.size; chunks.push(event.data);
+      if (retainedBytes >= MAX_VOICE_BYTES - 1024 * 1024 && recorder.state !== "inactive") {
+        // Reserve headroom for the final encoder chunk and finalize normally.
+        recorder.stop();
       }
     };
     const bundle: RecorderBundle = { stream, recorder, chunks };
     bundleRef.current = bundle;
-    recorder.start();
+    const startedAt = Date.now();
+    recorder.onstop = () => {
+      if (bundleRef.current !== bundle) return;
+      stopTimer(); stream.getTracks().forEach(track => track.stop());
+      void captureFromBundle(bundle, Date.now() - startedAt).then(() => {
+        if (!mounted.current) return;
+        const capture = captureRef.current;
+        if (capture && URL.createObjectURL) setPlaybackUrl(URL.createObjectURL(new Blob([capture.bytes as BlobPart], { type: capture.mimeType })));
+        setState("review"); props.onStop?.();
+      }).catch(err => { setErrorText(String(err)); setState("idle"); }).finally(() => { bundleRef.current = null; });
+    };
+    recorder.start(1000);
     setElapsedMs(0);
     setState("recording");
     props.onStart?.();
-    const startedAt = Date.now();
     timerRef.current = setInterval(() => {
       setElapsedMs(Date.now() - startedAt);
     }, 250);
-  }, [props]);
+  }, [props, captureFromBundle]);
 
-  const handleStop = useCallback(async () => {
+  const handleStop = useCallback(() => {
     const bundle = bundleRef.current;
-    if (!bundle) {
-      return;
-    }
-    stopTimer();
-    const durationMs = elapsedMs;
-    await new Promise<void>((resolve) => {
-      bundle.recorder.onstop = () => resolve();
-      if (bundle.recorder.state !== "inactive") {
-        bundle.recorder.stop();
-      } else {
-        resolve();
-      }
-    });
-    bundle.stream.getTracks().forEach((track) => track.stop());
-    try {
-      await captureFromBundle(bundle, durationMs);
-      if (captureRef.current && typeof URL !== "undefined" && URL.createObjectURL) {
-        const blob = new Blob([captureRef.current.bytes as BlobPart], {
-          type: bundle.recorder.mimeType || "audio/webm",
-        });
-        const url = URL.createObjectURL(blob);
-        setPlaybackUrl(url);
-      }
-      setState("review");
-      props.onStop?.();
-    } catch (err) {
-      setErrorText(
-        err instanceof Error
-          ? `Could not capture audio: ${err.message}`
-          : "Could not capture audio.",
-      );
-      setState("idle");
-    } finally {
-      bundleRef.current = null;
-    }
-  }, [captureFromBundle, elapsedMs, props]);
+    if (bundle && bundle.recorder.state !== "inactive") bundle.recorder.stop();
+  }, []);
 
   const handleCommit = useCallback(async () => {
-    if (!captureRef.current) {
+    if (!captureRef.current || uploading.current) {
       return;
     }
+    uploading.current = true;
+    setErrorText(undefined);
     setState("uploading");
     try {
       await props.onCapture({
         bytes: captureRef.current.bytes,
         durationMs: captureRef.current.durationMs,
+        mimeType: captureRef.current.mimeType,
       });
       props.onCommit?.();
       captureRef.current = null;
@@ -284,7 +294,7 @@ export function VoiceRecorderSelfManaged(
           : "Upload failed.",
       );
       setState("review");
-    }
+    } finally { uploading.current = false; }
   }, [playbackUrl, props]);
 
   const handleDiscard = useCallback(() => {

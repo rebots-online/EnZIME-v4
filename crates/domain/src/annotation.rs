@@ -1,9 +1,9 @@
 use crate::identity::{ArticleKey, EntryKey, PackId};
-use async_trait::async_trait;
 use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SelectorBundle {
     pub article: ArticleSelector,
     pub text_quote: Option<TextQuoteSelector>,
@@ -14,6 +14,7 @@ pub struct SelectorBundle {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ArticleSelector {
     pub pack_id: PackId,
     pub article_key: ArticleKey,
@@ -21,6 +22,7 @@ pub struct ArticleSelector {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TextQuoteSelector {
     pub exact: String,
     pub prefix: String,
@@ -28,18 +30,21 @@ pub struct TextQuoteSelector {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TextPositionSelector {
     pub normalized_start: u32,
     pub normalized_end: u32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DomPathSelector {
     pub path: String,
     pub node_text_digest: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ImageRegionSelector {
     pub resource_entry_key: EntryKey,
     pub x_fraction: f32,
@@ -59,6 +64,7 @@ pub enum AnnotationType {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationDraft {
     pub annotation_type: AnnotationType,
     pub selector: SelectorBundle,
@@ -70,6 +76,7 @@ pub struct AnnotationDraft {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationStyle {
     pub color_token: String,
     pub emphasis: String,
@@ -77,6 +84,7 @@ pub struct AnnotationStyle {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationRecord {
     pub annotation_id: String,
     pub annotation_type: AnnotationType,
@@ -94,6 +102,7 @@ pub struct AnnotationRecord {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TagSummary {
     pub tag_id: String,
     pub name: String,
@@ -101,6 +110,7 @@ pub struct TagSummary {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationResolution {
     pub state: AnnotationResolutionState,
     pub confidence: f32,
@@ -135,6 +145,7 @@ pub enum AnnotationError {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationAssetInput {
     pub asset_kind: String,
     pub mime_type: String,
@@ -143,6 +154,7 @@ pub struct AnnotationAssetInput {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AnnotationAssetRecord {
     pub annotation_asset_id: String,
     pub annotation_id: String,

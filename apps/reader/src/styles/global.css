@@ -103,7 +103,7 @@ body {
 .ez-shell {
   position: relative;
   display: grid;
-  grid-template-columns: var(--ez-shell-rail, 84px) 1fr;
+  grid-template-columns: var(--ez-shell-rail, 84px) minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   grid-template-areas:
     "rail top"
@@ -111,15 +111,6 @@ body {
   height: 100vh;
   width: 100vw;
   isolation: isolate;
-}
-@media (max-width: 48rem) {
-  .ez-shell {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "top"
-      "main";
-  }
-  .ez-shell__rail { display: none; }
 }
 
 /* Animated aurora background — the canvas is alive, not static. */
@@ -161,6 +152,7 @@ body {
 
 .ez-shell__topbar {
   grid-area: top;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -212,6 +204,7 @@ body {
 }
 .ez-shell__search {
   flex: 1 1 auto;
+  min-width: 0;
   max-width: 32rem;
   display: flex;
   align-items: center;
@@ -224,6 +217,12 @@ body {
   font-size: 0.9rem;
   transition: border-color var(--ez-duration-normal) ease,
     box-shadow var(--ez-duration-normal) ease;
+}
+.ez-shell__search > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ez-shell__search:hover { border-color: rgba(124, 140, 255, 0.4); }
 .ez-shell__search:focus-visible {
@@ -308,6 +307,7 @@ body {
 
 .ez-shell__main {
   grid-area: main;
+  min-width: 0;
   position: relative;
   overflow: auto;
   z-index: 1;

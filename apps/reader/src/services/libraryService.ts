@@ -26,8 +26,8 @@ export interface PageRequest {
 
 export interface PageResult<T> {
   readonly items: readonly T[];
-  readonly total?: number;
-  readonly nextOffset?: number;
+  readonly total?: number | null;
+  readonly nextOffset?: number | null;
 }
 
 // ─── DTOs (§14.4 contract) ──────────────────────────────────────────────────
@@ -57,7 +57,7 @@ export type CatalogEntry = {
   readonly publisher: string;
   readonly artifactUrl: string;
   readonly artifactSizeBytes: number;
-  readonly artifactSha256: string;
+  readonly artifactSha256: string | null;
 };
 
 /** Argument shape for `catalog_search` (§14.4). Optional filters are omitted
@@ -70,13 +70,28 @@ export type CatalogSearchRequest = {
   readonly limit?: number;
 };
 
+export interface CatalogPage extends PageResult<CatalogEntry> { readonly source: "live" | "cache"; readonly notice?: string | null }
+
 export type TransferMode = "ranged" | "full" | "local_copy";
 
 export type InstallPlanVerification = {
   readonly expectedSizeBytes: number;
-  readonly expectedSha256: string;
+  readonly expectedSha256: string | null;
   readonly signatureRequired: boolean;
   readonly zimStructureCheck: boolean;
+};
+
+export type OfflineCatalogProgress = {
+  readonly scannedEntries: number;
+  readonly totalEntries: number;
+  readonly plannedArticleCount: number;
+  readonly plannedResourceCount: number;
+  readonly plannedAliasCount: number;
+  readonly networkAllowanceBytes: number;
+  readonly networkReservedBytes: number;
+  readonly networkReceivedBytes: number;
+  readonly complete: boolean;
+  readonly stopReason: "transfer_allowance" | "metadata_budget" | null;
 };
 
 export type InstallPlan = {
@@ -90,6 +105,7 @@ export type InstallPlan = {
   readonly freeBytesBefore: number;
   readonly freeBytesAfter: number;
   readonly verification: InstallPlanVerification;
+  readonly offlineCatalog?: OfflineCatalogProgress | null;
 };
 
 export type DownloadJobState =
@@ -107,6 +123,9 @@ export type DownloadJob = {
   readonly downloadJobId: string;
   readonly state: DownloadJobState;
   readonly bytesVerified: number;
+  readonly bytesRetained: number;
+  readonly transferScope: "partial" | "full";
+  readonly errorDetail?: string | null;
   readonly expectedSizeBytes: number;
 };
 
@@ -187,8 +206,8 @@ export const libraryService = {
   /** Searches the public DynDon catalog for downloadable packs. */
   catalogSearch(
     request: CatalogSearchRequest,
-  ): Promise<PageResult<CatalogEntry>> {
-    return call<PageResult<CatalogEntry>>(
+  ): Promise<CatalogPage> {
+    return call<CatalogPage>(
       "catalog_search",
       compactArgs({
         query: request.query,
@@ -207,6 +226,7 @@ export const libraryService = {
     catalogEntryId: string;
     destinationStorageRootId: string;
     selectionProfileId?: string;
+    budgetBytes?: number;
   }): Promise<InstallPlan> {
     return call<InstallPlan>(
       "install_plan",
@@ -214,6 +234,7 @@ export const libraryService = {
         catalogEntryId: args.catalogEntryId,
         destinationStorageRootId: args.destinationStorageRootId,
         selectionProfileId: args.selectionProfileId,
+        budgetBytes: args.budgetBytes,
       }),
     );
   },
@@ -224,6 +245,10 @@ export const libraryService = {
     return call<DownloadJob>("install_start", {
       installPlanId: args.installPlanId,
     });
+  },
+
+  installCancel(args: { installPlanId: string }): Promise<void> {
+    return call<void>("install_cancel", { installPlanId: args.installPlanId });
   },
 
   /** Pages active and recent download jobs for the queue view. */

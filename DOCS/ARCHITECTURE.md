@@ -501,7 +501,8 @@ EnZIME/
 | `crates/application` | complete use cases and orchestration |
 | `crates/storage-sqlite` | migrations and repository implementations |
 | `crates/object-store` | staging, verification, atomic object activation |
-| `crates/zim-anzimmerman` | `ZimEngine` implementation over vendored library |
+| `crates/zim-anzimmerman` | Thin EnZIME `ZimEngine` adapter to canonical AnZimmermanLib Rust; no independent parser |
+| `VENDOR/AnZIMmermanLib-src/AnZimmermanLIB/AnZimmermanLib/rust` | Canonical AnZimmermanLib Rust implementation alongside its other languages (AMD-5) |
 | `crates/annotations` | selector capture, resolution and revision services |
 | `crates/sidecar` | canonical CBOR, signing, import/export |
 | `crates/retrieval` | lexical/vector retrieval, budgeting and citation map |
@@ -4984,6 +4985,48 @@ export interface IpcClient {
 
 ## 15.6 Aurora Glass design system
 
+### Stylesheet lifetime correction (2026-09-13)
+
+The existing Aurora Glass design remains the visual contract. Styles used by
+multiple routes belong to the persistent application shell; route-local styles
+remain rendered for the full lifetime of their route. Rendering a style element
+must be pure and repeatable, with no module-level mounted flag or effect gate.
+This corrects the unstyled Library observed in the v1.6.55832 native AppImage;
+it introduces no new screen or visual design and does not certify catalog data.
+
+| Exact entity | Target (pre-change line) | Role and signature/fields |
+|---|---|---|
+| `LibraryStyles` | `apps/reader/src/routes/library/LibraryView.tsx:528` | `(): ReactNode`; always renders existing `LIBRARY_STYLE_TEXT` style element while Library is mounted; remove `libStyleMounted` and its obsolete comments |
+| `__resetLibraryStylesForDev` | `apps/reader/src/routes/library/LibraryView.tsx:536` | Retired `(): void` helper; remove with the obsolete flag, since the pure stylesheet renderer has no process state to reset |
+| `HomeStyles` | `apps/reader/src/components/home/shared.tsx:426` | `(): ReactNode`; pure renderer of existing `STYLE_TEXT`; remove `styleMounted` and its state/effect gate; retain `useEffect` for `useOnlineSubscription` |
+| `STYLE_TEXT` | `apps/reader/src/components/home/shared.tsx:35` | Existing CSS string; declare the unchanged `--home-*` token block on `.ez-shell, .home-surface`; keep layout/spacing declarations on `.home-surface` only |
+| `AppShell` | `apps/reader/src/components/shell/AppShell.tsx:18` | `(): ReactNode`; imports and mounts one `HomeStyles` inside `.ez-shell`, before routes, retaining styles and token inheritance across navigation |
+| `HomeView` | `apps/reader/src/components/home/HomeView.tsx:11` | `(): ReactNode`; removes its route-local `HomeStyles` import/mount; all existing data, events and layout remain |
+
+Flow: `AppShell` owns shared styles → its `HomeView`, `LibraryView` and reader
+descendants inherit shared tokens; `LibraryView` owns `LibraryStyles` on every
+render. Data loading, typing and route re-entry cannot remove a live route's
+stylesheet. The native verification protocol is in `DOCS/TEST_RUBRIC.md`,
+separate from M1's unresolved catalog/download/offline-reading acceptance.
+
+The v1.7.21541 native follow-up exposed a second defect at the configured minimum
+window width (720 CSS pixels): the 48rem shell media rule removes the `rail` grid
+area, while a later `.ez-shell__rail` rule restores `display: flex`. The visible
+rail then creates implicit grid tracks and the route disappears from the viewport.
+Keep the existing desktop navigation rail throughout the supported native width
+range. This preserves access to routes and adds no new navigation surface.
+
+| Exact CSS entity | Target (pre-change line) | Required end state |
+|---|---|---|
+| `.ez-shell` | `apps/reader/src/styles/global.css:103` | Keep the existing two-column `rail top` / `rail main` grid at all supported native widths; content column is `minmax(0, 1fr)`; remove the contradictory 48rem one-column/rail-hiding block |
+| `.ez-shell__topbar` | `apps/reader/src/styles/global.css:162` | Existing flex layout and tokens; `min-width: 0` allows content-column shrinkage |
+| `.ez-shell__search` | `apps/reader/src/styles/global.css:213` | Existing search control; `min-width: 0` allows flex shrinkage; its last span has `min-width: 0`, `overflow: hidden`, `text-overflow: ellipsis`, `white-space: nowrap` so the label stays inside the button |
+| `.ez-shell__main` | `apps/reader/src/styles/global.css:309` | Existing scroll container; `min-width: 0` keeps route content inside its assigned grid track |
+
+Library's existing 60rem single-column layout remains unchanged. The same native
+protocol must pass at 1280 and 720 CSS pixels; a screenshot of a blank narrow route
+is a failure regardless of compiler success.
+
 ```css
 :root {
   --ez-color-bg-canvas: #090b13;
@@ -6592,3 +6635,29 @@ Operator-directed global rule.
   copied from `~/Admin-Manual/versioning/update-version.sh`), never a manual
   edit. MAJOR=4. Artifacts are staged in the canonical checkout's tracked
   `dist/`, slug-first: `enzime-reader-v<MAJOR.MINOR.BUILD>-<qualifier>`.
+
+## AMD-5 (2026-10-12) — One AnZimmermanLib across languages
+
+Operator-directed. AnZimmermanLib is one maintained library with language
+implementations, including Rust. Translation from another implementation does
+not establish a separate product, competing library, or independent maintenance
+line. EnZIME consumes AnZimmermanLib through its application ports.
+
+- Incorporate the existing Rust implementation currently located at
+  `crates/zim-anzimmerman` into AnZimmermanLib's maintained source tree. Preserve
+  working behavior and provenance. Application-specific port adapters remain
+  in EnZIME; archive-format logic belongs to the library.
+- If another Rust implementation exists in AnZimmermanLib, reconcile both into
+  one canonical Rust implementation, incorporating useful improvements instead
+  of maintaining duplicate parsers or selecting a permanent application fork.
+- Assess correctness, format support, validation, and bounded-I/O improvements
+  across the other language implementations. Propagate the applicable behavior
+  and shared regression fixtures; language-specific runtime and UI bindings
+  remain specific to their language or application.
+- DynDon uses this maintained library for archive metadata and cluster access.
+  Extending range-based access must reuse its existing parsing and codec logic.
+  A complete local ZIM or a whole-archive in-memory representation is not a
+  prerequisite for browsing or acquiring selected clusters.
+- This decision establishes ownership and integration direction. It does not
+  attest that consolidation, cross-language parity, DynDon integration, or
+  reader runtime verification has already been completed.

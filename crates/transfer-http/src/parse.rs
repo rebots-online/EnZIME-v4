@@ -13,7 +13,7 @@ pub(crate) struct ParsedContentRange {
 /// `bytes <start>-<end>/<total>` or `bytes <start>-<end>/*`.
 pub(crate) fn content_range(value: &str) -> Option<ParsedContentRange> {
     let value = value.trim();
-    let value = value.strip_prefix("bytes")?;
+    let value = value.strip_prefix("bytes ")?;
     let value = value.trim_start_matches(|c: char| c.is_ascii_whitespace());
     let slash = value.find('/')?;
     let range_part = value.get(..slash)?;
@@ -26,6 +26,9 @@ pub(crate) fn content_range(value: &str) -> Option<ParsedContentRange> {
     let dash = range_part.find('-')?;
     let start: u64 = range_part.get(..dash)?.parse().ok()?;
     let end: u64 = range_part.get(dash + 1..)?.parse().ok()?;
+    if end < start || total.is_some_and(|total| end >= total) {
+        return None;
+    }
     Some(ParsedContentRange {
         start,
         end_inclusive: end,

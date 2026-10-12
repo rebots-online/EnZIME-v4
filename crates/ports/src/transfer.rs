@@ -33,22 +33,51 @@ pub struct TransferRange {
     pub end_byte_exclusive: u64,
 }
 
-pub type TransferByteStream =
-    Pin<Box<dyn Stream<Item = Result<Bytes, TransferError>> + Send>>;
+pub type TransferByteStream = Pin<Box<dyn Stream<Item = Result<Bytes, TransferError>> + Send>>;
 
 #[async_trait]
 pub trait TransferSource: Send + Sync {
     fn source_kind(&self) -> &'static str;
-    async fn probe(
-        &self,
-        request: TransferProbeRequest,
-    ) -> Result<TransferProbe, TransferError>;
+    async fn probe(&self, request: TransferProbeRequest) -> Result<TransferProbe, TransferError>;
     async fn open_range(
         &self,
         uri: &str,
         range: TransferRange,
         expected_etag: Option<&str>,
     ) -> Result<TransferByteStream, TransferError>;
+    /// Revalidate a pinned identity before an exact range; HTTP providers also
+    /// enforce the validators on the response to close the probe/request race.
+    async fn open_pinned_range(
+        &self,
+        uri: &str,
+        range: TransferRange,
+        identity: &TransferProbe,
+    ) -> Result<TransferByteStream, TransferError> {
+        let strong = identity
+            .etag
+            .as_deref()
+            .filter(|e| e.len() >= 2 && e.starts_with('"') && e.ends_with('"'));
+        if strong.is_none() && identity.last_modified.is_none() {
+            return Err(TransferError::Transport(
+                "source_identity_unavailable".into(),
+            ));
+        }
+        let current = self
+            .probe(TransferProbeRequest {
+                uri: uri.to_owned(),
+                maximum_response_bytes: 80,
+            })
+            .await?;
+        if current.size_bytes != identity.size_bytes
+            || !current.accepts_ranges
+            || strong
+                .map(|e| current.etag.as_deref() != Some(e))
+                .unwrap_or_else(|| current.last_modified != identity.last_modified)
+        {
+            return Err(TransferError::SourceChanged);
+        }
+        self.open_range(uri, range, strong).await
+    }
     async fn open_full(
         &self,
         uri: &str,

@@ -1,16 +1,13 @@
 // PackGrid — the "installed packs" tile grid on the Library route.
 //
 // Reads the `packs` slice from libraryStore and renders one tile per
-// `PackManifest`. Selecting a tile opens the pack in the Reader via
-// `/reader/:packId/:mainPageKey`. NOTE: `PackManifest` (§14.4) does not carry
-// `mainPageKey` — the Reader's `reader_open` returns it, but that call belongs
-// to the Reader vertical. Until the manifest DTO is extended, we route to the
-// ZIM main-namespace landing key `"A"` as the conventional default; the
-// Reader's own open flow resolves the true main page. (DTO gap flagged in the
-// build report.)
+// `PackManifest`. Selecting a tile opens the pack in the Reader.
+// The native reader resolves the actual main-page key; namespace labels are
+// never used as fabricated article addresses.
 
-import { type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { readerService } from "../../services/readerService";
 import { useLibraryStore } from "../../stores/libraryStore";
 import {
   LinkButton,
@@ -24,6 +21,34 @@ import {
 
 export function PackGrid(): ReactNode {
   const navigate = useNavigate();
+  const opening = useRef(false);
+  const mounted = useRef(true);
+  const [openingPackId, setOpeningPackId] = useState<string>();
+  const [openError, setOpenError] = useState<string>();
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+  async function openInstalledPack(packId: string): Promise<void> {
+    if (opening.current) return;
+    opening.current = true;
+    setOpeningPackId(packId);
+    setOpenError(undefined);
+    try {
+      const result = await readerService.readerOpen(packId);
+      if (!mounted.current) return;
+      if (result.packId !== packId) throw new Error("The reader returned a different pack. Please try again.");
+      if (!result.mainPageKey?.trim()) throw new Error("This pack has no readable main page.");
+      navigate(`/reader/${encodeURIComponent(result.packId)}/${encodeURIComponent(result.mainPageKey)}`);
+    } catch (cause) {
+      if (!mounted.current) return;
+      const message = cause && typeof cause === "object" && "message" in cause ? String(cause.message) : String(cause);
+      setOpenError(message);
+    } finally {
+      opening.current = false;
+      if (mounted.current) setOpeningPackId(undefined);
+    }
+  }
   const online = useLibraryStore((s) => s.online);
   const slice = useLibraryStore((s) => s.packs);
   const reload = useLibraryStore((s) => s.loadPacks);
@@ -69,9 +94,9 @@ export function PackGrid(): ReactNode {
               key={pack.packId}
               type="button"
               className="lib-tile"
-              onClick={() =>
-                navigate(`/reader/${encodeURIComponent(pack.packId)}/A`)
-              }
+              onClick={() => void openInstalledPack(pack.packId)}
+              disabled={openingPackId !== undefined}
+              aria-busy={openingPackId === pack.packId}
               aria-label={`Open pack ${pack.displayName}`}
             >
               <span className="lib-tile__title">{pack.displayName}</span>
@@ -141,6 +166,7 @@ export function PackGrid(): ReactNode {
           </span>
         ) : null}
       </header>
+      {openError ? <StatusBanner tone="warning" icon="!" title="Could not open pack" detail={`${openError} Select the pack to retry.`} /> : null}
       {body}
     </section>
   );

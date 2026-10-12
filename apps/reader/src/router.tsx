@@ -3,6 +3,7 @@ import { AppShell } from "./components/shell/AppShell";
 import { HomeView } from "./components/home/HomeView";
 import { LibraryView } from "./routes/library/LibraryView";
 import { ReaderView } from "./routes/reader/ReaderView";
+import { NotesView } from "./routes/notes/NotesView";
 
 /**
  * M1 registers the Home, Library, and Reader routes inside the AppShell
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomeView /> },
       { path: "library", element: <LibraryView /> },
+      { path: "notes", element: <NotesView /> },
       { path: "reader/:packId/:articleKey", element: <ReaderView /> },
       { path: "*", element: <Navigate to="/" replace /> },
     ],

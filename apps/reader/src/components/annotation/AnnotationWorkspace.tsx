@@ -1,10 +1,12 @@
 import type { JSX } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
   useCallback,
   useEffect,
   useMemo,
   useId,
   useState,
+  useRef,
   type CSSProperties,
   type ReactNode,
 } from "react";
@@ -33,6 +35,10 @@ import {
   VoiceRecorderSelfManaged,
   type VoiceRecorderSelfManagedProps,
 } from "./VoiceRecorder";
+import {
+  VideoRecorderSelfManaged,
+  type VideoRecorderSelfManagedProps,
+} from "./VideoRecorder";
 import { SidecarImportDialog } from "./SidecarImportDialog";
 import {
   HIGHLIGHT_COLORS,
@@ -45,10 +51,11 @@ export type AnnotationTool =
   | "highlight"
   | "comment"
   | "ink"
-  | "voice";
+  | "voice"
+  | "film";
 
 export interface AnnotationWorkspaceProps {
-  article: ArticleResponse;
+  article: WorkspaceArticle;
   selection?: SelectorBundle;
   annotations: AnnotationRecord[];
   activeTool: AnnotationTool;
@@ -68,6 +75,7 @@ const TOOL_ORDER: readonly AnnotationTool[] = [
   "comment",
   "ink",
   "voice",
+  "film",
 ];
 
 const TOOL_LABELS: Record<AnnotationTool, string> = {
@@ -76,7 +84,24 @@ const TOOL_LABELS: Record<AnnotationTool, string> = {
   comment: "Comment",
   ink: "Ink",
   voice: "Voice",
+  film: "Film",
 };
+
+/// Narrow article context the workspace actually needs; the reader passes
+/// the route's (packId, articleKey) plus the article title.
+type WorkspaceArticle = Pick<ArticleResponse, "packId" | "articleKey" | "title">;
+
+/// Article-level anchor: notes typed, drawn, spoken, or filmed without a
+/// text selection attach to the article as a whole.
+function articleLevelSelector(article: WorkspaceArticle): SelectorBundle {
+  return {
+    article: {
+      packId: article.packId,
+      articleKey: article.articleKey,
+    },
+    capturedContext: "",
+  };
+}
 
 export function AnnotationWorkspace(
   props: AnnotationWorkspaceProps,
@@ -91,8 +116,58 @@ export function AnnotationWorkspace(
   const [inkColor, setInkColor] = useState<string>(HIGHLIGHT_COLORS[3] ?? "highlight-blue");
   const [inkStrokeWidth, setInkStrokeWidth] = useState(3);
   const [sidecarOpen, setSidecarOpen] = useState(false);
+  const saving = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const pendingMedia = useRef<{ kind: "ink" | "voice" | "film"; id: string; draft: AnnotationDraft } | undefined>(undefined);
+  const [mediaPending, setMediaPending] = useState(false);
+  const [draftEpoch, setDraftEpoch] = useState(0);
+  function discardMedia() {
+    if (saving.current) return;
+    pendingMedia.current = undefined; setMediaPending(false); setDraftEpoch(n => n + 1);
+  }
+  async function saveMedia(kind: "ink" | "voice" | "film", draft: AnnotationDraft, upload: (id: string) => Promise<AnnotationRecord | undefined>) {
+    if (saving.current) throw new Error("A save is already in progress.");
+    saving.current = true; setBusy(true); setMediaPending(true);
+    try {
+      let pending = pendingMedia.current;
+      if (pending && pending.kind !== kind) throw new Error("Discard the pending attachment before changing tools.");
+      if (!pending) {
+        const created = await store.create(draft);
+        if (!created) throw new Error("Annotation could not be saved. Your capture is retained.");
+        pending = { kind, id: created.annotationId, draft }; pendingMedia.current = pending; setMediaPending(true);
+      }
+      if (!await upload(pending.id)) throw new Error("Attachment could not be saved. Retry uses the existing annotation.");
+      pendingMedia.current = undefined; setMediaPending(false); props.onCreate(pending.draft);
+    } finally { saving.current = false; setBusy(false); }
+  }
 
-  const store = useAnnotationStore();
+
+  // Field-wise shallow selection: transient mutation flips and unrelated
+  // slices no longer re-render the whole workspace (the previous
+  // whole-store subscription re-rendered mid-stroke while inking).
+  const store = useAnnotationStore(
+    useShallow((s) => ({
+      status: s.status,
+      mutation: s.mutation,
+      annotations: s.annotations,
+      layers: s.layers,
+      selectedAnnotationId: s.selectedAnnotationId,
+      load: s.load,
+      reload: s.reload,
+      create: s.create,
+      update: s.update,
+      remove: s.remove,
+      restore: s.restore,
+      selectAnnotation: s.selectAnnotation,
+      clearMutation: s.clearMutation,
+      chooseSidecarImportSource: s.chooseSidecarImportSource,
+      commitSidecarImport: s.commitSidecarImport,
+      uploadInk: s.uploadInk,
+      uploadVoice: s.uploadVoice,
+      uploadVideo: s.uploadVideo,
+      sidecarPlan: s.sidecarPlan,
+    })),
+  );
   const status = store.status;
   const mutation = store.mutation;
   const articleAnnotations = useMemo(
@@ -111,8 +186,8 @@ export function AnnotationWorkspace(
     }
   }, [status.kind, store]);
 
-  const handleCreateHighlight = useCallback(() => {
-    if (!props.selection) {
+  const handleCreateHighlight = useCallback(async () => {
+    if (saving.current || !props.selection) {
       return;
     }
     const draft: AnnotationDraft = {
@@ -125,21 +200,19 @@ export function AnnotationWorkspace(
       tagIds: [],
       sidecarLayerId: localLayerId(store.layers),
     };
-    void store.create(draft);
-    props.onCreate(draft);
+    saving.current = true; setBusy(true);
+    try { if (await store.create(draft)) props.onCreate(draft); }
+    finally { saving.current = false; setBusy(false); }
   }, [highlightColor, props, store]);
 
-  const handleCreateComment = useCallback(() => {
-    if (!props.selection) {
-      return;
-    }
+  const handleCreateComment = useCallback(async () => {
     const trimmed = commentText.trim();
-    if (trimmed.length === 0) {
+    if (saving.current || trimmed.length === 0) {
       return;
     }
     const draft: AnnotationDraft = {
       annotationType: "comment",
-      selector: props.selection,
+      selector: props.selection ?? articleLevelSelector(props.article),
       bodyText: trimmed,
       style: {
         colorToken: highlightColor,
@@ -148,19 +221,16 @@ export function AnnotationWorkspace(
       tagIds: [],
       sidecarLayerId: localLayerId(store.layers),
     };
-    void store.create(draft);
-    setCommentText("");
-    props.onCreate(draft);
+    saving.current = true; setBusy(true);
+    try { if (await store.create(draft)) { setCommentText(""); props.onCreate(draft); } }
+    finally { saving.current = false; setBusy(false); }
   }, [commentText, highlightColor, props, store]);
 
   const handleCommitInk = useCallback(
-    (svg: string) => {
-      if (!props.selection) {
-        return;
-      }
+    async (svg: string) => {
       const draft: AnnotationDraft = {
         annotationType: "ink",
-        selector: props.selection,
+        selector: props.selection ?? articleLevelSelector(props.article),
         bodyText: svg,
         style: {
           colorToken: inkColor,
@@ -170,29 +240,16 @@ export function AnnotationWorkspace(
         tagIds: [],
         sidecarLayerId: localLayerId(store.layers),
       };
-      void store.create(draft).then((created) => {
-        if (created) {
-          void store.uploadInk(
-            created.annotationId,
-            svg,
-            inkColor,
-            inkStrokeWidth,
-          );
-        }
-      });
-      props.onCreate(draft);
+      await saveMedia("ink", draft, id => store.uploadInk(id, svg, inkColor, inkStrokeWidth));
     },
     [inkColor, inkStrokeWidth, props, store],
   );
 
   const handleVoiceCapture = useCallback<VoiceRecorderSelfManagedProps["onCapture"]>(
     async (capture) => {
-      if (!props.selection) {
-        return;
-      }
       const draft: AnnotationDraft = {
         annotationType: "voice",
-        selector: props.selection,
+        selector: props.selection ?? articleLevelSelector(props.article),
         style: {
           colorToken: highlightColor,
           emphasis: "solid",
@@ -200,12 +257,24 @@ export function AnnotationWorkspace(
         tagIds: [],
         sidecarLayerId: localLayerId(store.layers),
       };
-      const created = await store.create(draft);
-      if (!created) {
-        throw new Error("Annotation was not created; voice upload aborted.");
-      }
-      props.onCreate(draft);
-      await store.uploadVoice(created.annotationId, capture.bytes, capture.durationMs);
+      await saveMedia("voice", draft, id => store.uploadVoice(id, capture.bytes, capture.durationMs, capture.mimeType));
+    },
+    [highlightColor, props, store],
+  );
+
+  const handleFilmCapture = useCallback<VideoRecorderSelfManagedProps["onCapture"]>(
+    async (capture) => {
+      const draft: AnnotationDraft = {
+        annotationType: "comment",
+        selector: props.selection ?? articleLevelSelector(props.article),
+        style: {
+          colorToken: highlightColor,
+          emphasis: "solid",
+        },
+        tagIds: [],
+        sidecarLayerId: localLayerId(store.layers),
+      };
+      await saveMedia("film", draft, id => store.uploadVideo(id, capture.bytes, capture.mimeType, capture.durationMs));
     },
     [highlightColor, props, store],
   );
@@ -243,10 +312,6 @@ export function AnnotationWorkspace(
     (acceptUnsigned: boolean, layerName: string) => {
       void store
         .commitSidecarImport({
-          artifactSha256:
-            store.layers.length > 0
-              ? `pending-${Date.now().toString(36)}`
-              : "",
           acceptUnsigned,
           layerName,
         })
@@ -277,6 +342,7 @@ export function AnnotationWorkspace(
             ⇪
           </EzIconButton>
           <EzIconButton
+            disabled={busy || mediaPending}
             ariaLabel="Close annotation workspace"
             onClick={props.onClose}
             title="Close"
@@ -309,6 +375,7 @@ export function AnnotationWorkspace(
             key={tool}
             variant={tool === props.activeTool ? "primary" : "ghost"}
             ariaPressed={tool === props.activeTool}
+            disabled={busy || mediaPending}
             onClick={() => props.onToolChange(tool)}
             ariaLabel={`Use ${TOOL_LABELS[tool]} tool`}
           >
@@ -317,10 +384,13 @@ export function AnnotationWorkspace(
         ))}
       </div>
 
+      {mediaPending && !busy ? <p role="status">Attachment is not saved yet. Retry the attachment or <button type="button" onClick={discardMedia}>Discard pending attachment</button>.</p> : null}
+      <fieldset disabled={busy} style={{ border: 0, padding: 0, margin: 0 }}>
       <ActiveToolSurface
+        key={draftEpoch}
         tool={props.activeTool}
         selection={props.selection}
-        article={props.article}
+        article={props.article as ArticleResponse}
         highlightColor={highlightColor}
         onHighlightColorChange={setHighlightColor}
         onCreateHighlight={handleCreateHighlight}
@@ -332,13 +402,17 @@ export function AnnotationWorkspace(
         inkStrokeWidth={inkStrokeWidth}
         onInkStrokeWidthChange={setInkStrokeWidth}
         onCommitInk={handleCommitInk}
-        onCancelInk={() => props.onToolChange("select")}
+        onCancelInk={() => { discardMedia(); props.onToolChange("select"); }}
         onVoiceCapture={handleVoiceCapture}
+        onFilmCapture={handleFilmCapture}
         localLayerAvailable={hasLocalLayer(store.layers)}
+        onDiscardMedia={discardMedia}
       />
+      </fieldset>
 
       <SidecarImportDialog
         open={sidecarOpen}
+        plan={store.sidecarPlan}
         onChooseFile={handleSidecarChooseFile}
         onImport={handleSidecarImport}
         onCancel={() => setSidecarOpen(false)}
@@ -361,9 +435,11 @@ interface ActiveToolSurfaceProps {
   onInkColorChange: (color: string) => void;
   inkStrokeWidth: number;
   onInkStrokeWidthChange: (width: number) => void;
-  onCommitInk: (svg: string) => void;
+  onCommitInk: (svg: string) => Promise<void>;
+  onDiscardMedia: () => void;
   onCancelInk: () => void;
   onVoiceCapture: VoiceRecorderSelfManagedProps["onCapture"];
+  onFilmCapture: VideoRecorderSelfManagedProps["onCapture"];
   localLayerAvailable: boolean;
 }
 
@@ -423,7 +499,17 @@ function ActiveToolSurface(props: ActiveToolSurfaceProps): JSX.Element | null {
           onStart={() => undefined}
           onStop={() => undefined}
           onCommit={() => undefined}
-          onDiscard={() => undefined}
+          onDiscard={props.onDiscardMedia}
+        />
+      );
+    case "film":
+      return (
+        <VideoRecorderSelfManaged
+          onCapture={props.onFilmCapture}
+          onStart={() => undefined}
+          onStop={() => undefined}
+          onCommit={() => undefined}
+          onDiscard={props.onDiscardMedia}
         />
       );
     default:

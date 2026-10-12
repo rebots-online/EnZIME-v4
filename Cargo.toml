@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "VENDOR/AnZIMmermanLib-src/AnZimmermanLIB/AnZimmermanLib/rust",
   "crates/domain", "crates/ports", "crates/application",
   "crates/storage-sqlite", "crates/object-store",
   "crates/zim-anzimmerman", "crates/catalog-openzim",
@@ -14,7 +15,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.6.55832"
+version = "1.13.63942"
 edition = "2021"
 license-file = "LICENSE"
 authors = ["Robin L. M. Cheung, MBA"]

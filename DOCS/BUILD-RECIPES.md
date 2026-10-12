@@ -1,5 +1,32 @@
 # EnZIME Reader — Build Recipes
 
+## Current operator command — every platform, one build set
+
+```bash
+bash scripts/build-all.sh
+```
+
+Commit intended source before invocation. The script snapshots that commit,
+stamps one fresh version, prepares the frontend once, and attempts every platform
+with bounded concurrent jobs. Optional `--jobs N` controls concurrency;
+`--source-ref REF` selects a committed source revision. There is no platform-only
+option. Historical recipes below describe the internal commands and prior evidence.
+
+Open `dist/index.html` for the current attempt, including its Windows NSIS row.
+`dist/current-build-manifest.json` contains artifact hashes and lane results.
+Failed targets never link older versions. The complete-build pointer advances
+only when the complete matrix passes; MSI/MSIX require a configured native Windows
+executor. The process exits nonzero for any missing/failed required output.
+
+Android signing uses the existing production keystore and
+`ENZIME_KEYSTORE_PASSWORD`/`ENZIME_KEY_PASSWORD`, with optional
+`ENZIME_KEYSTORE_PATH` and `ENZIME_KEYSTORE_ALIAS`. The native Windows interface is
+`ENZIME_WINDOWS_BUILD_EXECUTOR`; see `DOCS/ARCHITECTURE/unified-build.md`.
+The optional ignored `signing/build-credentials.json` supplies these four signing
+variables when they are absent from the environment; `ENZIME_SIGNING_CONFIG` can
+select another private JSON file. Credentials are excluded from source archives.
+No upload, git commit, push, or CI invocation occurs inside the build script.
+
 Manual builds only. No CI until public-release operator signoff (§26 AMD-4).
 Every recipe below is recorded **after it actually worked**, with the errors
 hit on the way, so the next run does not rediscover them.
@@ -206,18 +233,18 @@ the real error.
 # created once, per BUILD_CONVENTIONS
 keytool -genkey -v -keystore signing/production.keystore -alias upload \
   -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity 25000 \
-  -storepass 'Ch4n3l.C3351' -keypass 'Ch4n3l.C3351' \
+  -storepass "$ENZIME_KEYSTORE_PASSWORD" -keypass "$ENZIME_KEY_PASSWORD" \
   -dname 'CN=EnZIME Reader Upload, O=Robin L M Cheung MBA, C=CA'
 
 # APK -> apksigner
 $ANDROID_HOME/build-tools/36.1.0/apksigner sign \
   --ks signing/production.keystore --ks-key-alias upload \
-  --ks-pass pass:Ch4n3l.C3351 --key-pass pass:Ch4n3l.C3351 \
+  --ks-pass env:ENZIME_KEYSTORE_PASSWORD --key-pass env:ENZIME_KEY_PASSWORD \
   --out dist/<slug>-v<VER>-android-universal-release-signed.apk <unsigned.apk>
 
 # AAB -> jarsigner (apksigner does not sign bundles)
-jarsigner -keystore signing/production.keystore -storepass 'Ch4n3l.C3351' \
-  -keypass 'Ch4n3l.C3351' -sigalg SHA256withRSA -digestalg SHA-256 \
+jarsigner -keystore signing/production.keystore -storepass "$ENZIME_KEYSTORE_PASSWORD" \
+  -keypass "$ENZIME_KEY_PASSWORD" -sigalg SHA256withRSA -digestalg SHA-256 \
   dist/<slug>-v<VER>-android-universal-release-signed.aab upload
 ```
 
@@ -248,3 +275,109 @@ Built from **committed HEAD**, so it is reproducible and never picks up
 uncommitted working-tree state. ~104 MB because the vendored Tauri, wllama3
 and AnZimmermanLib trees are genuinely part of our tree — the archive is
 self-contained and rebuilds without reaching upstream.
+
+
+## 2026-09-13 — v1.7.21541 native stylesheet repair trial
+
+User rejected the v1.6.55832 Library appearance. P8-03-STYLE restored pure route
+stylesheet rendering and shell ownership of shared styles/tokens in four TSX files.
+Backups are in the Admin-Manual core-sesh-recovery staging area.
+
+- Host: msi4090, Linux; cargo 1.94.1, tauri-cli 2.11.4, Node 24.14.1,
+  pnpm 11.13.0. Existing toolchains/caches used; no CI.
+- Preserved old release.lock (1/6/55832), ran `bash scripts/update-version.sh`
+  once, and froze 1.7.21541 before Tauri's beforeBuildCommand ran the stamper.
+- Command: `cargo tauri build --bundles appimage` from `apps/reader`.
+  TypeScript passed; Vite built 92 modules; Rust release completed in 29.92s;
+  AppImage bundling exited 0. Existing transfer-http unused-import warning remains.
+- Artifact: `dist/enzime-reader-v1.7.21541-linux-amd64.AppImage`, 83,212,792 bytes;
+  SHA-256 `6a95b8f2a69e8d1e027f72367fd72884751615b4bb5f03ecffcc2a88d427f366`.
+- Trial: isolated data/cache/runtime paths under Admin-Manual staging; the launched
+  process omitted inherited LD_LIBRARY_PATH. Initial native launch-log snapshot was empty; system
+  gst-inspect finds appsink. This is not a media playback verification.
+- Observed: desktop Library styling survives settled loading, wikipedia/en input,
+  and Home→Library return. Search returns no matches from the empty catalog.
+- FAILED at 720 CSS pixel minimum: pre-existing shell media/cascade conflict
+  displaces the navigation rail and hides route content. See P8-03-NARROW;
+  preserve this artifact and screenshot, then stamp the next iteration.
+- Capture note: ffmpeg x11grab recorded the fixed-size native window; shrinking
+  that window terminated capture with an X11 image-size error. The narrow failure
+  is also preserved as a window screenshot. It is not a catalog/offline gauntlet.
+- Evidence: `dist/rubric-runs/v1.7.21541-linux-styles-20260913T094211Z/`.
+
+
+## 2026-09-13 — v1.8.21560 native width correction and verified UI trial
+
+P8-03-NARROW corrects the observed shell grid/rail conflict, preserving the
+existing navigation rail, using a shrinkable content track and containing the
+search label. Independent review passed both source tasks; no broader redesign.
+
+- Preserved the 1.7.21541 freeze in its evidence folder; invoked the canonical
+  stamper once and froze 1.8.21560. Same manual command:
+  `cargo tauri build --bundles appimage` from `apps/reader`.
+- Build: TypeScript exits 0; Vite 92 modules; Rust optimized release 19.36s;
+  AppImage bundler exits 0. Existing unused-import warning is unchanged.
+- Source: `b574ed8504a4298bab1e326ec201bb0e82e0be2f`, committed from the compiled
+  source after the successful build, before native verification; no application
+  source edits followed. The commit includes the original build freeze.
+- Artifact: `dist/enzime-reader-v1.8.21560-linux-amd64.AppImage`, 83,200,504 bytes;
+  SHA-256 `a96dd71e871cdf4e39752c7e5b4b52af3b707b428112b8d2a147bfddda28a72d`.
+- Native run: isolated data/cache/runtime on msi4090; inherited LD_LIBRARY_PATH
+  omitted for this launch. The later log reports `GStreamer element appsink not
+  found`; system gst-inspect finds the plugin, so packaged-runtime diagnosis
+  and media verification remain outstanding.
+- PASS bounded protocol: settled desktop Library, wikipedia/en input with no
+  matches, Home→Library remount, 720 CSS pixel minimum-width layout, scrolling
+  to Downloads, then desktop restoration. Root viewed narrow/scrolled/final
+  stills; independent reviewer viewed query/Home/Library-return stills.
+- Recorded two native clips (12.13s desktop, 5.93s narrow) with screenshots and
+  timecode/seek-link index. Stop capture before resizing; this avoids the
+  fixed-size X11 capture error from v1.7. The corrected app remains open on Library.
+- Evidence: `dist/rubric-runs/v1.8.21560-linux-styles-20260913T100046Z/RESULTS.md`;
+  `dist/enzime-reader-v1.8.21560-linux-ui-evidence.zip`. Artifact and ZIP hashes
+  are in `dist/SHA256SUMS-v1.8.21560.txt`.
+- Archived release.lock in the evidence folder and released the active freeze
+  after this completed capture cycle, per M1-STATE. For reproducing this exact
+  version, restore the archived freeze before running the same recipe.
+- This is an existing-design repair and a Linux trial, not a commercial release
+  or full platform build. Catalog acquisition, downloads, restart/offline reading,
+  media, inference, entitlements and the full gauntlet remain unverified.
+
+## 2026-10-12 — v1.9.63091 diagnostic Linux checkpoint
+
+Manual `cargo tauri build --bundles deb,appimage` completed: TypeScript and Vite
+(102 modules) passed, Rust release compile completed, both bundles emitted.
+The AppImage opened via tauri-driver/WebKitWebDriver and returned the native Home
+DOM. This does not verify media recording, live installation, or offline restart.
+
+- AppImage: `dist/enzime-reader-v1.9.63091-linux-amd64.AppImage`, 83,859,960 bytes;
+  SHA256 `c43e2c525b1f260fea06d22a37573831fa17572eb4b5ec53ca79ac43adb33272`.
+- Debian: `dist/enzime-reader-v1.9.63091-linux-amd64.deb`, 8,457,860 bytes;
+  SHA256 `348111ef6c5a08719fd0a2165eb97e568a990fa951317e69106d05042be337cd`.
+- Application source checkpoint: `ec4f83f`; stamped version files accompany this
+  evidence. Build log: Admin-Manual/LOGS/EnZIME-v4/native-trial-v1.9.63091-build.log.
+- Not an all-platform set or release. Offline selected-entry metadata gap remains.
+
+**Operator correction:** all subsequent builds use one unified script, one source
+snapshot and version, all platform lanes, and a current-build manifest. Separate
+one-off Linux/Windows/Android builds are not the normal delivery path.
+
+## 2026-10-12 — unified build attempt v1.10.63169
+
+`bash scripts/build-all.sh` ran against committed source `b016ef1`. Preparation
+produced web/source artifacts; concurrent Linux/NSIS/Android lanes all rejected
+a Rust/npm Tauri minor-version mismatch. Cause: the orchestration fallback used
+`cargo generate-lockfile`, upgrading locked third-party dependencies. The corrected
+preparation runs full offline Cargo metadata against the existing lock, asserts
+third-party name/version/source/checksum tuples unchanged, and forwards --locked
+to all platform cargo invocations. The failed generated lock remains in the log.
+
+SBOM generation emitted23 documents; collection erroneously tested absolute paths
+for a target component even though every lane lives below target/. Filtering now
+uses paths relative to the snapshot. Native MSI/MSIX executor remains unconfigured.
+Android chooses the existing known recipe NDK27 only when NDK_HOME is unset.
+
+The script exited1 and published an honest incomplete current manifest with2/12
+artifacts. Independent verifier accepts its hashes/state; --require-complete
+correctly fails. No old installer is linked in any failed row. Logs are under
+Admin-Manual/LOGS/EnZIME-v4/build-sets/20261012T072934.973569Z-b016ef12a393/.

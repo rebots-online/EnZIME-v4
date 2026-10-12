@@ -31,3 +31,5 @@ pub mod manifest;
 
 pub use cache_archive::ClusterCacheArchive;
 pub use manifest::{ArticleRecord, CachedBlob, ClusterDirectory, ClusterRange};
+
+pub mod disk;
