@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { HomeStyles } from "../home/shared";
 import { NavigationRail } from "./NavigationRail";
 import { JobStrip } from "./JobStrip";
 import { ReadinessIndicator } from "./ReadinessIndicator";
@@ -25,6 +26,7 @@ export function AppShell(): ReactNode {
 
   return (
     <div className="ez-shell">
+      <HomeStyles />
       <div className="ez-shell__aurora" aria-hidden="true" />
 
       <header className="ez-shell__topbar">

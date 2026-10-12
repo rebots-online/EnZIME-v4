@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, type CSSProperties, type ReactNode } from "react";
 import type { Slice } from "../../stores/homeStore";
 import type { ServiceError } from "../../services/homeService";
 
@@ -33,6 +33,7 @@ export function resolveState<T>(
 }
 
 const STYLE_TEXT = `
+.ez-shell,
 .home-surface {
   --home-fg: #F4F6FF;
   --home-fg-muted: rgba(244, 246, 255, 0.66);
@@ -48,6 +49,8 @@ const STYLE_TEXT = `
   --home-degraded: #F49B6B;
   --home-unavailable: #F47B7B;
   --home-focus: #A8CFFF;
+}
+.home-surface {
   box-sizing: border-box;
   width: 100%;
   max-width: 72rem;
@@ -421,16 +424,7 @@ const STYLE_TEXT = `
 }
 `;
 
-let styleMounted = false;
-
 export function HomeStyles(): ReactNode {
-  const [mounted, setMounted] = useState(styleMounted);
-  useEffect(() => {
-    if (styleMounted) return;
-    styleMounted = true;
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
   return <style aria-hidden="true">{STYLE_TEXT}</style>;
 }
 

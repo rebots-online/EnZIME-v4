@@ -1,8 +1,8 @@
 // LibraryView — §15.1 / §15.3 `/library` route.
 //
 // The user-facing entry to EnZIME's DynDon download — the USP: "download only
-// what fits your storage". Composition: LibraryView mounts the scoped Aurora
-// Glass stylesheet once, then composes PackGrid (installed), CatalogBrowser
+// what fits your storage". Composition: LibraryView renders the scoped Aurora
+// Glass stylesheet, then composes PackGrid (installed), CatalogBrowser
 // (search), StoragePlanner + InstallPlanSummary + StorageImpactBar (the fit
 // moment, hosted inside DownloadPlanDialog), and DownloadQueue (active jobs).
 //
@@ -518,23 +518,12 @@ const LIBRARY_STYLE_TEXT = `
 }
 `;
 
-let libStyleMounted = false;
-
 /**
- * Mounts the scoped Library stylesheet exactly once per process (mirrors the
- * home/reader HomeStyles/ReaderStyles pattern). LibraryView renders this; the
+ * Renders the scoped Library stylesheet for the lifetime of LibraryView;
  * children reference the class names directly.
  */
 export function LibraryStyles(): ReactNode {
-  if (libStyleMounted) return null;
-  libStyleMounted = true;
   return <style aria-hidden="true">{LIBRARY_STYLE_TEXT}</style>;
-}
-
-/** Reset the mounted flag — used only by tests / hot-reload in dev. Intentionally
- *  not used in production paths. */
-export function __resetLibraryStylesForDev(): void {
-  libStyleMounted = false;
 }
 
 export function LibraryView(): ReactNode {

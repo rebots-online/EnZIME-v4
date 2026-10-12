@@ -20,10 +20,22 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
+use annotations::AnnotationsService;
+use application::annotation_assets::{AnnotationAssetService, AssetUploadSession};
+use object_store::ObjectStore;
 use ports::zim::ZimArchive;
 use rusqlite::Connection;
 
 use crate::ipc::PersistedInstallPlan;
+
+/// One in-flight annotation-asset upload keyed by its upload token. The
+/// session value is owned by the host (the shell) per the §9.3 contract —
+/// the application service transforms it deterministically.
+pub struct AssetUpload {
+    pub session: AssetUploadSession,
+    pub annotation_id: String,
+    pub last_sequence_no: u64,
+}
 
 /// Managed Tauri state. `Send + Sync` so it can be registered with
 /// `tauri::App::manage` and borrowed from async command handlers.
@@ -44,17 +56,33 @@ pub struct AppState {
     /// `selection_profile_revisions` so they survive a restart even if the
     /// plan envelope does not.
     pub install_plans: Arc<Mutex<HashMap<String, PersistedInstallPlan>>>,
+    /// The annotation-domain service over the shared connection + object
+    /// store (the `crates/annotations` adapter).
+    pub annotations: Arc<AnnotationsService>,
+    /// §9.3 chunked-asset upload orchestrator (application layer).
+    pub asset_service: Arc<AnnotationAssetService>,
+    /// In-flight asset uploads keyed by upload token.
+    pub asset_uploads: Arc<Mutex<HashMap<String, AssetUpload>>>,
 }
 
 impl AppState {
     /// Construct from an already-migrated connection and the resolved
-    /// app-data directory.
-    pub fn new(conn: Connection, app_data_dir: PathBuf) -> Self {
-        Self {
-            conn: Arc::new(Mutex::new(conn)),
+    /// app-data directory. The object store is rooted under the same
+    /// directory; the annotation service shares the connection.
+    pub fn new(conn: Connection, app_data_dir: PathBuf) -> Result<Self, String> {
+        let objects = ObjectStore::open(&app_data_dir).map_err(|e| e.to_string())?;
+        let objects = Arc::new(objects);
+        let conn = Arc::new(Mutex::new(conn));
+        let annotations = Arc::new(AnnotationsService::new(conn.clone(), objects));
+        let asset_service = Arc::new(AnnotationAssetService::new(annotations.asset_sink()));
+        Ok(Self {
+            conn,
             archives: Arc::new(Mutex::new(HashMap::new())),
             app_data_dir,
             install_plans: Arc::new(Mutex::new(HashMap::new())),
-        }
+            annotations,
+            asset_service,
+            asset_uploads: Arc::new(Mutex::new(HashMap::new())),
+        })
     }
 }

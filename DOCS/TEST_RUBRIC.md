@@ -31,6 +31,32 @@ A recorded screencast of the **Linux AppImage** in which the app boots, opens th
 - **DEFECTIVE**: any of R-BOOT…R-SCREENCAST ❌.
 - **INCOMPLETE—pending-operator**: R-BOOT…R-SCREENCAST all ✅, R-OPERATOR un-run.
 
+## Bounded stylesheet repair protocol — 2026-09-13
+
+This is a debugging protocol for CHECKLIST P8-03-STYLE, not an M1 verdict or
+replacement for any R-* row. The user rejected the visibly unstyled v1.6.55832
+AppImage. On the newly stamped native AppImage, record its version and SHA-256,
+then capture the actual window through these steps:
+
+1. Launch with an isolated application-data profile. Open Library and let its
+   data loading settle. Cards, two-column layout at desktop width, styled
+   inputs and separate empty-state title/detail lines remain visible.
+2. Type a catalog query and language, causing route re-renders. Styling persists
+   after search completion; an empty result is reported as empty, not invented.
+3. Navigate Library → Home → Library and repeat. Shared status icons, text and
+   buttons retain their styles without depending on a prior Home visit.
+4. Resize the native window to its 720 CSS pixel minimum, narrower than Library's 60rem breakpoint; the
+   single-column flow is readable and inputs remain contained. Restore the
+   desktop size and leave Library open for the operator.
+
+Archive the window recording/stills and results in the project evidence home.
+Record catalog/download/offline-reading as unverified by this bounded run;
+restoring styles does not connect the remote catalog or close F01/F02.
+
+The v1.7.21541 run passed desktop loading/search/navigation but failed step 4:
+the shell's conflicting 48rem rules displaced the route. P8-03-NARROW closes
+that observed CSS defect before repeating this same protocol on the next artifact.
+
 ## What this rubric is NOT
 
 - A green `cargo check`/`tsc`/`vite build` is **not** a PASS (GR-4) — prerequisite only.

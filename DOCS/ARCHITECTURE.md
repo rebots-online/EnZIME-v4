@@ -4984,6 +4984,48 @@ export interface IpcClient {
 
 ## 15.6 Aurora Glass design system
 
+### Stylesheet lifetime correction (2026-09-13)
+
+The existing Aurora Glass design remains the visual contract. Styles used by
+multiple routes belong to the persistent application shell; route-local styles
+remain rendered for the full lifetime of their route. Rendering a style element
+must be pure and repeatable, with no module-level mounted flag or effect gate.
+This corrects the unstyled Library observed in the v1.6.55832 native AppImage;
+it introduces no new screen or visual design and does not certify catalog data.
+
+| Exact entity | Target (pre-change line) | Role and signature/fields |
+|---|---|---|
+| `LibraryStyles` | `apps/reader/src/routes/library/LibraryView.tsx:528` | `(): ReactNode`; always renders existing `LIBRARY_STYLE_TEXT` style element while Library is mounted; remove `libStyleMounted` and its obsolete comments |
+| `__resetLibraryStylesForDev` | `apps/reader/src/routes/library/LibraryView.tsx:536` | Retired `(): void` helper; remove with the obsolete flag, since the pure stylesheet renderer has no process state to reset |
+| `HomeStyles` | `apps/reader/src/components/home/shared.tsx:426` | `(): ReactNode`; pure renderer of existing `STYLE_TEXT`; remove `styleMounted` and its state/effect gate; retain `useEffect` for `useOnlineSubscription` |
+| `STYLE_TEXT` | `apps/reader/src/components/home/shared.tsx:35` | Existing CSS string; declare the unchanged `--home-*` token block on `.ez-shell, .home-surface`; keep layout/spacing declarations on `.home-surface` only |
+| `AppShell` | `apps/reader/src/components/shell/AppShell.tsx:18` | `(): ReactNode`; imports and mounts one `HomeStyles` inside `.ez-shell`, before routes, retaining styles and token inheritance across navigation |
+| `HomeView` | `apps/reader/src/components/home/HomeView.tsx:11` | `(): ReactNode`; removes its route-local `HomeStyles` import/mount; all existing data, events and layout remain |
+
+Flow: `AppShell` owns shared styles → its `HomeView`, `LibraryView` and reader
+descendants inherit shared tokens; `LibraryView` owns `LibraryStyles` on every
+render. Data loading, typing and route re-entry cannot remove a live route's
+stylesheet. The native verification protocol is in `DOCS/TEST_RUBRIC.md`,
+separate from M1's unresolved catalog/download/offline-reading acceptance.
+
+The v1.7.21541 native follow-up exposed a second defect at the configured minimum
+window width (720 CSS pixels): the 48rem shell media rule removes the `rail` grid
+area, while a later `.ez-shell__rail` rule restores `display: flex`. The visible
+rail then creates implicit grid tracks and the route disappears from the viewport.
+Keep the existing desktop navigation rail throughout the supported native width
+range. This preserves access to routes and adds no new navigation surface.
+
+| Exact CSS entity | Target (pre-change line) | Required end state |
+|---|---|---|
+| `.ez-shell` | `apps/reader/src/styles/global.css:103` | Keep the existing two-column `rail top` / `rail main` grid at all supported native widths; content column is `minmax(0, 1fr)`; remove the contradictory 48rem one-column/rail-hiding block |
+| `.ez-shell__topbar` | `apps/reader/src/styles/global.css:162` | Existing flex layout and tokens; `min-width: 0` allows content-column shrinkage |
+| `.ez-shell__search` | `apps/reader/src/styles/global.css:213` | Existing search control; `min-width: 0` allows flex shrinkage; its last span has `min-width: 0`, `overflow: hidden`, `text-overflow: ellipsis`, `white-space: nowrap` so the label stays inside the button |
+| `.ez-shell__main` | `apps/reader/src/styles/global.css:309` | Existing scroll container; `min-width: 0` keeps route content inside its assigned grid track |
+
+Library's existing 60rem single-column layout remains unchanged. The same native
+protocol must pass at 1280 and 720 CSS pixels; a screenshot of a blank narrow route
+is a failure regardless of compiler success.
+
 ```css
 :root {
   --ez-color-bg-canvas: #090b13;

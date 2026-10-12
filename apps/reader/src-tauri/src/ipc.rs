@@ -51,6 +51,8 @@ use rusqlite::{params, Connection, OptionalExtension};
 
 use crate::state::AppState;
 
+pub mod annotations;
+
 // ===========================================================================
 // Helpers
 // ===========================================================================

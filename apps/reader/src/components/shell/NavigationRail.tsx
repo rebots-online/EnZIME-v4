@@ -18,7 +18,7 @@ const DESTINATIONS: readonly Destination[] = [
   { path: "/", label: "Home", glyph: "⌂", built: true },
   { path: "/library", label: "Library", glyph: "▤", built: true },
   { path: "/ask", label: "Ask", glyph: "◆", built: false },
-  { path: "/notes", label: "Notes", glyph: "✎", built: false },
+  { path: "/notes", label: "Notes", glyph: "✎", built: true },
   { path: "/memory", label: "Memory", glyph: "◈", built: false },
   { path: "/settings", label: "Settings", glyph: "⚙", built: false },
 ];

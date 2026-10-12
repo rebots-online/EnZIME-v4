@@ -35,6 +35,13 @@ transfer-file = { path = "../../../crates/transfer-file" }
 transfer-http = { path = "../../../crates/transfer-http" }
 domain = { path = "../../../crates/domain" }
 storage-sqlite = { path = "../../../crates/storage-sqlite" }
+annotations = { path = "../../../crates/annotations" }
+application = { path = "../../../crates/application" }
+object-store = { path = "../../../crates/object-store" }
+base64 = "0.21"
+sha2 = "0.10"
+hex = "0.4"
+ulid = "1"
 rusqlite = { version = "0.32", features = ["bundled"] }
 tokio = { version = "1", features = ["full"] }
 async-trait = "0.1"

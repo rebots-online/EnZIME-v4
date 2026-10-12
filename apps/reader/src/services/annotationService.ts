@@ -249,10 +249,6 @@ export interface TagCreateRequest {
   colorToken: string;
 }
 
-export interface SidecarImportPlanRequest {
-  sourceToken: string;
-}
-
 export interface SidecarConflict {
   entityKind: string;
   entityId: string;
@@ -271,9 +267,14 @@ export interface SidecarImportPlan {
 }
 
 export interface SidecarImportCommitRequest {
-  artifactSha256: Sha256Hex;
+  bytesBase64: string;
   acceptUnsigned: boolean;
   layerName: string;
+}
+
+export interface ChosenSidecarFile {
+  name: string;
+  bytesBase64: string;
 }
 
 export class IpcError extends Error {
@@ -444,13 +445,10 @@ export const annotationService = {
   async sidecarLayers(): Promise<SidecarLayer[]> {
     return call<EmptyRequest, SidecarLayer[]>("sidecar_layers", {});
   },
-  async sidecarImportChoose(): Promise<string> {
-    return call<EmptyRequest, string>("sidecar_import_choose", {});
-  },
-  async sidecarImportPlan(sourceToken: string): Promise<SidecarImportPlan> {
-    return call<SidecarImportPlanRequest, SidecarImportPlan>(
+  async sidecarImportPlan(bytesBase64: string): Promise<SidecarImportPlan> {
+    return call<{ bytesBase64: string }, SidecarImportPlan>(
       "sidecar_import_plan",
-      { sourceToken },
+      { bytesBase64 },
     );
   },
   async sidecarImportCommit(
@@ -535,4 +533,49 @@ function hexFromBuffer(buffer: ArrayBuffer): Sha256Hex {
     hex += value.toString(16).padStart(2, "0");
   }
   return hex;
+}
+
+export function chooseSidecarFile(): Promise<ChosenSidecarFile | null> {
+  return new Promise((resolve) => {
+    if (typeof document === "undefined") {
+      resolve(null);
+      return;
+    }
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".sidecar,.cbor,application/octet-stream";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve({
+          name: file.name,
+          bytesBase64: arrayBufferToBase64(reader.result as ArrayBuffer),
+        });
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsArrayBuffer(file);
+    };
+    input.oncancel = () => resolve(null);
+    input.click();
+  });
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let offset = 0; offset < bytes.byteLength; offset += chunk) {
+    binary += String.fromCharCode(
+      ...bytes.subarray(offset, Math.min(offset + chunk, bytes.byteLength)),
+    );
+  }
+  if (typeof btoa === "function") {
+    return btoa(binary);
+  }
+  return Buffer.from(binary, "binary").toString("base64");
 }

@@ -23,6 +23,7 @@ import {
 import { BreadcrumbNav } from "./BreadcrumbNav";
 import { ArticleToolbar } from "./ArticleToolbar";
 import { ArticleContent } from "./ArticleContent";
+import { AnnotationDrawer } from "./AnnotationDrawer";
 
 const READER_STYLE_TEXT = `
 .reader-surface {
@@ -314,7 +315,16 @@ export function ReaderView(): ReactNode {
     );
   } else if (state === "populated" && article) {
     pane = (
-      <ArticleContent article={article} packId={routePackId} />
+      <>
+        <ArticleContent article={article} packId={routePackId} />
+        {currentArticleKey ? (
+          <AnnotationDrawer
+            packId={routePackId}
+            articleKey={currentArticleKey}
+            title={article.title}
+          />
+        ) : null}
+      </>
     );
   } else if (state === "empty") {
     pane = (

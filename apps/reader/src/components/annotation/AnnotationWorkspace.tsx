@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import { useShallow } from "zustand/react/shallow";
 import {
   useCallback,
   useEffect,
@@ -33,6 +34,10 @@ import {
   VoiceRecorderSelfManaged,
   type VoiceRecorderSelfManagedProps,
 } from "./VoiceRecorder";
+import {
+  VideoRecorderSelfManaged,
+  type VideoRecorderSelfManagedProps,
+} from "./VideoRecorder";
 import { SidecarImportDialog } from "./SidecarImportDialog";
 import {
   HIGHLIGHT_COLORS,
@@ -45,10 +50,11 @@ export type AnnotationTool =
   | "highlight"
   | "comment"
   | "ink"
-  | "voice";
+  | "voice"
+  | "film";
 
 export interface AnnotationWorkspaceProps {
-  article: ArticleResponse;
+  article: WorkspaceArticle;
   selection?: SelectorBundle;
   annotations: AnnotationRecord[];
   activeTool: AnnotationTool;
@@ -68,6 +74,7 @@ const TOOL_ORDER: readonly AnnotationTool[] = [
   "comment",
   "ink",
   "voice",
+  "film",
 ];
 
 const TOOL_LABELS: Record<AnnotationTool, string> = {
@@ -76,7 +83,24 @@ const TOOL_LABELS: Record<AnnotationTool, string> = {
   comment: "Comment",
   ink: "Ink",
   voice: "Voice",
+  film: "Film",
 };
+
+/// Narrow article context the workspace actually needs; the reader passes
+/// the route's (packId, articleKey) plus the article title.
+type WorkspaceArticle = Pick<ArticleResponse, "packId" | "articleKey" | "title">;
+
+/// Article-level anchor: notes typed, drawn, spoken, or filmed without a
+/// text selection attach to the article as a whole.
+function articleLevelSelector(article: WorkspaceArticle): SelectorBundle {
+  return {
+    article: {
+      packId: article.packId,
+      articleKey: article.articleKey,
+    },
+    capturedContext: "",
+  };
+}
 
 export function AnnotationWorkspace(
   props: AnnotationWorkspaceProps,
@@ -92,7 +116,32 @@ export function AnnotationWorkspace(
   const [inkStrokeWidth, setInkStrokeWidth] = useState(3);
   const [sidecarOpen, setSidecarOpen] = useState(false);
 
-  const store = useAnnotationStore();
+  // Field-wise shallow selection: transient mutation flips and unrelated
+  // slices no longer re-render the whole workspace (the previous
+  // whole-store subscription re-rendered mid-stroke while inking).
+  const store = useAnnotationStore(
+    useShallow((s) => ({
+      status: s.status,
+      mutation: s.mutation,
+      annotations: s.annotations,
+      layers: s.layers,
+      selectedAnnotationId: s.selectedAnnotationId,
+      load: s.load,
+      reload: s.reload,
+      create: s.create,
+      update: s.update,
+      remove: s.remove,
+      restore: s.restore,
+      selectAnnotation: s.selectAnnotation,
+      clearMutation: s.clearMutation,
+      chooseSidecarImportSource: s.chooseSidecarImportSource,
+      commitSidecarImport: s.commitSidecarImport,
+      uploadInk: s.uploadInk,
+      uploadVoice: s.uploadVoice,
+      uploadVideo: s.uploadVideo,
+      sidecarPlan: s.sidecarPlan,
+    })),
+  );
   const status = store.status;
   const mutation = store.mutation;
   const articleAnnotations = useMemo(
@@ -130,16 +179,13 @@ export function AnnotationWorkspace(
   }, [highlightColor, props, store]);
 
   const handleCreateComment = useCallback(() => {
-    if (!props.selection) {
-      return;
-    }
     const trimmed = commentText.trim();
     if (trimmed.length === 0) {
       return;
     }
     const draft: AnnotationDraft = {
       annotationType: "comment",
-      selector: props.selection,
+      selector: props.selection ?? articleLevelSelector(props.article),
       bodyText: trimmed,
       style: {
         colorToken: highlightColor,
@@ -155,12 +201,9 @@ export function AnnotationWorkspace(
 
   const handleCommitInk = useCallback(
     (svg: string) => {
-      if (!props.selection) {
-        return;
-      }
       const draft: AnnotationDraft = {
         annotationType: "ink",
-        selector: props.selection,
+        selector: props.selection ?? articleLevelSelector(props.article),
         bodyText: svg,
         style: {
           colorToken: inkColor,
@@ -187,12 +230,9 @@ export function AnnotationWorkspace(
 
   const handleVoiceCapture = useCallback<VoiceRecorderSelfManagedProps["onCapture"]>(
     async (capture) => {
-      if (!props.selection) {
-        return;
-      }
       const draft: AnnotationDraft = {
         annotationType: "voice",
-        selector: props.selection,
+        selector: props.selection ?? articleLevelSelector(props.article),
         style: {
           colorToken: highlightColor,
           emphasis: "solid",
@@ -206,6 +246,33 @@ export function AnnotationWorkspace(
       }
       props.onCreate(draft);
       await store.uploadVoice(created.annotationId, capture.bytes, capture.durationMs);
+    },
+    [highlightColor, props, store],
+  );
+
+  const handleFilmCapture = useCallback<VideoRecorderSelfManagedProps["onCapture"]>(
+    async (capture) => {
+      const draft: AnnotationDraft = {
+        annotationType: "comment",
+        selector: props.selection ?? articleLevelSelector(props.article),
+        style: {
+          colorToken: highlightColor,
+          emphasis: "solid",
+        },
+        tagIds: [],
+        sidecarLayerId: localLayerId(store.layers),
+      };
+      const created = await store.create(draft);
+      if (!created) {
+        throw new Error("Annotation was not created; film upload aborted.");
+      }
+      props.onCreate(draft);
+      await store.uploadVideo(
+        created.annotationId,
+        capture.bytes,
+        capture.mimeType,
+        capture.durationMs,
+      );
     },
     [highlightColor, props, store],
   );
@@ -243,10 +310,6 @@ export function AnnotationWorkspace(
     (acceptUnsigned: boolean, layerName: string) => {
       void store
         .commitSidecarImport({
-          artifactSha256:
-            store.layers.length > 0
-              ? `pending-${Date.now().toString(36)}`
-              : "",
           acceptUnsigned,
           layerName,
         })
@@ -320,7 +383,7 @@ export function AnnotationWorkspace(
       <ActiveToolSurface
         tool={props.activeTool}
         selection={props.selection}
-        article={props.article}
+        article={props.article as ArticleResponse}
         highlightColor={highlightColor}
         onHighlightColorChange={setHighlightColor}
         onCreateHighlight={handleCreateHighlight}
@@ -334,11 +397,13 @@ export function AnnotationWorkspace(
         onCommitInk={handleCommitInk}
         onCancelInk={() => props.onToolChange("select")}
         onVoiceCapture={handleVoiceCapture}
+        onFilmCapture={handleFilmCapture}
         localLayerAvailable={hasLocalLayer(store.layers)}
       />
 
       <SidecarImportDialog
         open={sidecarOpen}
+        plan={store.sidecarPlan}
         onChooseFile={handleSidecarChooseFile}
         onImport={handleSidecarImport}
         onCancel={() => setSidecarOpen(false)}
@@ -364,6 +429,7 @@ interface ActiveToolSurfaceProps {
   onCommitInk: (svg: string) => void;
   onCancelInk: () => void;
   onVoiceCapture: VoiceRecorderSelfManagedProps["onCapture"];
+  onFilmCapture: VideoRecorderSelfManagedProps["onCapture"];
   localLayerAvailable: boolean;
 }
 
@@ -420,6 +486,16 @@ function ActiveToolSurface(props: ActiveToolSurfaceProps): JSX.Element | null {
       return (
         <VoiceRecorderSelfManaged
           onCapture={props.onVoiceCapture}
+          onStart={() => undefined}
+          onStop={() => undefined}
+          onCommit={() => undefined}
+          onDiscard={() => undefined}
+        />
+      );
+    case "film":
+      return (
+        <VideoRecorderSelfManaged
+          onCapture={props.onFilmCapture}
           onStart={() => undefined}
           onStop={() => undefined}
           onCommit={() => undefined}

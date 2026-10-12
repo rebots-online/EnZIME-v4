@@ -44,7 +44,15 @@ pub fn run() {
                     .map(|p| p.to_path_buf())
                     .unwrap_or_else(|| PathBuf::from(".")),
             };
-            app.manage(AppState::new(conn, app_data_dir));
+            let state = AppState::new(conn, app_data_dir)
+                .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            // The local private layer must exist before the first note is
+            // taken; creating it at boot keeps every command path simple.
+            state
+                .annotations
+                .ensure_local_layer()
+                .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
+            app.manage(state);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -60,6 +68,23 @@ pub fn run() {
             ipc::install_plan,
             ipc::install_start,
             ipc::job_list,
+            // Annotation vertical (§14.4 notes contract) — multimodal-notes USP.
+            ipc::annotations::annotation_list,
+            ipc::annotations::annotation_create,
+            ipc::annotations::annotation_update,
+            ipc::annotations::annotation_delete,
+            ipc::annotations::annotation_restore,
+            ipc::annotations::annotation_asset_begin,
+            ipc::annotations::annotation_asset_chunk,
+            ipc::annotations::annotation_asset_commit,
+            ipc::annotations::notebook_tree,
+            ipc::annotations::notebook_create,
+            ipc::annotations::notebook_update,
+            ipc::annotations::tag_list,
+            ipc::annotations::tag_create,
+            ipc::annotations::sidecar_layers,
+            ipc::annotations::sidecar_import_plan,
+            ipc::annotations::sidecar_import_commit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running EnZIME Reader");

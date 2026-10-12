@@ -649,7 +649,7 @@ mod tests {
         assert_eq!(record.annotation_id, "ann-7");
         assert_eq!(record.asset_kind, "voice");
         assert_eq!(record.mime_type, "audio/webm");
-        assert_eq!(record.byte_length, 10);
+        assert_eq!(record.byte_length, 11);
         assert_eq!(record.duration_ms, Some(1850));
         assert_eq!(record.object_sha256, sha256_hex(b"voice-bytes"));
     }

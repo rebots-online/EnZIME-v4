@@ -1,5 +1,42 @@
 # EnZIME Reader — Milestone 1 State (compaction-safe recovery doc)
 
+## Current assessment — 2026-09-13
+
+Source `a727a75` preserves the September reader/DynDon and annotation work at
+version `1.6.55832`. The historical coder-running statuses below are July context,
+not a current dispatch ledger. Use CHECKLIST.md as the task contract and
+[the release reassessment](../RELEASE-READINESS-2026-09-13.md) for current findings.
+
+M1 success is **not established**: the checked-in installer still requires a full
+local source ZIM, installed archive handles are not restored after restart, and
+the required built-AppImage recording/operator evidence was not found in the
+designated local evidence locations. Source changes also postdate the newest
+AppImage. No runtime gauntlet was executed by this static reassessment.
+
+The subsequent operator-requested v1.6.55832 native trial opened successfully but
+was rejected for its unstyled Library. The source contains a disappearing Library
+stylesheet and route-local ownership of shared styles. P8-03-STYLE specifies a
+bounded correction and native appearance protocol; its build/evidence is recorded
+in BUILD-RECIPES. An appearance repair does not demonstrate the M1 reading journey.
+
+**Latest native trial:** v1.8.21560, source `b574ed8`, corrects stylesheet lifetime
+and the subsequently observed minimum-width shell grid defect. Loading, query
+input, Home→Library return, 720 CSS pixel layout/scrolling and desktop restoration
+passed the bounded UI protocol. [Indexed evidence](../../dist/rubric-runs/v1.8.21560-linux-styles-20260913T100046Z/RESULTS.md)
+and a stamped evidence ZIP are in tracked dist/. The fresh catalog remains empty;
+Kiwix acquisition, DynDon download and offline reading are not established.
+
+Next phase: ARCHITECT reconciliation of remote DynDon acquisition, trusted cluster
+verification, chosen storage destination, durable activation/reopen, and note
+portability; then bounded implementation tasks and the actual M1 gauntlet. Keep
+the Library → DynDon subset → offline reader entry and no-ZIM-writer decision.
+
+The Stitch claim below and the tracked generation-evidence JSON conflict: the
+JSON still has null IDs/unverified screens. Recover and inspect actual capture/tool
+evidence before treating either as a completed gate; do not assume a missing tool.
+
+## Historical M1 recovery notes — retained for provenance
+
 **Success gate (operator directive 2026-07-29):** a **recorded screencast of the
 built Linux AppImage** actually reading a ZIM article offline. The web/vite app
 is source-testing only. The gate is formalised in `DOCS/TEST_RUBRIC.md` (SC4).

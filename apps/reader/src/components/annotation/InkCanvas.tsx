@@ -50,7 +50,15 @@ export function InkCanvas({
 }: InkCanvasProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [strokes, setStrokes] = useState<InkStroke[]>([]);
-  const [active, setActive] = useState<InkStroke | null>(null);
+  // In-flight stroke lives in a ref and renders through direct canvas 2D
+  // ops: a state update per pointermove re-rendered the whole component and
+  // rebuilt the full SVG path per sample (O(n²) per stroke at 60-120 Hz).
+  const activeRef = useRef<{
+    color: string;
+    strokeWidth: number;
+    points: { x: number; y: number }[];
+  } | null>(null);
+  const liveCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [dimensions, setDimensions] = useState({
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
@@ -99,63 +107,85 @@ export function InkCanvas({
       event.preventDefault();
       canvasFocusAndARIA(event.currentTarget);
       const point = toPoint(event);
-      setActive({
+      activeRef.current = {
         color: resolveColorToken(colorToken),
         strokeWidth,
         points: [point],
-      });
+      };
+      const live = liveCanvasRef.current;
+      if (live) {
+        const ctx = live.getContext("2d");
+        if (ctx) {
+          ctx.clearRect(0, 0, live.width, live.height);
+        }
+      }
+      drawSegment(liveCanvasRef.current, point, point, strokeWidth, resolveColorToken(colorToken));
     },
     [colorToken, enabled, strokeWidth, toPoint],
   );
 
   const handlePointerMove = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      if (!active) {
+      const stroke = activeRef.current;
+      if (!stroke) {
         return;
       }
       event.preventDefault();
       const point = toPoint(event);
-      setActive({
-        ...active,
-        points: [...active.points, point],
-      });
+      const last = stroke.points[stroke.points.length - 1] ?? point;
+      stroke.points.push(point);
+      drawSegment(
+        liveCanvasRef.current,
+        last,
+        point,
+        stroke.strokeWidth,
+        stroke.color,
+      );
     },
-    [active, toPoint],
+    [toPoint],
   );
 
   const finishStroke = useCallback(() => {
-    if (!active) {
+    const stroke = activeRef.current;
+    if (!stroke) {
       return;
     }
-    setStrokes((previous) => [...previous, active]);
-    setActive(null);
-  }, [active]);
+    setStrokes((previous) => [...previous, stroke]);
+    activeRef.current = null;
+    const live = liveCanvasRef.current;
+    if (live) {
+      const ctx = live.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, live.width, live.height);
+      }
+    }
+  }, []);
 
   const handlePointerUp = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      if (!active) {
+      if (!activeRef.current) {
         return;
       }
       event.preventDefault();
       finishStroke();
     },
-    [active, finishStroke],
+    [finishStroke],
   );
 
   const handlePointerLeave = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      if (!active) {
+      const stroke = activeRef.current;
+      if (!stroke) {
         return;
       }
       event.preventDefault();
       const point = toPoint(event);
-      setActive({
-        ...active,
-        points: [...active.points, point],
-      });
+      const last = stroke.points[stroke.points.length - 1] ?? point;
+      stroke.points.push(point);
+      drawSegment(liveCanvasRef.current, last, point, stroke.strokeWidth, stroke.color);
       finishStroke();
     },
-    [active, finishStroke, toPoint],
+    [finishStroke, toPoint],
   );
 
   const undo = useCallback(() => {
@@ -164,7 +194,14 @@ export function InkCanvas({
 
   const clear = useCallback(() => {
     setStrokes([]);
-    setActive(null);
+    activeRef.current = null;
+    const live = liveCanvasRef.current;
+    if (live) {
+      const ctx = live.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, live.width, live.height);
+      }
+    }
   }, []);
 
   const commit = useCallback(() => {
@@ -174,10 +211,10 @@ export function InkCanvas({
     const svg = renderSvg(strokes, dimensions.width, dimensions.height);
     onCommitSvg(svg);
     setStrokes([]);
-    setActive(null);
+    activeRef.current = null;
   }, [dimensions.height, dimensions.width, onCommitSvg, strokes]);
 
-  const liveStrokes = active ? [...strokes, active] : strokes;
+  const liveStrokes = strokes;
   const description = describeCanvas(strokes.length, enabled);
 
   return (
@@ -224,6 +261,17 @@ export function InkCanvas({
           }}
         />
         <InkOverlay strokes={liveStrokes} dimensions={dimensions} />
+        <canvas
+          ref={liveCanvasRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+          }}
+        />
       </div>
       <p
         style={{
@@ -310,6 +358,30 @@ function canvasFocusAndARIA(canvas: HTMLCanvasElement): void {
   if (typeof canvas.focus === "function") {
     canvas.focus();
   }
+}
+
+function drawSegment(
+  canvas: HTMLCanvasElement | null,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  strokeWidth: number,
+  color: string,
+): void {
+  if (!canvas) {
+    return;
+  }
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = strokeWidth;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.stroke();
 }
 
 function pathFromStroke(stroke: InkStroke): string {
