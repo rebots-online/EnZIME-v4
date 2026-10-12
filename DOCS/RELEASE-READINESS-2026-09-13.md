@@ -421,3 +421,11 @@ Bounded audit of Library handoff, Home and shell using CodeGraph (PROJECT_INDEX.
 | Home recent/history/tasks | home_snapshot queries actual SQLite rows | Backend source is real; DTO alignment, mutation paths and displayed behavior require separate verification. |
 
 ENTRY-01 verification after repair: all 80 frontend tests passed; TypeScript check passed. Source commit ffd4be2, verified GitHub bde0c5a on codex/reader-dyndon. Current 1.13 build is immutable source d18aaa0 and does not include this later repair. Native artifact acceptance, offline restart and all media tools remain incomplete.
+
+## Unified build 1.13.63942 terminal result — verified 2026-10-12 17:43 EDT
+
+The systemd-owned whole-platform invocation finished at 16:40:25 EDT with an honest incomplete result, 7/12 collected artifacts. Source snapshot d18aaa0 predates ENTRY-01. Linux AppImage/deb/rpm, Windows NSIS, web/source archives and SBOM were collected. Independent `python3 scripts/verify-build-set.py dist/current-build-manifest.json` passed size/hash/version consistency at 17:43; this does not imply complete-matrix or runtime acceptance.
+
+Android compilation/package signing reached completion, but symbols collection rejected insufficient disk space: 3058445254 free bytes required. The lane failed and Android artifacts were not promoted into the current manifest. Native Windows MSI/MSIX executor remains unconfigured. At 17:43 the host filesystem has approximately 1.3 GiB available. Restore sufficient build workspace capacity before another whole-platform invocation; do not bypass symbol verification or issue a one-off Android build.
+
+Publication chronology: GitHub source branch codex/reader-dyndon last advanced at 16:35:40 EDT to 67ce2c4 before this follow-up. No source work or push occurred during the intervening hour; the independently running build alone continued until 16:40. This terminal build record is now being committed and published. Local artifact preservation is separate from GitHub download publication; the source mirror preserves its prior dist tree.
