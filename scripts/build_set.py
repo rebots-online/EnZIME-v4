@@ -215,15 +215,15 @@ def prepare_snapshot(repo, source_ref):
         run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         run(["pnpm", "exec", "vite", "build"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         # Cargo resolves workspace package version changes once; lanes consume this lock.
-        run(["cargo", "metadata", "--no-deps", "--format-version", "1"], build.snapshot,
+        run(["cargo", "metadata", "--offline", "--format-version", "1"], build.snapshot,
             logs / "cargo-metadata.json", "preparation", echo=False)
         packages = tomllib.loads((build.snapshot / "Cargo.lock").read_text())["package"]
         if not any(p["name"] == "reader" and p["version"] == build.version for p in packages):
-            run(["cargo", "generate-lockfile", "--offline"], build.snapshot,
-                Path(result.log_path), "preparation")
-            packages = tomllib.loads((build.snapshot / "Cargo.lock").read_text())["package"]
-        if not any(p["name"] == "reader" and p["version"] == build.version for p in packages):
             raise RuntimeError("Cargo lock does not contain stamped reader version")
+        original_packages = tomllib.loads(originals["Cargo.lock"].decode())["package"]
+        pinned = lambda items: {(p["name"], p["version"], p.get("source"), p.get("checksum")) for p in items if p.get("source")}
+        if pinned(packages) != pinned(original_packages):
+            raise RuntimeError("Preparation changed locked third-party dependencies")
         if (repo / "Cargo.lock").read_bytes() != originals["Cargo.lock"]:
             raise RuntimeError("Concurrent Cargo.lock change")
         shutil.copy2(build.snapshot / "Cargo.lock", repo / "Cargo.lock")

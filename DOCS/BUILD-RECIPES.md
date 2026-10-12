@@ -361,3 +361,23 @@ DOM. This does not verify media recording, live installation, or offline restart
 **Operator correction:** all subsequent builds use one unified script, one source
 snapshot and version, all platform lanes, and a current-build manifest. Separate
 one-off Linux/Windows/Android builds are not the normal delivery path.
+
+## 2026-10-12 — unified build attempt v1.10.63169
+
+`bash scripts/build-all.sh` ran against committed source `b016ef1`. Preparation
+produced web/source artifacts; concurrent Linux/NSIS/Android lanes all rejected
+a Rust/npm Tauri minor-version mismatch. Cause: the orchestration fallback used
+`cargo generate-lockfile`, upgrading locked third-party dependencies. The corrected
+preparation runs full offline Cargo metadata against the existing lock, asserts
+third-party name/version/source/checksum tuples unchanged, and forwards --locked
+to all platform cargo invocations. The failed generated lock remains in the log.
+
+SBOM generation emitted23 documents; collection erroneously tested absolute paths
+for a target component even though every lane lives below target/. Filtering now
+uses paths relative to the snapshot. Native MSI/MSIX executor remains unconfigured.
+Android chooses the existing known recipe NDK27 only when NDK_HOME is unset.
+
+The script exited1 and published an honest incomplete current manifest with2/12
+artifacts. Independent verifier accepts its hashes/state; --require-complete
+correctly fails. No old installer is linked in any failed row. Logs are under
+Admin-Manual/LOGS/EnZIME-v4/build-sets/20261012T072934.973569Z-b016ef12a393/.

@@ -57,6 +57,11 @@ config.write_text(json.dumps({'build': {'beforeBuildCommand': 'echo Using prepar
 env = os.environ.copy()
 env['CARGO_TARGET_DIR'] = str(target)
 env.setdefault('CARGO_BUILD_JOBS', '2')
+if lane == 'android' and not env.get('NDK_HOME'):
+    sdk = Path(env.get('ANDROID_HOME', env.get('ANDROID_SDK_ROOT', str(Path.home() / 'Android/Sdk'))))
+    known_ndk = sdk / 'ndk/27.0.12077973'
+    if known_ndk.is_dir():
+        env['NDK_HOME'] = str(known_ndk)
 artifacts = []
 prefix = f'enzime-reader-v{version}-'
 
@@ -120,7 +125,7 @@ def require_abis(path, root):
 try:
     if lane == 'linux':
         shutil.rmtree(target / 'release/bundle', ignore_errors=True)
-        run(['cargo', 'tauri', 'build', '--bundles', 'deb,appimage,rpm', '--config', config])
+        run(['cargo', 'tauri', 'build', '--bundles', 'deb,appimage,rpm', '--config', config, '--', '--locked'])
         bundle = target / 'release/bundle'
         deb = one(bundle / 'deb', '*.deb')
         for field, expected in [('Package', 'enzime-reader'), ('Version', version), ('Architecture', 'amd64')]:
@@ -139,7 +144,7 @@ try:
     elif lane == 'windows-nsis':
         shutil.rmtree(target / 'x86_64-pc-windows-msvc/release/bundle', ignore_errors=True)
         run(['cargo', 'tauri', 'build', '--runner', 'cargo-xwin', '--target',
-             'x86_64-pc-windows-msvc', '--bundles', 'nsis', '--config', config])
+             'x86_64-pc-windows-msvc', '--bundles', 'nsis', '--config', config, '--', '--locked'])
         installer = one(target / 'x86_64-pc-windows-msvc/release/bundle/nsis', '*.exe')
         if version not in installer.name:
             fail('NSIS filename does not contain prepared version')
@@ -157,7 +162,7 @@ try:
         if not env.get('ENZIME_KEYSTORE_PASSWORD') or not env.get('ENZIME_KEY_PASSWORD'):
             fail('Production signing password environment is not provisioned')
         alias = env.get('ENZIME_KEYSTORE_ALIAS', 'upload')
-        run(['cargo', 'tauri', 'android', 'build', '--apk', '--aab', '--config', config])
+        run(['cargo', 'tauri', 'android', 'build', '--apk', '--aab', '--config', config, '--', '--locked'])
         android = app / 'src-tauri/gen/android/app/build/outputs'
         apk = one(android / 'apk', '**/*universal*release*unsigned.apk')
         aab = one(android / 'bundle', '**/*release.aab')
@@ -233,7 +238,8 @@ try:
     elif lane == 'sbom':
         run(['cargo', 'cyclonedx', '--all', '--format', 'json', '--spec-version', '1.5', '--target', 'all'], cwd=snapshot)
         documents = [read_json(path) for path in snapshot.rglob('*.cdx.json')
-                     if 'node_modules' not in path.parts and 'target' not in path.parts]
+                     if 'node_modules' not in path.relative_to(snapshot).parts
+                     and 'target' not in path.relative_to(snapshot).parts]
         if not documents:
             fail('cargo cyclonedx produced no documents')
         components, dependencies, cargo_roots = {}, {}, set()
