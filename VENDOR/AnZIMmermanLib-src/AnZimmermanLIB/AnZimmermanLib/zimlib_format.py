@@ -78,7 +78,12 @@ class ZIMHeader:
         return data
 
     mime_type_list_pos = property(lambda self: self.mime_list_pos)
-    title_index_pos = property(lambda self: self.title_ptr_pos)
+    @property
+    def title_index_pos(self):
+        """Optional physical title-index address; raw bytes remain unchanged."""
+        if self.title_ptr_pos == 0 or (self.major_version == 6 and self.title_ptr_pos == (1 << 64) - 1):
+            return None
+        return self.title_ptr_pos
     main_page_index = property(lambda self: self.main_page)
     layout_page_index = property(lambda self: self.layout_page)
 

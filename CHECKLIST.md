@@ -1635,4 +1635,20 @@ L is `VENDOR/AnZIMmermanLib-src/AnZimmermanLIB/AnZimmermanLib`; R is L/rust.
 
 **Verify:** `cargo test --manifest-path R/Cargo.toml --test range_access --test offline_catalog --test conformance` (use exact existing conformance target from Cargo inventory if named differently); `python3 L/tests/parity/python_parity.py`. **Accept:** sentinel fixtures open/read through range and local APIs, captured header validates, regular invalid bounds and mandatory-field sentinels reject, existing tests pass. Report exact commands and counts. Packaged real-Kiwix trial remains separate.
 
-- [ ] KI-01 absent title-index marker in canonical Rust/Python.
+- ✅ KI-01 absent title-index marker in canonical Rust/Python: 24 conformance, 12 range-access, 3 sparse-catalog and 13 Python parity tests passed. Captured live 80-byte header validates; absent/present/invalid title-index bounds and local/range payload reads verified. Real packaged Kiwix re-trial remains pending.
+
+
+## UB02 — Android frozen version and full symbols
+
+Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCode1074172 while frozenversion.json is100011. Installed tauri-utils2.9.3 AndroidConfig supports bundle.android.versionCode and autoIncrementVersionCode. Root gen/android/tauri.properties is not the generated app-level input. All4Cargo libenzime_reader_lib.so and APK/AAB counterparts match exact hashes but have .symtab only, no .debug_info or BuildID. AGP FULL cannot create missing Rust DWARF; mapping is outputs/mapping/universalRelease/mapping.txt. This refines UB01's AGP-only symbols collection.
+
+| Entity | File | Exact contract |
+|---|---|---|
+| Prepared Android overrides | scripts/build-lane.sh | Prepared merged Tauri config includes bundle.android.versionCode=frozenversion.json.versionCode, autoIncrementVersionCode=false; never derive from BUILD. Android lane sets CARGO_PROFILE_RELEASE_DEBUG=2 and CARGO_PROFILE_RELEASE_STRIP=none before cargo. Existing APK/AAB manifest verification remains strict. |
+| collect_android_symbols | scripts/collect-android-symbols.py (new) | Standard-library Python CLI `--target-dir PATH --android-output-dir PATH --apk PATH --aab PATH --output PATH --ndk PATH --version VERSION`. Exact4ABI target mapping above; require DWARF .debug_info in each current Cargo ELF, extract actualsymbols with NDKllvm-objcopy --only-keep-debug into <abi>/libenzime_reader_lib.so.dbg. Include nonempty exactuniversalRelease/mapping.txt and provenance.json (version, method=ndk-llvm-objcopy, tool path/version, input/packaged/symbol SHA256). No synthetic symbols or filename-only validation. |
+| Symbol correspondence | same helper | Require APK and AAB ABI libraries correspond to compiled library: exact SHA256 when unchanged; if packaging strips, compare every SHF_ALLOC section's name,type,flags,address,size and bytes including relocations; NOBITS compares metadata. Reject missing/extra/changed allocated sections. Validate extracted debug ELF has .debug_info. Use bounded streaming file hashing/extraction, staging beneath output parent's semantic symbols-work directory, no /tmp. |
+| Symbol collection invocation | scripts/build-lane.sh | Call helper after APK/AAB signature+identity/version verification; input target/android buildoutput exact currentlane. Verify4ABI ZIP, then emit symbols artifact. Existing AGP output may be inspected but fallback provenance must truthfully identify extraction. |
+
+**Do:** Root owns build-lane.sh config/env/call and contract updates; delegated worker owns only new collect-android-symbols.py helper, no overlapping edits. Preserve other workers. **Verify:** bash parsing, Python compile; helper rejects existing1.11 libraries without DWARF (use semantic stagingoutput, never overwrite historicalartifact); run actual complete `bash scripts/build-all.sh` after commit. **Accept:** all4currentpackageELFs match symbolinputs, extracteddebugsections+mappingnonempty, APK/AAB embeddedversionCode equalsfrozenvalue, symbolsZIPiscollectedandhashed. Whole-build completion remains dependent on everyrequiredtarget; no one-offbuild.
+
+- [ ] UB02 Android frozen version and full native symbols.

@@ -88,6 +88,33 @@ class PythonParity(unittest.TestCase):
         self.assertEqual(len(reader.list_articles()), 2)
         self.assertEqual(reader.header.mime_type_list_pos, reader.header.mime_list_pos)
 
+    def test_absent_v6_title_pointer_preserves_bytes_and_reads_payload(self):
+        for marker in (0, (1 << 64) - 1):
+            data = bytearray(BASELINE)
+            struct.pack_into('<H', data, 6, 3)
+            struct.pack_into('<Q', data, 40, marker)
+            reader = self.reader(data)
+            self.assertEqual(reader.header.title_ptr_pos, marker)
+            self.assertIsNone(reader.header.title_index_pos)
+            self.assertEqual(reader.header.to_bytes(), data[:80])
+            self.assertEqual(reader.get_article_content(reader.get_main_page()), b'<p>Library fixture</p>')
+            self.assertEqual(reader.get_article_content(reader.get_entry_by_path('I/pixel.txt')), b'pixel')
+        for field in (32, 48, 56):
+            data = bytearray(BASELINE); struct.pack_into('<Q', data, field, (1 << 64) - 1)
+            self.assert_code('InvalidFormat', lambda data=data: self.reader(data))
+        for position in (len(BASELINE), len(BASELINE) + 1, len(BASELINE) - 1, (1 << 64) - 2):
+            data = bytearray(BASELINE); struct.pack_into('<Q', data, 40, position)
+            self.assert_code('InvalidFormat', lambda data=data: self.reader(data))
+        data = bytearray(BASELINE)
+        struct.pack_into('<H', data, 4, 5)
+        struct.pack_into('<Q', data, 40, (1 << 64) - 1)
+        self.assert_code('InvalidFormat', lambda: self.reader(data))
+        data = bytearray(BASELINE)
+        position = len(data)
+        data.extend(struct.pack('<III', 0, 1, 2))
+        struct.pack_into('<Q', data, 40, position)
+        self.assertEqual(self.reader(data).header.title_index_pos, position)
+
     def test_header_directory_and_pointer_failures(self):
         self.assert_code('InvalidFormat', lambda: self.reader(BASELINE[:79]))
         bad = bytearray(BASELINE); bad[0] = 0

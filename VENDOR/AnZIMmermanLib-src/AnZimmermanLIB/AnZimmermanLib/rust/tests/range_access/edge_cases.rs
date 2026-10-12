@@ -273,3 +273,143 @@ async fn invalid_cluster_indices_special_records_and_response_sizes() {
         .await
         .is_err());
 }
+
+#[tokio::test]
+async fn absent_v6_title_index_keeps_raw_header_and_reads_range_and_local_content() {
+    use std::io::Write;
+    for marker in [0, NO_TITLE_INDEX] {
+        let mut bytes = fixture();
+        bytes[6..8].copy_from_slice(&3u16.to_le_bytes());
+        set64(&mut bytes, 40, marker);
+        let src = source(bytes.clone());
+        let index = Arc::new(
+            RemoteZimIndex::open(src.clone(), Default::default())
+                .await
+                .unwrap(),
+        );
+        assert_eq!(index.header().title_ptr_pos, marker);
+        assert_eq!(index.header().title_index_pos(), None);
+        let remote = RangeZimArchive::open(
+            index,
+            Arc::new(Blobs {
+                source: src.clone(),
+                calls: Mutex::new(0),
+            }),
+            seed(),
+            Default::default(),
+        )
+        .await
+        .unwrap();
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+        file.write_all(&bytes).unwrap();
+        let local = anzimmerman::archive::open_archive(&ZimOpenRequest {
+            path: file.path().to_string_lossy().into_owned(),
+            expected_sha256: None,
+            expected_size_bytes: None,
+        })
+        .await
+        .unwrap();
+        for archive in [&remote as &dyn ZimArchive, &local as &dyn ZimArchive] {
+            let main = archive.main_page().await.unwrap().unwrap();
+            let resolved = archive
+                .resolve_redirect(&EntryKey(main.0), 16)
+                .await
+                .unwrap();
+            assert_eq!(resolved.0, "A/Café");
+            assert_eq!(
+                archive
+                    .article(&ArticleKey(resolved.0))
+                    .await
+                    .unwrap()
+                    .raw_html
+                    .as_ref(),
+                b"<p>chosen</p>"
+            );
+            assert_eq!(
+                archive
+                    .resource(&EntryKey("C/pixel.txt".into()))
+                    .await
+                    .unwrap()
+                    .bytes
+                    .as_ref(),
+                b"pixel"
+            );
+        }
+        assert!(src
+            .requests
+            .lock()
+            .unwrap()
+            .iter()
+            .all(|(offset, length)| offset
+                .checked_add(*length)
+                .is_some_and(|end| end <= bytes.len() as u64)));
+    }
+}
+
+#[tokio::test]
+async fn optional_title_marker_does_not_relax_other_bounds() {
+    let original = fixture();
+    for field in [32, 48, 56] {
+        let mut bytes = original.clone();
+        set64(&mut bytes, field, u64::MAX);
+        assert!(RemoteZimIndex::open(source(bytes), Default::default())
+            .await
+            .is_err());
+    }
+    for position in [
+        original.len() as u64,
+        original.len() as u64 + 1,
+        original.len() as u64 - 1,
+        u64::MAX - 1,
+    ] {
+        let mut bytes = original.clone();
+        set64(&mut bytes, 40, position);
+        assert!(
+            validate_header_offsets(&parse_header(&bytes).unwrap(), bytes.len() as u64).is_err()
+        );
+        assert!(RemoteZimIndex::open(source(bytes), Default::default())
+            .await
+            .is_err());
+    }
+    let mut bytes = original.clone();
+    bytes[4..6].copy_from_slice(&5u16.to_le_bytes());
+    set64(&mut bytes, 40, u64::MAX);
+    assert_eq!(
+        parse_header(&bytes).unwrap().title_index_pos(),
+        Some(u64::MAX)
+    );
+    assert!(RemoteZimIndex::open(source(bytes), Default::default())
+        .await
+        .is_err());
+    // A real optional title table at EOF remains a bounded physical address.
+    let mut bytes = original;
+    let position = bytes.len() as u64;
+    let count = parse_header(&bytes).unwrap().entry_count;
+    for i in 0..count {
+        bytes.extend_from_slice(&i.to_le_bytes());
+    }
+    set64(&mut bytes, 40, position);
+    let index = RemoteZimIndex::open(source(bytes), Default::default())
+        .await
+        .unwrap();
+    assert_eq!(index.header().title_index_pos(), Some(position));
+    assert!(index
+        .cluster_range(index.header().cluster_count - 1)
+        .await
+        .is_ok());
+}
+
+#[test]
+fn captured_kiwix_v6_3_header_accepts_absent_legacy_title_index() {
+    let bytes=hex::decode("5a494d04060003003f6bebc3c642c6588892774f740d1dace11f0100ba040000a686b10600000000ffffffffffffffffae85ba06000000005000000000000000dd1f0100ffffffff7eabba0600000000").unwrap();
+    assert_eq!(bytes.len(), 80);
+    let header = parse_header(&bytes).unwrap();
+    assert_eq!((header.major_version, header.minor_version), (6, 3));
+    assert_eq!(header.title_ptr_pos, NO_TITLE_INDEX);
+    assert_eq!(header.title_index_pos(), None);
+    validate_header_offsets(&header, 112896910).unwrap();
+    assert_eq!(
+        cluster_end(&header, 112_000_000, None, 112896910).unwrap(),
+        112297638
+    );
+}

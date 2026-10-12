@@ -44,8 +44,8 @@ impl RemoteZimIndex {
             (header.path_ptr_pos, header.entry_count, 8u64),
             (header.cluster_ptr_pos, header.cluster_count, 8),
             (
-                header.title_ptr_pos,
-                if header.title_ptr_pos == 0 {
+                header.title_index_pos().unwrap_or(0),
+                if header.title_index_pos().is_none() {
                     0
                 } else {
                     header.entry_count
@@ -78,7 +78,7 @@ impl RemoteZimIndex {
         let mut consumed = 0;
         let boundary = [
             header.path_ptr_pos,
-            header.title_ptr_pos,
+            header.title_index_pos().unwrap_or(0),
             header.cluster_ptr_pos,
             header.checksum_pos,
             reader.len(),

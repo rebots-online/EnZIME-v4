@@ -13,6 +13,9 @@ pub const ZIM_MAGIC: u32 = 0x044D_495A;
 /// Sentinel value of the `main_page` field meaning "no main page".
 pub const NO_PAGE: u32 = 0xFFFF_FFFF;
 
+/// v6 absent legacy title-index marker; never a physical byte address.
+pub const NO_TITLE_INDEX: u64 = u64::MAX;
+
 /// ZIM major versions this implementation accepts.
 pub const SUPPORTED_MAJOR_VERSIONS: &[u16] = &[5, 6];
 
@@ -34,6 +37,17 @@ pub struct ZimHeader {
     pub main_page: u32,
     pub layout_page: u32,
     pub checksum_pos: u64,
+}
+
+impl ZimHeader {
+    /// Physical legacy title-index position, preserving the raw header value.
+    pub fn title_index_pos(&self) -> Option<u64> {
+        match self.title_ptr_pos {
+            0 => None,
+            NO_TITLE_INDEX if self.major_version == 6 => None,
+            position => Some(position),
+        }
+    }
 }
 
 /// Parses the 80-byte ZIM header. The buffer must be at least 80 bytes long;
@@ -115,12 +129,16 @@ pub fn validate_header_offsets(header: &ZimHeader, file_size: u64) -> Result<(),
             )));
         }
     }
-    // title_ptr_pos may be 0 in v6+ (obsolete field).
-    if header.title_ptr_pos != 0 && header.title_ptr_pos >= file_size {
-        return Err(ZimError::InvalidHeader(format!(
-            "title_ptr_pos {} >= file size {}",
-            header.title_ptr_pos, file_size
-        )));
+    if let Some(position) = header.title_index_pos() {
+        if position >= file_size
+            || position
+                .checked_add(u64::from(header.entry_count) * 4)
+                .is_none_or(|end| end > file_size)
+        {
+            return Err(ZimError::InvalidHeader(format!(
+                "title pointer table at {position} outside file size {file_size}"
+            )));
+        }
     }
     if header.checksum_pos != 0 && header.checksum_pos >= file_size {
         return Err(ZimError::InvalidHeader(format!(
@@ -174,7 +192,7 @@ pub fn cluster_end(
     let mut end = next_cluster.unwrap_or(source_len);
     for boundary in [
         header.path_ptr_pos,
-        header.title_ptr_pos,
+        header.title_index_pos().unwrap_or(0),
         header.cluster_ptr_pos,
         header.mime_list_pos,
         header.checksum_pos,

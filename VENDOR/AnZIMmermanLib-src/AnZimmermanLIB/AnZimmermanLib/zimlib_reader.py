@@ -77,7 +77,7 @@ class ZIMReader:
         h, length = self.header, self._reader.length
         if not 80 <= h.mime_list_pos < length:
             raise ZimError('InvalidFormat', 'MIME list lies outside source')
-        for position, count, width in [(h.path_ptr_pos, h.entry_count, 8), (h.cluster_ptr_pos, h.cluster_count, 8), (h.title_ptr_pos, h.entry_count if h.title_ptr_pos else 0, 4)]:
+        for position, count, width in [(h.path_ptr_pos, h.entry_count, 8), (h.cluster_ptr_pos, h.cluster_count, 8), (h.title_index_pos or 0, h.entry_count if h.title_index_pos is not None else 0, 4)]:
             checked_range(position, count * width, length)
             if position >= length:
                 raise ZimError('InvalidFormat', 'Pointer table lies outside source')
@@ -89,7 +89,7 @@ class ZIMReader:
 
     def _boundaries(self):
         h = self.header
-        return (h.path_ptr_pos, h.title_ptr_pos, h.cluster_ptr_pos, h.mime_list_pos, h.checksum_pos, self._reader.length)
+        return (h.path_ptr_pos, h.title_index_pos or 0, h.cluster_ptr_pos, h.mime_list_pos, h.checksum_pos, self._reader.length)
 
     def _read_mime_types(self):
         position = self.header.mime_list_pos
