@@ -1,9 +1,9 @@
 {
-  "version": "1.11.63172",
-  "versionBase": "1.11",
-  "buildNumber": "63172",
-  "versionCode": 100011,
-  "buildDate": "2026-10-12T03:32:36-04:00",
+  "version": "1.12.63579",
+  "versionBase": "1.12",
+  "buildNumber": "63579",
+  "versionCode": 100012,
+  "buildDate": "2026-10-12T10:19:34-04:00",
   "productName": "EnZIME Reader",
   "internalName": "enzime-reader",
   "packageName": "mba.robin.enzime"

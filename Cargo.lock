@@ -66,7 +66,7 @@ dependencies = [
 
 [[package]]
 name = "annotations"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "application",
  "async-trait",
@@ -117,7 +117,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "backup"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "argon2",
  "async-trait",
@@ -456,7 +456,7 @@ dependencies = [
 
 [[package]]
 name = "catalog-openzim"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -918,7 +918,7 @@ dependencies = [
 
 [[package]]
 name = "diagnostics"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "domain",
  "hex",
@@ -1024,7 +1024,7 @@ dependencies = [
 
 [[package]]
 name = "domain"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -1086,7 +1086,7 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 
 [[package]]
 name = "dyndon"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "serde",
  "serde_json",
@@ -1145,7 +1145,7 @@ checksum = "4ef6b89e5b37196644d8796de5268852ff179b44e96276cf4290264843743bb7"
 
 [[package]]
 name = "entitlement"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "ciborium",
@@ -2081,7 +2081,7 @@ dependencies = [
 
 [[package]]
 name = "inference-wllama"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "domain",
@@ -2368,7 +2368,7 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
 name = "lore"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "domain",
@@ -2757,7 +2757,7 @@ dependencies = [
 
 [[package]]
 name = "object-store"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "domain",
  "hex",
@@ -3024,7 +3024,7 @@ checksum = "19f132c84eca552bf34cab8ec81f1c1dcc229b811638f9d283dceabe58c5569e"
 
 [[package]]
 name = "platform-adapter"
-version = "1.11.63172"
+version = "1.12.63579"
 
 [[package]]
 name = "plist"
@@ -3078,7 +3078,7 @@ dependencies = [
 
 [[package]]
 name = "ports"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -3371,7 +3371,7 @@ checksum = "20675572f6f24e9e76ef639bc5552774ed45f1c30e2951e1e99c59888861c539"
 
 [[package]]
 name = "reader"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "annotations",
  "anzimmerman",
@@ -3522,11 +3522,11 @@ dependencies = [
 
 [[package]]
 name = "retrieval"
-version = "1.11.63172"
+version = "1.12.63579"
 
 [[package]]
 name = "revenuecat-adapter"
-version = "1.11.63172"
+version = "1.12.63579"
 
 [[package]]
 name = "ring"
@@ -4023,7 +4023,7 @@ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "sidecar"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "domain",
@@ -4179,7 +4179,7 @@ checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 
 [[package]]
 name = "storage-sqlite"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "rusqlite",
  "sha2",
@@ -4982,7 +4982,7 @@ dependencies = [
 
 [[package]]
 name = "transfer-file"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -4995,7 +4995,7 @@ dependencies = [
 
 [[package]]
 name = "transfer-http"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "async-trait",
  "bytes",
@@ -6026,7 +6026,7 @@ dependencies = [
 
 [[package]]
 name = "zim-anzimmerman"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "anzimmerman",
  "async-trait",
@@ -6046,7 +6046,7 @@ dependencies = [
 
 [[package]]
 name = "zim-cluster-cache"
-version = "1.11.63172"
+version = "1.12.63579"
 dependencies = [
  "anzimmerman",
  "async-stream",
