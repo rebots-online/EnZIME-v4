@@ -32,6 +32,14 @@ async fn native_http_partial_install_restart_and_annotation() {
         .await
         .unwrap();
     assert!(plan.download_bytes < full);
+    let coverage = plan.offline_catalog.as_ref().unwrap();
+    assert!(coverage.complete);
+    assert_eq!(coverage.planned_article_count, 101);
+    assert_eq!(coverage.planned_resource_count, 2);
+    assert_eq!(coverage.planned_alias_count, 2);
+    let wire = serde_json::to_value(&plan).unwrap();
+    assert_eq!(wire["offlineCatalog"]["plannedArticleCount"], 101);
+    assert!(wire["offlineCatalog"].get("readableArticles").is_none());
     assert_eq!(plan.verification.expected_size_bytes, full);
     assert_eq!(plan.verification.expected_sha256, None);
     let job = run_dyndon_install(&state, &plan.install_plan_id)
@@ -126,6 +134,41 @@ async fn native_http_partial_install_restart_and_annotation() {
         .resource(&EntryKey("I/pixel.txt".into()))
         .await
         .unwrap();
+    assert_eq!(
+        archive
+            .resource(&EntryKey("I/unvisited.txt".into()))
+            .await
+            .unwrap()
+            .bytes
+            .as_ref(),
+        b"offline resource"
+    );
+    // These keys were never opened online; metadata spans more than three pages.
+    let unvisited = archive
+        .article(&ArticleKey("A/a00090".into()))
+        .await
+        .unwrap();
+    assert_eq!(unvisited.normalized_text, "unvisited payload 90");
+    assert_eq!(
+        archive
+            .article(&ArticleKey("R/Via".into()))
+            .await
+            .unwrap()
+            .article_key
+            .0,
+        "A/a00090"
+    );
+    let hits = archive
+        .search_titles(ports::zim::TitleSearchQuery {
+            text: "Unvisited 00090".into(),
+            offset: 0,
+            limit: 5,
+        })
+        .await
+        .unwrap();
+    assert!(hits.iter().any(|hit| hit.article_key.0 == "A/a00090"));
+    assert!(archive.resource(&EntryKey("Z/Large".into())).await.is_err());
+    assert_eq!(archive.metadata().article_count, 101);
     assert_eq!(source.requests.load(Ordering::SeqCst), before);
     let notes = restarted
         .annotations

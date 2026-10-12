@@ -112,6 +112,46 @@ pub async fn pack_list(
             }
         }
     }
+    // Query durable availability outside the application DB lock. A cached
+    // archive descriptor may predate payload eviction and is not count truth.
+    let active_versions = {
+        let conn = state.conn.lock().map_err(err_str)?;
+        items
+            .iter()
+            .map(|item| {
+                let version: Option<String> = conn
+                    .query_row(
+                        "SELECT active_pack_version_id FROM packs WHERE pack_id=?1",
+                        [&item.pack_id],
+                        |row| row.get(0),
+                    )
+                    .map_err(err_str)?;
+                Ok((item.pack_id.clone(), version))
+            })
+            .collect::<Result<std::collections::HashMap<_, _>, String>>()?
+    };
+    let stores = state
+        .dyndon_stores
+        .lock()
+        .map_err(err_str)?
+        .values()
+        .cloned()
+        .collect::<Vec<_>>();
+    for store in stores {
+        let manifest = store.manifest()?;
+        if active_versions
+            .get(&manifest.pack_id)
+            .and_then(|id| id.as_deref())
+            == Some(manifest.pack_version_id.as_str())
+        {
+            if let Some(item) = items
+                .iter_mut()
+                .find(|item| item.pack_id == manifest.pack_id)
+            {
+                item.article_count = store.catalog_progress()?.readable_articles;
+            }
+        }
+    }
     let total = items.len() as u64;
     let next_offset = if items.len() as u32 >= limit {
         Some(offset + limit)

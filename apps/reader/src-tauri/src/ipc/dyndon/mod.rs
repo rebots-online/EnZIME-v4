@@ -2,8 +2,9 @@
 use super::*;
 use std::path::PathBuf;
 use zim_cluster_cache::disk::{
-    install_selected, open_disk_archive, plan_disk_fit, DiskPackManifest, DiskPackPolicy,
-    DiskPackStore, DiskRangeSource, PlanSummary, SourceIdentity,
+    discover_offline_entries, install_selected, open_disk_archive, plan_disk_fit, DiskPackManifest,
+    DiskPackPolicy, DiskPackStore, DiskRangeSource, OfflineCatalogProgress, PlanSummary,
+    SourceIdentity,
 };
 mod install;
 mod persistence;
@@ -33,6 +34,8 @@ struct SavedPlan {
     catalog_entry_id: String,
     expected_sha256: Option<String>,
     upstream_version: String,
+    #[serde(default)]
+    offline_catalog: Option<OfflineCatalogProgress>,
 }
 fn digest(bytes: &[u8]) -> String {
     use sha2::{Digest, Sha256};

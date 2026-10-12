@@ -25,6 +25,21 @@ pub async fn run_dyndon_install(
         store
     };
     let manifest = store.manifest()?;
+    if manifest.pack_id != plan.record.pack_id
+        || manifest.pack_version_id != plan.record.pack_version_id
+    {
+        return Err("manifest_identity_mismatch".into());
+    }
+    if plan.offline_catalog.is_none() {
+        return Err("offline_catalog_upgrade_required: compute a new install plan".into());
+    }
+    let current_summary = store.planned_summary()?;
+    if current_summary.selected_count != plan.record.summary.selected_count
+        || current_summary.selected_bytes != plan.record.summary.selected_bytes
+    {
+        return Err("offline_catalog_plan_changed: compute a new install plan".into());
+    }
+    store.catalog_planned_progress()?;
     let job_id = {
         let conn = state.conn.lock().map_err(err_str)?;
         let prefix = format!("job-{install_plan_id}");
@@ -74,6 +89,10 @@ pub async fn run_dyndon_install(
   let archive=open_disk_archive(store.clone()).await?;
   let main=archive.main_page().await.map_err(err_str)?.ok_or("main_page_missing")?;
   archive.article(&main).await.map_err(err_str)?;
+  let available = store.catalog_progress()?;
+  if available.readable_articles == 0 {
+      return Err("offline_catalog_main_unavailable".to_string());
+  }
   if prior!="staged" {transition(state,&job_id,"verifying")?;transition(state,&job_id,"staged")?;}
   transition(state,&job_id,"activating")?;
   activate(state,&plan,&manifest,summary.selected_bytes,&job_id)?;

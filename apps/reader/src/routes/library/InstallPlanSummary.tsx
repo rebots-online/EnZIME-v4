@@ -15,6 +15,7 @@ export function InstallPlanSummary({
   plan: InstallPlan;
 }): ReactNode {
   const verification = plan.verification;
+  const catalog = plan.offlineCatalog;
   return (
     <div className="lib-summary" aria-label="Install plan summary">
       <Row k="Destination" v={plan.destination.displayName} />
@@ -24,6 +25,16 @@ export function InstallPlanSummary({
         accent
       />
       <Row k={plan.transferMode === "ranged" ? "Planned partial download" : "Download"} v={formatBytes(plan.downloadBytes)} />
+      {catalog ? <>
+        <Row k="Planned offline articles" v={catalog.plannedArticleCount.toLocaleString()} />
+        <Row k="Planned offline resources" v={catalog.plannedResourceCount.toLocaleString()} />
+        <Row k="Planned retained redirects" v={catalog.plannedAliasCount.toLocaleString()} />
+        <Row k="Catalog entries inspected" v={`${catalog.scannedEntries.toLocaleString()} / ${catalog.totalEntries.toLocaleString()}`} />
+        <Row k="Catalog transfer allowance used" v={`${formatBytes(catalog.networkReservedBytes)} / ${formatBytes(catalog.networkAllowanceBytes)}`} />
+        <Row k="Catalog metadata received" v={formatBytes(catalog.networkReceivedBytes)} />
+        <p>Planned entries become available offline after their content finishes downloading. Metadata traffic is separate from the planned content download; retained metadata uses your storage budget.</p>
+        {!catalog.complete ? <p role="status">Partial catalog discovery: {catalog.stopReason === "metadata_budget" ? "the metadata storage budget was reached" : "the metadata transfer allowance was reached"}. This plan covers the indexed subset shown above, not every article in the source archive.</p> : null}
+      </> : null}
       <Row k="Temporary scratch" v={formatBytes(plan.temporaryBytes)} />
       <Row k="Final footprint" v={formatBytes(plan.finalBytes)} />
       <Row k="Free before" v={formatBytes(plan.freeBytesBefore)} />

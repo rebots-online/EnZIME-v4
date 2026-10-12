@@ -1506,7 +1506,7 @@ Source pushes remain integrator-owned GitHub code publication under outage instr
 
 - ✅ OI-01 Canonical pluggable entry index (3 sparse catalog +9 range access tests, parent reviewed and independently executed).
 - ✅ OI-02 Durable bounded catalog: `cargo test -p zim-cluster-cache --offline` passed 16 tests (9 catalog, 6 disk-range, 1 planner); parent reviewed quota, persistence and availability paths. Packaged Kiwix validation remains separate.
-- [ ] OI-03 Native plan/activation coverage.
+- ✅ OI-03 Native plan/activation coverage: final parent `cargo test --manifest-path apps/reader/src-tauri/Cargo.toml --test dyndon_install --offline` passed 3 tests after OI-02 integration; worker TypeScript check and 13 library tests passed. Previously unvisited article/alias/resource/search reopened with zero network calls. Actual Tauri pack-list command and packaged media/offline flow remain runtime gates.
 
 # DynDon offline entry catalog
 

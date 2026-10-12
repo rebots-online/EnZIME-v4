@@ -269,6 +269,37 @@ pub struct InstallPlanVerificationDto {
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct OfflineCatalogProgressDto {
+    pub scanned_entries: u32,
+    pub total_entries: u32,
+    pub planned_article_count: u64,
+    pub planned_resource_count: u64,
+    pub planned_alias_count: u64,
+    pub network_allowance_bytes: u64,
+    pub network_reserved_bytes: u64,
+    pub network_received_bytes: u64,
+    pub complete: bool,
+    pub stop_reason: Option<String>,
+}
+impl From<zim_cluster_cache::disk::OfflineCatalogProgress> for OfflineCatalogProgressDto {
+    fn from(progress: zim_cluster_cache::disk::OfflineCatalogProgress) -> Self {
+        Self {
+            scanned_entries: progress.scanned_entries,
+            total_entries: progress.total_entries,
+            planned_article_count: progress.readable_articles,
+            planned_resource_count: progress.readable_resources,
+            planned_alias_count: progress.retained_aliases,
+            network_allowance_bytes: progress.network_allowance_bytes,
+            network_reserved_bytes: progress.network_reserved_bytes,
+            network_received_bytes: progress.network_received_bytes,
+            complete: progress.complete,
+            stop_reason: progress.stop_reason,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InstallPlanDto {
     pub install_plan_id: String,
     pub catalog_entry: LibraryCatalogEntry,
@@ -280,6 +311,7 @@ pub struct InstallPlanDto {
     pub free_bytes_before: u64,
     pub free_bytes_after: u64,
     pub verification: InstallPlanVerificationDto,
+    pub offline_catalog: Option<OfflineCatalogProgressDto>,
 }
 
 #[derive(Clone, Debug, Serialize)]

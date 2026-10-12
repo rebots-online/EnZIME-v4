@@ -104,7 +104,26 @@ pub fn fixture() -> Vec<u8> {
             "text/html",
             b"<p>Offline canvas article</p><img src='../I/pixel.txt'>".to_vec(),
         )
-        .add_article(b'I', "pixel.txt", "Pixel", "text/plain", b"pixel".to_vec())
+        .add_article(b'I', "pixel.txt", "Pixel", "text/plain", b"pixel".to_vec());
+    for index in 0..100 {
+        builder = builder.add_article(
+            b'A',
+            format!("a{index:05}"),
+            format!("Unvisited {index:05} {}", "t".repeat(1980)),
+            "text/html",
+            format!("<p>unvisited payload {index}</p>").into_bytes(),
+        );
+    }
+    builder = builder
+        .add_redirect(b'R', "Retained", "Retained alias", 92)
+        .add_redirect(b'R', "Via", "Via alias", 102)
+        .add_article(
+            b'I',
+            "unvisited.txt",
+            "Unvisited resource",
+            "text/plain",
+            b"offline resource".to_vec(),
+        )
         .add_article(
             b'Z',
             "Large",

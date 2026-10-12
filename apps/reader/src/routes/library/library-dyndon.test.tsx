@@ -34,6 +34,19 @@ describe("DynDon wire contracts", () => {
     render(<InstallPlanSummary plan={plan} />);
     expect(screen.getByText("Not provided by source")).toBeTruthy(); expect(screen.getByText(/full archive SHA-256 is not verified/)).toBeTruthy();
   });
+  it("separates planned catalog coverage from completed offline availability", () => {
+    render(<InstallPlanSummary plan={{ ...plan, offlineCatalog: {
+      scannedEntries: 400, totalEntries: 1000, plannedArticleCount: 120,
+      plannedResourceCount: 50, plannedAliasCount: 3, networkAllowanceBytes: 4 * 1024 ** 2,
+      networkReservedBytes: 4 * 1024 ** 2, networkReceivedBytes: 3 * 1024 ** 2,
+      complete: false, stopReason: "transfer_allowance",
+    } }} />);
+    expect(screen.getByText("Planned offline articles").parentElement?.textContent).toContain("120");
+    expect(screen.getByText("Planned offline resources").parentElement?.textContent).toContain("50");
+    expect(screen.getByText("Catalog transfer allowance used").parentElement?.textContent).toContain("4.0 MB / 4.0 MB");
+    expect(screen.getByRole("status").textContent).toContain("not every article");
+    expect(screen.getByText(/become available offline after/)).toBeTruthy();
+  });
   it("renders retained partial bytes without dividing by the full archive size", () => {
     useLibraryStore.setState({ downloads: ready([job]) }); render(<DownloadQueue />);
     expect(screen.getByText(/retained locally/).textContent).not.toContain("100 GiB");

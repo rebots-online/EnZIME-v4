@@ -81,6 +81,19 @@ export type InstallPlanVerification = {
   readonly zimStructureCheck: boolean;
 };
 
+export type OfflineCatalogProgress = {
+  readonly scannedEntries: number;
+  readonly totalEntries: number;
+  readonly plannedArticleCount: number;
+  readonly plannedResourceCount: number;
+  readonly plannedAliasCount: number;
+  readonly networkAllowanceBytes: number;
+  readonly networkReservedBytes: number;
+  readonly networkReceivedBytes: number;
+  readonly complete: boolean;
+  readonly stopReason: "transfer_allowance" | "metadata_budget" | null;
+};
+
 export type InstallPlan = {
   readonly installPlanId: string;
   readonly catalogEntry: CatalogEntry;
@@ -92,6 +105,7 @@ export type InstallPlan = {
   readonly freeBytesBefore: number;
   readonly freeBytesAfter: number;
   readonly verification: InstallPlanVerification;
+  readonly offlineCatalog?: OfflineCatalogProgress | null;
 };
 
 export type DownloadJobState =

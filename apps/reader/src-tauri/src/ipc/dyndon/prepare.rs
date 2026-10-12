@@ -132,7 +132,7 @@ pub async fn prepare_dyndon_install(
     let pack_id = format!("pack-{}", digest(entry.id.as_bytes()));
     let intent = selection_intent(state, request.selection_profile_id.as_deref(), budget)?;
     let edition_hash =
-        digest(&serde_json::to_vec(&(identity_hash, &intent, budget)).map_err(err_str)?);
+        digest(&serde_json::to_vec(&(&identity_hash, &intent, budget)).map_err(err_str)?);
     let pack_version_id = format!("version-{edition_hash}");
     let main_page = main.key.0.clone();
     let metadata = ZimMetadata {
@@ -181,6 +181,14 @@ pub async fn prepare_dyndon_install(
     } else {
         DiskPackStore::create(store_root.clone(), manifest, state.transfer_source.clone()).await?
     };
+    let retained_manifest = store.manifest()?;
+    if retained_manifest.pack_id != pack_id
+        || retained_manifest.pack_version_id != pack_version_id
+        || digest(&serde_json::to_vec(&retained_manifest.identity).map_err(err_str)?)
+            != identity_hash
+    {
+        return Err("manifest_identity_mismatch".into());
+    }
     store.set_offline(false).await?;
     state
         .dyndon_stores
@@ -198,7 +206,10 @@ pub async fn prepare_dyndon_install(
     // Persist and pin the actual redirect target's metadata before planning sweeps.
     index.main_entry().await.map_err(err_str)?;
 
-    let summary = plan_disk_fit(store.clone(), index, intent, &[main_cluster]).await?;
+    plan_disk_fit(store.clone(), index.clone(), intent, &[main_cluster]).await?;
+    discover_offline_entries(store.clone(), index).await?;
+    let offline_catalog = store.catalog_planned_progress()?;
+    let summary = store.planned_summary()?;
     let plan_id = format!(
         "plan-{}",
         digest(format!("{}:{}:{budget}", pack_version_id, root.storage_root_id).as_bytes())
@@ -215,6 +226,7 @@ pub async fn prepare_dyndon_install(
         catalog_entry_id: request.catalog_entry_id.clone(),
         expected_sha256: acquisition.sha256().map(str::to_owned),
         upstream_version: entry.updated,
+        offline_catalog: Some(offline_catalog.clone()),
     };
     persistence::save(state, &plan).await?;
     let catalog = {
@@ -240,6 +252,7 @@ pub async fn prepare_dyndon_install(
         final_bytes: summary.selected_bytes + summary.metadata_reserved_bytes,
         free_bytes_before: free,
         free_bytes_after: free - budget,
+        offline_catalog: Some(OfflineCatalogProgressDto::from(offline_catalog)),
         verification: InstallPlanVerificationDto {
             expected_size_bytes: probe.size_bytes,
             expected_sha256: plan.expected_sha256,
