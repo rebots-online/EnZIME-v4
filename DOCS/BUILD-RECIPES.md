@@ -315,3 +315,22 @@ search label. Independent review passed both source tasks; no broader redesign.
 - This is an existing-design repair and a Linux trial, not a commercial release
   or full platform build. Catalog acquisition, downloads, restart/offline reading,
   media, inference, entitlements and the full gauntlet remain unverified.
+
+## 2026-10-12 — v1.9.63091 diagnostic Linux checkpoint
+
+Manual `cargo tauri build --bundles deb,appimage` completed: TypeScript and Vite
+(102 modules) passed, Rust release compile completed, both bundles emitted.
+The AppImage opened via tauri-driver/WebKitWebDriver and returned the native Home
+DOM. This does not verify media recording, live installation, or offline restart.
+
+- AppImage: `dist/enzime-reader-v1.9.63091-linux-amd64.AppImage`, 83,859,960 bytes;
+  SHA256 `c43e2c525b1f260fea06d22a37573831fa17572eb4b5ec53ca79ac43adb33272`.
+- Debian: `dist/enzime-reader-v1.9.63091-linux-amd64.deb`, 8,457,860 bytes;
+  SHA256 `348111ef6c5a08719fd0a2165eb97e568a990fa951317e69106d05042be337cd`.
+- Application source checkpoint: `ec4f83f`; stamped version files accompany this
+  evidence. Build log: Admin-Manual/LOGS/EnZIME-v4/native-trial-v1.9.63091-build.log.
+- Not an all-platform set or release. Offline selected-entry metadata gap remains.
+
+**Operator correction:** all subsequent builds use one unified script, one source
+snapshot and version, all platform lanes, and a current-build manifest. Separate
+one-off Linux/Windows/Android builds are not the normal delivery path.

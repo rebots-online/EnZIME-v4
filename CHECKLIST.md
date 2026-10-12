@@ -1408,3 +1408,7 @@ This architecture establishes a repair plan, not an application dependency on al
 ## Architecture handback evidence
 
 This document records one library with several language editions. The repair scope is portable structural correctness plus verified bounded primitives; codecs lacking a bounded backend fail explicitly. No new third-party codec dependency, registry identity, network transport, or app-specific retention policy is implied. Existing reader/writer APIs remain where feasible; the browser lookup/enumeration scheduling change is explicit and names its actual consumers. All LP tasks remain unchecked until their named commands run and semantic assertions pass.
+
+LP-PY-01 approved constructor refinement: ZIMReader(file_path:str="", source:RandomAccessSource=None, limits:RangeReadLimits=None, decode_limits:ClusterDecodeLimits=None). self.decode_limits controls output/blob/window bounds, independently validated; convenience extraction clamps configured output to32MiB and explicit store extraction retains configured output at most2GiB. No new codec dependencies.
+
+LP-PY-01 canonical bounds clarification: read-only `L/rust/src/limits.rs` is authorized; align MAX_URL_BYTES/MAX_TITLE_BYTES=2048 and MAX_MIME_TYPES=65530 with canonical Rust, retaining the64KiB total directory-entry bound.
