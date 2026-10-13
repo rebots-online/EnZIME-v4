@@ -20,6 +20,10 @@ The user's final direction supersedes the proposed multi-state visible icon taxo
 
 If the addition cannot fit, explain the shortfall and offer to adjust the storage limit or collection. Never silently evict selected/pinned content, exceed the limit or override explicit exclusions. Link availability must update after acquisition, eviction or loss of the storage destination. Keep annotations durable across collection changes.
 
+## Page-local link availability — explicit implementation constraint
+
+Do not walk or scan the whole ZIM to classify links. During rendering of the current article, inspect its internal links and use the existing local indexed availability data to determine whether each target is readable. Deduplicate repeated targets and use bounded lookups/batches; the work scales with links on the displayed page, not archive entry count. Grey unavailable targets, keeping them clickable. Missing local index coverage means unavailable locally, not confirmed nonexistent upstream. Do not prefetch remote targets or compute section download sizes just to style links. Resolve the live address or calculate incremental acquisition only on the relevant user action. This requirement concerns link demarcation; it does not claim that initial collection planning needs no metadata.
+
 ## Release evidence
 
 DynDon is central product value: demonstrate chosen destination, suggested budget, meaningful selected coverage, bounded acquisition, offline restart/read/annotation and optional expansion through a grey link. These requirements do not mean the current artifact passes that journey. Rebuild all platforms through scripts/build-all.sh; commit and verify GitHub pushes for each completed task. Forgejo remains unavailable by operator instruction.
