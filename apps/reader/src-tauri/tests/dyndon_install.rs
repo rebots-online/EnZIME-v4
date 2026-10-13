@@ -8,6 +8,42 @@ use std::sync::{atomic::Ordering, Arc};
 #[path = "dyndon_install/support.rs"]
 mod support;
 use support::*;
+
+#[tokio::test]
+async fn below_minimum_budget_rejects_before_busy_acquisition_without_network() {
+    let (source, server) = serve(fixture(), false).await;
+    let root = root();
+    let state = make_state(&root, source.clone());
+    let requests_before = source.requests.load(Ordering::SeqCst);
+    let gate = state.acquisition_gate.lock().await;
+    let result = tokio::time::timeout(
+        std::time::Duration::from_millis(250),
+        prepare_dyndon_install(
+            &state,
+            DynDonInstallRequest {
+                catalog_entry_id: "unresolved-entry".into(),
+                destination_storage_root_id: "chosen".into(),
+                budget_bytes: 8 * 1024 * 1024,
+                selection_profile_id: None,
+            },
+        ),
+    )
+    .await
+    .expect("invalid budget must not wait for the acquisition gate");
+    let error = result.unwrap_err();
+    assert!(error.contains("budget_exceeded"), "{error}");
+    assert!(
+        error.contains("minimum") && error.contains("16 MiB"),
+        "{error}"
+    );
+    assert_eq!(source.requests.load(Ordering::SeqCst), requests_before);
+    assert!(state.dyndon_stores.lock().unwrap().is_empty());
+    drop(gate);
+    drop(state);
+    server.abort();
+    std::fs::remove_dir_all(root).unwrap();
+}
+
 #[tokio::test]
 async fn native_http_partial_install_restart_and_annotation() {
     let bytes = fixture();

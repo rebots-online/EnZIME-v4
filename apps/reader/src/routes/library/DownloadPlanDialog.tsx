@@ -40,6 +40,7 @@ export function DownloadPlanDialog(): ReactNode {
   const [cancelError, setCancelError] = useState<string>();
   const [computedBudget, setComputedBudget] = useState<number>();
   const budgetBytes = budgetBytesFor(budget, unit);
+  const budgetMeetsMinimum = budgetBytes !== undefined && budgetBytes >= 16 * 1024 ** 2;
   const starting = useLibraryStore(s => s.installStarting);
   const downloads = useLibraryStore(s => s.downloads.data);
   const activeEntryId = useLibraryStore((s) => s.activeCatalogEntryId);
@@ -93,9 +94,9 @@ export function DownloadPlanDialog(): ReactNode {
   const planResolved = plan !== null && plan !== undefined && plan.destination.storageRootId === selectedRootId && computedBudget === budgetBytes;
   const planError = planSlice.status === "error" ? planSlice.error : null;
 
-  const canCompute = !!entry && !!selectedRootId && !!budgetBytes && !planning && !starting && !planResolved;
+  const canCompute = !!entry && !!selectedRootId && budgetMeetsMinimum && !planning && !starting && !planResolved;
   const canStart = planResolved && !planning && !starting;
-  const compute = () => { if (entry && selectedRootId && budgetBytes) { setComputedBudget(budgetBytes); return computePlan(entry.catalogEntryId, selectedRootId, budgetBytes); } return Promise.resolve(); };
+  const compute = () => { if (entry && selectedRootId && budgetBytes && budgetMeetsMinimum) { setComputedBudget(budgetBytes); return computePlan(entry.catalogEntryId, selectedRootId, budgetBytes); } return Promise.resolve(); };
 
   return (
     <div
@@ -128,10 +129,12 @@ export function DownloadPlanDialog(): ReactNode {
         <StoragePlanner />
         <fieldset disabled={planning || starting} style={{ border: 0, padding: 0 }}>
           <legend>Maximum storage budget</legend>
-          <div className="lib-search"><input className="lib-input" type="number" min="0.001" step="any" value={budget} aria-label="Storage budget" onChange={event => setBudget(event.target.value)} />
+          <div className="lib-search"><input className="lib-input" type="number" min={unit === "MiB" ? 16 : 16 / 1024} step="any" value={budget} aria-label="Storage budget" onChange={event => setBudget(event.target.value)} />
           <select className="lib-select" aria-label="Storage budget unit" value={unit} onChange={event => setUnit(event.target.value as "MiB" | "GiB")}><option value="MiB">MiB</option><option value="GiB">GiB</option></select></div>
           <p>DynDon retains selected clusters within this budget, including its index and working space.</p>
+          <p>Minimum storage budget: 16 MiB, including the local index and decoding workspace, even for smaller archives.</p>
           {!budgetBytes ? <p role="alert">Enter a positive storage budget that resolves to a safe whole byte count.</p> : null}
+          {budgetBytes && !budgetMeetsMinimum ? <p role="alert">Increase the storage budget to at least 16 MiB.</p> : null}
         </fieldset>
 
         {!selectedRootId ? (

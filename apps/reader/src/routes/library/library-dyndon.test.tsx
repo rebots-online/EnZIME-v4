@@ -84,6 +84,27 @@ describe("catalog loading", () => {
 });
 
 describe("budgeted install flow", () => {
+  it("rejects 8 MiB locally and permits the exact 16 MiB minimum", async () => {
+    seedDialog();
+    const compute = vi.spyOn(libraryService, "installPlan").mockResolvedValue(plan);
+    render(<DownloadPlanDialog />);
+    fireEvent.change(screen.getByLabelText("Storage budget unit"), { target: { value: "MiB" } });
+    fireEvent.change(screen.getByLabelText("Storage budget"), { target: { value: "8" } });
+    const button = screen.getByRole("button", { name: "Compute plan" }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(screen.getByText(/minimum.*16 MiB/i)).toBeTruthy();
+    fireEvent.click(button);
+    expect(compute).not.toHaveBeenCalled();
+    expect(invoke).not.toHaveBeenCalledWith("install_plan", expect.anything());
+
+    fireEvent.change(screen.getByLabelText("Storage budget"), { target: { value: "16" } });
+    expect(button.disabled).toBe(false);
+    fireEvent.click(button);
+    await screen.findByRole("button", { name: "Start download" });
+    expect(compute).toHaveBeenCalledExactlyOnceWith({
+      catalogEntryId: "wiki", destinationStorageRootId: "root", budgetBytes: 16 * 1024 ** 2,
+    });
+  });
   it("sends the chosen budget, retains the failed plan and retries the same ID", async () => {
     seedDialog(); const compute = vi.spyOn(libraryService, "installPlan").mockResolvedValue(plan);
     const start = vi.spyOn(libraryService, "installStart").mockRejectedValueOnce({ kind: "recoverable", message: "Network interrupted", cause: null }).mockResolvedValue(job);

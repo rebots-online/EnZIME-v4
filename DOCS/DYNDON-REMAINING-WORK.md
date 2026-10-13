@@ -5,8 +5,8 @@ User instruction, 2026-10-13: display the current colour-coded remaining-work li
 ⚪ **EnZIME core release work and non-blocking DynDon enhancements**
 
 - 🟠 Add a desktop folder/drive chooser and persist the selected destination.
-- 🟠 Suggest an editable storage maximum from actual destination free space, accounting for reserve, metadata and working space; recheck before transfer.
-- 🟠 Add expandable topic checkboxes and per-topic depth choices within the budget, using real source-matched content metadata.
+- 🟠 Add a storage-budget slider synchronized with an editable value, suggesting a maximum from actual destination free space and accounting for reserve, metadata and working space; recheck before transfer.
+- 🟠 Add an expandable topic tree with checkboxes and per-topic depth choices, using real source-matched metadata; begin bounded background cluster mapping on hover, focus or selection and reuse it as choices change.
 - 🟠 Check internal links on the page being rendered against the local availability index; grey unavailable targets, keeping them clickable. No whole-ZIM walk or remote prefetch for link styling.
 - 🟠 On a grey-link click: explain unavailability offline; online offer Open live page or Download this section. Resolve real targets, calculate incremental storage when requested, and confirm before acquisition. Do not silently evict content or exceed the budget.
 - 🟠 Replace misleading placeholder statuses and disconnected controls with working behavior or explicit unavailable states.
@@ -23,3 +23,5 @@ The first five implementation items (destinations, suggested budgets, topic sele
 As of 2026-10-13 01:24 EDT, the new destination, suggested-budget, topic-selection and grey-link requirements are documented, not implemented. Native 1.13.63942 demonstrated live Kiwix partial acquisition, but failed the installed-pack handoff. The source repair passed 80 frontend tests and TypeScript checking and is pushed; rebuilt native acceptance remains pending. Unified 1.13 collected 7/12 required artifacts. Its Android symbols step failed on historical insufficient workspace storage; a later observation found / with 84 GB and /home with 24 GB free, so re-probe rather than assume that shortage persists. New native binaries are local, not published GitHub downloads.
 
 Detailed product decisions: DYNDON-USER-REQUIREMENTS-2026-10-13.md. Executable coding contracts: ../CHECKLIST.md. This remaining-work view does not replace those contracts or mark unfinished features complete.
+
+2026-10-13 17:55 EDT source verification: undersized-budget validation now reports the 16 MiB minimum before waiting for the acquisition lock; the dialog displays that minimum and prevents planning below it. Focused frontend tests 14/14, native dyndon_install integration tests 4/4 and TypeScript checking passed. Packaged validation remains pending, including the originally reported installed-app delay. Slider/topic-tree/background-mapping refinements remain requirements, not implemented behavior. Artifact versions must be generated automatically and displayed in a consistent location; no manually entered version labels.

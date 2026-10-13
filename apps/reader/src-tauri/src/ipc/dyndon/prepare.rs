@@ -50,6 +50,12 @@ pub async fn prepare_dyndon_install(
     state: &AppState,
     request: DynDonInstallRequest,
 ) -> Result<InstallPlanDto, String> {
+    if request.budget_bytes != 0 && request.budget_bytes < 16 * 1024 * 1024 {
+        return Err(format!(
+            "budget_exceeded: minimum storage budget is 16 MiB including index and decoding workspace; requested {} bytes",
+            request.budget_bytes
+        ));
+    }
     let _gate = state.acquisition_gate.lock().await;
     let entry = super::super::kiwix::load_entry(state, &request.catalog_entry_id)?;
     let root = {
@@ -69,7 +75,12 @@ pub async fn prepare_dyndon_install(
     } else {
         request.budget_bytes
     };
-    if budget < 16 * 1024 * 1024 || budget > available {
+    if available < 16 * 1024 * 1024 {
+        return Err(format!(
+            "budget_exceeded: destination needs at least 16 MiB after safety reserve; available {available} bytes"
+        ));
+    }
+    if budget > available {
         return Err(format!(
             "budget_exceeded: requested {budget}, available after reserve {available}"
         ));
