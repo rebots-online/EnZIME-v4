@@ -1663,3 +1663,5 @@ Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCod
 ## DynDon product requirements — captured 2026-10-13
 
 Authority: DOCS/DYNDON-USER-REQUIREMENTS-2026-10-13.md. Requirements only; not executable coder tasks or completion claims. Next architecture/design pass must define exact entities and acceptance contracts for desktop destination registration, actual-free-space budget recommendations, topic/depth selection, and grey unavailable links with consented budget-checked incremental acquisition. Preserve the user's simplified grey-link interaction rather than introducing the earlier proposed visible status taxonomy.
+
+Operator scope correction 2026-10-13: the DynDon enhancements in DOCS/DYNDON-USER-REQUIREMENTS-2026-10-13.md are **still to do and non-blocking for initial release**. See DOCS/ROADMAP.md and README.md. They do not add initial-release gates or waive existing core verification.
