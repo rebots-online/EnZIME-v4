@@ -177,12 +177,13 @@ def prepare_snapshot(repo, source_ref):
     commit = subprocess.check_output(["git", "rev-parse", "--verify", source_ref + "^{commit}"],
                                      cwd=repo, text=True).strip()
     attempt = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ") + "-" + commit[:12]
-    workspace = repo / "target/build-set" / attempt
+    workspace = Path(os.environ.get("ENZIME_BUILD_WORKSPACE_ROOT", str(repo / "target/build-set"))).expanduser().resolve() / attempt
     workspace.mkdir(parents=True)
-    logs = Path.home() / "Admin-Manual/LOGS/EnZIME-v4/build-sets" / attempt
+    logs = Path(os.environ.get("ENZIME_BUILD_LOG_ROOT", str(Path.home() / "Admin-Manual/LOGS/EnZIME-v4/build-sets"))).expanduser().resolve() / attempt
     logs.mkdir(parents=True)
-    build = BuildSet(repo, workspace / "source", workspace, logs, repo / "dist", commit)
-    build.artifact_dir.mkdir(exist_ok=True)
+    artifact_dir = Path(os.environ.get("ENZIME_BUILD_ARTIFACT_DIR", str(repo / "dist"))).expanduser().resolve()
+    build = BuildSet(repo, workspace / "source", workspace, logs, artifact_dir, commit)
+    build.artifact_dir.mkdir(parents=True, exist_ok=True)
     result = LaneResult("preparation", log_path=str(logs / "preparation.log"))
     try:
         dirty = subprocess.check_output(["git", "status", "--porcelain", "-uno"], cwd=repo, text=True)
@@ -266,7 +267,7 @@ def run_lane(build, lane):
     result = LaneResult(lane, log_path=str(build.logs / (lane + ".log")))
     lane_root = build.workspace / "lanes" / lane
     output = build.workspace / "output" / lane
-    target = build.root / "target/build-set-cache" / lane
+    target = Path(os.environ.get("ENZIME_BUILD_CACHE_ROOT", str(build.root / "target/build-set-cache"))).expanduser().resolve() / lane
     try:
         output.mkdir(parents=True)
         target.mkdir(parents=True, exist_ok=True)

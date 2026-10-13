@@ -1,5 +1,45 @@
 # EnZIME Reader — Build Recipes
 
+## Root-partition environment on msi4090 (2026-10-13)
+
+The build profile is `/srv/enzime-build/env.sh`, automatically loaded through
+`~/.config/enzime/build-env.sh`. `/opt/enzime-build` is a convenience symlink:
+`/opt` itself is a separate partition, so the physical build directory is under
+`/srv` on the Btrfs root partition of the internal 2 TB WD drive.
+**Do not use the removable 500 GB KINGSTON drive or its F2FS partition.**
+
+Rust/Cargo, Android SDK/NDKs, Gradle, pnpm and Windows-cross caches, historical
+build workspaces and lane targets have root destinations. Old paths are retained
+as compatibility symlinks after checksum verification. Node 24.14.1 and pnpm
+11.19.0 are installed under this environment; system JDK 21, Clang/LLD 18,
+NSIS and native Linux libraries reside on root under `/usr`.
+
+The same whole-platform command below uses root-contained workspaces, caches,
+temporary files, logs and collected artifacts. For this profile the current
+artifact index is `/srv/enzime-build/artifacts/index.html`, and its manifest is
+`/srv/enzime-build/artifacts/current-build-manifest.json`; existing repository
+`dist/` files remain historical records. A configured native Windows executor
+is still required for MSI/MSIX. Cross-compiling NSIS does not establish native
+Windows runtime acceptance.
+
+To inspect placement before a build:
+
+```bash
+source ~/.config/enzime/build-env.sh
+findmnt -T "$ENZIME_BUILD_ROOT"
+pnpm store path
+rustup show home
+df -h / /home "$ENZIME_BUILD_ROOT"
+bash scripts/build-all.sh
+```
+
+An explicit `ENZIME_BUILD_ENV=/absolute/path/profile.sh` overrides the local
+profile; a missing explicit profile fails immediately. Other hosts without a
+profile retain the existing default locations. The path overrides are
+`ENZIME_BUILD_WORKSPACE_ROOT`, `ENZIME_BUILD_CACHE_ROOT`,
+`ENZIME_BUILD_LOG_ROOT` and `ENZIME_BUILD_ARTIFACT_DIR`. The repository lock,
+frozen source, unified version and required platform matrix remain unchanged.
+
 ## Current operator command — every platform, one build set
 
 ```bash
