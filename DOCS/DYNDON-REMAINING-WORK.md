@@ -9,6 +9,8 @@ User instruction, 2026-10-13: display the current colour-coded remaining-work li
 - 🟠 Add an expandable topic tree with checkboxes and per-topic depth choices, using real source-matched metadata; begin bounded background cluster mapping on hover, focus or selection and reuse it as choices change.
 - 🟠 Check internal links on the page being rendered against the local availability index; grey unavailable targets, keeping them clickable. No whole-ZIM walk or remote prefetch for link styling.
 - 🟠 On a grey-link click: explain unavailability offline; online offer Open live page or Download this section. Resolve real targets, calculate incremental storage when requested, and confirm before acquisition. Do not silently evict content or exceed the budget.
+- 🟣 Specify dependency-aware checkbox removal and recoverable annotation/source mappings; Homestead LAN / server hub remains unarchitected future scope.
+- 🟠 Reconcile automatic payload eviction with explicit user-directed retention/removal; preserve retrieval mappings and verified alternate copies.
 - 🟠 Replace misleading placeholder statuses and disconnected controls with working behavior or explicit unavailable states.
 - 🟠 Resolve packaged media support and outstanding Android-symbol / native Windows MSI-MSIX build requirements.
 - 🔵 Rebuild all platforms together through scripts/build-all.sh and publish clearly identified artifacts. Commit and verify each completed task's GitHub push; Forgejo remains unavailable.

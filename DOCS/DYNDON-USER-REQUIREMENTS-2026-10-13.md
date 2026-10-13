@@ -41,10 +41,38 @@ Operator clarification, 2026-10-13 17:59 EDT: source-identity-bound reusable
 cluster mappings are fundamental to both incremental additions and removing/paring
 the retained ZIM collection. Track dependencies from retained entries/resources
 to shared clusters. Additions count only newly required payload and metadata;
-pruning frees a cluster only when no retained or pinned dependency still needs it.
+pruning normally frees a cluster when no retained or pinned dependency still needs it; the explicit dependency-removal exceptions below take precedence.
 Account for actual decoded workspace and metadata independently of payload.
 Update local availability atomically with retained-content changes and preserve
-annotations. Never infer a cluster can be deleted merely because one topic was
-unselected. A changed archive identity invalidates the old mapping. These are
+annotations. Unselection is the user removal request; shared-cluster dependencies require the handling below before deleting a cluster. A changed archive identity invalidates the old mapping. These are
 requirements for the future selection/pruning implementation, not verification
 of current behavior.
+
+
+## Selection, removal authorization and recoverable annotations
+
+Final operator clarification, 2026-10-13 18:03 EDT: checked means keep/download;
+unchecked means remove/do not download. Unchecking retained content is an
+explicit removal request. Existing selected unique content must remain unless
+the user requests its removal. Budget pressure, access recency and adding another
+section do not authorize automatic payload deletion. The current store's automatic
+unpinned-payload LRU path conflicts with this requirement and needs reconciliation.
+Transient planning caches are distinct from retained offline content.
+
+If removal affects still-required dependencies, proceed only when (1) the user
+accepts the dependency consequence and a durable mapping supports later retrieval
+on need/access, or (2) the affected content has been persisted to another local
+HDD/SSD, NAS or supported destination and that copy is verified. Preserve source
+identity, entry/cluster mapping and location independently of local payload.
+Show when an access needs recovery and whether that source is currently reachable;
+do not promise recovery from an unverified or vanished upstream source.
+
+Every annotation must remain tied to an identified ZIM, a recoverable original
+online URL, or a re-retrievable ZIM portion. Preserve article/entry identity,
+source revision, selectors and the relevant retrieval mapping when removing local
+payload. A cluster number alone is insufficient without its archive identity.
+Never delete annotations as a side effect of pruning.
+
+Homestead LAN / EnZIME server-hub storage is a future option, not yet architected.
+No protocol, deployment, identity, replication or retrieval support is claimed.
+Current work records that future capability without implementing it.
