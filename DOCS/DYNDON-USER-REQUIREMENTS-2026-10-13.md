@@ -33,3 +33,18 @@ Do not walk or scan the whole ZIM to classify links. During rendering of the cur
 Operator version-identity clarification, 2026-10-13 17:54 EDT: show the artifact version in a consistent standard location across platforms, using the automatically generated build version. Never manually enter or hard-code the displayed artifact version. Propagate the same generated identity through packages and the visible UI.
 
 DynDon is central product value: demonstrate chosen destination, suggested budget, meaningful selected coverage, bounded acquisition, offline restart/read/annotation and optional expansion through a grey link. These requirements do not mean the current artifact passes that journey. Rebuild all platforms through scripts/build-all.sh; commit and verify GitHub pushes for each completed task. Forgejo remains unavailable by operator instruction.
+
+
+## Incremental acquisition and pruning — core accounting invariant
+
+Operator clarification, 2026-10-13 17:59 EDT: source-identity-bound reusable
+cluster mappings are fundamental to both incremental additions and removing/paring
+the retained ZIM collection. Track dependencies from retained entries/resources
+to shared clusters. Additions count only newly required payload and metadata;
+pruning frees a cluster only when no retained or pinned dependency still needs it.
+Account for actual decoded workspace and metadata independently of payload.
+Update local availability atomically with retained-content changes and preserve
+annotations. Never infer a cluster can be deleted merely because one topic was
+unselected. A changed archive identity invalidates the old mapping. These are
+requirements for the future selection/pruning implementation, not verification
+of current behavior.

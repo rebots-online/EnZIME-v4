@@ -421,3 +421,37 @@ The script exited1 and published an honest incomplete current manifest with2/12
 artifacts. Independent verifier accepts its hashes/state; --require-complete
 correctly fails. No old installer is linked in any failed row. Logs are under
 Admin-Manual/LOGS/EnZIME-v4/build-sets/20261012T072934.973569Z-b016ef12a393/.
+
+
+## 2026-10-13 — operator-selected nvme0n1p8 build storage
+
+The operator changed the requested build destination to
+`/media/robin/pinokio/pinokio/enzime-build` on `/dev/nvme0n1p8`.
+`findmnt` verified that device at the named mount, with 141 GiB free.
+An actual executable and relative-symlink probe passed on its fuseblk filesystem.
+Keep existing root toolchains and historical attempts; copy reusable caches
+without removing their originals. Use the existing explicit environment override:
+
+```bash
+ENZIME_BUILD_ENV=/media/robin/pinokio/pinokio/enzime-build/env.sh bash scripts/build-all.sh
+```
+
+The profile puts new workspaces, lane compilation caches, Gradle/package caches,
+temporary files, logs and artifact collection on nvme0n1p8. Installed Rust,
+Cargo registry and Android SDK toolchains remain under /srv/enzime-build;
+this is a build-storage selection, not a completed migration of every tool.
+No HOME reassignment or Pinokio application-data changes. Keep source checkout
+and repository lock in their existing locations. Version stamping remains
+automatic through the unified entrypoint; never type an artifact version label.
+The manifest remains the authority for actual per-platform results; Linux
+cross-compilation does not establish native MSI/MSIX acceptance.
+
+
+Operator clarification, 17:59 EDT: the purpose is to reclaim /home space.
+Copies are temporary protection only. After the destination works and copies
+pass checksum verification, remove transferred build data from the old physical
+filesystem and retain compatibility symlinks. Measure actual /home free-space
+change; moving /srv data alone cannot count as home-space recovery. Current
+inspection finds about 25 GiB in this checkout's target/debug and additional
+release/Android targets physically on /home. Preserve their contents at the new
+destination before removal; retain application data and unrelated projects.
