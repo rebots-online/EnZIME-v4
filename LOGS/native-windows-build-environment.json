@@ -1,0 +1,26 @@
+{
+  "host": "DESKTOP-CN0GDTR",
+  "os": "native Windows",
+  "repository": "E:\\devProjects\\EnZIME-v4",
+  "sourceCommit": "26db277664b402f3922ebdc94491e0aa456e22fa",
+  "version": "1.6.55832",
+  "toolRoot": "E:\\DevTools",
+  "rust": "1.94.1",
+  "tauriCli": "2.11.4",
+  "java": "21.0.12.1",
+  "ndk": "29.0.14206865",
+  "gradle": "8.14.3",
+  "windowsCommand": "cargo tauri build --bundles nsis --ci",
+  "androidCommand": "cargo tauri android build --apk --ci",
+  "windowsTargetDir": "E:\\DevTools\\caches\\enzime-target",
+  "androidTargetDir": "E:\\DevTools\\caches\\enzime-android-target",
+  "bash": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "preBuildChange": "pnpm approve-builds esbuild",
+  "windowsSmoke": {
+    "processId": 24168,
+    "exited": false,
+    "responding": true,
+    "windowTitle": "EnZIME Reader",
+    "exitCode": null
+  }
+}

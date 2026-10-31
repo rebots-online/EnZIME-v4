@@ -1,0 +1,1308 @@
+        Info Using installed NDK: E:\DevTools\android\sdk\ndk\29.0.14206865
+        Info Looking up installed tauri packages to check mismatched versions...
+     Running beforeBuildCommand `pnpm build`
+$ bash ../../scripts/update-version.sh && tsc --noEmit && vite build
+[update-version] Using frozen release.lock values
+Stamping version: 1.6.55832  (versionCode: 100006)
+Done: 1.6.55832 (versionCode 100006)
+vite v6.4.3 building for production...
+transforming...
+✓ 75 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.41 kB │ gzip:   0.28 kB
+dist/assets/index-CwJqWkbx.css   15.43 kB │ gzip:   3.34 kB
+dist/assets/event-DsU-j_w8.js     1.41 kB │ gzip:   0.67 kB
+dist/assets/index-DyUzKuRe.js   350.21 kB │ gzip: 104.79 kB
+✓ built in 4.24s
+ Downloading crates ...
+  Downloaded android_system_properties v0.1.5
+  Downloaded bytemuck v1.25.2
+  Downloaded tao-macros v0.1.3
+  Downloaded windows-targets v0.42.2
+  Downloaded simdutf8 v0.1.5
+  Downloaded signal-hook-registry v1.4.8
+  Downloaded num_enum_derive v0.7.6
+  Downloaded jni-macros v0.22.4
+  Downloaded toml_edit v0.25.13+spec-1.1.0
+  Downloaded ndk v0.9.0
+  Downloaded jni v0.21.1
+  Downloaded combine v4.6.7
+  Downloaded num_enum v0.7.6
+  Downloaded jni-sys v0.4.1
+  Downloaded jni v0.22.4
+  Downloaded jni-sys v0.3.1
+  Downloaded cesu8 v1.1.0
+  Downloaded rustls-platform-verifier-android v0.1.1
+  Downloaded jni-sys-macros v0.4.1
+  Downloaded simd_cesu8 v1.2.0
+  Downloaded ndk-sys v0.6.0+11769913
+  Downloaded windows_x86_64_msvc v0.42.2
+  Downloaded windows-sys v0.45.0
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.189
+   Compiling serde_core v1.0.229
+   Compiling siphasher v1.0.3
+   Compiling getrandom v0.4.3
+   Compiling parking_lot_core v0.9.12
+   Compiling serde v1.0.229
+   Compiling smallvec v1.15.2
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling fastrand v2.5.0
+   Compiling zmij v1.0.23
+   Compiling phf_shared v0.13.1
+   Compiling version_check v0.9.5
+   Compiling itoa v1.0.18
+   Compiling icu_properties_data v2.2.0
+   Compiling icu_normalizer_data v2.2.0
+   Compiling phf_generator v0.13.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling scopeguard v1.2.0
+   Compiling zerocopy v0.8.55
+   Compiling thiserror v2.0.19
+   Compiling memchr v2.8.3
+   Compiling windows-link v0.2.1
+   Compiling phf_codegen v0.13.1
+   Compiling lock_api v0.4.14
+   Compiling winnow v1.0.4
+   Compiling dunce v1.0.5
+   Compiling once_cell v1.21.4
+   Compiling jobserver v0.1.35
+   Compiling pin-project-lite v0.2.17
+   Compiling thiserror v1.0.69
+   Compiling log v0.4.33
+   Compiling generic-array v0.14.7
+   Compiling getrandom v0.2.17
+   Compiling cc v1.4.0
+   Compiling futures-core v0.3.33
+   Compiling rand_core v0.6.4
+   Compiling windows-sys v0.61.2
+   Compiling typeid v1.0.3
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling errno v0.3.14
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling syn v2.0.119
+   Compiling syn v3.0.3
+   Compiling string_cache_codegen v0.6.1
+   Compiling new_debug_unreachable v1.0.6
+   Compiling time-core v0.1.9
+   Compiling parking_lot v0.12.5
+   Compiling num-conv v0.2.2
+   Compiling signal-hook-registry v1.4.8
+   Compiling socket2 v0.6.5
+   Compiling semver v1.0.28
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling mio v1.2.2
+   Compiling indexmap v2.14.0
+   Compiling web_atoms v0.2.5
+   Compiling writeable v0.6.3
+   Compiling strsim v0.11.1
+   Compiling erased-serde v0.4.10
+   Compiling ident_case v1.0.1
+   Compiling serde_json v1.0.151
+   Compiling litemap v0.8.2
+   Compiling selectors v0.36.1
+   Compiling utf8_iter v1.0.4
+   Compiling winapi-util v0.1.11
+   Compiling precomputed-hash v0.1.1
+   Compiling bitflags v2.13.1
+   Compiling same-file v1.0.6
+   Compiling anyhow v1.0.104
+   Compiling walkdir v2.5.0
+   Compiling rustc_version v0.4.1
+   Compiling serde_spanned v1.1.1
+   Compiling cmake v0.1.58
+   Compiling phf_shared v0.11.3
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling ctor-proc-macro v0.0.7
+   Compiling fs_extra v1.3.0
+   Compiling pkg-config v0.3.33
+   Compiling string_cache v0.9.0
+   Compiling slab v0.4.12
+   Compiling dtoa v1.0.11
+   Compiling percent-encoding v2.3.2
+   Compiling ppv-lite86 v0.2.21
+   Compiling autocfg v1.5.1
+   Compiling crc32fast v1.5.0
+   Compiling aws-lc-sys v0.43.0
+   Compiling windows_x86_64_msvc v0.52.6
+   Compiling form_urlencoded v1.2.2
+   Compiling dtoa-short v0.3.5
+   Compiling tendril v0.5.1
+   Compiling uuid v1.24.0
+   Compiling rand_chacha v0.3.1
+   Compiling aho-corasick v1.1.4
+   Compiling synstructure v0.13.2
+   Compiling darling_core v0.23.0
+   Compiling indexmap v1.9.3
+   Compiling rand v0.8.7
+   Compiling regex-syntax v0.8.11
+   Compiling unic-common v0.9.0
+   Compiling typenum v1.20.1
+   Compiling unic-char-range v0.9.0
+   Compiling camino v1.2.4
+   Compiling alloc-no-stdlib v2.0.4
+   Compiling byteorder v1.5.0
+   Compiling fnv v1.0.7
+   Compiling alloc-stdlib v0.2.4
+   Compiling phf_generator v0.11.3
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.19
+   Compiling unic-char-property v0.9.0
+   Compiling unic-ucd-version v0.9.0
+   Compiling serde_derive_internals v0.29.1
+   Compiling toml v1.1.3+spec-1.1.0
+   Compiling vswhom-sys v0.1.3
+   Compiling regex-automata v0.4.16
+   Compiling servo_arc v0.4.3
+   Compiling getrandom v0.3.4
+   Compiling bit-vec v0.8.0
+   Compiling aws-lc-rs v1.17.3
+   Compiling schemars v0.8.22
+   Compiling deranged v0.5.8
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.6
+   Compiling phf_macros v0.13.1
+   Compiling cssparser-macros v0.6.1
+   Compiling thiserror-impl v1.0.69
+   Compiling tokio-macros v2.7.1
+   Compiling derive_more-impl v2.1.1
+   Compiling darling_macro v0.23.0
+   Compiling jni-sys-macros v0.4.1
+   Compiling futures-macro v0.3.33
+   Compiling powerfmt v0.2.0
+   Compiling futures-task v0.3.33
+   Compiling hashbrown v0.12.3
+   Compiling darling v0.23.0
+   Compiling rustc-hash v2.1.3
+   Compiling serde_with_macros v3.21.0
+   Compiling time v0.3.54
+   Compiling zerofrom v0.1.8
+   Compiling regex v1.13.1
+   Compiling derive_more v2.1.1
+   Compiling schemars_derive v0.8.22
+   Compiling yoke v0.8.3
+   Compiling jni-sys v0.4.1
+   Compiling phf v0.13.1
+   Compiling futures-util v0.3.33
+   Compiling cfb v0.7.3
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling bit-set v0.8.0
+   Compiling cargo-platform v0.1.9
+   Compiling cssparser v0.36.0
+   Compiling jsonptr v0.6.3
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling bytes v1.12.1
+   Compiling icu_locale_core v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling markup5ever v0.38.0
+   Compiling windows-targets v0.52.6
+   Compiling unic-ucd-ident v0.9.0
+   Compiling brotli-decompressor v5.0.3
+   Compiling tokio v1.53.1
+   Compiling http v1.4.2
+   Compiling html5ever v0.38.0
+   Compiling combine v4.6.7
+   Compiling quick-xml v0.41.0
+   Compiling base64 v0.22.1
+   Compiling dyn-clone v1.0.20
+   Compiling jni-sys v0.3.1
+   Compiling icu_provider v2.2.0
+   Compiling zeroize v1.9.0
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling foldhash v0.2.0
+   Compiling plist v1.10.0
+   Compiling dom_query v0.27.0
+   Compiling brotli v8.0.4
+   Compiling cargo_metadata v0.19.2
+   Compiling windows-sys v0.59.0
+   Compiling serde-untagged v0.1.9
+   Compiling serde_with v3.21.0
+   Compiling idna_adapter v1.2.2
+   Compiling json-patch v3.0.1
+   Compiling infer v0.19.0
+   Compiling idna v1.1.0
+   Compiling url v2.5.8
+   Compiling tracing-attributes v0.1.31
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling ctor v0.8.0
+   Compiling tracing-core v0.1.36
+   Compiling ahash v0.8.12
+   Compiling futures-sink v0.3.33
+   Compiling glob v0.3.4
+   Compiling siphasher v0.3.11
+   Compiling digest v0.10.7
+   Compiling phf_shared v0.10.0
+   Compiling tokio-util v0.7.19
+   Compiling urlpattern v0.3.0
+   Compiling vswhom v0.1.0
+   Compiling rustls-pki-types v1.15.1
+   Compiling http-body v1.1.0
+   Compiling phf_macros v0.11.3
+   Compiling tracing v0.1.44
+   Compiling tauri-utils v2.9.3
+   Compiling toml_edit v0.25.13+spec-1.1.0
+   Compiling time-macros v0.2.32
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling cpufeatures v0.2.17
+   Compiling winreg v0.55.0
+   Compiling httparse v1.10.1
+   Compiling rustversion v1.0.23
+   Compiling simd-adler32 v0.3.10
+   Compiling untrusted v0.9.0
+   Compiling option-ext v0.2.0
+   Compiling winnow v0.7.15
+   Compiling rustls v0.23.42
+   Compiling dirs-sys v0.5.0
+   Compiling phf v0.11.3
+   Compiling embed-resource v3.0.11
+   Compiling proc-macro-crate v3.5.0
+   Compiling sha2 v0.10.9
+   Compiling phf_generator v0.10.0
+   Compiling phf_codegen v0.11.3
+   Compiling string_cache_codegen v0.5.4
+   Compiling async-trait v0.1.91
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling jni-macros v0.22.4
+   Compiling heck v0.5.0
+   Compiling tower-service v0.3.3
+   Compiling simdutf8 v0.1.5
+   Compiling toml v0.9.12+spec-1.1.0
+   Compiling subtle v2.6.1
+   Compiling try-lock v0.2.5
+   Compiling atomic-waker v1.1.2
+   Compiling mac v0.1.1
+   Compiling adler2 v2.0.1
+   Compiling crossbeam-utils v0.8.22
+   Compiling miniz_oxide v0.8.9
+   Compiling futf v0.1.5
+   Compiling want v0.3.1
+   Compiling cargo_toml v0.22.3
+   Compiling h2 v0.4.15
+   Compiling domain v1.6.55832 (E:\devProjects\EnZIME-v4\crates\domain)
+   Compiling simd_cesu8 v1.2.0
+warning: unused import: `async_trait::async_trait`
+ --> crates\domain\src\annotation.rs:2:5
+  |
+2 | use async_trait::async_trait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling num_enum_derive v0.7.6
+   Compiling markup5ever v0.12.1
+   Compiling phf_codegen v0.10.0
+   Compiling tauri-winres v0.3.6
+   Compiling dirs v6.0.0
+   Compiling jni v0.22.4
+   Compiling futures-channel v0.3.33
+warning: `domain` (lib) generated 1 warning (run `cargo fix --lib -p domain` to apply 1 suggestion)
+   Compiling cookie v0.18.1
+   Compiling raw-window-handle v0.6.2
+   Compiling utf-8 v0.7.6
+   Compiling cesu8 v1.1.0
+   Compiling jni v0.21.1
+   Compiling num_enum v0.7.6
+   Compiling tendril v0.4.3
+   Compiling hyper v1.11.0
+   Compiling ports v1.6.55832 (E:\devProjects\EnZIME-v4\crates\ports)
+   Compiling tauri-build v2.6.3
+   Compiling selectors v0.25.0
+   Compiling flate2 v1.1.9
+   Compiling fdeflate v0.3.7
+   Compiling ndk-sys v0.6.0+11769913
+   Compiling string_cache v0.8.9
+   Compiling dpi v0.1.2
+   Compiling html5ever v0.27.0
+   Compiling sync_wrapper v1.0.2
+   Compiling vcpkg v0.2.15
+   Compiling tower-layer v0.3.3
+   Compiling zstd-safe v7.2.4
+   Compiling bitflags v1.3.2
+   Compiling ipnet v2.12.0
+   Compiling png v0.17.16
+   Compiling hyper-util v0.1.20
+   Compiling libsqlite3-sys v0.30.1
+   Compiling tower v0.5.3
+   Compiling ndk v0.9.0
+   Compiling crossbeam-channel v0.5.16
+   Compiling phf v0.10.1
+   Compiling cssparser v0.31.2
+   Compiling fxhash v0.2.1
+   Compiling derive_more v0.99.20
+   Compiling tao-macros v0.1.3
+   Compiling servo_arc v0.3.0
+   Compiling tauri-runtime v2.11.3
+   Compiling rustls-platform-verifier-android v0.1.1
+   Compiling unicode-width v0.2.2
+   Compiling wry v0.55.1
+   Compiling getopts v0.2.24
+   Compiling tauri v2.11.5
+   Compiling tower-http v0.6.11
+   Compiling ico v0.5.0
+   Compiling hashbrown v0.14.5
+   Compiling http-body-util v0.1.4
+   Compiling async-stream-impl v0.3.6
+   Compiling hex v0.4.3
+   Compiling tauri-runtime-wry v2.11.4
+   Compiling ego-tree v0.6.3
+   Compiling tauri-codegen v2.6.3
+   Compiling scraper v0.20.0
+   Compiling async-stream v0.3.6
+   Compiling tao v0.35.3
+   Compiling serialize-to-javascript-impl v0.1.2
+   Compiling fallible-iterator v0.3.0
+   Compiling hashlink v0.9.1
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling reader v1.6.55832 (E:\devProjects\EnZIME-v4\apps\reader\src-tauri)
+   Compiling tokio-stream v0.1.19
+   Compiling serde_repr v0.1.21
+   Compiling mime v0.3.17
+   Compiling transfer-file v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-file)
+   Compiling serialize-to-javascript v0.1.2
+   Compiling inference-wllama v1.6.55832 (E:\devProjects\EnZIME-v4\crates\inference-wllama)
+   Compiling dyndon v1.6.55832 (E:\devProjects\EnZIME-v4\crates\dyndon)
+   Compiling platform-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\platform-adapter)
+   Compiling revenuecat-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\revenuecat-adapter)
+   Compiling tauri-macros v2.6.3
+   Compiling zstd v0.13.3
+   Compiling zim-anzimmerman v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-anzimmerman)
+   Compiling zim-cluster-cache v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-cluster-cache)
+   Compiling rustls-webpki v0.103.13
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling rusqlite v0.32.1
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling storage-sqlite v1.6.55832 (E:\devProjects\EnZIME-v4\crates\storage-sqlite)
+   Compiling transfer-http v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-http)
+warning: unused imports: `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_COUNT`, and `TRANSFER_RETRY_MAX_MS`
+  --> crates\transfer-http\src\lib.rs:23:71
+   |
+23 |     TransferSource, TRANSFER_MAX_REDIRECTS, TRANSFER_PROBE_MAX_BYTES, TRANSFER_RETRY_BASE_MS,
+   |                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+24 |     TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+   |     ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `transfer-http` (lib) generated 1 warning (run `cargo fix --lib -p transfer-http` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 6m 49s
+        Info symlinking lib "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" in jniLibs dir "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/arm64-v8a"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libandroid.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libdl.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "liblog.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libm.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libc.so"
+        Info symlink at "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/arm64-v8a\\libenzime_reader_lib.so" points to "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so"
+Downloading https://services.gradle.org/distributions/gradle-8.14.3-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%..............100%
+w: file:///E:/devProjects/EnZIME-v4/apps/reader/src-tauri/gen/android/buildSrc/src/main/java/mba/robin/enzime/kotlin/BuildTask.kt:53:17 'exec(Action<in ExecSpec!>): ExecResult' is deprecated. Deprecated in Java
+Checking the license for package Android SDK Build-Tools 35 in E:\DevTools\android\sdk\licenses
+License for package Android SDK Build-Tools 35 accepted.
+Preparing "Install Android SDK Build-Tools 35 v.35.0.0".
+"Install Android SDK Build-Tools 35 v.35.0.0" ready.
+Installing Android SDK Build-Tools 35 in E:\DevTools\android\sdk\build-tools\35.0.0
+"Install Android SDK Build-Tools 35 v.35.0.0" complete.
+"Install Android SDK Build-Tools 35 v.35.0.0" finished.
+        Info connection; remote_addr=127.0.0.1:59932 conn_id=0
+        Info Using installed NDK: E:\DevTools\android\sdk\ndk\29.0.14206865
+warning: unused import: `async_trait::async_trait`
+ --> crates\domain\src\annotation.rs:2:5
+  |
+2 | use async_trait::async_trait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `domain` (lib) generated 1 warning (run `cargo fix --lib -p domain` to apply 1 suggestion)
+   Compiling wry v0.55.1
+   Compiling tauri v2.11.5
+warning: unused imports: `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_COUNT`, and `TRANSFER_RETRY_MAX_MS`
+  --> crates\transfer-http\src\lib.rs:23:71
+   |
+23 |     TransferSource, TRANSFER_MAX_REDIRECTS, TRANSFER_PROBE_MAX_BYTES, TRANSFER_RETRY_BASE_MS,
+   |                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+24 |     TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+   |     ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `transfer-http` (lib) generated 1 warning (run `cargo fix --lib -p transfer-http` to apply 1 suggestion)
+   Compiling reader v1.6.55832 (E:\devProjects\EnZIME-v4\apps\reader\src-tauri)
+   Compiling tauri-runtime-wry v2.11.4
+    Finished `release` profile [optimized] target(s) in 1m 21s
+        Info symlinking lib "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" in jniLibs dir "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/arm64-v8a"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libandroid.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libdl.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "liblog.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libm.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\aarch64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libc.so"
+        Info connection; remote_addr=127.0.0.1:57017 conn_id=1
+        Info Using installed NDK: E:\DevTools\android\sdk\ndk\29.0.14206865
+   Compiling cfg-if v1.0.4
+   Compiling smallvec v1.15.2
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.189
+   Compiling serde v1.0.229
+   Compiling itoa v1.0.18
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling memchr v2.8.3
+   Compiling siphasher v1.0.3
+   Compiling once_cell v1.21.4
+   Compiling zerofrom v0.1.8
+   Compiling log v0.4.33
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.33
+   Compiling new_debug_unreachable v1.0.6
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling thiserror v2.0.19
+   Compiling writeable v0.6.3
+   Compiling lock_api v0.4.14
+   Compiling bitflags v2.13.1
+   Compiling precomputed-hash v0.1.1
+   Compiling yoke v0.8.3
+   Compiling litemap v0.8.2
+   Compiling errno v0.3.14
+   Compiling mio v1.2.2
+   Compiling socket2 v0.6.5
+   Compiling utf8_iter v1.0.4
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+   Compiling jni-sys v0.4.1
+   Compiling phf_shared v0.13.1
+   Compiling slab v0.4.12
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling signal-hook-registry v1.4.8
+   Compiling percent-encoding v2.3.2
+   Compiling aws-lc-sys v0.43.0
+   Compiling generic-array v0.14.7
+   Compiling fnv v1.0.7
+   Compiling dtoa v1.0.11
+   Compiling typenum v1.20.1
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.17.1
+   Compiling phf v0.13.1
+   Compiling futures-task v0.3.33
+   Compiling byteorder v1.5.0
+   Compiling getrandom v0.3.4
+   Compiling parking_lot v0.12.5
+   Compiling form_urlencoded v1.2.2
+   Compiling dtoa-short v0.3.5
+   Compiling thiserror v1.0.69
+   Compiling base64 v0.22.1
+   Compiling zeroize v1.9.0
+   Compiling futures-util v0.3.33
+   Compiling getrandom v0.4.3
+   Compiling jni-sys v0.3.1
+   Compiling tracing-core v0.1.36
+   Compiling phf_shared v0.11.3
+   Compiling zerocopy v0.8.55
+   Compiling futures-sink v0.3.33
+   Compiling ahash v0.8.12
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling rustls-pki-types v1.15.1
+   Compiling icu_collections v2.2.0
+   Compiling deranged v0.5.8
+   Compiling indexmap v2.14.0
+   Compiling untrusted v0.9.0
+   Compiling icu_locale_core v2.2.0
+   Compiling powerfmt v0.2.0
+   Compiling num-conv v0.2.2
+   Compiling tracing v0.1.44
+   Compiling time-core v0.1.9
+   Compiling httparse v1.10.1
+   Compiling phf v0.11.3
+   Compiling string_cache v0.9.0
+   Compiling aho-corasick v1.1.4
+   Compiling uuid v1.24.0
+   Compiling typeid v1.0.3
+   Compiling web_atoms v0.2.5
+   Compiling alloc-no-stdlib v2.0.4
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling atomic-waker v1.1.2
+   Compiling try-lock v0.2.5
+   Compiling digest v0.10.7
+   Compiling mac v0.1.1
+   Compiling subtle v2.6.1
+   Compiling unic-common v0.9.0
+   Compiling unic-char-range v0.9.0
+   Compiling regex-syntax v0.8.11
+   Compiling tower-service v0.3.3
+   Compiling unic-char-property v0.9.0
+   Compiling crossbeam-utils v0.8.22
+   Compiling unic-ucd-version v0.9.0
+   Compiling bytes v1.12.1
+   Compiling futf v0.1.5
+   Compiling sha2 v0.10.9
+   Compiling want v0.3.1
+   Compiling alloc-stdlib v0.2.4
+   Compiling icu_provider v2.2.0
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling futures-channel v0.3.33
+   Compiling time v0.3.54
+   Compiling tendril v0.5.1
+   Compiling erased-serde v0.4.10
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling siphasher v0.3.11
+   Compiling cesu8 v1.1.0
+   Compiling tokio v1.53.1
+   Compiling http v1.4.2
+   Compiling combine v4.6.7
+   Compiling domain v1.6.55832 (E:\devProjects\EnZIME-v4\crates\domain)
+   Compiling raw-window-handle v0.6.2
+   Compiling winnow v1.0.4
+   Compiling simdutf8 v0.1.5
+   Compiling utf-8 v0.7.6
+warning: unused import: `async_trait::async_trait`
+ --> crates\domain\src\annotation.rs:2:5
+  |
+2 | use async_trait::async_trait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling regex-automata v0.4.16
+   Compiling tendril v0.4.3
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling http-body v1.1.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+warning: `domain` (lib) generated 1 warning (run `cargo fix --lib -p domain` to apply 1 suggestion)
+   Compiling simd_cesu8 v1.2.0
+   Compiling url v2.5.8
+   Compiling phf_shared v0.10.0
+   Compiling jsonptr v0.6.3
+   Compiling cookie v0.18.1
+   Compiling markup5ever v0.38.0
+   Compiling jni v0.22.4
+   Compiling num_enum v0.7.6
+   Compiling markup5ever v0.12.1
+   Compiling brotli-decompressor v5.0.3
+   Compiling unic-ucd-ident v0.9.0
+   Compiling string_cache v0.8.9
+   Compiling dpi v0.1.2
+   Compiling cfb v0.7.3
+   Compiling regex v1.13.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling serde_spanned v1.1.1
+   Compiling ndk-sys v0.6.0+11769913
+   Compiling cssparser v0.36.0
+   Compiling quick-xml v0.41.0
+   Compiling sync_wrapper v1.0.2
+   Compiling anyhow v1.0.104
+   Compiling servo_arc v0.4.3
+   Compiling derive_more v2.1.1
+   Compiling jni v0.21.1
+   Compiling selectors v0.36.1
+   Compiling ipnet v2.12.0
+   Compiling rustc-hash v2.1.3
+   Compiling tower-layer v0.3.3
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling bit-vec v0.8.0
+   Compiling same-file v1.0.6
+   Compiling toml v1.1.3+spec-1.1.0
+   Compiling walkdir v2.5.0
+   Compiling bit-set v0.8.0
+   Compiling plist v1.10.0
+   Compiling ndk v0.9.0
+   Compiling html5ever v0.27.0
+   Compiling infer v0.19.0
+   Compiling urlpattern v0.3.0
+   Compiling brotli v8.0.4
+   Compiling crossbeam-channel v0.5.16
+   Compiling serde-untagged v0.1.9
+   Compiling json-patch v3.0.1
+   Compiling html5ever v0.38.0
+   Compiling selectors v0.25.0
+   Compiling tokio-util v0.7.19
+   Compiling ports v1.6.55832 (E:\devProjects\EnZIME-v4\crates\ports)
+   Compiling tower v0.5.3
+   Compiling h2 v0.4.15
+   Compiling phf v0.10.1
+   Compiling cssparser v0.31.2
+   Compiling serde_with v3.21.0
+   Compiling fxhash v0.2.1
+   Compiling crc32fast v1.5.0
+   Compiling ctor v0.8.0
+   Compiling servo_arc v0.3.0
+   Compiling glob v0.3.4
+   Compiling dunce v1.0.5
+   Compiling rustls-platform-verifier-android v0.1.1
+   Compiling unicode-width v0.2.2
+   Compiling adler2 v2.0.1
+   Compiling semver v1.0.28
+   Compiling foldhash v0.2.0
+   Compiling simd-adler32 v0.3.10
+   Compiling miniz_oxide v0.8.9
+   Compiling dom_query v0.27.0
+   Compiling tauri-runtime v2.11.3
+   Compiling getopts v0.2.24
+   Compiling wry v0.55.1
+   Compiling tower-http v0.6.11
+   Compiling libsqlite3-sys v0.30.1
+   Compiling tauri-utils v2.9.3
+   Compiling hashbrown v0.14.5
+   Compiling hyper v1.11.0
+   Compiling http-body-util v0.1.4
+   Compiling ego-tree v0.6.3
+   Compiling hex v0.4.3
+   Compiling option-ext v0.2.0
+   Compiling dirs-sys v0.5.0
+   Compiling hashlink v0.9.1
+   Compiling scraper v0.20.0
+   Compiling tauri-runtime-wry v2.11.4
+   Compiling async-stream v0.3.6
+   Compiling tauri v2.11.5
+   Compiling flate2 v1.1.9
+   Compiling tao v0.35.3
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling serialize-to-javascript v0.1.2
+   Compiling hyper-util v0.1.20
+   Compiling dirs v6.0.0
+   Compiling tokio-stream v0.1.19
+   Compiling mime v0.3.17
+   Compiling heck v0.5.0
+   Compiling inference-wllama v1.6.55832 (E:\devProjects\EnZIME-v4\crates\inference-wllama)
+   Compiling reader v1.6.55832 (E:\devProjects\EnZIME-v4\apps\reader\src-tauri)
+   Compiling transfer-file v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-file)
+   Compiling dyndon v1.6.55832 (E:\devProjects\EnZIME-v4\crates\dyndon)
+   Compiling platform-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\platform-adapter)
+   Compiling revenuecat-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\revenuecat-adapter)
+   Compiling zstd-safe v7.2.4
+   Compiling zstd v0.13.3
+   Compiling zim-anzimmerman v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-anzimmerman)
+   Compiling zim-cluster-cache v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-cluster-cache)
+   Compiling aws-lc-rs v1.17.3
+   Compiling rustls v0.23.42
+   Compiling rustls-webpki v0.103.13
+   Compiling rusqlite v0.32.1
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling storage-sqlite v1.6.55832 (E:\devProjects\EnZIME-v4\crates\storage-sqlite)
+   Compiling transfer-http v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-http)
+warning: unused imports: `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_COUNT`, and `TRANSFER_RETRY_MAX_MS`
+  --> crates\transfer-http\src\lib.rs:23:71
+   |
+23 |     TransferSource, TRANSFER_MAX_REDIRECTS, TRANSFER_PROBE_MAX_BYTES, TRANSFER_RETRY_BASE_MS,
+   |                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+24 |     TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+   |     ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `transfer-http` (lib) generated 1 warning (run `cargo fix --lib -p transfer-http` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 3m 14s
+        Info symlinking lib "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" in jniLibs dir "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/armeabi-v7a"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" requires shared lib "libandroid.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" requires shared lib "libdl.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" requires shared lib "liblog.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" requires shared lib "libm.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\armv7-linux-androideabi\\release\\libenzime_reader_lib.so" requires shared lib "libc.so"
+        Info connection; remote_addr=127.0.0.1:61068 conn_id=2
+        Info Using installed NDK: E:\DevTools\android\sdk\ndk\29.0.14206865
+   Compiling cfg-if v1.0.4
+   Compiling smallvec v1.15.2
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.189
+   Compiling serde v1.0.229
+   Compiling itoa v1.0.18
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling memchr v2.8.3
+   Compiling siphasher v1.0.3
+   Compiling once_cell v1.21.4
+   Compiling zerofrom v0.1.8
+   Compiling pin-project-lite v0.2.17
+   Compiling log v0.4.33
+   Compiling futures-core v0.3.33
+   Compiling new_debug_unreachable v1.0.6
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling thiserror v2.0.19
+   Compiling litemap v0.8.2
+   Compiling lock_api v0.4.14
+   Compiling bitflags v2.13.1
+   Compiling yoke v0.8.3
+   Compiling writeable v0.6.3
+   Compiling precomputed-hash v0.1.1
+   Compiling utf8_iter v1.0.4
+   Compiling zerovec v0.11.6
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.2
+   Compiling zerotrie v0.2.4
+   Compiling icu_properties_data v2.2.0
+   Compiling icu_normalizer_data v2.2.0
+   Compiling jni-sys v0.4.1
+   Compiling phf_shared v0.13.1
+   Compiling slab v0.4.12
+   Compiling percent-encoding v2.3.2
+   Compiling aws-lc-sys v0.43.0
+   Compiling generic-array v0.14.7
+   Compiling signal-hook-registry v1.4.8
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling typenum v1.20.1
+   Compiling dtoa v1.0.11
+   Compiling fnv v1.0.7
+   Compiling byteorder v1.5.0
+   Compiling parking_lot v0.12.5
+   Compiling dtoa-short v0.3.5
+   Compiling phf v0.13.1
+   Compiling futures-task v0.3.33
+   Compiling getrandom v0.3.4
+   Compiling form_urlencoded v1.2.2
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling thiserror v1.0.69
+   Compiling futures-util v0.3.33
+   Compiling base64 v0.22.1
+   Compiling zeroize v1.9.0
+   Compiling icu_collections v2.2.0
+   Compiling icu_locale_core v2.2.0
+   Compiling getrandom v0.4.3
+   Compiling jni-sys v0.3.1
+   Compiling tracing-core v0.1.36
+   Compiling phf_shared v0.11.3
+   Compiling zerocopy v0.8.55
+   Compiling futures-sink v0.3.33
+   Compiling ahash v0.8.12
+   Compiling indexmap v2.14.0
+   Compiling rustls-pki-types v1.15.1
+   Compiling deranged v0.5.8
+   Compiling time-core v0.1.9
+   Compiling powerfmt v0.2.0
+   Compiling cpufeatures v0.2.17
+   Compiling num-conv v0.2.2
+   Compiling tracing v0.1.44
+   Compiling untrusted v0.9.0
+   Compiling httparse v1.10.1
+   Compiling phf v0.11.3
+   Compiling string_cache v0.9.0
+   Compiling aho-corasick v1.1.4
+   Compiling typeid v1.0.3
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling uuid v1.24.0
+   Compiling web_atoms v0.2.5
+   Compiling unic-char-range v0.9.0
+   Compiling digest v0.10.7
+   Compiling mac v0.1.1
+   Compiling icu_provider v2.2.0
+   Compiling unic-common v0.9.0
+   Compiling tower-service v0.3.3
+   Compiling sha2 v0.10.9
+   Compiling try-lock v0.2.5
+   Compiling atomic-waker v1.1.2
+   Compiling alloc-no-stdlib v2.0.4
+   Compiling regex-syntax v0.8.11
+   Compiling subtle v2.6.1
+   Compiling alloc-stdlib v0.2.4
+   Compiling bytes v1.12.1
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling want v0.3.1
+   Compiling time v0.3.54
+   Compiling unic-ucd-version v0.9.0
+   Compiling futf v0.1.5
+   Compiling unic-char-property v0.9.0
+   Compiling crossbeam-utils v0.8.22
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling futures-channel v0.3.33
+   Compiling tokio v1.53.1
+   Compiling http v1.4.2
+   Compiling combine v4.6.7
+   Compiling domain v1.6.55832 (E:\devProjects\EnZIME-v4\crates\domain)
+   Compiling tendril v0.5.1
+warning: unused import: `async_trait::async_trait`
+ --> crates\domain\src\annotation.rs:2:5
+  |
+2 | use async_trait::async_trait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling http-body v1.1.0
+   Compiling erased-serde v0.4.10
+   Compiling simdutf8 v0.1.5
+warning: `domain` (lib) generated 1 warning (run `cargo fix --lib -p domain` to apply 1 suggestion)
+   Compiling url v2.5.8
+   Compiling regex-automata v0.4.16
+   Compiling siphasher v0.3.11
+   Compiling raw-window-handle v0.6.2
+   Compiling winnow v1.0.4
+   Compiling utf-8 v0.7.6
+   Compiling cesu8 v1.1.0
+   Compiling tendril v0.4.3
+   Compiling phf_shared v0.10.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling simd_cesu8 v1.2.0
+   Compiling cookie v0.18.1
+   Compiling markup5ever v0.38.0
+   Compiling jsonptr v0.6.3
+   Compiling jni v0.22.4
+   Compiling num_enum v0.7.6
+   Compiling markup5ever v0.12.1
+   Compiling unic-ucd-ident v0.9.0
+   Compiling brotli-decompressor v5.0.3
+   Compiling dpi v0.1.2
+   Compiling string_cache v0.8.9
+   Compiling cfb v0.7.3
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling serde_spanned v1.1.1
+   Compiling ndk-sys v0.6.0+11769913
+   Compiling cssparser v0.36.0
+   Compiling quick-xml v0.41.0
+   Compiling sync_wrapper v1.0.2
+   Compiling servo_arc v0.4.3
+   Compiling regex v1.13.1
+   Compiling jni v0.21.1
+   Compiling anyhow v1.0.104
+   Compiling selectors v0.36.1
+   Compiling derive_more v2.1.1
+   Compiling rustc-hash v2.1.3
+   Compiling ipnet v2.12.0
+   Compiling same-file v1.0.6
+   Compiling tower-layer v0.3.3
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling bit-vec v0.8.0
+   Compiling ndk v0.9.0
+   Compiling bit-set v0.8.0
+   Compiling toml v1.1.3+spec-1.1.0
+   Compiling walkdir v2.5.0
+   Compiling plist v1.10.0
+   Compiling tokio-util v0.7.19
+   Compiling ports v1.6.55832 (E:\devProjects\EnZIME-v4\crates\ports)
+   Compiling tower v0.5.3
+   Compiling h2 v0.4.15
+   Compiling urlpattern v0.3.0
+   Compiling html5ever v0.27.0
+   Compiling brotli v8.0.4
+   Compiling infer v0.19.0
+   Compiling crossbeam-channel v0.5.16
+   Compiling serde-untagged v0.1.9
+   Compiling json-patch v3.0.1
+   Compiling selectors v0.25.0
+   Compiling html5ever v0.38.0
+   Compiling phf v0.10.1
+   Compiling hyper v1.11.0
+   Compiling serde_with v3.21.0
+   Compiling cssparser v0.31.2
+   Compiling fxhash v0.2.1
+   Compiling crc32fast v1.5.0
+   Compiling ctor v0.8.0
+   Compiling hyper-util v0.1.20
+   Compiling servo_arc v0.3.0
+   Compiling rustls-platform-verifier-android v0.1.1
+   Compiling semver v1.0.28
+   Compiling unicode-width v0.2.2
+   Compiling foldhash v0.2.0
+   Compiling adler2 v2.0.1
+   Compiling simd-adler32 v0.3.10
+   Compiling glob v0.3.4
+   Compiling dunce v1.0.5
+   Compiling miniz_oxide v0.8.9
+   Compiling tauri-runtime v2.11.3
+   Compiling tauri-utils v2.9.3
+   Compiling dom_query v0.27.0
+   Compiling wry v0.55.1
+   Compiling getopts v0.2.24
+   Compiling tower-http v0.6.11
+   Compiling libsqlite3-sys v0.30.1
+   Compiling hashbrown v0.14.5
+   Compiling http-body-util v0.1.4
+   Compiling ego-tree v0.6.3
+   Compiling option-ext v0.2.0
+   Compiling hex v0.4.3
+   Compiling dirs-sys v0.5.0
+   Compiling scraper v0.20.0
+   Compiling tauri-runtime-wry v2.11.4
+   Compiling async-stream v0.3.6
+   Compiling tauri v2.11.5
+   Compiling hashlink v0.9.1
+   Compiling flate2 v1.1.9
+   Compiling tao v0.35.3
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling serialize-to-javascript v0.1.2
+   Compiling dirs v6.0.0
+   Compiling tokio-stream v0.1.19
+   Compiling heck v0.5.0
+   Compiling mime v0.3.17
+   Compiling reader v1.6.55832 (E:\devProjects\EnZIME-v4\apps\reader\src-tauri)
+   Compiling transfer-file v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-file)
+   Compiling dyndon v1.6.55832 (E:\devProjects\EnZIME-v4\crates\dyndon)
+   Compiling inference-wllama v1.6.55832 (E:\devProjects\EnZIME-v4\crates\inference-wllama)
+   Compiling revenuecat-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\revenuecat-adapter)
+   Compiling platform-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\platform-adapter)
+   Compiling zstd-safe v7.2.4
+   Compiling zstd v0.13.3
+   Compiling zim-anzimmerman v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-anzimmerman)
+   Compiling zim-cluster-cache v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-cluster-cache)
+   Compiling aws-lc-rs v1.17.3
+   Compiling rustls v0.23.42
+   Compiling rustls-webpki v0.103.13
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling rusqlite v0.32.1
+   Compiling storage-sqlite v1.6.55832 (E:\devProjects\EnZIME-v4\crates\storage-sqlite)
+   Compiling transfer-http v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-http)
+warning: unused imports: `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_COUNT`, and `TRANSFER_RETRY_MAX_MS`
+  --> crates\transfer-http\src\lib.rs:23:71
+   |
+23 |     TransferSource, TRANSFER_MAX_REDIRECTS, TRANSFER_PROBE_MAX_BYTES, TRANSFER_RETRY_BASE_MS,
+   |                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+24 |     TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+   |     ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `transfer-http` (lib) generated 1 warning (run `cargo fix --lib -p transfer-http` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 3m 18s
+        Info symlinking lib "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" in jniLibs dir "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/x86"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libandroid.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libdl.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "liblog.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libm.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\i686-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libc.so"
+        Info connection; remote_addr=127.0.0.1:62832 conn_id=3
+        Info Using installed NDK: E:\DevTools\android\sdk\ndk\29.0.14206865
+   Compiling cfg-if v1.0.4
+   Compiling smallvec v1.15.2
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.189
+   Compiling serde v1.0.229
+   Compiling itoa v1.0.18
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling memchr v2.8.3
+   Compiling siphasher v1.0.3
+   Compiling once_cell v1.21.4
+   Compiling zerofrom v0.1.8
+   Compiling pin-project-lite v0.2.17
+   Compiling log v0.4.33
+   Compiling futures-core v0.3.33
+   Compiling new_debug_unreachable v1.0.6
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling thiserror v2.0.19
+   Compiling writeable v0.6.3
+   Compiling lock_api v0.4.14
+   Compiling litemap v0.8.2
+   Compiling yoke v0.8.3
+   Compiling precomputed-hash v0.1.1
+   Compiling bitflags v2.13.1
+   Compiling utf8_iter v1.0.4
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling jni-sys v0.4.1
+   Compiling phf_shared v0.13.1
+   Compiling slab v0.4.12
+   Compiling percent-encoding v2.3.2
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.2
+   Compiling aws-lc-sys v0.43.0
+   Compiling generic-array v0.14.7
+   Compiling signal-hook-registry v1.4.8
+   Compiling typenum v1.20.1
+   Compiling dtoa v1.0.11
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.17.1
+   Compiling parking_lot v0.12.5
+   Compiling fnv v1.0.7
+   Compiling dtoa-short v0.3.5
+   Compiling phf v0.13.1
+   Compiling futures-task v0.3.33
+   Compiling byteorder v1.5.0
+   Compiling getrandom v0.3.4
+   Compiling form_urlencoded v1.2.2
+   Compiling thiserror v1.0.69
+   Compiling zeroize v1.9.0
+   Compiling base64 v0.22.1
+   Compiling futures-util v0.3.33
+   Compiling getrandom v0.4.3
+   Compiling jni-sys v0.3.1
+   Compiling tracing-core v0.1.36
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling phf_shared v0.11.3
+   Compiling zerocopy v0.8.55
+   Compiling icu_collections v2.2.0
+   Compiling futures-sink v0.3.33
+   Compiling icu_locale_core v2.2.0
+   Compiling ahash v0.8.12
+   Compiling rustls-pki-types v1.15.1
+   Compiling indexmap v2.14.0
+   Compiling tracing v0.1.44
+   Compiling time-core v0.1.9
+   Compiling powerfmt v0.2.0
+   Compiling num-conv v0.2.2
+   Compiling cpufeatures v0.2.17
+   Compiling untrusted v0.9.0
+   Compiling deranged v0.5.8
+   Compiling httparse v1.10.1
+   Compiling phf v0.11.3
+   Compiling string_cache v0.9.0
+   Compiling aho-corasick v1.1.4
+   Compiling typeid v1.0.3
+   Compiling web_atoms v0.2.5
+   Compiling tower-service v0.3.3
+   Compiling unic-common v0.9.0
+   Compiling try-lock v0.2.5
+   Compiling mac v0.1.1
+   Compiling crypto-common v0.1.7
+   Compiling icu_provider v2.2.0
+   Compiling block-buffer v0.10.4
+   Compiling unic-char-range v0.9.0
+   Compiling subtle v2.6.1
+   Compiling regex-syntax v0.8.11
+   Compiling alloc-no-stdlib v2.0.4
+   Compiling digest v0.10.7
+   Compiling atomic-waker v1.1.2
+   Compiling crossbeam-utils v0.8.22
+   Compiling unic-char-property v0.9.0
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling alloc-stdlib v0.2.4
+   Compiling futf v0.1.5
+   Compiling want v0.3.1
+   Compiling sha2 v0.10.9
+   Compiling unic-ucd-version v0.9.0
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling uuid v1.24.0
+   Compiling time v0.3.54
+   Compiling futures-channel v0.3.33
+   Compiling tendril v0.5.1
+   Compiling bytes v1.12.1
+   Compiling idna_adapter v1.2.2
+   Compiling erased-serde v0.4.10
+   Compiling simdutf8 v0.1.5
+   Compiling idna v1.1.0
+   Compiling cesu8 v1.1.0
+   Compiling raw-window-handle v0.6.2
+   Compiling utf-8 v0.7.6
+   Compiling siphasher v0.3.11
+   Compiling url v2.5.8
+   Compiling winnow v1.0.4
+   Compiling tokio v1.53.1
+   Compiling http v1.4.2
+   Compiling combine v4.6.7
+   Compiling regex-automata v0.4.16
+   Compiling domain v1.6.55832 (E:\devProjects\EnZIME-v4\crates\domain)
+warning: unused import: `async_trait::async_trait`
+ --> crates\domain\src\annotation.rs:2:5
+  |
+2 | use async_trait::async_trait;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling http-body v1.1.0
+   Compiling phf_shared v0.10.0
+   Compiling tendril v0.4.3
+   Compiling simd_cesu8 v1.2.0
+   Compiling jsonptr v0.6.3
+   Compiling markup5ever v0.38.0
+warning: `domain` (lib) generated 1 warning (run `cargo fix --lib -p domain` to apply 1 suggestion)
+   Compiling cookie v0.18.1
+   Compiling dpi v0.1.2
+   Compiling string_cache v0.8.9
+   Compiling cfb v0.7.3
+   Compiling jni v0.22.4
+   Compiling num_enum v0.7.6
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling markup5ever v0.12.1
+   Compiling unic-ucd-ident v0.9.0
+   Compiling brotli-decompressor v5.0.3
+   Compiling ndk-sys v0.6.0+11769913
+   Compiling regex v1.13.1
+   Compiling cssparser v0.36.0
+   Compiling quick-xml v0.41.0
+   Compiling sync_wrapper v1.0.2
+   Compiling anyhow v1.0.104
+   Compiling servo_arc v0.4.3
+   Compiling selectors v0.36.1
+   Compiling derive_more v2.1.1
+   Compiling ipnet v2.12.0
+   Compiling rustc-hash v2.1.3
+   Compiling same-file v1.0.6
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling tower-layer v0.3.3
+   Compiling bit-vec v0.8.0
+   Compiling toml v1.1.3+spec-1.1.0
+   Compiling plist v1.10.0
+   Compiling bit-set v0.8.0
+   Compiling walkdir v2.5.0
+   Compiling ndk v0.9.0
+   Compiling html5ever v0.27.0
+   Compiling brotli v8.0.4
+   Compiling tokio-util v0.7.19
+   Compiling ports v1.6.55832 (E:\devProjects\EnZIME-v4\crates\ports)
+   Compiling h2 v0.4.15
+   Compiling jni v0.21.1
+   Compiling tower v0.5.3
+   Compiling urlpattern v0.3.0
+   Compiling infer v0.19.0
+   Compiling crossbeam-channel v0.5.16
+   Compiling selectors v0.25.0
+   Compiling serde-untagged v0.1.9
+   Compiling json-patch v3.0.1
+   Compiling html5ever v0.38.0
+   Compiling phf v0.10.1
+   Compiling serde_with v3.21.0
+   Compiling hyper v1.11.0
+   Compiling cssparser v0.31.2
+   Compiling fxhash v0.2.1
+   Compiling crc32fast v1.5.0
+   Compiling ctor v0.8.0
+   Compiling servo_arc v0.3.0
+   Compiling glob v0.3.4
+   Compiling hyper-util v0.1.20
+   Compiling simd-adler32 v0.3.10
+   Compiling dunce v1.0.5
+   Compiling rustls-platform-verifier-android v0.1.1
+   Compiling unicode-width v0.2.2
+   Compiling semver v1.0.28
+   Compiling foldhash v0.2.0
+   Compiling adler2 v2.0.1
+   Compiling wry v0.55.1
+   Compiling miniz_oxide v0.8.9
+   Compiling tauri-utils v2.9.3
+   Compiling tauri-runtime v2.11.3
+   Compiling getopts v0.2.24
+   Compiling dom_query v0.27.0
+   Compiling tower-http v0.6.11
+   Compiling libsqlite3-sys v0.30.1
+   Compiling hashbrown v0.14.5
+   Compiling http-body-util v0.1.4
+   Compiling ego-tree v0.6.3
+   Compiling hex v0.4.3
+   Compiling option-ext v0.2.0
+   Compiling dirs-sys v0.5.0
+   Compiling scraper v0.20.0
+   Compiling tauri-runtime-wry v2.11.4
+   Compiling async-stream v0.3.6
+   Compiling hashlink v0.9.1
+   Compiling tauri v2.11.5
+   Compiling flate2 v1.1.9
+   Compiling tao v0.35.3
+   Compiling fallible-streaming-iterator v0.1.9
+   Compiling fallible-iterator v0.3.0
+   Compiling serialize-to-javascript v0.1.2
+   Compiling dirs v6.0.0
+   Compiling tokio-stream v0.1.19
+   Compiling heck v0.5.0
+   Compiling mime v0.3.17
+   Compiling reader v1.6.55832 (E:\devProjects\EnZIME-v4\apps\reader\src-tauri)
+   Compiling transfer-file v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-file)
+   Compiling dyndon v1.6.55832 (E:\devProjects\EnZIME-v4\crates\dyndon)
+   Compiling inference-wllama v1.6.55832 (E:\devProjects\EnZIME-v4\crates\inference-wllama)
+   Compiling revenuecat-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\revenuecat-adapter)
+   Compiling platform-adapter v1.6.55832 (E:\devProjects\EnZIME-v4\crates\platform-adapter)
+   Compiling zstd-safe v7.2.4
+   Compiling zstd v0.13.3
+   Compiling zim-anzimmerman v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-anzimmerman)
+   Compiling zim-cluster-cache v1.6.55832 (E:\devProjects\EnZIME-v4\crates\zim-cluster-cache)
+   Compiling aws-lc-rs v1.17.3
+   Compiling rustls v0.23.42
+   Compiling rustls-webpki v0.103.13
+   Compiling rusqlite v0.32.1
+   Compiling storage-sqlite v1.6.55832 (E:\devProjects\EnZIME-v4\crates\storage-sqlite)
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.7.0
+   Compiling hyper-rustls v0.27.9
+   Compiling reqwest v0.13.4
+   Compiling transfer-http v1.6.55832 (E:\devProjects\EnZIME-v4\crates\transfer-http)
+warning: unused imports: `TRANSFER_RETRY_BASE_MS`, `TRANSFER_RETRY_COUNT`, and `TRANSFER_RETRY_MAX_MS`
+  --> crates\transfer-http\src\lib.rs:23:71
+   |
+23 |     TransferSource, TRANSFER_MAX_REDIRECTS, TRANSFER_PROBE_MAX_BYTES, TRANSFER_RETRY_BASE_MS,
+   |                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+24 |     TRANSFER_RETRY_COUNT, TRANSFER_RETRY_MAX_MS,
+   |     ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `transfer-http` (lib) generated 1 warning (run `cargo fix --lib -p transfer-http` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 3m 02s
+        Info symlinking lib "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" in jniLibs dir "E:\\devProjects\\EnZIME-v4\\apps\\reader\\src-tauri\\gen/android\\app/src/main/jniLibs/x86_64"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libandroid.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libdl.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "liblog.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libm.so"
+        Info "E:\\DevTools\\caches\\enzime-android-target\\x86_64-linux-android\\release\\libenzime_reader_lib.so" requires shared lib "libc.so"
+w: file:///E:/DevTools/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tauri-2.11.5/mobile/android/src/main/java/app/tauri/AppPlugin.kt:35:37 'onBackPressed(): Unit' is deprecated. Deprecated in Java
+w: file:///E:/DevTools/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tauri-2.11.5/mobile/android/src/main/java/app/tauri/plugin/Plugin.kt:107:5 'onDestroy(): Unit' is deprecated. use onDestroy(activity: AppCompatActivity) instead
+w: file:///E:/DevTools/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tauri-2.11.5/mobile/android/src/main/java/app/tauri/plugin/Plugin.kt:112:5 'onRestart(): Unit' is deprecated. use onRestart(activity: AppCompatActivity) instead
+w: file:///E:/DevTools/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tauri-2.11.5/mobile/android/src/main/java/app/tauri/plugin/PluginMethodData.kt:11:23 Parameter 'methodDecorator' is never used
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+w: file:///E:/devProjects/EnZIME-v4/apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/generated/RustWebView.kt:26:18 'setter for databaseEnabled: Boolean' is deprecated. Deprecated in Java
+w: file:///E:/devProjects/EnZIME-v4/apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/generated/WryActivity.kt:69:46 'onBackPressed(): Unit' is deprecated. This method has been deprecated in favor of using the
+      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.
+      The OnBackPressedDispatcher controls how back button events are dispatched
+      to one or more {@link OnBackPressedCallback} objects.
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+
+[Incubating] Problems report is available at: file:///E:/devProjects/EnZIME-v4/apps/reader/src-tauri/gen/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+    Finished 1 APK at:
+        E:\devProjects\EnZIME-v4\apps\reader\src-tauri\gen/android\app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+

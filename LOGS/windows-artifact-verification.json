@@ -1,0 +1,14 @@
+[
+  {
+    "file": "enzime-reader-v1.6.55832-windows-x64-setup.exe",
+    "bytes": 4462116,
+    "signature": "NotSigned",
+    "sha256": "74CA45E59F120C17F81A0EE5328BB7331C3148E01F2EA7A34B9F5DE8CC832679"
+  },
+  {
+    "file": "enzime-reader-v1.6.55832-windows-x64.exe",
+    "bytes": 16392704,
+    "signature": "NotSigned",
+    "sha256": "575B98687C58CCA50A62096D3BBA38FA42DF84DD48943F55BC682346263C5EB6"
+  }
+]

@@ -1,0 +1,3 @@
+74ca45e59f120c17f81a0ee5328bb7331c3148e01f2ea7a34b9f5de8cc832679  enzime-reader-v1.6.55832-windows-x64-setup.exe
+575b98687c58cca50a62096d3bba38fa42df84dd48943f55bc682346263c5eb6  enzime-reader-v1.6.55832-windows-x64.exe
+0972593d3ab002b416771d69b8a63c7cf6a69d217d168a5941efd81da08b571c  enzime-reader-v1.6.55832-android-universal-release-signed.apk

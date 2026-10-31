@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=EnZIME Reader Upload, O=Robin L M Cheung MBA, C=CA
+Signer #1 certificate SHA-256 digest: 95ffe60a8badd2612a844595abe9284f02199bdb55b6bc28d0c708772864d9e3
+Signer #1 certificate SHA-1 digest: 4bd1873fa0b6e24f69fef08921071405ef99ba3b
+Signer #1 certificate MD5 digest: 2a4d5aac2e4c28c48b51561528bb9729
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: d9528a41f86b60ddebee061d9f3e3b9322cdbe8fe51d96d481330ea1868ef581
+Signer #1 public key SHA-1 digest: 7d553d89f16bf4714b88faf0e271b25e6f2930f6
+Signer #1 public key MD5 digest: ce8de1f3e7f79a63024fade073c57ac1
