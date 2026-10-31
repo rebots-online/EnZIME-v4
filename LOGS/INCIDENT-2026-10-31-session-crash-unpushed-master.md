@@ -4,7 +4,7 @@
 - **Repository:** EnZIME-v4 (`github.com/rebots-online/EnZIME-v4`), branch `master`
 - **Severity:** High — finished release artifacts and a commit existed only on this workstation; `origin/master` did not match local `master`
 - **Status:** Recovered (this record accompanies the recovery commit)
-- **Policy authority:** Admin-Manual (single source of policy truth, per `GLOBAL/RULES`). This document is project-level incident evidence, not policy.
+- **Policy authority:** KStore — the authoritative, active policy guide and assistant, which receives every output by hook. Admin-Manual is KStore's backup; anything written to Admin-Manual must be accepted/adopted by KStore. This document is project-level incident evidence feeding that policy chain, not policy itself.
 
 ## Summary
 
@@ -44,7 +44,7 @@ A Claude Code agent session crashed mid-turn after committing v1.6.55832 analysi
 2. **Manual, interactive git state manipulation.** Live edits were stashed and popped by hand, leaving the tree mid-operation at crash time. Nothing scripted or resumable recorded the intent, so recovery required archaeology (stash-message inspection, marker-label forensics, commit-date reconstruction).
 3. **Manual build steps by a stateless agent.** The build existed only in the session's ephemeral context. Manual builds by stateless agents are useless — they cannot be reproduced, and if the agent crashes, no one can even know what was run or whether it completed. Worse, a *successful* manual build is a curse: it produces a real artifact and a success claim with no procedure attached, and agents invariably declare success without reducing the steps even to written documentation, let alone a reproducible script. The v1.6.55832 artifacts published in this very recovery commit embody that defect — they are real, verified artifacts whose build procedure survives nowhere. Committed scripts are the only durable record of how an artifact came to exist.
 
-## Precipitated operating requirements (authority: Admin-Manual)
+## Precipitated operating requirements (authority: KStore; mirrored to Admin-Manual backup)
 
 1. **Commit and push every repository-work turn.** COMMIT the work of every turn, PUSH it before the turn ends and certainly before the session ends, and VERIFY the remote SHA readback. A push reporting "Everything up-to-date" publishes nothing. Never end a session with unpushed commits, uncommitted work, or a conflicted/unmerged working tree.
 2. **Builds and release operations run by committed scripts only, never manual agent steps.** Every artifact must carry a reproducible provenance chain (script revision + commit) that survives agent crashes. This applies to successful manual builds too: an artifact whose procedure was never reduced to a committed script is unpublishable debt, no matter how well it works today. A crashed manual build leaves no record of what ran; a crashed scripted build leaves an exact one.
@@ -62,4 +62,7 @@ A Claude Code agent session crashed mid-turn after committing v1.6.55832 analysi
 
 ## Exit verification (mandatory)
 
-Push followed by `git ls-remote origin master` compared against `git rev-parse master`. Result appended immediately after publication in this same recovery session.
+- `git push origin master` → `4c2590d..3283fa2  master -> master` (fast-forward; includes previously unpushed `59accbf` and recovery commit `3283fa2`)
+- `git rev-parse master` = `git ls-remote origin refs/heads/master` = `3283fa216f0afd9bf9167a0e5af1f6e0d6a24533` → **MATCH VERIFIED — remote equals local**
+- GitHub advisory (non-blocking): the 71.58 MB APK exceeds the 50 MB recommended size; under the 100 MB hard limit and consistent with this repo's vendor-binaries-as-real-blobs convention
+- `stash@{0}` dropped after verifying its content was fully captured by commit `3283fa2` (`pnpm-workspace.yaml` `esbuild: true` already in HEAD; `version.json` stash side committed)
