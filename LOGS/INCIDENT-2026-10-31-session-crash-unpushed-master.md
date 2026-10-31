@@ -8,7 +8,7 @@
 
 ## Summary
 
-A Claude Code agent session crashed mid-turn after committing v1.6.55832 analysis work locally (`59accbf`) but **before pushing**. At crash time the working tree was mid-`git-stash-pop` with a conflict on `version.json`, and the session's finished v1.6.55832 Windows/Android release artifacts (~96 MB) plus verification logs were untracked. Consequence: `origin/master` sat one commit behind local `master`, and the only copies of the signed release artifacts were on this workstation. The divergence was discovered only because the operator was told "remote did not match local master" moments before the crash.
+A Claude Code agent session crashed mid-turn — the underlying **Bun runtime process itself crashed** — after committing v1.6.55832 analysis work locally (`59accbf`) but **before pushing**. At crash time the working tree was mid-`git-stash-pop` with a conflict on `version.json`, and the session's finished v1.6.55832 Windows/Android release artifacts (~96 MB) plus verification logs were untracked. Consequence: `origin/master` sat one commit behind local `master`, and the only copies of the signed release artifacts were on this workstation. The divergence was discovered only because the operator was told "remote did not match local master" moments before the crash.
 
 ## Timeline (America/New_York unless UTC noted)
 
@@ -40,6 +40,7 @@ A Claude Code agent session crashed mid-turn after committing v1.6.55832 analysi
 
 ## Root causes
 
+0. **Triggering failure: the Bun runtime process itself crashed** mid-turn — an infrastructure death entirely outside the agent's control. This is the reason no boundary other than per-turn commit/push is safe: the agent cannot assume its host process will survive to any later cleanup point.
 1. **The turn/session did not end at a clean boundary.** The commit existed but the push had not run. A commit that is not pushed is not published; the commit → push → verify cycle is only safe when it completes within the turn.
 2. **Manual, interactive git state manipulation.** Live edits were stashed and popped by hand, leaving the tree mid-operation at crash time. Nothing scripted or resumable recorded the intent, so recovery required archaeology (stash-message inspection, marker-label forensics, commit-date reconstruction).
 3. **Manual build steps by a stateless agent.** The build existed only in the session's ephemeral context. Manual builds by stateless agents are useless — they cannot be reproduced, and if the agent crashes, no one can even know what was run or whether it completed. Worse, a *successful* manual build is a curse: it produces a real artifact and a success claim with no procedure attached, and agents invariably declare success without reducing the steps even to written documentation, let alone a reproducible script. The v1.6.55832 artifacts published in this very recovery commit embody that defect — they are real, verified artifacts whose build procedure survives nowhere. Committed scripts are the only durable record of how an artifact came to exist.
