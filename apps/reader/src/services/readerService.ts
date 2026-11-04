@@ -26,6 +26,21 @@ export type ArticleResponse = {
   readonly internalLinks: readonly string[];
 };
 
+export type ReaderTitleSearchItem = {
+  readonly articleKey: string;
+  readonly title: string;
+  readonly score: number;
+};
+
+export type ReaderTitleSearchPage = {
+  readonly packId: string;
+  readonly query: string;
+  readonly offset: number;
+  readonly limit: number;
+  readonly hasMore: boolean;
+  readonly items: readonly ReaderTitleSearchItem[];
+};
+
 export type ServiceErrorKind =
   | "recoverable"
   | "non-recoverable"
@@ -70,6 +85,9 @@ async function call<T>(
 }
 
 export const readerService = {
+  readerSearchTitles(packId: string, query: string, offset?: number, limit?: number): Promise<ReaderTitleSearchPage> {
+    return call<ReaderTitleSearchPage>("reader_search_titles", { packId, query, offset, limit });
+  },
   /** Opens (or attaches to) a ZIM pack by its installed `packId`; returns its id/title/main page. */
   readerOpen(packId: string): Promise<OpenPackResponse> {
     return call<OpenPackResponse>("reader_open", { packId });

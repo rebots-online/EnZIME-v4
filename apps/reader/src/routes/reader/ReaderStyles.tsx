@@ -152,6 +152,31 @@ const READER_STYLE_TEXT = `
 }
 .reader-chip--ghost:hover { background: rgba(124, 140, 255, 0.12); }
 
+.reader-title-search {
+  padding: 0.75rem;
+  border: 1px solid var(--reader-border);
+  border-radius: var(--ez-radius-md);
+  background: var(--reader-glass);
+  color: var(--reader-fg);
+}
+.reader-title-search__form { display: grid; gap: 0.4rem; }
+.reader-title-search__input-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.reader-title-search input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  padding: 0.5rem;
+  font: inherit;
+  color: var(--reader-fg);
+  background: var(--ez-color-bg-canvas);
+  border: 1px solid var(--reader-border-strong);
+  border-radius: var(--ez-radius-md);
+}
+.reader-title-search input:focus-visible,
+.reader-title-search a:focus-visible { outline: 2px solid var(--reader-accent); outline-offset: 3px; }
+.reader-title-search__results { display: grid; gap: 0.5rem; padding-left: 1.5rem; }
+.reader-title-search__results a { color: var(--reader-accent); overflow-wrap: anywhere; }
+.reader-title-search__pages { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.reader-title-search button:disabled { opacity: 0.5; cursor: default; }
 .reader-pane {
   position: relative;
   border-radius: var(--ez-radius-lg);

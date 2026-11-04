@@ -64,6 +64,7 @@ pub fn run() {
             ipc::readiness_get,
             ipc::reader_open,
             ipc::reader_article,
+            ipc::reader_search_titles,
             // M1 Library / DynDon vertical (§14.4 wire contract).
             ipc::storage_roots_list,
             ipc::pack_list,

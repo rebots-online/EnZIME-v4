@@ -167,6 +167,25 @@ pub struct ReaderOpenResponse {
     pub main_page_key: Option<String>,
 }
 
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReaderTitleSearchItem {
+    pub article_key: String,
+    pub title: String,
+    pub score: f32,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReaderTitleSearchPage {
+    pub pack_id: String,
+    pub query: String,
+    pub offset: u32,
+    pub limit: u32,
+    pub has_more: bool,
+    pub items: Vec<ReaderTitleSearchItem>,
+}
+
 /// `reader_article({packId, articleKey})` response. The frontend renders
 /// `rawHtml` in a sandboxed iframe.
 #[derive(Clone, Debug, Serialize)]

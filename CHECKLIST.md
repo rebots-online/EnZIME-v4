@@ -8,11 +8,11 @@ tasks: [reader title search](DOCS/superpowers/plans/2026-11-03-reader-title-sear
 
 | Task | State | Completion evidence |
 | --- | --- | --- |
-| TITLE-01 native bounded search/DTO/registration | NOT_STARTED | Real archive path, bounded query and actual page lookahead |
-| TITLE-02 Reader production search/results/navigation | NOT_STARTED | Actual IPC data and existing draft navigation guard |
-| TITLE-03 source verification and coder self-review | NOT_STARTED | Exact actual commands/results; no mocked success |
-| TITLE-04 supervising semantic review/correction | NOT_STARTED | Per-item review and same-coder correction commits |
-| TITLE-05 prescribed build and continuous packaged recording | NOT_STARTED | Artifact/source/resource digests, observations and timecodes |
+| TITLE-01 native bounded search/DTO/registration | COMPLETE | Production source inspected; actual runtime observation remains TITLE-05 |
+| TITLE-02 Reader production search/results/navigation | COMPLETE | Production panel and preserved router guard inspected; runtime remains TITLE-05 |
+| TITLE-03 source verification and coder self-review | COMPLETE | Native cargo check and frontend tsc exit 0; no mocked acceptance |
+| TITLE-04 supervising semantic review/correction | COMPLETE | Root and independent source review; LOGS/IMPLEMENTATION/2026-11-03-reader-title-search-review.md |
+| TITLE-05 prescribed build and continuous packaged recording | IN_PROGRESS | Tool/resource preparation; no runtime PASS or recording claimed |
 
 Allowed states are NOT_STARTED, IN_PROGRESS, BLOCKED, COMPLETE. No task is COMPLETE
 by authorship, compile success alone, or a historical binary. Parent gates remain

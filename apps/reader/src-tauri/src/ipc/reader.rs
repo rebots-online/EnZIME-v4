@@ -1,4 +1,86 @@
 use super::*;
+use ports::zim::TitleSearchQuery;
+
+/// Search the installed archive, preserving its title ranking and retained scope.
+#[tauri::command]
+pub async fn reader_search_titles(
+    state: tauri::State<'_, AppState>,
+    pack_id: String,
+    query: String,
+    offset: Option<u32>,
+    limit: Option<u32>,
+) -> Result<ReaderTitleSearchPage, String> {
+    if pack_id.trim().is_empty() {
+        return Err("invalid_request: packId must not be empty".into());
+    }
+    let query = query.trim().to_string();
+    if query.chars().count() > 256 {
+        return Err("invalid_request: title query must contain at most 256 characters".into());
+    }
+    let offset = offset.unwrap_or(0);
+    let limit = limit.unwrap_or(25).clamp(1, 100);
+    if offset > 10_000 {
+        return Err("invalid_request: title search supports offsets up to 10000; refine your search to see more matches".into());
+    }
+    let archive = {
+        let archives = state.archives.lock().map_err(err_str)?;
+        archives.get(&pack_id).cloned().ok_or_else(|| {
+            format!("not_found: no open archive for packId {pack_id}; open an installed pack first")
+        })?
+    };
+    let mut hits = Vec::new();
+    if !query.is_empty() {
+        // The retained range archive caps offsets at 10,000 and requests at
+        // 200. At most 101 obtains real lookahead even at that last offset.
+        // Other adapters may cap a page at 100; handle that below.
+        hits = archive
+            .search_titles(TitleSearchQuery {
+                text: query.clone(),
+                offset,
+                limit: limit + 1,
+            })
+            .await
+            .map_err(err_str)?;
+    }
+    let has_more = if hits.len() > limit as usize {
+        true
+    } else if hits.len() == limit as usize && offset + limit <= 10_000 {
+        !archive
+            .search_titles(TitleSearchQuery {
+                text: query.clone(),
+                offset: offset + limit,
+                limit: 1,
+            })
+            .await
+            .map_err(err_str)?
+            .is_empty()
+    } else {
+        false
+    };
+    hits.truncate(limit as usize);
+    let items = hits
+        .into_iter()
+        .map(|hit| {
+            if !hit.score.is_finite() {
+                return Err("invalid_archive: title search returned a non-finite score".to_string());
+            }
+            Ok(ReaderTitleSearchItem {
+                article_key: hit.article_key.0,
+                title: hit.title,
+                score: hit.score,
+            })
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    Ok(ReaderTitleSearchPage {
+        pack_id,
+        query,
+        offset,
+        limit,
+        has_more,
+        items,
+    })
+}
+
 /// §14.4 `reader_open({ packId })`. Opens an INSTALLED pack: looks up the
 /// `ClusterCacheArchive` registered in [`AppState::archives`] at install time
 /// and returns its main page key. Any `path` argument the frontend may still

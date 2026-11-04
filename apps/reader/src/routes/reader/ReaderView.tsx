@@ -33,6 +33,7 @@ import type { CanvasDraftMessage } from "./rendererBridge";
 import { AnnotationDrawer } from "./AnnotationDrawer";
 
 import { ReaderStyles } from "./ReaderStyles";
+import { ReaderTitleSearch } from "./ReaderTitleSearch";
 export { ReaderStyles } from "./ReaderStyles";
 
 export function ReaderView(): ReactNode {
@@ -297,6 +298,7 @@ export function ReaderView(): ReactNode {
       {capture ? <ReaderCanvasCapture key={capture.draftId} kind={capture.kind} selector={capture.selector} draftId={capture.draftId} onBusyChange={setSaving} onCancel={discardCanvas} onSaved={() => {
         capture.reply({ kind: "draft_result", draftId: capture.draftId, saved: true }); setCapture(undefined); dirtyRef.current = undefined; setDirtyDraftId(undefined);
       }} /> : null}
+      <ReaderTitleSearch key={routePackId} packId={routePackId} onNavigate={path => navigate(path)} />
       <div className="reader-pane" aria-busy={busy}>
         {pane}
       </div>
