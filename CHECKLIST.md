@@ -1,5 +1,23 @@
 # EnZIME Reader Reboot IV — Fresh Execution Checklist
 
+## Current independent iteration — P2-05-TITLE (2026-11-03)
+
+This is a bounded refinement of existing P2-05/P2-07, not a replacement checklist
+or a waiver of their remaining clauses. Production recipe and exact four-state
+tasks: [reader title search](DOCS/superpowers/plans/2026-11-03-reader-title-search.md).
+
+| Task | State | Completion evidence |
+| --- | --- | --- |
+| TITLE-01 native bounded search/DTO/registration | NOT_STARTED | Real archive path, bounded query and actual page lookahead |
+| TITLE-02 Reader production search/results/navigation | NOT_STARTED | Actual IPC data and existing draft navigation guard |
+| TITLE-03 source verification and coder self-review | NOT_STARTED | Exact actual commands/results; no mocked success |
+| TITLE-04 supervising semantic review/correction | NOT_STARTED | Per-item review and same-coder correction commits |
+| TITLE-05 prescribed build and continuous packaged recording | NOT_STARTED | Artifact/source/resource digests, observations and timecodes |
+
+Allowed states are NOT_STARTED, IN_PROGRESS, BLOCKED, COMPLETE. No task is COMPLETE
+by authorship, compile success alone, or a historical binary. Parent gates remain
+unchanged. Later pending checklist work remains in scope for this execution.
+
 **Initial state (2026-07-26 historical):** every executable task was unstarted.
 **Rule:** each dispatched task includes the full row below.
 **Scope:** complete Android, Linux and Windows public release.

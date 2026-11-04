@@ -6670,4 +6670,3 @@ The bounded P2-05 title-search refinement is defined by
 production archive title search through native IPC and the Reader, preserves
 retained offline scope and unsaved annotation guards, and requires an independent
 Windows packaged screencast cycle. It does not close unrelated P2-05/P2-07 work.
-

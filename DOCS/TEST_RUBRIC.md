@@ -1,5 +1,36 @@
 # EnZIME Reader — Final Test Rubric / Gauntlet (SC4) — DynDon M1
 
+## P2-05-TITLE independent Windows demonstration — preauthored 2026-11-03
+
+The operator selected Windows EXE as sufficient for current shared-function
+demonstration; Android runtime execution is not required for this bounded gate.
+This section does not retroactively pass the original M1/all-platform rows.
+Source of behavior: `DOCS/ARCHITECTURE/reader-title-search.md`; exact tasks:
+`DOCS/superpowers/plans/2026-11-03-reader-title-search.md`.
+
+Record a REAL CONTINUOUS session of the prescribed-build Windows application.
+Record source commit, EXE SHA-256/version, actual resource identity/digest and
+retained data path before observation. Use a real acquired resource and actual
+native IPC/archive operations, never a fake archive or mocked search response.
+Archive the recording under project `LOGS/SCREENCASTS/` with semantic naming and
+record actual timecodes; reconcile any current KStore-specific archive directive.
+
+| Requirement/task | Exact recorded observation | Failure trigger |
+| --- | --- | --- |
+| FR-ZIM-003 / TITLE-01,02: real titles | Open an installed real pack. Search for a retained article other than the current article; show actual title results and open one, reading its real text/resources. | No handler, invented rows, wrong pack/key, blank article or unavailable-only result |
+| Bounded paging / TITLE-01,02 | Use a real query with more than one page when the retained corpus permits; visit next/back and compare visible identities/order. Otherwise leave this observation unproven until an adequate real retained corpus exists. | Fabricated totals, missing available next page, duplicate/shifted page boundary or claimed pagination PASS without observing it |
+| Offline restart / TITLE-01,05 | Quit the product, make internet unavailable, relaunch the SAME artifact/profile, open the installed pack and search/open a retained article not already open. | Network prerequisite, lost retained catalog, result advertised as readable but absent |
+| Query lifecycle / TITLE-02,04 | Submit changed queries/pages, switch away/reopen, and observe that late work cannot show another pack/query's results. Real latency/actual service only. | Stale results, crash, lost current input or status belonging to another request |
+| Errors/empty / TITLE-01,02 | Show an actual successful zero-hit query and a genuine unavailable-pack/source failure when encountered by supported production actions. State which failure paths remain unobserved rather than fabricate one. | Error presented as successful empty results or fabricated failure/success evidence |
+| Draft preservation / TITLE-02,04 | Start a real unfinished typed/ink annotation; choose a search result, select Stay and verify the draft remains. Then use explicit Discard and verify navigation reaches the real selected article. | Silent loss of draft/capture, bypassed guard, incorrect article or duplicated save |
+
+Supervising review compares every task and real observation to intended behavior,
+not just command exits. Any defect returns to the SAME coder, followed by a
+published correction and a new complete continuous recording. Logs/screenshots
+may support interpretation, never replace that recording. Every required row
+must be observed; missing data/tool/provider availability remains BLOCKED or
+NOT_STARTED, not a fabricated PASS. Record operator attestation separately.
+
 - **Authority**: SC4 (`~/Admin-Manual/DOCS/SPEC_CONVENTIONS/final-test-rubric-gauntlet.md`); TC11 screencast archival; SC2 idempotent accept clauses (structural); SC3 semantic names.
 - **Authored/re-formed**: ARCHITECT phase, 2026-07-29 — re-formed after the M1 reader-entry re-architecture (file-picker → **Library → DynDon storage-fit download → read**). Earlier file-picker rows are void.
 - **Execution timing (GR-2)**: run only after the M1 DynDon wave (application unblock + planner + storage write-repos + cluster-cache wrapper + Library UI + integration coder E) is green end-to-end. Partial runs are debugging, not verdicts.
