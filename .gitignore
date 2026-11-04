@@ -15,3 +15,6 @@ apps/*/dist/
 
 # Local build signing values; never enter snapshots or source publication.
 /signing/build-credentials.json
+
+# Per-session agent state written by local tooling hooks (not project source).
+.anchor/
