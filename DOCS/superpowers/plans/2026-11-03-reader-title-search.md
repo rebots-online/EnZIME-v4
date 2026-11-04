@@ -26,6 +26,8 @@ Consume: `AppState.archives` and `ports::zim::{TitleSearchQuery, TitleSearchHit,
 
 Completion: exact registration/serde contract is reachable, bounded and semantically consistent with actual archive behavior. Archive absence produces a real error. Supply source-level and real-data verification evidence, not a fake archive test.
 
+Current-source ruling: the canonical archive caps offset at 10,000. Native rejects larger offsets rather than silently repeating the capped page. Truthful lookahead remains; the UI asks the user to refine the query when the next actual page would exceed that boundary. Do not modify the canonical archive for this task.
+
 ### TITLE-02 — Reader search UI
 
 State: NOT_STARTED.

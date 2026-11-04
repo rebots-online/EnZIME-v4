@@ -14,6 +14,8 @@ Register `reader_search_titles` in the actual Tauri command handler. Its JS argu
 
 Return a camelCase `ReaderTitleSearchPage` with `packId`, normalized `query`, `offset`, `limit`, `hasMore`, and `items`. Each item has its real `articleKey`, `title`, and finite archive-supplied `score`. Determine `hasMore` from an actual extra result at the requested offset, never an invented total. Respect the archive adapter's actual bounds; if it prevents an extra hit at limit 100, use a separate bounded lookahead request rather than silently reporting no next page.
 
+The current canonical archive caps search offset at 10,000. Preserve that boundary in this iteration: reject a larger native offset with an actionable refine-query error rather than silently clamp it and repeat a page. If actual lookahead reports further matches but the next UI offset would exceed 10,000, retain truthful `hasMore` and show an explicit refine-search boundary. Do not report that all matches have been exhausted. Changing canonical archive search policy belongs to a separately justified iteration.
+
 The handler clones the archive handle under the state lock and releases the lock before awaiting archive work. Do not hold SQLite/archive mutexes across network or asynchronous work. The retained offline archive determines available hits; do not advertise unavailable upstream titles as locally readable results. Existing archive title ranking/order is preserved.
 
 ## Frontend behavior
