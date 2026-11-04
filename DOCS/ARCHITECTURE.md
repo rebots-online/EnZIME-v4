@@ -6661,3 +6661,13 @@ line. EnZIME consumes AnZimmermanLib through its application ports.
 - This decision establishes ownership and integration direction. It does not
   attest that consolidation, cross-language parity, DynDon integration, or
   reader runtime verification has already been completed.
+
+
+## AMD-6 (2026-11-03) — Installed-pack title search
+
+The bounded P2-05 title-search refinement is defined by
+[reader-title-search.md](ARCHITECTURE/reader-title-search.md). It exposes the existing
+production archive title search through native IPC and the Reader, preserves
+retained offline scope and unsaved annotation guards, and requires an independent
+Windows packaged screencast cycle. It does not close unrelated P2-05/P2-07 work.
+
