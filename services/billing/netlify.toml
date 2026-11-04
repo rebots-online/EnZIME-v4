@@ -1,0 +1,15 @@
+# Deploy: Netlify site with base directory `services/billing`.
+# No build dependencies — Netlify bundles the TypeScript function with esbuild.
+[build]
+  publish = "public"
+  command = "node --test test/*.test.ts"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"

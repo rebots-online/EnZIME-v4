@@ -18,3 +18,5 @@ getrandom = "0.2"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }
+sidecar = { path = "../sidecar" }
+ed25519-dalek = { version = "2" }

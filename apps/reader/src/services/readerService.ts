@@ -12,6 +12,7 @@
 // uses, so the shared `resolveState`/`StatusBanner` primitives compose.
 
 import { invoke } from "@tauri-apps/api/core";
+import { track } from "./analytics";
 
 export type OpenPackResponse = {
   readonly packId: string;
@@ -86,6 +87,8 @@ async function call<T>(
 
 export const readerService = {
   readerSearchTitles(packId: string, query: string, offset?: number, limit?: number): Promise<ReaderTitleSearchPage> {
+    // Event only — the query text is never sent.
+    if (!offset) track({ name: "title_search" });
     return call<ReaderTitleSearchPage>("reader_search_titles", { packId, query, offset, limit });
   },
   /** Opens (or attaches to) a ZIM pack by its installed `packId`; returns its id/title/main page. */

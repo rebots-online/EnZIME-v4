@@ -14,6 +14,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use annotations::AnnotationsService;
+
+use crate::analytics::{Analytics, AnalyticsConfig};
+use crate::billing::{Billing, BillingConfig};
 use application::annotation_assets::{AnnotationAssetService, AssetUploadSession};
 use object_store::ObjectStore;
 use ports::zim::ZimArchive;
@@ -56,6 +59,10 @@ pub struct AppState {
     pub asset_service: Arc<AnnotationAssetService>,
     /// In-flight asset uploads keyed by upload token.
     pub asset_uploads: Arc<Mutex<HashMap<String, AssetUpload>>>,
+    /// Offline entitlement policy + billing-service client (§13).
+    pub billing: Arc<Billing>,
+    /// Opt-in GA4 Measurement Protocol sender.
+    pub analytics: Arc<Analytics>,
 }
 
 impl AppState {
@@ -87,6 +94,8 @@ impl AppState {
             annotations,
             asset_service,
             asset_uploads: Arc::new(Mutex::new(HashMap::new())),
+            billing: Arc::new(Billing::new(BillingConfig::from_env())?),
+            analytics: Arc::new(Analytics::new(AnalyticsConfig::from_env())?),
         })
     }
 }

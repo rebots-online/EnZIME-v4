@@ -20,7 +20,7 @@ const DESTINATIONS: readonly Destination[] = [
   { path: "/ask", label: "Ask", glyph: "◆", built: false },
   { path: "/notes", label: "Notes", glyph: "✎", built: true },
   { path: "/memory", label: "Memory", glyph: "◈", built: false },
-  { path: "/settings", label: "Settings", glyph: "⚙", built: false },
+  { path: "/settings", label: "Settings", glyph: "⚙", built: true },
 ];
 
 export function NavigationRail(): ReactNode {

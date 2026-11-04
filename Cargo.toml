@@ -8,7 +8,7 @@ members = [
   "crates/transfer-http", "crates/transfer-file",
   "crates/annotations", "crates/sidecar",
   "crates/inference-wllama", "crates/retrieval", "crates/lore",
-  "crates/entitlement", "crates/revenuecat-adapter",
+  "crates/entitlement",
   "crates/platform-adapter", "crates/backup", "crates/diagnostics",
   "crates/dyndon", "crates/zim-cluster-cache",
   "apps/reader/src-tauri",

@@ -3117,10 +3117,14 @@ pub enum EntitlementError {
 Release provider implementation:
 
 ```text
-RevenueCatEntitlementSource
+Chargebee (via the EnZIME billing issuer, services/billing) — WooCommerce later
 ```
 
-RevenueCat is never queried from domain or UI code directly.
+> **Amended 2026-11-04.** RevenueCat is replaced by Chargebee behind a
+> server-side `BillingProvider`; the issuer signs §13.3 artifacts and the app
+> verifies them offline. See `DOCS/ARCHITECTURE/billing-and-analytics.md`.
+
+The commerce provider is never queried from domain or UI code directly.
 
 ## 13.3 Signed offline artifact
 

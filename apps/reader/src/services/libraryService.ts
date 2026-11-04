@@ -12,6 +12,7 @@
 // file builds green regardless of handler availability on the Rust side.
 
 import { invoke } from "@tauri-apps/api/core";
+import { track } from "./analytics";
 
 // ─── Paging types ───────────────────────────────────────────────────────────
 // homeService does not export PageRequest / PageResult (it has no paged
@@ -242,6 +243,7 @@ export const libraryService = {
   /** Starts a download job for a computed install plan; returns the initial
    *  `DownloadJob` row (state typically `planned` → `fetching`). */
   installStart(args: { installPlanId: string }): Promise<DownloadJob> {
+    track({ name: "pack_install_start" });
     return call<DownloadJob>("install_start", {
       installPlanId: args.installPlanId,
     });

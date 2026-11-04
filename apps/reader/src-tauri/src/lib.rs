@@ -1,5 +1,8 @@
+pub mod analytics;
+pub mod billing;
 pub mod ipc;
 mod reader_resources;
+pub mod settings;
 pub mod state;
 
 use std::path::PathBuf;
@@ -27,6 +30,7 @@ fn resolve_db_path(app: &tauri::App) -> Result<PathBuf, Box<dyn std::error::Erro
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     reader_resources::register(tauri::Builder::default())
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let db_path = resolve_db_path(app)?;
             let conn = storage_sqlite::open_with_pragmas(&db_path)
@@ -55,7 +59,14 @@ pub fn run() {
                 .ensure_local_layer()
                 .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
             tauri::async_runtime::block_on(ipc::dyndon::restore_dyndon_archives(&state))?;
+            // Paid capabilities come from the last verified artifact — offline.
+            tauri::async_runtime::block_on(billing::load_active(&state))?;
             app.manage(state);
+            let handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                let state = handle.state::<AppState>();
+                billing::refresh_in_background(&state).await;
+            });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -91,6 +102,18 @@ pub fn run() {
             ipc::annotations::sidecar_layers,
             ipc::annotations::sidecar_import_plan,
             ipc::annotations::sidecar_import_commit,
+            // Billing + offline entitlement (§13, §14.4 entitlement_*).
+            billing::billing_status,
+            billing::billing_plans,
+            billing::billing_checkout,
+            billing::billing_portal,
+            billing::entitlement_decisions,
+            billing::entitlement_refresh,
+            billing::entitlement_restore,
+            // Opt-in GA4 analytics.
+            analytics::analytics_state,
+            analytics::analytics_set_consent,
+            analytics::analytics_track,
         ])
         .run(tauri::generate_context!())
         .expect("error while running EnZIME Reader");

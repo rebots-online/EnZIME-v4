@@ -1,0 +1,120 @@
+/* Settings / Plan — Aurora Glass (§15.6). Status is never colour-only:
+ * every state carries text ("✓ Included" / "Not included"). */
+
+.ez-settings {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--ez-space-6) var(--ez-space-4) var(--ez-space-8);
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+.ez-settings__header h1 { margin: 0 0 var(--ez-space-4); font-size: 1.75rem; }
+.ez-settings__section { margin-bottom: var(--ez-space-8); }
+.ez-settings__section > h2 {
+  font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ez-color-text-muted); margin: 0 0 var(--ez-space-3);
+}
+
+.ez-card {
+  background: var(--ez-color-bg-glass);
+  border: 1px solid var(--ez-color-border-subtle);
+  border-radius: var(--ez-radius-lg);
+  padding: var(--ez-space-5);
+  margin-bottom: var(--ez-space-4);
+  backdrop-filter: blur(var(--ez-blur-glass));
+}
+.ez-card__title { margin: 0 0 var(--ez-space-2); font-size: 1.15rem; }
+.ez-card__lead { margin: 0 0 var(--ez-space-4); color: var(--ez-color-text-secondary); }
+.ez-muted { color: var(--ez-color-text-muted); }
+
+.ez-caps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ez-space-2); }
+.ez-caps li {
+  display: grid; grid-template-columns: 8.5rem 1fr; gap: 2px var(--ez-space-3);
+  padding: var(--ez-space-2) 0; border-top: 1px solid var(--ez-color-border-subtle);
+}
+.ez-caps__state { grid-row: span 2; font-size: 0.85rem; font-weight: 600; }
+.ez-caps .is-on .ez-caps__state { color: var(--ez-color-success); }
+.ez-caps .is-off .ez-caps__state { color: var(--ez-color-text-muted); }
+.ez-caps__title { font-weight: 600; }
+.ez-caps__detail { display: block; color: var(--ez-color-text-secondary); font-size: 0.9rem; }
+
+.ez-actions { display: flex; flex-wrap: wrap; gap: var(--ez-space-2); margin-top: var(--ez-space-4); }
+
+.ez-btn {
+  font: inherit; font-weight: 600; cursor: pointer;
+  min-height: 40px; padding: 0 var(--ez-space-4);
+  border-radius: var(--ez-radius-sm);
+  border: 1px solid var(--ez-color-border-subtle);
+  background: var(--ez-color-bg-glass-strong); color: var(--ez-color-text-primary);
+  transition: background var(--ez-duration-fast), transform var(--ez-duration-fast);
+}
+.ez-btn:hover:not(:disabled) { background: var(--ez-color-bg-elevated); }
+.ez-btn:focus-visible, .ez-input:focus-visible, .ez-link:focus-visible { outline: none; box-shadow: var(--ez-focus-ring); }
+.ez-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.ez-btn--primary { background: var(--ez-color-primary); border-color: transparent; color: #0b0d18; }
+.ez-btn--primary:hover:not(:disabled) { background: var(--ez-color-primary-hover); }
+.ez-btn--ghost { background: transparent; border-color: transparent; min-height: 32px; padding: 0 var(--ez-space-2); }
+.ez-link { background: none; border: 0; color: var(--ez-color-primary); cursor: pointer; font: inherit; padding: 0; text-decoration: underline; }
+
+.ez-plans {
+  list-style: none; margin: 0 0 var(--ez-space-4); padding: 0;
+  display: grid; gap: var(--ez-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.ez-plan {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--ez-color-bg-glass); border: 1px solid var(--ez-color-border-subtle);
+  border-radius: var(--ez-radius-lg); padding: var(--ez-space-5);
+}
+.ez-plan--highlight { border-color: var(--ez-color-primary); box-shadow: 0 0 0 1px var(--ez-color-primary), var(--ez-shadow-panel); }
+.ez-plan__badge {
+  position: absolute; top: calc(-1 * var(--ez-space-3)); right: var(--ez-space-4);
+  background: var(--ez-color-accent); color: #04201d; font-size: 0.75rem; font-weight: 700;
+  padding: 2px var(--ez-space-2); border-radius: 999px;
+}
+.ez-plan__name { margin: 0; font-size: 1.05rem; }
+.ez-plan__price { margin: var(--ez-space-2) 0 0; font-size: 1.6rem; font-weight: 700; }
+.ez-plan__kind { margin: var(--ez-space-1) 0 var(--ez-space-3); color: var(--ez-color-text-secondary); font-size: 0.9rem; }
+.ez-plan__caps { margin: 0 0 var(--ez-space-4); padding-left: 1.1rem; color: var(--ez-color-text-secondary); font-size: 0.9rem; flex: 1; }
+.ez-plan__caps li { margin: 2px 0; }
+
+.ez-license { display: flex; flex-wrap: wrap; gap: var(--ez-space-2); align-items: center; margin-bottom: var(--ez-space-4); }
+.ez-license__key {
+  font-family: var(--ez-font-mono); font-size: 0.95rem; user-select: all;
+  background: var(--ez-color-bg-elevated); padding: var(--ez-space-2) var(--ez-space-3);
+  border-radius: var(--ez-radius-sm); overflow-wrap: anywhere;
+}
+.ez-restore label { display: block; font-weight: 600; margin-bottom: var(--ez-space-2); }
+.ez-restore__row { display: flex; gap: var(--ez-space-2); flex-wrap: wrap; }
+.ez-input {
+  flex: 1 1 16rem; min-height: 40px; padding: 0 var(--ez-space-3);
+  font: inherit; font-family: var(--ez-font-mono);
+  color: var(--ez-color-text-primary); background: var(--ez-color-bg-elevated);
+  border: 1px solid var(--ez-color-border-subtle); border-radius: var(--ez-radius-sm);
+}
+
+.ez-notice {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ez-space-3);
+  padding: var(--ez-space-3) var(--ez-space-4); margin-bottom: var(--ez-space-4);
+  border-radius: var(--ez-radius-md); border: 1px solid var(--ez-color-border-subtle);
+  background: var(--ez-color-bg-glass-strong);
+}
+.ez-notice--success { border-color: var(--ez-color-success); }
+.ez-notice--error { border-color: var(--ez-color-danger); }
+.ez-notice--info { border-color: var(--ez-color-primary); }
+
+.ez-toggle { display: flex; gap: var(--ez-space-3); align-items: flex-start; cursor: pointer; }
+.ez-toggle input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--ez-color-primary); }
+
+/* First-run analytics consent banner (mounted by AppShell). */
+.ez-consent {
+  position: fixed; left: 50%; bottom: var(--ez-space-6); transform: translateX(-50%);
+  width: min(560px, calc(100vw - 2 * var(--ez-space-4)));
+  background: var(--ez-color-bg-glass-strong); border: 1px solid var(--ez-color-border-subtle);
+  border-radius: var(--ez-radius-lg); box-shadow: var(--ez-shadow-panel);
+  padding: var(--ez-space-4) var(--ez-space-5); z-index: 50;
+  backdrop-filter: blur(var(--ez-blur-glass));
+}
+.ez-consent p { margin: 0 0 var(--ez-space-3); color: var(--ez-color-text-secondary); }
+.ez-consent strong { color: var(--ez-color-text-primary); }

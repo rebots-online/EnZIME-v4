@@ -1,0 +1,15 @@
+{
+  "name": "@enzime/billing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "EnZIME billing + entitlement issuer (Netlify Function). Zero runtime dependencies.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "keygen": "node scripts/keygen.ts",
+    "golden": "node scripts/golden.ts"
+  }
+}

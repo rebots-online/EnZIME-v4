@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { track } from "./analytics";
 
 export type Ulid = string;
 export type Sha256Hex = string;
@@ -391,9 +392,11 @@ export const annotationService = {
     );
   },
   async create(draft: AnnotationDraft): Promise<AnnotationRecord> {
-    return call<AnnotationCreateRequest, AnnotationRecord>("annotation_create", {
+    const record = await call<AnnotationCreateRequest, AnnotationRecord>("annotation_create", {
       draft,
     });
+    track({ name: "annotation_create", params: { kind: draft.annotationType } });
+    return record;
   },
   async update(
     annotationId: Ulid,

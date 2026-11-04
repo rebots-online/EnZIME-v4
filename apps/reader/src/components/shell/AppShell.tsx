@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { HomeStyles } from "../home/shared";
@@ -7,6 +7,9 @@ import { NavigationRail } from "./NavigationRail";
 import { JobStrip } from "./JobStrip";
 import { ReadinessIndicator } from "./ReadinessIndicator";
 import { AboutDialog } from "./AboutDialog";
+import { ConsentBanner } from "./ConsentBanner";
+import { routeTemplate, track } from "../../services/analytics";
+import { useEntitlementStore } from "../../stores/entitlementStore";
 
 const APP_VERSION: string =
   typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "1.0.52684";
@@ -20,9 +23,19 @@ export function AppShell(): ReactNode {
   const bootstrap = useAppStore((s) => s.bootstrap);
   const [aboutOpen, setAboutOpen] = useState(false);
 
+  const location = useLocation();
+  const loadEntitlements = useEntitlementStore((s) => s.load);
+
   useEffect(() => {
     void bootstrap();
-  }, [bootstrap]);
+    void loadEntitlements();
+    track({ name: "app_open" });
+  }, [bootstrap, loadEntitlements]);
+
+  // Route templates only — ids and article keys never leave the device.
+  useEffect(() => {
+    track({ name: "page_view", params: { page_path: routeTemplate(location.pathname) } });
+  }, [location.pathname]);
 
   return (
     <div className="ez-shell">
@@ -66,6 +79,8 @@ export function AppShell(): ReactNode {
         EnZIME Reader v{APP_VERSION}
       </div>
       {/* ToastRegion is mounted by the ToastProvider in the App tree. */}
+
+      <ConsentBanner />
 
       <AboutDialog
         open={aboutOpen}

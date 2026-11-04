@@ -1,0 +1,52 @@
+{
+  "plans": [
+    {
+      "id": "pro_monthly",
+      "name": "EnZIME Pro — Monthly",
+      "price_label": "$4 / month",
+      "kind": "subscription",
+      "provider_product_id": "enzime-pro-USD-Monthly",
+      "capabilities": [
+        "reader.unlimited_packs",
+        "annotations.rich_media",
+        "ask.local_inference",
+        "memory.lore",
+        "backup.encrypted",
+        "sidecar.signed_export",
+        "models.premium_catalog"
+      ]
+    },
+    {
+      "id": "pro_yearly",
+      "name": "EnZIME Pro — Yearly",
+      "price_label": "$36 / year",
+      "kind": "subscription",
+      "provider_product_id": "enzime-pro-USD-Yearly",
+      "highlight": true,
+      "capabilities": [
+        "reader.unlimited_packs",
+        "annotations.rich_media",
+        "ask.local_inference",
+        "memory.lore",
+        "backup.encrypted",
+        "sidecar.signed_export",
+        "models.premium_catalog"
+      ]
+    },
+    {
+      "id": "lifetime",
+      "name": "EnZIME Lifetime",
+      "price_label": "$89 once",
+      "kind": "lifetime",
+      "provider_product_id": "enzime-lifetime-USD",
+      "capabilities": [
+        "reader.unlimited_packs",
+        "annotations.rich_media",
+        "ask.local_inference",
+        "memory.lore",
+        "backup.encrypted",
+        "sidecar.signed_export"
+      ]
+    }
+  ]
+}
