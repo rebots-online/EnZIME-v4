@@ -57,7 +57,7 @@ cargo install tauri-cli --version '^2' --locked   # installed 2.11.4
 ### Recipe
 
 ```bash
-cd /home/robin/forgejo/EnZIME-v4
+cd /path/to/EnZIME-v4
 ./scripts/update-version.sh                 # stamps version.txt + version.json
 cd apps/reader
 cargo tauri build --bundles deb,appimage
