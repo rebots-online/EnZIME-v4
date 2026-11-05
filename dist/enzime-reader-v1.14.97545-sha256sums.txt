@@ -1,0 +1,7 @@
+3ba9b50ae4d6a7406a22fc03d2bccf24f68e634122aed9ea8300b3746bd0ecad  enzime-reader-v1.14.97545-source.tar.gz
+76d3b8a3f473e52883669116a5d3dc1ad893e691a09c36efb74087cbfaf7c4d3  enzime-reader-v1.14.97545-web.tar.gz
+7dc5ffdb432a432f6ef7d769f95f602c8c462d9aa5757aff9a4e5d4091b12f35  enzime-reader-v1.14.97545-sbom.cdx.json
+33efedf5f8e282a98521f8335f038464c58c62be523ddfff3dd152114ea941ad  enzime-reader-v1.14.97545-linux-amd64.deb
+92ccffc9163e7e00cef6c71126b5ac337ccf2951b3855f72ecc54eaf4a772b41  enzime-reader-v1.14.97545-linux-amd64.rpm
+7ae1a79c0d493acfc1b104a2743075d0430eaff6ecb554c079eea0f5331d7e7d  enzime-reader-v1.14.97545-linux-amd64.AppImage
+4e4cb04facd35d2c24c2993b5c041871b30fd1fd69e21a0737339733c933078b  enzime-reader-v1.14.97545-windows-x64-setup.exe
