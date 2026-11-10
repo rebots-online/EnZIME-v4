@@ -18,3 +18,11 @@ apps/*/dist/
 
 # Per-session agent state written by local tooling hooks (not project source).
 .anchor/
+.omp/
+
+# Outputs above GitHub's 100 MB object limit stay on disk in dist/ and in the build
+# manifest (name, size, SHA-256) but are not committed; there is no LFS budget.
+/dist/*-android-universal-release-signed.aab
+/dist/*-android-native-debug-symbols.zip
+# 1.17.05542 only: its APK carried unstripped native libraries (1.2 GB).
+/dist/enzime-reader-v1.17.05542-android-universal-release-signed.apk
