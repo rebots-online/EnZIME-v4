@@ -62,3 +62,20 @@ the open point "where the navigator lives in the app".
 
 **Still open:** where the mode switch sits and whether the choice is remembered per pack; what "generated" ZIM content
 covers; how selecting a node in the navigator opens its article in the reader mode (the artifact's double-click "dive").
+
+### Decision, same item (operator, 2026-11-10) — mode switch and presentation
+
+**Operator's words:** "it is a toggle. Since it's a USP, it would ideally present either in conjunction with the
+traditional reader shape or inset in a windowlet to navigate and swap focus with the main window, like the natal
+chart inset windowlet in Natally-ai-studio's main atelier view"
+
+**Recorded as decided:** the mode switch is a toggle. Because the navigator is a selling point, it is visible
+together with the reader, not hidden behind it: either alongside the traditional reader layout, or as an inset
+windowlet that can be navigated in place and swapped with the main pane (inset becomes main, main becomes inset).
+Reference behaviour: the natal chart inset windowlet in the main atelier view of `~/CascadeProjects/natally-ai-studio`.
+
+**Not yet read:** the Natally inset implementation (click/swap, docking, resizing). It is read when this item is
+architected, not before.
+
+**Still open:** side-by-side versus inset as the default, or both offered; inset size, position and behaviour on
+narrow and Android screens; whether the toggle state is remembered per pack.
