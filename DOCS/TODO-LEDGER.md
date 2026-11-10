@@ -126,3 +126,33 @@ that platform alone. First observed on `enzime-reader-v1.20.05778-android-univer
 ### Android only
 
 (none yet)
+
+## 2026-11-10 — Operator instructions after the on-device look at v1.20.05778
+
+1. **Fallbacks (rule).** Operator's words: "Fallbacks are to be functional and in a deliberate, authorized form, not
+   ad hoc substituted". A fallback is a working, designed, approved behaviour; it is never a notice or stand-in
+   improvised by whoever writes the code.
+
+2. **Work in ThinkSpace Navigator v1.107 before any rewrite.** Operator's words: "ok before rewriting since it's
+   already a dog's breakfast, work in the 1107 version pysanky I put in the vendored folder".
+   - Source: `VENDOR/knowledge-pysanky/thinkspace-navigatorv1107.tsx` (2,742 lines, header "ThinkSpace Navigator —
+     v1.107", one React component `ThinkSpace`). Committed as placed. An identical copy sits untracked at
+     `DOCS/thinkspace-navigatorv1107.tsx`; left alone.
+   - Read so far (lines 1-40, 447-459, 973-981, 1090-1290, 1872-1903): it has the Fabergé egg (16 % chance, lines
+     973/981); the same charge code as v102 (power 0 at one second, `0.35 + 0.9*power`, overcharge scatter at
+     random 0.6-1.4); the wheel adds forward velocity; idle recentre is on by default. It also contains its own
+     reader tab, journey map, document import, embeddings through OpenAI/Ollama endpoints, Qdrant and Neo4j
+     stores, an agent chat, and a seed pool of real Wikipedia topic clusters with en.wikipedia.org URLs.
+   - Supersedes v102 as the reference for the reticle, overcharge glitch and eggs.
+
+3. **Chargebee billing, prepper-first.** Operator's words: "add chargebee billing in vibe coder method, remembering
+   this is to be a prepper positioned first release--so intended to be full offline functional" and "so the
+   entitlements should be a token of some sort not requiring online beyond the one purchase time".
+   - Already in the repository (commit `ea2056b`, `DOCS/ARCHITECTURE/billing-and-analytics.md`): Chargebee hosted
+     checkout through a Netlify function (`services/billing`), which returns an Ed25519-signed entitlement bound to
+     the device; the app verifies it offline against an embedded public key and stores it. Lifetime purchases are
+     `perpetual` grants; subscriptions are `term` grants that end at the paid-through date.
+   - Not done: Chargebee items and prices, the signing key, the Netlify deployment, and the five build settings.
+     Without those the app shows the "purchasing isn't available" notice recorded above.
+   - Consequence of the operator's second sentence: a subscription needs the app to go online again at each renewal
+     to fetch a new token. Only a one-time purchase gives a token that never needs the network again.
