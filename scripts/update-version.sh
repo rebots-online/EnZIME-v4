@@ -16,8 +16,7 @@
 #   MAJOR = manual milestone (edit version.txt by hand, once per milestone)
 #   MINOR = auto-bumped UNCONDITIONALLY on every invocation (the heartbeat;
 #           resets to 0 when MAJOR changes)
-#   BUILD = epoch-minutes % 90000 + 10000, always 5 digits, no leading zero
-#           (display only; EnZIME deviation from the canonical % 100000, see below)
+#   BUILD = epoch-minutes % 100000, 5-digit zero-padded (display only)
 #
 #   versionName = MAJOR.MINOR.BUILD      e.g. 1.28.06942
 #   versionCode = MAJOR*100000 + MINOR   (BUILD excluded — Play needs monotonic)
@@ -47,14 +46,18 @@ else
   CURRENT_MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
   MAJOR="$CURRENT_MAJOR"                       # manual milestone lives in version.txt
   MINOR=$((CURRENT_MINOR + 1))                 # THE heartbeat — never remove
-  # Epoch-minutes folded into 10000-99999: always five digits and never a leading
-  # zero. A zero-padded value such as 05537 is invalid SemVer; Cargo, npm and Tauri
-  # reject it and the build stops in preparation (observed 2026-11-10, v1.15.05537).
-  BUILD_NUM=$(( $(date +%s) / 60 % 90000 + 10000 ))
+  BUILD_NUM=$(( $(date +%s) / 60 % 100000 ))
 fi
 
+BUILD_NUM=$((10#${BUILD_NUM}))                # numeric, even if a lock carried padding
 BUILD_PADDED="$(printf '%05d' "${BUILD_NUM}")"
 DISPLAY_VERSION="${MAJOR}.${MINOR}.${BUILD_PADDED}"
+# SemVer forbids a leading zero in a numeric field. Cargo, npm and Tauri parse their
+# manifests as SemVer, so when BUILD < 10000 (e.g. 05537) the padded display string
+# stops the build in preparation (observed 2026-11-10, v1.15.05537). Those three
+# manifests therefore take the same number unpadded; everything a person reads
+# (version.txt, version.json, filenames, the window badge) keeps the padded form.
+SEMVER_VERSION="${MAJOR}.${MINOR}.${BUILD_NUM}"
 VERSION_CODE=$(( MAJOR * 100000 + MINOR ))
 echo "Stamping version: ${DISPLAY_VERSION}  (versionCode: ${VERSION_CODE})"
 
@@ -63,6 +66,7 @@ echo "${DISPLAY_VERSION}" > version.txt
 cat > version.json << EOF
 {
   "version": "${DISPLAY_VERSION}",
+  "semver": "${SEMVER_VERSION}",
   "versionBase": "${MAJOR}.${MINOR}",
   "buildNumber": "${BUILD_PADDED}",
   "versionCode": ${VERSION_CODE},
@@ -75,20 +79,20 @@ EOF
 
 # ── stamp whatever manifests the project has (each guarded, no failures) ─────
 [ -f package.json ] && command -v jq >/dev/null && {
-  jq --arg v "${DISPLAY_VERSION}" '.version = $v' package.json > package.json.tmp
+  jq --arg v "${SEMVER_VERSION}" '.version = $v' package.json > package.json.tmp
   mv package.json.tmp package.json
 }
 [ -f apps/reader/package.json ] && command -v jq >/dev/null && {
-  jq --arg v "${DISPLAY_VERSION}" '.version = $v' apps/reader/package.json > apps/reader/package.json.tmp
+  jq --arg v "${SEMVER_VERSION}" '.version = $v' apps/reader/package.json > apps/reader/package.json.tmp
   mv apps/reader/package.json.tmp apps/reader/package.json
 }
 [ -f apps/reader/src-tauri/tauri.conf.json ] && \
-  sed -i 's/"version": "[^"]*"/"version": "'"${DISPLAY_VERSION}"'"/' apps/reader/src-tauri/tauri.conf.json
+  sed -i 's/"version": "[^"]*"/"version": "'"${SEMVER_VERSION}"'"/' apps/reader/src-tauri/tauri.conf.json
 [ -f apps/reader/src-tauri/Cargo.toml ] && \
-  sed -i '0,/^version *= *"[^"]*"/s//version = "'"${DISPLAY_VERSION}"'"/' apps/reader/src-tauri/Cargo.toml
+  sed -i '0,/^version *= *"[^"]*"/s//version = "'"${SEMVER_VERSION}"'"/' apps/reader/src-tauri/Cargo.toml
 # workspace root inherits into every crate via version.workspace = true
 [ -f Cargo.toml ] && \
-  sed -i '0,/^version *= *"[^"]*"/s//version = "'"${DISPLAY_VERSION}"'"/' Cargo.toml
+  sed -i '0,/^version *= *"[^"]*"/s//version = "'"${SEMVER_VERSION}"'"/' Cargo.toml
 [ -d apps/reader/src-tauri/gen/android ] && cat > apps/reader/src-tauri/gen/android/tauri.properties << EOF
 tauri.android.versionCode=${VERSION_CODE}
 tauri.android.versionName=${DISPLAY_VERSION}

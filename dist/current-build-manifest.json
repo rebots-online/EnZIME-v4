@@ -4,21 +4,21 @@
   "version_code": 100016,
   "status": "incomplete",
   "source": {
-    "commit": "9d15f9b5d3a002a771987874e02b5b8557df68e8",
+    "commit": "7fedab15cfa89288d4ae07a572aa6fcb06852eef",
     "archive_sha256": null,
     "archive_filename": null
   },
-  "started_at": "2026-11-10T17:38:57.997144+00:00",
-  "finished_at": "2026-11-10T17:39:08.612961+00:00",
+  "started_at": "2026-11-10T17:39:38.739776+00:00",
+  "finished_at": "2026-11-10T17:39:40.168569+00:00",
   "lanes": [
     {
       "id": "preparation",
       "status": "failed",
       "exit_code": 1,
-      "reason": "Command '['cargo', 'metadata', '--offline', '--format-version', '1']' returned non-zero exit status 101.",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:38:57.997237+00:00",
-      "finished_at": "2026-11-10T17:39:08.612731+00:00",
+      "reason": "Command '['git', 'archive', '7fedab15cfa89288d4ae07a572aa6fcb06852eef']' returned non-zero exit status 255.",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:38.739843+00:00",
+      "finished_at": "2026-11-10T17:39:40.168384+00:00",
       "artifacts": []
     },
     {
@@ -26,9 +26,9 @@
       "status": "failed",
       "exit_code": 1,
       "reason": "Source preparation failed",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:39:08.612823+00:00",
-      "finished_at": "2026-11-10T17:39:08.612830+00:00",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:40.168414+00:00",
+      "finished_at": "2026-11-10T17:39:40.168421+00:00",
       "artifacts": []
     },
     {
@@ -36,9 +36,9 @@
       "status": "failed",
       "exit_code": 1,
       "reason": "Source preparation failed",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:39:08.612840+00:00",
-      "finished_at": "2026-11-10T17:39:08.612844+00:00",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:40.168443+00:00",
+      "finished_at": "2026-11-10T17:39:40.168448+00:00",
       "artifacts": []
     },
     {
@@ -46,9 +46,9 @@
       "status": "failed",
       "exit_code": 1,
       "reason": "Source preparation failed",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:39:08.612851+00:00",
-      "finished_at": "2026-11-10T17:39:08.612855+00:00",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:40.168455+00:00",
+      "finished_at": "2026-11-10T17:39:40.168459+00:00",
       "artifacts": []
     },
     {
@@ -56,9 +56,9 @@
       "status": "failed",
       "exit_code": 1,
       "reason": "Source preparation failed",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:39:08.612861+00:00",
-      "finished_at": "2026-11-10T17:39:08.612866+00:00",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:40.168467+00:00",
+      "finished_at": "2026-11-10T17:39:40.168471+00:00",
       "artifacts": []
     },
     {
@@ -66,9 +66,9 @@
       "status": "failed",
       "exit_code": 1,
       "reason": "Source preparation failed",
-      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173857.996849Z-9d15f9b5d3a0/preparation.log",
-      "started_at": "2026-11-10T17:39:08.612872+00:00",
-      "finished_at": "2026-11-10T17:39:08.612875+00:00",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173938.739514Z-7fedab15cfa8/preparation.log",
+      "started_at": "2026-11-10T17:39:40.168477+00:00",
+      "finished_at": "2026-11-10T17:39:40.168481+00:00",
       "artifacts": []
     }
   ],

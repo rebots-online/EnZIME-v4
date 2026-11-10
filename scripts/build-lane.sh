@@ -44,8 +44,10 @@ version_data = read_json(snapshot / 'version.json')
 version = version_data.get('version', '')
 if not re.fullmatch(r'\d+\.\d+\.\d+', version):
     fail('Invalid prepared version')
+# Manifests parsed as SemVer carry BUILD unpadded; identical to `version` unless BUILD < 10000.
+semver = version_data.get('semver', version)
 config_data = read_json(snapshot / 'apps/reader/src-tauri/tauri.conf.json')
-if config_data.get('version') != version:
+if config_data.get('version') != semver:
     fail('Prepared Tauri version mismatch')
 app = snapshot / 'apps/reader'
 frontend = app / 'dist'
@@ -141,12 +143,12 @@ try:
         run(['cargo', 'tauri', 'build', '--bundles', 'deb,appimage,rpm', '--config', config, '--', '--locked'])
         bundle = target / 'release/bundle'
         deb = one(bundle / 'deb', '*.deb')
-        for field, expected in [('Package', 'en-zime-reader'), ('Version', version), ('Architecture', 'amd64')]:
+        for field, expected in [('Package', 'en-zime-reader'), ('Version', semver), ('Architecture', 'amd64')]:
             if run(['dpkg-deb', '--field', deb, field], capture=True) != expected:
                 fail(f'Debian {field} mismatch')
         rpm = one(bundle / 'rpm', '*.rpm')
         actual = run(['rpm', '-qp', '--queryformat', '%{NAME}\n%{VERSION}\n%{ARCH}', rpm], capture=True)
-        if actual.splitlines() != ['en-zime-reader', version, 'x86_64']:
+        if actual.splitlines() != ['en-zime-reader', semver, 'x86_64']:
             fail('RPM identity/version/architecture mismatch')
         appimage = one(bundle / 'appimage', '*.AppImage')
         if not os.access(appimage, os.X_OK):
@@ -159,7 +161,7 @@ try:
         run(['cargo', 'tauri', 'build', '--runner', 'cargo-xwin', '--target',
              'x86_64-pc-windows-msvc', '--bundles', 'nsis', '--config', config, '--', '--locked'])
         installer = one(target / 'x86_64-pc-windows-msvc/release/bundle/nsis', '*.exe')
-        if version not in installer.name:
+        if semver not in installer.name:
             fail('NSIS filename does not contain prepared version')
         pe(installer)
         emit(installer, 'windows-nsis', 'windows', 'nsis', 'windows-x64-setup.exe', authenticode(installer))
@@ -198,15 +200,15 @@ try:
         bundletool = shutil.which('bundletool')
         if not analyzer or not bundletool:
             fail('apkanalyzer and bundletool are required for version validation')
-        for field, expected in [('version-name', version), ('version-code', str(version_data['versionCode'])),
-                                ('application-id', config_data['identifier'])]:
-            if run([analyzer, 'manifest', field, signed_apk], capture=True) != expected:
+        for field, expected in [('version-name', (version, semver)), ('version-code', (str(version_data['versionCode']),)),
+                                ('application-id', (config_data['identifier'],))]:
+            if run([analyzer, 'manifest', field, signed_apk], capture=True) not in expected:
                 fail(f'APK {field} mismatch')
         import xml.etree.ElementTree as ET
         manifest = ET.fromstring(run([bundletool, 'dump', 'manifest', '--bundle=' + str(signed_aab),
                                       '--module=base'], capture=True))
         ns = '{http://schemas.android.com/apk/res/android}'
-        if (manifest.attrib.get(ns + 'versionName') != version or
+        if (manifest.attrib.get(ns + 'versionName') not in (version, semver) or
             manifest.attrib.get(ns + 'versionCode') != str(version_data['versionCode']) or
             manifest.attrib.get('package') != config_data['identifier']):
             fail('AAB manifest identity/version mismatch')

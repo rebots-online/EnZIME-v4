@@ -235,6 +235,7 @@ def prepare_snapshot(repo, source_ref):
         run(["bash", "scripts/update-version.sh"], build.snapshot, Path(result.log_path), "preparation")
         version = json.loads((build.snapshot / "version.json").read_text())
         build.version, build.version_code = version["version"], version["versionCode"]
+        semver = version.get("semver", build.version)
         major, minor, number = [int(value) for value in build.version.split(".")]
         freeze = f"MAJOR={major}\nMINOR={minor}\nBUILD_NUM={number}\n"
         (build.snapshot / "release.lock").write_text(freeze)
@@ -260,7 +261,7 @@ def prepare_snapshot(repo, source_ref):
         run(["cargo", "metadata", "--offline", "--format-version", "1"], build.snapshot,
             logs / "cargo-metadata.json", "preparation", echo=False)
         packages = tomllib.loads((build.snapshot / "Cargo.lock").read_text())["package"]
-        if not any(p["name"] == "reader" and p["version"] == build.version for p in packages):
+        if not any(p["name"] == "reader" and p["version"] == semver for p in packages):
             raise RuntimeError("Cargo lock does not contain stamped reader version")
         original_packages = tomllib.loads(originals["Cargo.lock"].decode())["package"]
         pinned = lambda items: {(p["name"], p["version"], p.get("source"), p.get("checksum")) for p in items if p.get("source")}
