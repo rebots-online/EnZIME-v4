@@ -15,7 +15,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.16.35539"
+version = "1.17.5542"
 edition = "2021"
 license-file = "LICENSE"
 authors = ["Robin L. M. Cheung, MBA"]

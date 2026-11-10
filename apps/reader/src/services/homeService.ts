@@ -13,7 +13,9 @@ const COMMANDS = {
   snapshot: "home_snapshot",
   acceptMemory: "home_accept_memory",
   dismissMemory: "home_dismiss_memory",
-  runReadinessCheck: "home_run_readiness_check",
+  // Registered command (lib.rs generate_handler!, ipc/home.rs::readiness_get). It
+  // returns the same SystemReadiness DTO that home_snapshot carries as `readiness`.
+  runReadinessCheck: "readiness_get",
 } as const;
 
 export type ArticleLocator = {
