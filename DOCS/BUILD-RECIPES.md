@@ -3,7 +3,7 @@
 ## Current operator command — every platform, one build set
 
 ```bash
-bash scripts/build-all.sh
+bash scripts/build_all.sh
 ```
 
 Commit intended source before invocation. The script snapshots that commit,
@@ -385,7 +385,7 @@ one-off Linux/Windows/Android builds are not the normal delivery path.
 
 ## 2026-10-12 — unified build attempt v1.10.63169
 
-`bash scripts/build-all.sh` ran against committed source `b016ef1`. Preparation
+`bash scripts/build_all.sh` ran against committed source `b016ef1`. Preparation
 produced web/source artifacts; concurrent Linux/NSIS/Android lanes all rejected
 a Rust/npm Tauri minor-version mismatch. Cause: the orchestration fallback used
 `cargo generate-lockfile`, upgrading locked third-party dependencies. The corrected

@@ -17,7 +17,7 @@ satisfy any line.
 1. Tauri 2 multiplatform. Matrix per CC11: Windows `.exe`, NSIS installer, `.msi`,
    `.msix`; Linux AppImage, `.deb`, `.rpm`; web; Android release `.apk`, `.aab`,
    native-symbols ZIP.
-2. Every platform is built together by `scripts/build-all.sh`. No manual, isolated
+2. Every platform is built together by `scripts/build_all.sh`. No manual, isolated
    or per-platform build. Windows `.exe` and NSIS cross-compile from Linux; MSI and
    MSIX are built when booted into Windows.
 3. Version bumps automatically on every build invocation. No two builds share a
@@ -91,7 +91,7 @@ reduced motion respected.
 
 ## R6 — Platform quality
 
-- `scripts/build-all.sh` on a clean clone produces the whole host matrix or exits
+- `scripts/build_all.sh` on a clean clone produces the whole host matrix or exits
   nonzero. `scripts/verify-build-set.py --require-full-matrix` must pass for a
   release, which requires the Windows-boot MSI/MSIX as well.
 - The build manifest records `monetization_env`; a release candidate has all three

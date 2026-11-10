@@ -67,7 +67,7 @@ Also: the current matrix has **no lane for a standalone `windows-x64.exe`**
 
 ## Next steps (operator workstation)
 
-1. `bash scripts/build-all.sh` — fills android apk/aab/symbols. Keystore is the
+1. `bash scripts/build_all.sh` — fills android apk/aab/symbols. Keystore is the
    single org keystore, pointer: `~/Admin-Manual/CREDENTIALS/EnZIME.md` →
    `CREDENTIALS/PlayStore/production.keystore`, alias `upload` (verified the
    only key in the store). `build_set.py` reads `signing/build-credentials.json`
@@ -85,7 +85,7 @@ Also: the current matrix has **no lane for a standalone `windows-x64.exe`**
   `git clone https://github.com/rebots-online/admin-manual ~/Admin-Manual` first.
   KStore is authoritative when reachable; Admin-Manual is the fallback.
 - Commit directly to `master`. No branches, no PRs.
-- Builds only via `scripts/build-all.sh`. Never isolated lane builds.
+- Builds only via `scripts/build_all.sh`. Never isolated lane builds.
 - Credentials are referenced by pointer, never asked for, never copied.
 - Cloud containers are ephemeral: toolchain (SDK/NDK, cargo-xwin, nsis, rpm,
   cargo-cyclonedx) is not present. A claude.ai/code environment setup script
