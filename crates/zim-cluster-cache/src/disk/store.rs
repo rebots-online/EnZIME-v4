@@ -57,6 +57,7 @@ pub struct DiskPackStore {
     pub(super) cluster_gate: Arc<AsyncMutex<()>>,
     pub(super) metadata_gate: AsyncMutex<()>,
     pub(super) catalog_gate: Arc<AsyncMutex<()>>,
+    pub(super) verified: Mutex<std::collections::HashMap<u32, (u64, std::time::SystemTime)>>,
 }
 impl DiskPackStore {
     pub fn manifest(&self) -> Result<DiskPackManifest, String> {
@@ -173,6 +174,7 @@ impl DiskPackStore {
             cluster_gate: Arc::new(AsyncMutex::new(())),
             metadata_gate: AsyncMutex::new(()),
             catalog_gate: Arc::new(AsyncMutex::new(())),
+            verified: Mutex::new(std::collections::HashMap::new()),
         })
     }
     async fn save_manifest(&self) -> Result<(), String> {
@@ -385,11 +387,24 @@ impl DiskPackStore {
                 return Err("source_changed: cluster mapping".into());
             }
             if let Some(hash) = hash {
-                if file_bytes(&path) == range.length
-                    && digest_file(&path).ok().as_deref() == Some(hash)
-                {
-                    self.conn.lock().map_err(err)?.execute("UPDATE clusters SET state='complete',pinned=MAX(pinned,?2),last_used=?3 WHERE cluster_index=?1",params![index,pinned,now()]).map_err(err)?;
-                    return Ok(path);
+                if file_bytes(&path) == range.length {
+                    let t = std::fs::metadata(&path).and_then(|m| m.modified()).ok();
+                    if let Some(t) = t {
+                        if self.verified.lock().map_err(err)?.get(&index) == Some(&(range.length, t)) {
+                            self.conn.lock().map_err(err)?.execute("UPDATE clusters SET state='complete',pinned=MAX(pinned,?2),last_used=?3 WHERE cluster_index=?1",params![index,pinned,now()]).map_err(err)?;
+                            return Ok(path);
+                        }
+                    }
+                    if digest_file(&path).ok().as_deref() == Some(hash) {
+                        if let Some(t) = t {
+                            self.verified
+                                .lock()
+                                .map_err(err)?
+                                .insert(index, (range.length, t));
+                        }
+                        self.conn.lock().map_err(err)?.execute("UPDATE clusters SET state='complete',pinned=MAX(pinned,?2),last_used=?3 WHERE cluster_index=?1",params![index,pinned,now()]).map_err(err)?;
+                        return Ok(path);
+                    }
                 }
             }
         }
@@ -401,6 +416,7 @@ impl DiskPackStore {
                 [index],
             )
             .map_err(err)?;
+        self.verified.lock().map_err(err)?.remove(&index);
         if self.manifest()?.policy.offline {
             return Err("offline_cluster_missing_or_corrupt".into());
         }
@@ -431,6 +447,7 @@ impl DiskPackStore {
                 [v],
             )
             .map_err(err)?;
+            self.verified.lock().map_err(err)?.remove(&v);
         }
         self.verify_weak_identity().await?;
         self.conn.lock().map_err(err)?.execute("INSERT INTO jobs(job_id,state) VALUES('download','fetching') ON CONFLICT(job_id) DO UPDATE SET state='fetching',error=NULL",[]).map_err(err)?;
