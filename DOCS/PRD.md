@@ -6,6 +6,26 @@
 to do. Items marked **OPEN** are not decided; nothing in this document decides them.
 **Design source:** Google Stitch project named in §13; screens there are the visual vocabulary for architecture.
 
+## 0. Lineage — which attempt this is
+
+Counted from the GitHub repository lists on 2026-11-10, by repository name (the repositories were not opened).
+
+| Line | Repositories before this document | This PRD is attempt |
+|---|---|---|
+| EnZIM / EnZIME, in `rebots-online` | 7: EnZIM, EnZIMe-Archive-4feb2026, EnZIM1, EnZIM-Stitch, EnZIMErgent-26apr2026-14h, EnZIME, EnZIME-v4 | 8th |
+| EnZIM / EnZIME, all organizations | 11: the 7 above plus, in `Robin-s-AI-World`, EnZIMErgent, emergent-EnZIME-Mobile, EnZIME.archive-2026-05-14, EnZIME | 12th |
+| Every ZIM-reader line of the operator's own in `rebots-online` | 18: the 7 above plus robinpedia-android, robinpedia-flutter, wikiitake, wikiitake-kotlin, kiwix-robinpedia, robinpedia, AndZimmerMan, AnZimmerman, ZIMnotebolt, BoltZIMnote-8mar2026, ZIMnote | 19th |
+| Every ZIM-reader line, all organizations | 23: the 18 above, the 4 in `Robin-s-AI-World`, and Knowledge-Pysanky | 24th |
+
+First repository in the line: November 2024. Inside EnZIME-v4 alone this is the fifth requirements document
+("Reboot IV" produced v4.0.0). Eight further repositories in `rebots-online` are Kiwix/openZIM-named
+(kiwix-desktop, kiwix-build, kiwix-tools, android-kiwix, kiwix-android-custom, libzim, kiwix-js-pwa,
+kiwix-zim-updater) and are not counted here. In two years, none of these twenty-three has reached a public release.
+
+The cost of that history is the first requirement of this one: **work that runs is kept and corrected in place;
+it is not discarded and begun again.** Build 1.20.05778 of EnZIME-v4 starts, lists the live catalog, plans and
+downloads a storage-fit subset of a real pack. That is the base this document builds on.
+
 ## 1. Product
 
 EnZIME Reader is an offline-first reader and annotator for ZIM knowledge packs (Wikipedia and other Kiwix/openZIM
@@ -171,7 +191,7 @@ release's interface.
 - **Performance (measured on a Wikipedia-class pack, ≥ 50 GB source):** cold start ≤ 2 s desktop / 3 s Android
   regardless of installed size; article open p95 ≤ 400 ms / 1 s; navigator holds 60 fps desktop / 30 fps Android
   with the visible node set; idle memory ≤ 350 MB / 250 MB.
-- **Accessibility:** WCAG 2.2 AA; reduced-motion mode gives the navigator a still, list-backed alternative.
+- **Accessibility:** WCAG 2.2 AA for the reading, library and settings flows.
 - **Privacy:** no content telemetry; analytics opt-in; diagnostics exclude content by default.
 
 ## 10. Commercial boundary
@@ -197,4 +217,7 @@ claims that a partial pack is a valid full ZIM; Creator Studio; browser extensio
 ## 13. Design source
 
 Google Stitch project "EnZIME Reader v5 — DynDon + Knowledge Pysanky" (ID recorded here when created).
-Design system: EnZIME Aurora Glass (`DOCS/REBOOT-PAK/STITCH/design-system.json`).
+Project ID: `13978455034360167310`.
+Design system: EnZIME Aurora Glass (`DOCS/REBOOT-PAK/STITCH/design-system.json`) with two of its rules removed by
+the operator on 2026-11-10: the reduced-motion rule is not a goal, and the reader surface is not opaque — glass
+surfaces apply to the reader as to the rest of the app.
