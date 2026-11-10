@@ -16,7 +16,8 @@
 #   MAJOR = manual milestone (edit version.txt by hand, once per milestone)
 #   MINOR = auto-bumped UNCONDITIONALLY on every invocation (the heartbeat;
 #           resets to 0 when MAJOR changes)
-#   BUILD = epoch-minutes % 100000, 5-digit zero-padded (display only)
+#   BUILD = epoch-minutes % 90000 + 10000, always 5 digits, no leading zero
+#           (display only; EnZIME deviation from the canonical % 100000, see below)
 #
 #   versionName = MAJOR.MINOR.BUILD      e.g. 1.28.06942
 #   versionCode = MAJOR*100000 + MINOR   (BUILD excluded — Play needs monotonic)
@@ -46,7 +47,10 @@ else
   CURRENT_MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
   MAJOR="$CURRENT_MAJOR"                       # manual milestone lives in version.txt
   MINOR=$((CURRENT_MINOR + 1))                 # THE heartbeat — never remove
-  BUILD_NUM=$(( $(date +%s) / 60 % 100000 ))
+  # Epoch-minutes folded into 10000-99999: always five digits and never a leading
+  # zero. A zero-padded value such as 05537 is invalid SemVer; Cargo, npm and Tauri
+  # reject it and the build stops in preparation (observed 2026-11-10, v1.15.05537).
+  BUILD_NUM=$(( $(date +%s) / 60 % 90000 + 10000 ))
 fi
 
 BUILD_PADDED="$(printf '%05d' "${BUILD_NUM}")"

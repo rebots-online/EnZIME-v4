@@ -1,0 +1,101 @@
+{
+  "schema": "mba.robin.enzime.build-set.v1",
+  "version": "1.15.05537",
+  "version_code": 100015,
+  "status": "incomplete",
+  "source": {
+    "commit": "9be48685b5f75a8e140dec74971dcfa5278268ca",
+    "archive_sha256": null,
+    "archive_filename": null
+  },
+  "started_at": "2026-11-10T17:37:35.517107+00:00",
+  "finished_at": "2026-11-10T17:37:47.392960+00:00",
+  "lanes": [
+    {
+      "id": "preparation",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Command '['cargo', 'metadata', '--offline', '--format-version', '1']' returned non-zero exit status 101.",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:35.517178+00:00",
+      "finished_at": "2026-11-10T17:37:47.392702+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "linux",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Source preparation failed",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:47.392792+00:00",
+      "finished_at": "2026-11-10T17:37:47.392801+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "windows-nsis",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Source preparation failed",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:47.392814+00:00",
+      "finished_at": "2026-11-10T17:37:47.392819+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "android",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Source preparation failed",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:47.392827+00:00",
+      "finished_at": "2026-11-10T17:37:47.392832+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "windows-native",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Source preparation failed",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:47.392840+00:00",
+      "finished_at": "2026-11-10T17:37:47.392845+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "sbom",
+      "status": "failed",
+      "exit_code": 1,
+      "reason": "Source preparation failed",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T173735.516621Z-9be48685b5f7/preparation.log",
+      "started_at": "2026-11-10T17:37:47.392852+00:00",
+      "finished_at": "2026-11-10T17:37:47.392857+00:00",
+      "artifacts": []
+    }
+  ],
+  "artifacts": [],
+  "required_artifact_ids": [
+    "source",
+    "web",
+    "linux-appimage",
+    "linux-deb",
+    "linux-rpm",
+    "windows-nsis",
+    "windows-exe",
+    "android-apk",
+    "android-aab",
+    "android-symbols",
+    "sbom"
+  ],
+  "deferred_artifact_ids": [
+    "windows-msi",
+    "windows-msix"
+  ],
+  "host_platform": "linux",
+  "monetization_env": {
+    "ENZIME_BILLING_URL": "unset",
+    "ENZIME_ENTITLEMENT_KEY_ID": "unset",
+    "ENZIME_ENTITLEMENT_PUBKEY": "unset",
+    "ENZIME_GA_MEASUREMENT_ID": "unset",
+    "ENZIME_GA_API_SECRET": "unset"
+  }
+}
