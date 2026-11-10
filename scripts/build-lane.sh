@@ -176,7 +176,17 @@ try:
         if not env.get('ENZIME_KEYSTORE_PASSWORD') or not env.get('ENZIME_KEY_PASSWORD'):
             fail('Production signing password environment is not provisioned')
         alias = env.get('ENZIME_KEYSTORE_ALIAS', 'upload')
+        # Each attempt uses a fresh lane directory with a shared Cargo cache, and the tauri and wry build scripts write
+        # gen/android/app/src/main/java/mba/robin/enzime/generated/ only when they rerun (observed v1.18.05715).
+        for triple in ('aarch64-linux-android', 'armv7-linux-androideabi',
+                       'i686-linux-android', 'x86_64-linux-android'):
+            run(['cargo', 'clean', '--release', '--offline', '-p', 'tauri', '-p', 'wry',
+                 '--target', triple], cwd=snapshot)
         run(['cargo', 'tauri', 'android', 'build', '--apk', '--aab', '--config', config, '--', '--locked'])
+        generated = app / 'src-tauri/gen/android/app/src/main/java/mba/robin/enzime/generated'
+        for name in ('TauriActivity.kt', 'WryActivity.kt'):
+            if not (generated / name).is_file():
+                fail('Generated Android Kotlin missing: ' + name)
         android = app / 'src-tauri/gen/android/app/build/outputs'
         apk = one(android / 'apk', '**/*universal*release*unsigned.apk')
         aab = one(android / 'bundle', '**/*release.aab')
