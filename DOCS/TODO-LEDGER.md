@@ -79,3 +79,22 @@ architected, not before.
 
 **Still open:** side-by-side versus inset as the default, or both offered; inset size, position and behaviour on
 narrow and Android screens; whether the toggle state is remembered per pack.
+
+## 2026-11-10 — Storage layout: observations on build 1.20.05778 against the fixed architecture
+
+**Operator's words:** "is a single monolithic db going to be a good idea for multiple hundred gb imports?" and, to my
+answer, "what do you mean? thats an architectural decision fixed years ago".
+
+**Standing:** the storage design is fixed by `DOCS/ARCHITECTURE.md` §1.2 (replaceable archives never coupled to user
+data), §6.1 (one metadata database) and §6.3 (file object store under `<storage-root>/EnZIME/`). It is not open for
+redesign. My reply wrongly presented layout points as things "to be decided"; that is withdrawn.
+
+**Observed on the 1.20.05778 AppImage profile (facts only, no action taken):**
+- Metadata database is `<app-data>/enzime.db` (0.6 MB after one install); §6.1 names
+  `<app-data>/EnZIME/metadata/enzime.sqlite3`.
+- Installed pack content is under `<app-data>/packs/version-<hash>/` (`pack-index.sqlite`, `clusters/<n>.bin`,
+  `pages/`, `workspace/`); §6.3 names `<storage-root>/EnZIME/packs/<pack-id>/<pack-version-id>/`. The directory
+  `EnZIME/packs/` exists and is empty.
+- Article and media bytes are in cluster files, not in SQLite. Each pack has its own index database.
+- Planning a 125 MB Wikipedia pack ran more than ten minutes without a progress figure.
+- Not checked: whether `DOCS/ARCHITECTURE/dyndon-range-acquisition.md` amends §6.1/§6.3 for these paths.
