@@ -156,3 +156,11 @@ that platform alone. First observed on `enzime-reader-v1.20.05778-android-univer
      Without those the app shows the "purchasing isn't available" notice recorded above.
    - Consequence of the operator's second sentence: a subscription needs the app to go online again at each renewal
      to fetch a new token. Only a one-time purchase gives a token that never needs the network again.
+   - **Decided (operator, 2026-11-10):** "there is no renewal", "it's a one-time activation i just said its to be
+     offline capable", "offline-FIRST, in fact, being prepper-positioned". The first release sells one-time
+     activation only. No subscriptions, no renewal, no call home after the purchase. The two subscription plans in
+     `services/billing/catalog.json` (`pro_monthly`, `pro_yearly`) do not belong in this release.
+   - **Chargebee site state (read through the Chargebee connector, 2026-11-10):** the site is `rochemedia`. Item
+     families present: Natally, RobinsAIWorld, Brainbud, FindMyStuffcam, ReBotsOnline, default (Rochemedia). There
+     is no EnZIME family and no EnZIME item. One feature exists, `query` (draft, "LLM Inference Credit"), which is
+     not EnZIME's. The connector in this session offers list, retrieve and export only; it has no create action.
