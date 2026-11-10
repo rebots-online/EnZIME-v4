@@ -99,12 +99,27 @@ redesign. My reply wrongly presented layout points as things "to be decided"; th
 - Planning a 125 MB Wikipedia pack ran more than ten minutes without a progress figure.
 - Not checked: whether `DOCS/ARCHITECTURE/dyndon-range-acquisition.md` amends §6.1/§6.3 for these paths.
 
-## 2026-11-10 — Operator's on-device notes, Android APK v1.20.05778
+## 2026-11-10 — Operator's notes on build v1.20.05778
 
-Recorded in the operator's words as they are given. Build: `enzime-reader-v1.20.05778-android-universal-release-signed.apk`.
+Recorded in the operator's words as they are given. Each note is filed by where the defect lives, not by the device
+it was seen on: **All platforms** for anything in the shared app, a platform name only for something that exists on
+that platform alone. First observed on `enzime-reader-v1.20.05778-android-universal-release-signed.apk`.
+
+### All platforms
 
 1. **"There is mock/placeholder content 'purchasing is not enabled'"**
    - Background: this build was produced with the billing settings unset (the build manifest records
      `monetization_env` as `unset`), so the app shows a not-enabled notice where purchasing belongs.
    - Standing rule it breaks: no mock or placeholder content, ever; every element is for end-user consumption and
      wired to real inputs (global rules, 2026-11-09). Release standard R1: no control that cannot succeed.
+   - **Filing (operator):** "it should be in all versions the same as it is not a platform-dependent matter, but
+     then the whole placeholder concept is not allowed for any platform any time except when specifically directed,
+     so i would suggest filing it under all platform bugs, not only android". Filed under All platforms. The text is
+     in the shared Settings screen (`apps/reader/src/routes/settings/SettingsView.tsx:222`) and the shared billing
+     code (`apps/reader/src-tauri/src/billing.rs:101`), so every platform's build of 1.20.05778 carries it.
+   - **Rule restated by the operator:** placeholder content is not allowed on any platform at any time, except when
+     specifically directed.
+
+### Android only
+
+(none yet)
