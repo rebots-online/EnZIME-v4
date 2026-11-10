@@ -4,8 +4,8 @@ pub(super) fn ensure_catalog_schema(conn: &rusqlite::Connection) -> Result<(), S
         CREATE INDEX IF NOT EXISTS catalog_entries_owner ON catalog_entries(owner_cluster,entry_index);
         CREATE INDEX IF NOT EXISTS clusters_catalog_rank ON clusters(priority ASC,article_count ASC,cluster_index DESC);").map_err(err)
 }
-/// A durable complete marker is invalid when its payload disappeared or changed.
-/// Walk by primary key, retaining one hash buffer and one row at a time.
+/// A durable complete marker is invalid when its payload is absent or has the wrong length.
+/// Content is verified on first read (DiskPackStore::ensure_inner), not at reopen; one row at a time.
 pub(super) fn reconcile_payload(store: &super::DiskPackStore) -> Result<(), String> {
     use rusqlite::OptionalExtension;
     let mut after = -1i64;
@@ -14,9 +14,7 @@ pub(super) fn reconcile_payload(store: &super::DiskPackStore) -> Result<(), Stri
         let Some((id, length, hash)) = row else { break };
         after = i64::from(id);
         let path = store.root.join("clusters").join(format!("{id}.bin"));
-        if super::store::file_bytes(&path) != length
-            || super::store::digest_file(&path).ok() != hash
-        {
+        if super::store::file_bytes(&path) != length || hash.is_none() {
             store
                 .conn
                 .lock()
