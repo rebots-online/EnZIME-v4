@@ -200,3 +200,12 @@ yearly subscriptions) and "EnZIME Mobile" (`projd31373e0`) were read and left as
 - The EnZIME app contains no RevenueCat or Play Billing code. Its billing code talks to the Chargebee function.
 - Linux and Windows have no payment path under Play billing.
 - How a Play purchase becomes the offline activation token is not designed.
+
+## 2026-11-10 — ThinkSpace Navigator v1.107: Ollama connection (operator observation)
+
+**Operator's words:** "there is a problem in the 1107tsx connecting to ollama localhost or on lan... but it is somewhat
+immaterial".
+
+Recorded, not investigated. In v1.107 the embedding and model calls go to an OpenAI-style or Ollama endpoint chosen in
+its settings (`/v1/models`, `/api/tags`, `/v1/embeddings`, `/api/embeddings`, lines 299-348). The operator asked
+instead for research into on-device options (report to follow in `DOCS/`).
