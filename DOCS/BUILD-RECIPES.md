@@ -419,3 +419,41 @@ The script exited1 and published an honest incomplete current manifest with2/12
 artifacts. Independent verifier accepts its hashes/state; --require-complete
 correctly fails. No old installer is linked in any failed row. Logs are under
 Admin-Manual/LOGS/EnZIME-v4/build-sets/20261012T072934.973569Z-b016ef12a393/.
+
+## 2026-11-10 — unified build attempt v1.18.05715: Android lane failed (8 of 11)
+
+`bash build_all.sh` (then still `scripts/build-all.sh`) ran against committed source
+`408c7ed`. Preparation, Linux, Windows NSIS/exe and SBOM lanes succeeded; the
+Android lane exited 1; MSI/MSIX deferred to Windows as designed. Manifest:
+`dist/enzime-reader-v1.18.05715-build-manifest.json` (status `incomplete`). Log:
+`Admin-Manual/LOGS/EnZIME-v4/build-sets/20261110T203552.773738Z-408c7ed7ae4a/android.log`.
+
+**Observed error** (Gradle task `:app:compileUniversalReleaseKotlin`):
+
+```
+MainActivity.kt:6:22 Unresolved reference: TauriActivity
+```
+
+**Observed cause.** Each attempt builds Android in a fresh lane directory
+(`target/build-set/<attempt>/lanes/android`) while Cargo reuses the shared cache
+`target/build-set-cache/android`. `gen/android/app/src/main/java/mba/robin/enzime/generated/`
+is written by Cargo build scripts during the Rust compile. In this attempt that
+directory holds the nine files `wry` writes (`WryActivity.kt`, `RustWebView.kt`, …)
+but not `TauriActivity.kt`, which the `tauri` crate's build script writes. In the
+1.17.05542 attempt (cold cache, everything compiled) all ten files are present.
+So with a warm cache the `tauri` build script was not rerun for the new lane
+directory, and Gradle compiled `MainActivity.kt` without its base class.
+1.17.05542 was the first Android build of this pipeline and ran cold; 1.18.05715
+was the first warm one. The Gradle `keepDebugSymbols` removal made between the
+two builds is unrelated: the failure is in Kotlin compilation, before native
+libraries are merged or stripped. Whether that removal brings the APK back from
+1.2 GB is therefore still unobserved.
+
+**Remedy to undertake** (coder task, `CHECKLIST.md` M0-A1). In the Android lane of
+`scripts/build-lane.sh`, before `cargo tauri android build`, force the build
+scripts that generate Kotlin to rerun for the current lane directory: run
+`cargo clean --release -p tauri -p wry --target <triple>` for each of the four
+Android triples against the lane's `CARGO_TARGET_DIR`. After the Tauri build
+returns, and before signing, fail with a clear message if
+`generated/TauriActivity.kt` or `generated/WryActivity.kt` is absent. The next
+`build_all.sh` run is the verification; it bears a new version (1.19 or later).
