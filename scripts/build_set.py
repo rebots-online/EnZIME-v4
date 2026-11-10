@@ -253,6 +253,9 @@ def prepare_snapshot(repo, source_ref):
         run(["pnpm", "install", "--frozen-lockfile"], build.snapshot, Path(result.log_path), "preparation")
         run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         run(["pnpm", "exec", "vite", "build"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
+        # A fresh workstation has not cached every target's crates. Fetch what the committed
+        # lock names; the pinned-dependency comparison below still rejects any drift.
+        run(["cargo", "fetch"], build.snapshot, Path(result.log_path), "preparation", echo=False)
         # Cargo resolves workspace package version changes once; lanes consume this lock.
         run(["cargo", "metadata", "--offline", "--format-version", "1"], build.snapshot,
             logs / "cargo-metadata.json", "preparation", echo=False)
