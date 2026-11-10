@@ -19,8 +19,8 @@ satisfy any line.
    native-symbols ZIP.
 2. Every platform is built together by `build_all.sh`. No manual, isolated
    or per-platform build. Windows `.exe` and NSIS cross-compile from Linux; MSI and
-   MSIX are built together by `build_all_windows.ps1` when booted into Windows, for
-   the same version.
+   MSIX are built by `build_all_windows.ps1` when booted into Windows, together
+   with the `.exe` and NSIS installer, under the same version scheme.
 3. Version bumps automatically on every build invocation. No two builds share a
    version. No build artifact exists without its version in the filename, and the
    running app shows version/build in the bottom-right corner of the window.

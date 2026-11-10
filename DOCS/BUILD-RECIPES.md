@@ -32,16 +32,19 @@ pulling the commit that holds the Linux set:
 powershell -ExecutionPolicy Bypass -File build_all_windows.ps1
 ```
 
-It does not bump the version. It builds MSI and MSIX together for the version in
-`version.json`, writes `enzime-reader-v<version>-windows-x64.msi`, `.msix` and
-`-windows-native-manifest.json` into `dist/`, then commits and pushes them.
-Installer-internal versions are `MAJOR.MINOR.0` (MSI) and `MAJOR.MINOR.0.0`
-(MSIX) because Windows limits those fields; the filename keeps the full version.
+It follows the same version scheme as `build_all.sh`: MINOR is bumped and BUILD
+recomputed on every run, so a Windows set bears its own new version. One run
+builds the standalone `.exe`, NSIS installer, MSI and MSIX together, writes them
+to `dist/` as `enzime-reader-v<version>-windows-x64*.{exe,msi,msix}` with
+`-windows-build-manifest.json` and `current-windows-build-manifest.json`, then
+commits (stamped version files included) and pushes. Windows Installer and MSIX
+cap their internal version fields at 255.255.65535, so those two fields carry
+`MAJOR.MINOR.0` / `MAJOR.MINOR.0.0`; filenames and the app carry the full version.
 Needs: Rust MSVC toolchain, `cargo-tauri`, pnpm, WiX (Tauri downloads it), the
 Windows SDK (`makeappx.exe`), and `ENZIME_MS_STORE_PUBLISHER`. Signing happens when
 `ENZIME_WINDOWS_CERTIFICATE_THUMBPRINT` and `ENZIME_WINDOWS_TIMESTAMP_URL` are set.
-`scripts/verify-build-set.py --require-full-matrix` passes once that manifest and
-both files are present. Status 2026-11-10: written on Linux, not yet run on Windows.
+`scripts/verify-build-set.py --require-full-matrix` passes once the current
+Windows manifest and its files are present. Status 2026-11-10: written on Linux, not yet run on Windows.
 
 **Android signing** uses the organization-wide production keystore, read by
 pointer from `~/Admin-Manual/CREDENTIALS/PlayStore/keystore.properties`

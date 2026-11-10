@@ -91,15 +91,17 @@ def read_json(path):
         raise ValueError(f'Invalid manifest JSON: {error}') from error
 
 
-def native(folder, version, wanted):
-    """The deferred MSI/MSIX must exist beside the set, as recorded by build_all_windows.ps1."""
-    receipt_path = folder / f'enzime-reader-v{version}-windows-native-manifest.json'
-    require(receipt_path.is_file(), 'Windows-native MSI/MSIX are still deferred; run build_all_windows.ps1 on Windows')
-    # PowerShell 5 writes JSON with or without a BOM depending on the host.
+def native(folder, wanted):
+    """The deferred MSI/MSIX come from the latest Windows build set (build_all_windows.ps1),
+    which bears its own version under the same scheme."""
+    receipt_path = folder / 'current-windows-build-manifest.json'
+    require(receipt_path.is_file(), 'Windows MSI/MSIX are still deferred; run build_all_windows.ps1 on Windows')
+    # PowerShell writes JSON with or without a BOM depending on the host.
     receipt = json.loads(receipt_path.read_text(encoding='utf-8-sig'))
-    require(receipt.get('version') == version, 'Windows-native manifest is for a different version')
-    records = unique_ids(receipt.get('artifacts'), 'windows-native artifact')
-    require(set(records) == wanted, 'Windows-native manifest does not list exactly the deferred artifacts')
+    version = receipt.get('version')
+    require(isinstance(version, str) and re.fullmatch(r'\d+\.\d+\.\d+', version), 'Windows manifest: invalid version')
+    records = unique_ids(receipt.get('artifacts'), 'Windows artifact')
+    require(wanted <= set(records) <= set(QUALIFIERS), 'Windows manifest does not list the deferred artifacts')
     for artifact_id, record in records.items():
         expected = f'enzime-reader-v{version}-{QUALIFIERS[artifact_id]}'
         require(record.get('filename') == expected, f'{artifact_id}: expected exact filename {expected}')
@@ -197,7 +199,7 @@ def verify(manifest_path, require_complete=False, require_full_matrix=False):
     if require_full_matrix:
         require(complete, 'Build set is incomplete; full release matrix not met')
         if deferred:
-            native(manifest_path.parent, version, set(deferred))
+            native(manifest_path.parent, set(deferred))
     return version, status, len(artifacts), len(required), len(deferred)
 
 
