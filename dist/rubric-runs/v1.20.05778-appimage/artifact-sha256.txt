@@ -1,0 +1,1 @@
+46f7c19ce67527fe78d32b71723067467e5d315c7ba16287688c717e44b31f23  dist/enzime-reader-v1.20.05778-linux-amd64.AppImage
