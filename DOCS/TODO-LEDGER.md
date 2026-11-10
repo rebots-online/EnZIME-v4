@@ -50,3 +50,15 @@ and node-banking move the view without input.
 
 **Not decided:** which inputs give pitch, yaw, roll and lateral/vertical thrust; whether velocity persists (drift)
 or damps; whether auto-recentre and banking are removed.
+
+### Decision, same item (operator, 2026-11-10)
+
+**Operator's words:** "the navigator is selectable as one of two main viewer modes for the downloaded/generated zim
+content"
+
+**Recorded as decided:** the navigator is not a separate route or an easter-egg screen. Reading installed ZIM content
+has two main viewer modes the user selects between: the existing article reader and the 6-DOF navigator. This closes
+the open point "where the navigator lives in the app".
+
+**Still open:** where the mode switch sits and whether the choice is remembered per pack; what "generated" ZIM content
+covers; how selecting a node in the navigator opens its article in the reader mode (the artifact's double-click "dive").
