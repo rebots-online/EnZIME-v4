@@ -218,3 +218,7 @@ as many platforms as possible with strong gpu, with no gpu,"
 **Recorded as a requirement:** local inference is built into the app and must work on as many platforms and hardware
 levels as possible, from machines with a strong GPU to machines with no GPU at all, with no network. The research
 report on backends (in progress) is to be organised by that range of hardware as well as by platform.
+- **Direction (operator, same day):** "yes ollama is somewhat irrelevant because we are looking to replace it locally
+  in-app with atomic-chat's llama.cpp". The navigator's dependence on an external Ollama server is to be replaced by
+  inference built into the app, using the llama.cpp that atomic-chat uses. The Ollama connection problem is therefore
+  not to be fixed.
