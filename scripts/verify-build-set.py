@@ -91,6 +91,23 @@ def read_json(path):
         raise ValueError(f'Invalid manifest JSON: {error}') from error
 
 
+def native(folder, version, wanted):
+    """The deferred MSI/MSIX must exist beside the set, as recorded by build_all_windows.ps1."""
+    receipt_path = folder / f'enzime-reader-v{version}-windows-native-manifest.json'
+    require(receipt_path.is_file(), 'Windows-native MSI/MSIX are still deferred; run build_all_windows.ps1 on Windows')
+    # PowerShell 5 writes JSON with or without a BOM depending on the host.
+    receipt = json.loads(receipt_path.read_text(encoding='utf-8-sig'))
+    require(receipt.get('version') == version, 'Windows-native manifest is for a different version')
+    records = unique_ids(receipt.get('artifacts'), 'windows-native artifact')
+    require(set(records) == wanted, 'Windows-native manifest does not list exactly the deferred artifacts')
+    for artifact_id, record in records.items():
+        expected = f'enzime-reader-v{version}-{QUALIFIERS[artifact_id]}'
+        require(record.get('filename') == expected, f'{artifact_id}: expected exact filename {expected}')
+        path = folder / expected
+        require(path.is_file() and path.stat().st_size == record.get('size_bytes'), f'{artifact_id}: missing or wrong-size file')
+        require(digest(path) == record.get('sha256'), f'{artifact_id}: SHA256 mismatch')
+
+
 def verify(manifest_path, require_complete=False, require_full_matrix=False):
     manifest = read_json(manifest_path)
     require(isinstance(manifest, dict), 'Manifest must be an object')
@@ -177,7 +194,10 @@ def verify(manifest_path, require_complete=False, require_full_matrix=False):
                 and all(lanes[lane_id]['status'] == 'unavailable' for lane_id in deferred_lanes))
     require((status == 'complete') == complete, 'Build status does not match this host\'s required target matrix')
     require(not require_complete or complete, 'Build set is honestly incomplete; full-complement acceptance failed')
-    require(not require_full_matrix or (complete and not deferred), 'Windows-native MSI/MSIX are still deferred; full release matrix not met')
+    if require_full_matrix:
+        require(complete, 'Build set is incomplete; full release matrix not met')
+        if deferred:
+            native(manifest_path.parent, version, set(deferred))
     return version, status, len(artifacts), len(required), len(deferred)
 
 
@@ -185,7 +205,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('manifest', type=Path, help='Build manifest; artifacts must reside alongside it')
     parser.add_argument('--require-complete', action='store_true', help='Fail unless every output required on the build host succeeded')
-    parser.add_argument('--require-full-matrix', action='store_true', help='Also fail while Windows-native MSI/MSIX remain deferred')
+    parser.add_argument('--require-full-matrix', action='store_true', help='Also require the Windows MSI/MSIX built by build_all_windows.ps1')
     args = parser.parse_args(argv)
     try:
         version, status, count, wanted, postponed = verify(args.manifest, args.require_complete, args.require_full_matrix)

@@ -3,7 +3,7 @@
 ## Current operator command — every platform, one build set
 
 ```bash
-bash scripts/build_all.sh
+bash build_all.sh
 ```
 
 Commit intended source before invocation. The script snapshots that commit,
@@ -25,9 +25,23 @@ debug build and no test or smoke-test stage. MSI/MSIX are Store packaging and
 are built when booted into Windows: on any other host the `windows-native` lane
 is recorded `unavailable` and its two ids are listed under
 `deferred_artifact_ids`, so a Linux set is `complete` at eleven.
-`scripts/verify-build-set.py --require-full-matrix` passes only once MSI/MSIX
-exist too. `ENZIME_WINDOWS_BUILD_EXECUTOR` still enables the lane on Linux; see
-`DOCS/ARCHITECTURE/unified-build.md`.
+The Windows half is `build_all_windows.ps1`, run from a Windows boot after
+pulling the commit that holds the Linux set:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build_all_windows.ps1
+```
+
+It does not bump the version. It builds MSI and MSIX together for the version in
+`version.json`, writes `enzime-reader-v<version>-windows-x64.msi`, `.msix` and
+`-windows-native-manifest.json` into `dist/`, then commits and pushes them.
+Installer-internal versions are `MAJOR.MINOR.0` (MSI) and `MAJOR.MINOR.0.0`
+(MSIX) because Windows limits those fields; the filename keeps the full version.
+Needs: Rust MSVC toolchain, `cargo-tauri`, pnpm, WiX (Tauri downloads it), the
+Windows SDK (`makeappx.exe`), and `ENZIME_MS_STORE_PUBLISHER`. Signing happens when
+`ENZIME_WINDOWS_CERTIFICATE_THUMBPRINT` and `ENZIME_WINDOWS_TIMESTAMP_URL` are set.
+`scripts/verify-build-set.py --require-full-matrix` passes once that manifest and
+both files are present. Status 2026-11-10: written on Linux, not yet run on Windows.
 
 **Android signing** uses the organization-wide production keystore, read by
 pointer from `~/Admin-Manual/CREDENTIALS/PlayStore/keystore.properties`
@@ -385,7 +399,7 @@ one-off Linux/Windows/Android builds are not the normal delivery path.
 
 ## 2026-10-12 — unified build attempt v1.10.63169
 
-`bash scripts/build_all.sh` ran against committed source `b016ef1`. Preparation
+`bash build_all.sh` ran against committed source `b016ef1`. Preparation
 produced web/source artifacts; concurrent Linux/NSIS/Android lanes all rejected
 a Rust/npm Tauri minor-version mismatch. Cause: the orchestration fallback used
 `cargo generate-lockfile`, upgrading locked third-party dependencies. The corrected

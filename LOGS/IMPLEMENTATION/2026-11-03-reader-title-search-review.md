@@ -26,7 +26,7 @@ Seven production files provide native command/DTO/handler registration, the type
 - Dot-source `E:\DevTools\pearl-build-env.ps1`; `cargo check -p reader`: exit 0, native dev check completed in 3m39s. Log: `E:\DevTools\caches\build-temp\enzime-title-native-check.log`.
 - `git diff --check`: passed for the actual source delta.
 
-Those commands are source checks, not substitute release builds. The sole release build invocation remains `bash scripts/build_all.sh`.
+Those commands are source checks, not substitute release builds. The sole release build invocation remains `bash build_all.sh`.
 
 ## Still unproven
 

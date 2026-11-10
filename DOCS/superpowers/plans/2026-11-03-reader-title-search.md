@@ -4,7 +4,7 @@ Architecture: `DOCS/ARCHITECTURE/reader-title-search.md`, published in `cd3e5b4a
 
 ## Global constraints
 
-Use the real production archive, IPC and UI. No invented title/archive/catalog/user data, mock IPC, fake success or temporary customer flow, including tests. Keep existing source/annotation persistence and guards intact. Do not run a platform-only packaging command: the prescribed release entrypoint is `bash scripts/build_all.sh`. Source checks are not a release build or product acceptance. Preserve the untracked crash transcript and all unrelated work. Work on the current master direction, stage only owned files, and preserve concurrent remote commits. Root owns source publication and its exact remote readback for this iteration.
+Use the real production archive, IPC and UI. No invented title/archive/catalog/user data, mock IPC, fake success or temporary customer flow, including tests. Keep existing source/annotation persistence and guards intact. Do not run a platform-only packaging command: the prescribed release entrypoint is `bash build_all.sh`. Source checks are not a release build or product acceptance. Preserve the untracked crash transcript and all unrelated work. Work on the current master direction, stage only owned files, and preserve concurrent remote commits. Root owns source publication and its exact remote readback for this iteration.
 
 ## Review focus
 

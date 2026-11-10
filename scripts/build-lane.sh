@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Internal build-set worker. The public command is scripts/build_all.sh.
+# Internal build-set worker. The public command is build_all.sh.
 set -euo pipefail
 exec python3 - "$@" <<'PY'
 import hashlib
