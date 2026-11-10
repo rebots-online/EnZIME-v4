@@ -119,6 +119,9 @@ that platform alone. First observed on `enzime-reader-v1.20.05778-android-univer
      code (`apps/reader/src-tauri/src/billing.rs:101`), so every platform's build of 1.20.05778 carries it.
    - **Rule restated by the operator:** placeholder content is not allowed on any platform at any time, except when
      specifically directed.
+   - **Rule (operator):** "Never, ever say 'purchasing is not available' when you're also upselling at every
+     opportunity; it is confusing and frictional". The app must never show a purchasing-unavailable message
+     alongside prompts to buy. Wherever the app invites a purchase, the purchase works.
 
 ### Android only
 
