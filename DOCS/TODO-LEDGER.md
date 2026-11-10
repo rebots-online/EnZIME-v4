@@ -36,3 +36,17 @@ semantic concept navigator (mockup)"), committed as placed.
 is; whether tap stays homing; the Fabergé variant's look and its ~10 % rule; where the navigator lives in the app;
 how node positions are derived from ZIM content (embedding, hypergraph or other) and when that is computed.
 No architecture, checklist task or code exists for this item.
+
+### Addition, same item (operator, minutes later)
+
+**Operator's words:** "the movement within it is also not correct, I just noticed--it should move like a space ship
+through 3-space, with the zoom wheel corresponding to a fwd thruster"
+
+**What the artifact does today (header comment and line 603):** dragging empty space pivots/orbits the view about a
+vertical hinge in front of the camera; the wheel adds to a forward velocity (`c.vFwd += -e.deltaY*0.05`) that "banks
+toward the focused node"; the view recentres itself after 0.9 s idle (`recenterIdle`). So the wheel already feeds a
+forward velocity, but steering is an orbit around a point, not the craft's own pitch/yaw/roll, and the idle recentre
+and node-banking move the view without input.
+
+**Not decided:** which inputs give pitch, yaw, roll and lateral/vertical thrust; whether velocity persists (drift)
+or damps; whether auto-recentre and banking are removed.
