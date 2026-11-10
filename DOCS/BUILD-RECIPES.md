@@ -12,19 +12,40 @@ with bounded concurrent jobs. Optional `--jobs N` controls concurrency;
 `--source-ref REF` selects a committed source revision. There is no platform-only
 option. Historical recipes below describe the internal commands and prior evidence.
 
-Open `dist/index.html` for the current attempt, including its Windows NSIS row.
+Open `dist/index.html` for the current attempt, including its Windows rows.
 `dist/current-build-manifest.json` contains artifact hashes and lane results.
-Failed targets never link older versions. The complete-build pointer advances
-only when the complete matrix passes; MSI/MSIX require a configured native Windows
-executor. The process exits nonzero for any missing/failed required output.
+Failed targets never link older versions. The process exits nonzero for any
+missing/failed required output.
 
-Android signing uses the existing production keystore and
-`ENZIME_KEYSTORE_PASSWORD`/`ENZIME_KEY_PASSWORD`, with optional
-`ENZIME_KEYSTORE_PATH` and `ENZIME_KEYSTORE_ALIAS`. The native Windows interface is
-`ENZIME_WINDOWS_BUILD_EXECUTOR`; see `DOCS/ARCHITECTURE/unified-build.md`.
-The optional ignored `signing/build-credentials.json` supplies these four signing
-variables when they are absent from the environment; `ENZIME_SIGNING_CONFIG` can
-select another private JSON file. Credentials are excluded from source archives.
+**Matrix (2026-11-10, CC11).** One Linux invocation produces eleven outputs:
+source, web, AppImage, deb, rpm, Windows NSIS installer, Windows standalone
+`.exe` (the same release binary the installer carries), Android release APK,
+AAB and native-symbols ZIP, and the SBOM. Release profile only; there is no
+debug build and no test or smoke-test stage. MSI/MSIX are Store packaging and
+are built when booted into Windows: on any other host the `windows-native` lane
+is recorded `unavailable` and its two ids are listed under
+`deferred_artifact_ids`, so a Linux set is `complete` at eleven.
+`scripts/verify-build-set.py --require-full-matrix` passes only once MSI/MSIX
+exist too. `ENZIME_WINDOWS_BUILD_EXECUTOR` still enables the lane on Linux; see
+`DOCS/ARCHITECTURE/unified-build.md`.
+
+**Android signing** uses the organization-wide production keystore, read by
+pointer from `~/Admin-Manual/CREDENTIALS/PlayStore/keystore.properties`
+(`storeFile`, `storePassword`, `keyAlias`, `keyPassword`); override the pointer
+with `ENZIME_KEYSTORE_PROPERTIES`. Explicit `ENZIME_KEYSTORE_*` environment
+values, then `signing/build-credentials.json` / `ENZIME_SIGNING_CONFIG`, take
+precedence when present. The tracked `signing/production.keystore` is the
+project keystore that signed v1.0.52684 and v1.6.55832 (certificate
+`95ffe60a8badd261…`); it is retained for those artifacts and is no longer the
+default. The organization certificate is `56c13674ef22df95…`.
+
+The manifest records `monetization_env` (each `ENZIME_BILLING_*`,
+`ENZIME_ENTITLEMENT_*`, `ENZIME_GA_*` name as `set`/`unset`, never its value) and
+the build warns when billing is unset, because such artifacts ship with
+purchasing disabled. Credentials are excluded from source archives.
+
+Workstation prerequisites beyond the Tauri/Android toolchain: `cargo-cyclonedx`
+(`cargo install cargo-cyclonedx --locked`) and a `bundletool` launcher on `PATH`.
 No upload, git commit, push, or CI invocation occurs inside the build script.
 
 Manual builds only. No CI until public-release operator signoff (§26 AMD-4).

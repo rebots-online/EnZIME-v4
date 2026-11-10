@@ -23,12 +23,20 @@ SCHEMA = "mba.robin.enzime.build-set.v1"
 TARGETS = {
     "preparation": ("source", "web"),
     "linux": ("linux-appimage", "linux-deb", "linux-rpm"),
-    "windows-nsis": ("windows-nsis",),
+    "windows-nsis": ("windows-nsis", "windows-exe"),
     "android": ("android-apk", "android-aab", "android-symbols"),
     "windows-native": ("windows-msi", "windows-msix"),
     "sbom": ("sbom",),
 }
-STAMPED = ("version.txt", "version.json", "package.json", "Cargo.toml",
+# MSI/MSIX are Store packaging: built when booted into Windows (CC11), deferred elsewhere.
+HOST_DEFERRED_LANE = "windows-native"
+ORG_KEYSTORE_PROPERTIES = Path.home() / "Admin-Manual/CREDENTIALS/PlayStore/keystore.properties"
+SIGNING_KEYS = ("ENZIME_KEYSTORE_PASSWORD", "ENZIME_KEY_PASSWORD", "ENZIME_KEYSTORE_PATH", "ENZIME_KEYSTORE_ALIAS")
+PROPERTY_KEYS = {"storeFile": "ENZIME_KEYSTORE_PATH", "storePassword": "ENZIME_KEYSTORE_PASSWORD",
+                 "keyAlias": "ENZIME_KEYSTORE_ALIAS", "keyPassword": "ENZIME_KEY_PASSWORD"}
+MONETIZATION_ENV = ("ENZIME_BILLING_URL", "ENZIME_ENTITLEMENT_KEY_ID", "ENZIME_ENTITLEMENT_PUBKEY",
+                    "ENZIME_GA_MEASUREMENT_ID", "ENZIME_GA_API_SECRET")
+STAMPED = ("version.txt", "version.json", "package.json", "apps/reader/package.json", "Cargo.toml",
            "apps/reader/src-tauri/Cargo.toml", "apps/reader/src-tauri/tauri.conf.json",
            "apps/reader/src-tauri/gen/android/tauri.properties", "Cargo.lock")
 PRINT_LOCK = threading.Lock()
@@ -129,6 +137,37 @@ class BuildSet:
     source_archive_filename: str | None = None
     started_at: str = field(default_factory=now)
     artifacts: list = field(default_factory=list)
+
+
+def deferred_lanes(env=None):
+    """Lanes this host cannot produce and the operator SOP assigns to a Windows boot."""
+    env = os.environ if env is None else env
+    if sys.platform == "win32" or env.get("ENZIME_WINDOWS_BUILD_EXECUTOR"):
+        return set()
+    return {HOST_DEFERRED_LANE}
+
+
+def signing_environment(env, root):
+    """Resolve Android signing. Explicit environment wins, then an optional private JSON,
+    then the organization-wide production keystore recorded in Admin-Manual (the default)."""
+    credentials = Path(env.get("ENZIME_SIGNING_CONFIG", str(root / "signing/build-credentials.json")))
+    if credentials.is_file():
+        values = json.loads(credentials.read_text())
+        for key in SIGNING_KEYS:
+            if key in values:
+                if not isinstance(values[key], str):
+                    raise ValueError("Signing configuration values must be strings")
+                env.setdefault(key, values[key])
+    properties = Path(env.get("ENZIME_KEYSTORE_PROPERTIES", str(ORG_KEYSTORE_PROPERTIES)))
+    if properties.is_file():
+        for line in properties.read_text().splitlines():
+            name, separator, value = line.partition("=")
+            if separator and not name.lstrip().startswith("#") and name.strip() in PROPERTY_KEYS:
+                value = value.strip()
+                if name.strip() == "storeFile" and not os.path.isabs(value):
+                    value = str((properties.parent / value).resolve())
+                env.setdefault(PROPERTY_KEYS[name.strip()], value)
+    return env
 
 
 def excluded(name):
@@ -273,17 +312,8 @@ def run_lane(build, lane):
         lane_root.parent.mkdir(parents=True, exist_ok=True)
         run(["cp", "-a", "--reflink=auto", str(build.snapshot), str(lane_root)],
             build.root, Path(result.log_path), lane)
-        env = os.environ.copy()
-        credentials = Path(env.get("ENZIME_SIGNING_CONFIG", str(build.root / "signing/build-credentials.json")))
-        if credentials.is_file():
-            values = json.loads(credentials.read_text())
-            for key in ("ENZIME_KEYSTORE_PASSWORD", "ENZIME_KEY_PASSWORD", "ENZIME_KEYSTORE_PATH", "ENZIME_KEYSTORE_ALIAS"):
-                if key in values:
-                    if not isinstance(values[key], str):
-                        raise ValueError("Signing configuration values must be strings")
-                    env.setdefault(key, values[key])
+        env = signing_environment(os.environ.copy(), build.root)
         env["ENZIME_PREPARED_SOURCE_ARCHIVE"] = str(build.workspace / build.source_archive_filename)
-        env.setdefault("ENZIME_KEYSTORE_PATH", str(build.root / "signing/production.keystore"))
         env.setdefault("CARGO_BUILD_JOBS", "2")
         run(["bash", str(lane_root / "scripts/build-lane.sh"), lane, str(lane_root),
              str(target), str(output)], lane_root, Path(result.log_path), lane, env)
@@ -310,10 +340,20 @@ def run_lane(build, lane):
     return result
 
 
+def deferred_result(build, lane):
+    log = build.logs / (lane + ".log")
+    reason = "Deferred to a Windows boot: MSI/MSIX are Store packaging built on Windows (CC11)"
+    log.write_text(reason + "\n")
+    report(lane, "unavailable: " + reason)
+    return LaneResult(lane, status="unavailable", exit_code=69, reason=reason, log_path=str(log))
+
+
 def run_lanes(build, jobs):
+    deferred = deferred_lanes()
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
-        futures = {pool.submit(run_lane, build, lane): lane for lane in TARGETS if lane != "preparation"}
-        results = []
+        futures = {pool.submit(run_lane, build, lane): lane for lane in TARGETS
+                   if lane != "preparation" and lane not in deferred}
+        results = [deferred_result(build, lane) for lane in sorted(deferred)]
         for future in concurrent.futures.as_completed(futures):
             try:
                 results.append(future.result())
@@ -324,13 +364,22 @@ def run_lanes(build, jobs):
 
 
 def finalize(build, results):
-    complete = {artifact.id for artifact in build.artifacts} == {item for values in TARGETS.values() for item in values} and all(row.status == "success" for row in results)
+    deferred = deferred_lanes()
+    deferred_ids = [item for lane in sorted(deferred) for item in TARGETS[lane]]
+    required_ids = [item for lane, values in TARGETS.items() if lane not in deferred for item in values]
+    complete = ({artifact.id for artifact in build.artifacts} == set(required_ids)
+                and all(row.status == "success" for row in results if row.id not in deferred)
+                and all(row.status == "unavailable" for row in results if row.id in deferred))
+    monetization = {name: "set" if os.environ.get(name) else "unset" for name in MONETIZATION_ENV}
+    if any(monetization[name] == "unset" for name in MONETIZATION_ENV[:3]):
+        report("build-set", "WARNING: billing environment unset; these artifacts ship with purchasing disabled")
     manifest = {"schema": SCHEMA, "version": build.version, "version_code": build.version_code,
         "status": "complete" if complete else "incomplete", "source": {"commit": build.source_commit,
         "archive_sha256": build.source_archive_sha256, "archive_filename": build.source_archive_filename},
         "started_at": build.started_at, "finished_at": now(), "lanes": [asdict(row) for row in results],
         "artifacts": [asdict(row) for row in build.artifacts],
-        "required_artifact_ids": [item for values in TARGETS.values() for item in values]}
+        "required_artifact_ids": required_ids, "deferred_artifact_ids": deferred_ids,
+        "host_platform": sys.platform, "monetization_env": monetization}
     path = build.artifact_dir / f"enzime-reader-v{build.version}-build-manifest.json"
     # A preparation failure before stamping must not overwrite an earlier attempt.
     if path.exists():

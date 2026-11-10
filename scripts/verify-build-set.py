@@ -15,6 +15,7 @@ QUALIFIERS = {
     'linux-deb': 'linux-amd64.deb',
     'linux-rpm': 'linux-amd64.rpm',
     'windows-nsis': 'windows-x64-setup.exe',
+    'windows-exe': 'windows-x64.exe',
     'windows-msi': 'windows-x64.msi',
     'windows-msix': 'windows-x64.msix',
     'android-apk': 'android-universal-release-signed.apk',
@@ -22,10 +23,12 @@ QUALIFIERS = {
     'android-symbols': 'android-native-debug-symbols.zip',
     'web': 'web.tar.gz', 'source': 'source.tar.gz', 'sbom': 'sbom.cdx.json',
 }
+# Store packaging that the operator SOP builds only when booted into Windows.
+DEFERRABLE = {'windows-msi', 'windows-msix'}
 LANES = {
     'preparation': {'web', 'source'},
     'linux': {'linux-appimage', 'linux-deb', 'linux-rpm'},
-    'windows-nsis': {'windows-nsis'},
+    'windows-nsis': {'windows-nsis', 'windows-exe'},
     'windows-native': {'windows-msi', 'windows-msix'},
     'android': {'android-apk', 'android-aab', 'android-symbols'},
     'sbom': {'sbom'},
@@ -88,7 +91,7 @@ def read_json(path):
         raise ValueError(f'Invalid manifest JSON: {error}') from error
 
 
-def verify(manifest_path, require_complete=False):
+def verify(manifest_path, require_complete=False, require_full_matrix=False):
     manifest = read_json(manifest_path)
     require(isinstance(manifest, dict), 'Manifest must be an object')
     require(manifest.get('schema') == SCHEMA, 'Unsupported build-set schema')
@@ -102,7 +105,12 @@ def verify(manifest_path, require_complete=False):
     time_range(manifest, 'build-set')
     required = manifest.get('required_artifact_ids')
     require(isinstance(required, list) and all(isinstance(item, str) for item in required), 'Invalid required_artifact_ids')
-    require(len(required) == len(QUALIFIERS) and set(required) == set(QUALIFIERS), 'Required artifact matrix differs from the twelve contracted outputs')
+    deferred = manifest.get('deferred_artifact_ids', [])
+    require(isinstance(deferred, list) and all(isinstance(item, str) for item in deferred), 'Invalid deferred_artifact_ids')
+    require(len(required) == len(set(required)) and len(deferred) == len(set(deferred)), 'Duplicate artifact id in matrix')
+    require(not set(required) & set(deferred) and set(required) | set(deferred) == set(QUALIFIERS),
+            'Required plus deferred artifacts differ from the contracted output matrix')
+    require(set(deferred) in (set(), DEFERRABLE), 'Only the Windows-native MSI/MSIX pair may be deferred')
     lanes = unique_ids(manifest.get('lanes'), 'lane')
     require(set(lanes) == set(LANES), 'Required lane records missing or unexpected')
     artifacts = unique_ids(manifest.get('artifacts'), 'artifact')
@@ -162,23 +170,29 @@ def verify(manifest_path, require_complete=False):
         require(not artifacts, 'Built artifacts require prepared source provenance')
         require(lanes['preparation']['status'] != 'success', 'Successful preparation requires source')
         require(source.get('archive_filename') is None and source.get('archive_sha256') is None, 'Absent source cannot claim an archive')
-    complete = len(artifacts) == len(QUALIFIERS) and all(lane['status'] == 'success' for lane in lanes.values())
-    require((status == 'complete') == complete, 'Build status does not match complete target matrix')
+    deferred_lanes = {lane_id for lane_id, owned in LANES.items() if owned and owned <= set(deferred)}
+    require(not set(artifacts) & set(deferred), 'Deferred artifact must not be present')
+    complete = (set(artifacts) == set(required)
+                and all(lane['status'] == 'success' for lane_id, lane in lanes.items() if lane_id not in deferred_lanes)
+                and all(lanes[lane_id]['status'] == 'unavailable' for lane_id in deferred_lanes))
+    require((status == 'complete') == complete, 'Build status does not match this host\'s required target matrix')
     require(not require_complete or complete, 'Build set is honestly incomplete; full-complement acceptance failed')
-    return version, status, len(artifacts)
+    require(not require_full_matrix or (complete and not deferred), 'Windows-native MSI/MSIX are still deferred; full release matrix not met')
+    return version, status, len(artifacts), len(required), len(deferred)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('manifest', type=Path, help='Build manifest; artifacts must reside alongside it')
-    parser.add_argument('--require-complete', action='store_true', help='Fail unless all twelve outputs succeeded')
+    parser.add_argument('--require-complete', action='store_true', help='Fail unless every output required on the build host succeeded')
+    parser.add_argument('--require-full-matrix', action='store_true', help='Also fail while Windows-native MSI/MSIX remain deferred')
     args = parser.parse_args(argv)
     try:
-        version, status, count = verify(args.manifest, args.require_complete)
+        version, status, count, wanted, postponed = verify(args.manifest, args.require_complete, args.require_full_matrix)
     except (ValueError, OSError, TypeError, KeyError) as error:
         print(f'Build-set verification failed: {error}', file=sys.stderr)
         return 1
-    print(f'Verified EnZIME {version}: {status}; {count}/{len(QUALIFIERS)} current artifacts')
+    print(f'Verified EnZIME {version}: {status}; {count}/{wanted} required artifacts; {postponed} deferred to Windows')
     return 0
 
 

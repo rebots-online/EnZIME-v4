@@ -100,12 +100,19 @@ def emit(source, artifact_id, platform, kind, qualifier, signing='not-applicable
 def pe(path):
     with path.open('rb') as stream:
         if stream.read(2) != b'MZ':
-            fail('NSIS output is not a PE executable')
+            fail(f'{path.name} is not a PE executable')
         stream.seek(60)
         offset = struct.unpack('<I', stream.read(4))[0]
         stream.seek(offset)
         if stream.read(4) != b'PE\0\0':
-            fail('NSIS PE signature invalid')
+            fail(f'{path.name} PE signature invalid')
+
+
+def authenticode(path):
+    if shutil.which('osslsigncode'):
+        if subprocess.run(['osslsigncode', 'verify', '-in', str(path)], env=env).returncode == 0:
+            return 'verified'
+    return 'unsigned'
 
 
 def sdk_tool(name):
@@ -155,16 +162,15 @@ try:
         if version not in installer.name:
             fail('NSIS filename does not contain prepared version')
         pe(installer)
-        signing = 'unsigned'
-        if shutil.which('osslsigncode'):
-            checked = subprocess.run(['osslsigncode', 'verify', '-in', str(installer)], env=env)
-            if checked.returncode == 0:
-                signing = 'verified'
-        emit(installer, 'windows-nsis', 'windows', 'nsis', 'windows-x64-setup.exe', signing)
+        emit(installer, 'windows-nsis', 'windows', 'nsis', 'windows-x64-setup.exe', authenticode(installer))
+        # Standalone executable: the same release binary the installer carries (CC11 `.exe`).
+        standalone = one(target / 'x86_64-pc-windows-msvc/release', '*.exe')
+        pe(standalone)
+        emit(standalone, 'windows-exe', 'windows', 'exe', 'windows-x64.exe', authenticode(standalone))
     elif lane == 'android':
-        keystore = Path(env.get('ENZIME_KEYSTORE_PATH', str(snapshot / 'signing/production.keystore')))
-        if not keystore.is_file():
-            fail('Production keystore unavailable; set ENZIME_KEYSTORE_PATH')
+        keystore = Path(env.get('ENZIME_KEYSTORE_PATH', ''))
+        if not env.get('ENZIME_KEYSTORE_PATH') or not keystore.is_file():
+            fail('Organization production keystore unavailable; see Admin-Manual CREDENTIALS/PlayStore')
         if not env.get('ENZIME_KEYSTORE_PASSWORD') or not env.get('ENZIME_KEY_PASSWORD'):
             fail('Production signing password environment is not provisioned')
         alias = env.get('ENZIME_KEYSTORE_ALIAS', 'upload')

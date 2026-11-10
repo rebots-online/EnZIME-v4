@@ -74,6 +74,10 @@ EOF
   jq --arg v "${DISPLAY_VERSION}" '.version = $v' package.json > package.json.tmp
   mv package.json.tmp package.json
 }
+[ -f apps/reader/package.json ] && command -v jq >/dev/null && {
+  jq --arg v "${DISPLAY_VERSION}" '.version = $v' apps/reader/package.json > apps/reader/package.json.tmp
+  mv apps/reader/package.json.tmp apps/reader/package.json
+}
 [ -f apps/reader/src-tauri/tauri.conf.json ] && \
   sed -i 's/"version": "[^"]*"/"version": "'"${DISPLAY_VERSION}"'"/' apps/reader/src-tauri/tauri.conf.json
 [ -f apps/reader/src-tauri/Cargo.toml ] && \
