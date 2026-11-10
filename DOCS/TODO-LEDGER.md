@@ -98,3 +98,13 @@ redesign. My reply wrongly presented layout points as things "to be decided"; th
 - Article and media bytes are in cluster files, not in SQLite. Each pack has its own index database.
 - Planning a 125 MB Wikipedia pack ran more than ten minutes without a progress figure.
 - Not checked: whether `DOCS/ARCHITECTURE/dyndon-range-acquisition.md` amends §6.1/§6.3 for these paths.
+
+## 2026-11-10 — Operator's on-device notes, Android APK v1.20.05778
+
+Recorded in the operator's words as they are given. Build: `enzime-reader-v1.20.05778-android-universal-release-signed.apk`.
+
+1. **"There is mock/placeholder content 'purchasing is not enabled'"**
+   - Background: this build was produced with the billing settings unset (the build manifest records
+     `monetization_env` as `unset`), so the app shows a not-enabled notice where purchasing belongs.
+   - Standing rule it breaks: no mock or placeholder content, ever; every element is for end-user consumption and
+     wired to real inputs (global rules, 2026-11-09). Release standard R1: no control that cannot succeed.
