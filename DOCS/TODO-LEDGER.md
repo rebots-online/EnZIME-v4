@@ -164,3 +164,39 @@ that platform alone. First observed on `enzime-reader-v1.20.05778-android-univer
      families present: Natally, RobinsAIWorld, Brainbud, FindMyStuffcam, ReBotsOnline, default (Rochemedia). There
      is no EnZIME family and no EnZIME item. One feature exists, `query` (draft, "LLM Inference Credit"), which is
      not EnZIME's. The connector in this session offers list, retrieve and export only; it has no create action.
+
+## 2026-11-10 — Billing provider direction and RevenueCat build-out
+
+**Operator's words, in order:** "not using netlify"; "if you need a server, tell me what you need"; "we cant afford to
+use all these non-scalable 3rd party tools"; "ok stop use our woocommerce" (credentials to be created by the operator;
+not yet given; the existing `wordpress-roche-media` record is not it); "in the meantime build out revenuecat if you
+can't do chargebee"; "but chargebee has a 250k promo limit but revenuecat only 2500"; "in revenuecat, put it in the
+same project as natally and all the other apps, under Robins AI World, and use google play in-app billing as a primary
+payment method".
+
+**Chargebee:** nothing created. The connector in this session has no write action. EnZIME must not use Natally's
+family, credentials or catalog server.
+
+**RevenueCat — created 2026-11-10 in project "Robin's AI World" (`projaba0bd94`), additive only:**
+
+| Object | Identifier | RevenueCat id |
+|---|---|---|
+| App, Google Play, package `mba.robin.enzime` | EnZIME Reader (Google Play) | `app3949b838c8` |
+| Entitlement | `enzime_pro` — "EnZIME Reader — one-time activation" | `entl90e87dac86` |
+| Product, one-time, non-consumable | `enzime_lifetime` | `prod23a256bbd2` |
+| Offering (not current) | `enzime_default` — "EnZIME Reader Packages" | `ofrngf028591509` |
+| Package | `$rc_lifetime` — "EnZIME Reader Lifetime" | `pkge2371829a34` |
+
+The product is attached to the entitlement and to the package. Naming follows the other apps in that project
+(`kintsugi_pro`, `prefetch_lifetime`, `kintsugi_default`). No existing app, entitlement, product or offering in the
+project was changed. The older RevenueCat projects named "EnZIME" (`proj4170079b`, test store only, with monthly and
+yearly subscriptions) and "EnZIME Mobile" (`projd31373e0`) were read and left as they are.
+
+**Not done, and required before a purchase can happen:**
+- The in-app product `enzime_lifetime` does not exist in Google Play Console, and the app is not on Play.
+- The Play service-account credentials are not configured on the RevenueCat app (true of every Play app in that
+  project).
+- No price is set.
+- The EnZIME app contains no RevenueCat or Play Billing code. Its billing code talks to the Chargebee function.
+- Linux and Windows have no payment path under Play billing.
+- How a Play purchase becomes the offline activation token is not designed.
