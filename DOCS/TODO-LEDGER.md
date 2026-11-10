@@ -209,3 +209,12 @@ immaterial".
 Recorded, not investigated. In v1.107 the embedding and model calls go to an OpenAI-style or Ollama endpoint chosen in
 its settings (`/v1/models`, `/api/tags`, `/v1/embeddings`, `/api/embeddings`, lines 299-348). The operator asked
 instead for research into on-device options (report to follow in `DOCS/`).
+
+## 2026-11-10 — Local inference requirement (operator)
+
+**Operator's words:** "as a prepp-oriented offline first platform we need to build in the local inference to work with
+as many platforms as possible with strong gpu, with no gpu,"
+
+**Recorded as a requirement:** local inference is built into the app and must work on as many platforms and hardware
+levels as possible, from machines with a strong GPU to machines with no GPU at all, with no network. The research
+report on backends (in progress) is to be organised by that range of hardware as well as by platform.
