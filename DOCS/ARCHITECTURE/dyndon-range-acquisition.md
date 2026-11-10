@@ -154,3 +154,24 @@ DD-RANGE-02 progress accessor clarification: `disk/plan.rs` adds `impl DiskPackS
 | install_cancel | apps/reader/src-tauri/src/ipc/library.rs | Tauri `(State<AppState>,install_plan_id:String)->Result<(),String>` delegates cancellation. |
 
 DD03 edition identity refinement: deterministic version hash combines source_identity_sha256, canonical SelectionIntent and budget; pack_versions schema2 unique key `(pack_id,upstream_version,artifact_sha256,edition_manifest_sha256)` preserves separate editions. Edition manifest digest is SHA256 of exact bounded `install-plan.json`; mutable disk offline policy is excluded. Canonical-root keyed shared store handles prevent independent cache gates. Restore sets offline before index open; prior active locations become retained transactionally.
+
+
+## Cluster verification timing — 2026-11-10 (supersedes "reconcile hashes every cluster at reopen")
+
+Observed 2026-11-08: `DiskPackStore::reopen` calls `catalog_schema::reconcile_payload`, which SHA-256es every
+complete cluster file, and `ensure_inner` SHA-256es the whole cluster file again on every access. Boot time and
+article-open time therefore grow with installed pack size (release standard R3).
+
+End state:
+
+| Entity | Target | Contract |
+|---|---|---|
+| reconcile_payload | crates/zim-cluster-cache/src/disk/catalog_schema.rs | At reopen, a `complete` row stays complete only when `clusters/<index>.bin` exists with exactly `byte_length` bytes; otherwise the row becomes `missing` with `stored_sha256=NULL`. No file content is read at reopen. |
+| DiskPackStore.verified | crates/zim-cluster-cache/src/disk/store.rs | `verified: Mutex<HashMap<u32,(u64,std::time::SystemTime)>>`, empty at construction. Key cluster index; value the file length and modification time observed when its SHA-256 last matched `stored_sha256` in this process. |
+| ensure_inner | crates/zim-cluster-cache/src/disk/store.rs | A cluster whose current file length and modification time equal its `verified` entry is returned without hashing. Otherwise it is hashed as today; on match the entry is recorded. Whenever a row is set to `missing` (mismatch, eviction victim, refetch) its entry is removed. |
+
+Integrity therefore moves from "every boot and every read" to "first read of each cluster per process, and again
+whenever the file's length or modification time changes". A cluster edited in place to the same length with the same
+modification time inside one process is not re-detected until the next start. Missing or wrong-length payloads are
+still withdrawn at reopen, so `tests/offline_catalog.rs::missing_payload_is_not_advertised_after_reopen` and the
+corruption case in `tests/disk_range.rs` describe the same behaviour as before.

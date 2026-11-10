@@ -1,5 +1,62 @@
 # EnZIME Reader Reboot IV — Fresh Execution Checklist
 
+## Current iteration — complete build set and read path (2026-11-10)
+
+Standard: `DOCS/RELEASE-STANDARD.md`. Architecture: `DOCS/ARCHITECTURE/unified-build.md` (2026-11-10 amendments)
+and `DOCS/ARCHITECTURE/dyndon-range-acquisition.md` (Cluster verification timing). Rubric: `DOCS/TEST_RUBRIC.md`
+(Build-set and read-path iteration). Coders: one task each, GLM coder seat via ACP, one git worktree per task.
+Markers: `[ ]` not started, `[/]` dispatched, `[X]` written and diff read by the orchestrator, ✅ observed on the
+built artifact. Operator directives that bind every task: no unit tests are written or run; no debug builds; no
+build is started by a coder; edit only the one named file; do not reformat untouched lines.
+
+- [/] **M0-A1 Android lane regenerates Kotlin per attempt.** File: `scripts/build-lane.sh` only (a bash file whose
+  body is one Python heredoc). In the `elif lane == 'android':` branch, immediately before the line
+  `run(['cargo', 'tauri', 'android', 'build', '--apk', '--aab', '--config', config, '--', '--locked'])`, add a loop
+  over the four triples `aarch64-linux-android`, `armv7-linux-androideabi`, `i686-linux-android`,
+  `x86_64-linux-android` that calls the existing helper as
+  `run(['cargo', 'clean', '--release', '--offline', '-p', 'tauri', '-p', 'wry', '--target', triple], cwd=snapshot)`.
+  `run` already passes `env`, which carries `CARGO_TARGET_DIR`. Precede the loop with a two-line comment stating
+  why: each attempt uses a fresh lane directory with a shared Cargo cache, and the tauri and wry build scripts write
+  `gen/android/app/src/main/java/mba/robin/enzime/generated/` only when they rerun (observed v1.18.05715).
+  Immediately after the `cargo tauri android build` line, define
+  `generated = app / 'src-tauri/gen/android/app/src/main/java/mba/robin/enzime/generated'` and call the existing
+  `fail('Generated Android Kotlin missing: ' + name)` for each of `TauriActivity.kt`, `WryActivity.kt` that is not
+  a file there. Change nothing else. **Verify:** `bash -n scripts/build-lane.sh` exits 0; then extract the heredoc
+  body and compile it: `sed -n '/^exec python3/,/^PY$/p' scripts/build-lane.sh | sed '1d;$d' | python3 -c "import sys;compile(sys.stdin.read(),'lane','exec')"`
+  exits 0. **Accept:** the android branch contains the four-triple clean loop before the Tauri build and the two
+  existence checks after it; no other line of the file differs.
+
+- [/] **M1-B1 Reopen checks cluster presence and length, not content.** File:
+  `crates/zim-cluster-cache/src/disk/catalog_schema.rs` only. In `reconcile_payload`, the condition that marks a
+  row missing is currently `file_bytes(&path) != length || digest_file(&path).ok() != hash`. Make it
+  `file_bytes(&path) != length || hash.is_none()` so no file content is read at reopen: a `complete` row survives
+  only when `clusters/<id>.bin` has exactly `byte_length` bytes and a recorded `stored_sha256`. Keep the paged
+  walk, the SQL text and the function signature unchanged. Replace the doc comment above the function with:
+  `/// A durable complete marker is invalid when its payload is absent or has the wrong length.` and
+  `/// Content is verified on first read (DiskPackStore::ensure_inner), not at reopen; one row at a time.`
+  **Verify:** `cargo check -p zim-cluster-cache --offline` exits 0 with no new warning from this file. **Accept:**
+  `reconcile_payload` no longer calls `digest_file`; everything else in the file is unchanged.
+
+- [/] **M1-C1 A verified cluster is not re-hashed on every read.** File:
+  `crates/zim-cluster-cache/src/disk/store.rs` only. (1) Add to `struct DiskPackStore` the field
+  `pub(super) verified: Mutex<std::collections::HashMap<u32, (u64, std::time::SystemTime)>>,` and initialise it
+  with `Mutex::new(std::collections::HashMap::new())` wherever the struct is built (`construct`). (2) In
+  `ensure_inner`, the existing early-return block is entered when the row has `Some(hash)` and
+  `file_bytes(&path) == range.length && digest_file(&path).ok().as_deref() == Some(hash)`. Restructure it: when
+  `file_bytes(&path) == range.length`, read `std::fs::metadata(&path).and_then(|m| m.modified()).ok()`; if that
+  modification time is `Some(t)` and `self.verified.lock().map_err(err)?.get(&index) == Some(&(range.length, t))`
+  the cluster is accepted without hashing; otherwise call `digest_file(&path)` and accept only when it equals the
+  stored hash, then insert `(range.length, t)` under `index` when `t` is known. Acceptance runs the same existing
+  `UPDATE clusters SET state='complete',pinned=MAX(pinned,?2),last_used=?3` statement and `return Ok(path)`.
+  (3) Every place in this file that executes `UPDATE clusters SET state='missing',stored_sha256=NULL WHERE
+  cluster_index=?1` for an index must also remove that index from `verified` (in `ensure_inner`: the statement
+  after the failed check uses `index`; the eviction loop uses `v`). (4) After the freshly fetched file is renamed
+  into place and its row set to `complete`, do not insert into `verified`; the next read hashes it once. Do not
+  hold the `verified` lock across an `.await`. Change no SQL text and no public signature. **Verify:**
+  `cargo check -p zim-cluster-cache --offline` exits 0 with no new warning from this file. **Accept:** a cluster
+  whose length and modification time match its `verified` entry returns without `digest_file`; every
+  `state='missing'` update for an index is paired with removal of that index from `verified`.
+
 ## Current independent iteration — P2-05-TITLE (2026-11-03)
 
 This is a bounded refinement of existing P2-05/P2-07, not a replacement checklist

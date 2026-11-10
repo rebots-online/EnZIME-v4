@@ -102,3 +102,24 @@ that observed CSS defect before repeating this same protocol on the next artifac
 Voice recording and typing are separate tools. Automatic transcription is deferred by explicit user decision and is not claimed or required for this release. A later transcription feature must retain the original audio asset, annotation ID and article anchor. The native run must verify all five annotation modes, not substitute a sidebar list or mocked asset URLs for on-canvas playback. Camera/microphone permission denial must show an actionable error and leave the reader usable.
 
 Record the selected Kiwix entry and exact pinned source size/identity, user storage budget, actual retained payload and metadata size, and offline restart result. Keep whole-archive digest verification distinct from partial source identity and local asset integrity. Tests alone do not establish real Kiwix acquisition or native media-device behavior.
+
+
+## Build-set and read-path iteration — preauthored 2026-11-10 (before coding)
+
+Scope: CHECKLIST tasks M0-A1, M1-B1, M1-C1. Evidence is the versioned artifacts of one `build_all.sh` run
+(1.19 or later) and the AppImage of that run launched with an isolated application-data profile. A continuous
+recording is waived by the operator for this iteration provided each row is observed directly on that AppImage
+and the observation is written down with the artifact version and SHA-256. Rows not observed stay unproven.
+
+| ID | Task | Exact observation | Failure trigger |
+|---|---|---|---|
+| R-SET | M0-A1 | `python3 scripts/verify-build-set.py dist/current-build-manifest.json --require-complete` exits 0 for the new version: eleven artifacts, Android lane `success`. | Any lane failed; version equals 1.18.05715 or earlier |
+| R-APK-SIZE | M0-A1 | The signed APK of that set is below 150 MB and its four `lib/<abi>/libenzime_reader_lib.so` entries carry no `.debug_info` section; the symbols ZIP holds four `.dbg` files with `.debug_info`. | APK near 1.2 GB; symbols ZIP missing an ABI |
+| R-BOOT | M1-B1 | The AppImage starts into the styled Home; the bottom-right label shows the set's `MAJOR.MINOR.BUILD`. | Blank window, unstyled page, wrong or absent version |
+| R-LIBRARY | — | Library opens and lists catalog results or a clearly labelled offline state. | Placeholder rows or an error presented as empty |
+| R-PLAN / R-DOWNLOAD / R-READ | M1-C1 | A real pack larger than the chosen budget yields a fitting subset, downloads to completed, and a retained article renders its real text and images. | Fabricated plan numbers, stalled job, blank article |
+| R-REOPEN | M1-B1, M1-C1 | Quit, relaunch the same artifact and profile: the installed pack is listed and the same article opens again; a second open of that article in the same run is not slower than the first. | Pack missing after restart; article error; restore error surfaced |
+| R-OFFLINE | M1-B1 | With the network unavailable, relaunch and reopen the retained article. | Network prerequisite; lost catalog |
+
+Rows R-ANNOTATE, R-ANNOTATION-RESTART and R-ANNOTATION-FAILURE of the M1 table above are unchanged and are not
+re-certified by this iteration.

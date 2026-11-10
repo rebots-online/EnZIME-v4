@@ -98,3 +98,20 @@ Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCod
 **Do:** Root owns build-lane.sh config/env/call and contract updates; delegated worker owns only new collect-android-symbols.py helper, no overlapping edits. Preserve other workers. **Verify:** bash parsing, Python compile; helper rejects existing1.11 libraries without DWARF (use semantic stagingoutput, never overwrite historicalartifact); run actual complete `bash build_all.sh` after commit. **Accept:** all4currentpackageELFs match symbolinputs, extracteddebugsections+mappingnonempty, APK/AAB embeddedversionCode equalsfrozenvalue, symbolsZIPiscollectedandhashed. Whole-build completion remains dependent on everyrequiredtarget; no one-offbuild.
 
 - [ ] UB02 Android frozen version and full native symbols.
+
+
+## 2026-11-10 amendments (end state after v1.17.05542 / v1.18.05715)
+
+These rows supersede the conflicting rows above; the rest of the contract stands.
+
+| Entity | Target | End-state contract |
+|---|---|---|
+| build_all | `build_all.sh` (repository root) | Sole Linux entrypoint, same form as the other Tauri 2 projects. Builds source, web, AppImage, deb, rpm, Windows NSIS installer, Windows standalone exe, Android APK, AAB, symbols ZIP and SBOM under one new version per run. Release profile only; no debug build, no unit-test stage, no smoke-test stage. |
+| windows-exe | `scripts/build-lane.sh` windows-nsis lane | The release `x86_64-pc-windows-msvc` executable the installer carries is also emitted as `enzime-reader-v<VERSION>-windows-x64.exe`. |
+| deferred lane | `scripts/build_set.py::deferred_lanes` | `windows-native` (MSI, MSIX) is recorded `unavailable` with `deferred_artifact_ids` on a non-Windows host; a Linux set is `complete` at eleven artifacts. |
+| build_all_windows | `build_all_windows.ps1` (repository root) | Windows entrypoint: bumps the version under the same scheme, builds exe, NSIS, MSI and MSIX in one run, writes `dist/current-windows-build-manifest.json`, commits and pushes. Not yet executed on Windows. |
+| signing_environment | `scripts/build_set.py` | Android signing resolves from environment, then `signing/build-credentials.json`, then the organization keystore pointer `~/Admin-Manual/CREDENTIALS/PlayStore/keystore.properties`. The repository `signing/` keystore is never a fallback. |
+| check_ipc_commands | `scripts/check-ipc-commands.py` | Preparation step: every command name the frontend passes to `invoke`/`call` or lists in a `COMMANDS` table must be in `generate_handler!`; otherwise preparation fails. |
+| semver | `scripts/update-version.sh`, `version.json.semver` | BUILD is `epoch-minutes % 100000`, zero-padded to five digits for display and filenames; Cargo, npm and Tauri manifests carry it unpadded. |
+| AndroidRelease packaging | `gen/android/app/build.gradle.kts` | No `packaging.jniLibs.keepDebugSymbols` entries: AGP strips the packaged libraries; full DWARF ships only in the symbols ZIP. |
+| AndroidGeneratedKotlin (UB03) | `scripts/build-lane.sh` android lane | Each attempt compiles in a fresh lane directory with the shared Cargo cache. Before `cargo tauri android build` the lane runs `cargo clean --release -p tauri -p wry --target <triple>` for the four Android triples so both crates' build scripts rewrite `gen/android/app/src/main/java/mba/robin/enzime/generated/`. After the build it fails unless `generated/TauriActivity.kt` and `generated/WryActivity.kt` exist. Evidence: v1.18.05715 (see `DOCS/BUILD-RECIPES.md`). |
