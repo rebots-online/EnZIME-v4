@@ -152,7 +152,24 @@ All annotations across packs, notebooks, tags, filters, jump to source, signed s
 Storage and network policy, accessibility, purchase status and restore, backup and restore, privacy and
 analytics consent, diagnostics export, about and licences.
 
-### 7.10 Later release (not in the first)
+### 7.10 Activation (paywall) — four steps
+
+One flow, the same on every platform. Component names are fixed here and used unchanged in the design source,
+the architecture and the code. Every screen keeps the app frame: `TopBar` (app mark "Z EnZIME Reader", a Close
+control) and the version label bottom-right.
+
+| Step | Component | Shows | Primary action |
+|---|---|---|---|
+| 1 | `ActivationStepValue` | Headline "Keep everything. Offline. Forever."; `CapabilityList` of the four paid capabilities, each with an icon and one line: unlimited packs; photo, voice, video and ink notes; encrypted backup and restore; signed note export | "Continue" |
+| 2 | `ActivationStepOffer` | `OfferCard`: "One-time activation", the price from the store (`{{ product.price }}`), and three `PromiseRow`s: "Pay once — no subscription, no renewal"; "Works with no network after activation"; "Your notes stay yours whether or not you activate" | "Activate for {{ product.price }}" |
+| 3 | `ActivationStepPay` | `PaymentMethodPanel`: Google Play on Android, Google Pay on Linux and Windows; order line "EnZIME Reader — Lifetime"; total `{{ product.price }}`; `RestoreLink` "Already activated? Restore" | The store's own pay button |
+| 4 | `ActivationStepDone` | `ActivationReceipt`: "Activated on this device", the date, "Stored on this device — no network needed again", and the restore key with a Copy control | "Start reading" |
+
+`StepIndicator` (four dots, current one filled) sits under the `TopBar` on all four steps. A failed or cancelled
+payment returns to step 3 with the reason and "Try again"; nothing is activated and nothing is lost.
+The app never shows a message that purchasing is unavailable.
+
+### 7.11 Later release (not in the first)
 Ask (cited questions to a local model) and Memory (reviewed long-term lore). They do not appear in the first
 release's interface.
 
@@ -197,8 +214,10 @@ release's interface.
 ## 10. Commercial boundary
 
 Free: read, search, DynDon downloads, highlights and typed comments, human-readable export.
-Paid (prices set by the operator): rich-media annotations, signed sidecar export, unlimited packs, encrypted
-backup. **OPEN:** whether the navigator is free, paid, or free with a paid depth; whether a pack-count limit
+Paid, by one-time activation (operator decision 2026-11-10: no subscription, no renewal, no network needed after
+the purchase): rich-media annotations, signed sidecar export, unlimited packs, encrypted backup. The price is set
+by the operator in the store and read from it; it is never written into the app. Payment is Google Play in-app
+billing on Android and Google Pay on Linux and Windows. **OPEN:** whether the navigator is free, paid, or free with a paid depth; whether a pack-count limit
 applies to the free tier. Payment status never blocks access to user-created data.
 
 ## 11. Release acceptance
