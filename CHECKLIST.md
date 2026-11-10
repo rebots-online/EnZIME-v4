@@ -9,7 +9,7 @@ Markers: `[ ]` not started, `[/]` dispatched, `[X]` written and diff read by the
 built artifact. Operator directives that bind every task: no unit tests are written or run; no debug builds; no
 build is started by a coder; edit only the one named file; do not reformat untouched lines.
 
-- [/] **M0-A1 Android lane regenerates Kotlin per attempt.** File: `scripts/build-lane.sh` only (a bash file whose
+- [X] **M0-A1 Android lane regenerates Kotlin per attempt.** File: `scripts/build-lane.sh` only (a bash file whose
   body is one Python heredoc). In the `elif lane == 'android':` branch, immediately before the line
   `run(['cargo', 'tauri', 'android', 'build', '--apk', '--aab', '--config', config, '--', '--locked'])`, add a loop
   over the four triples `aarch64-linux-android`, `armv7-linux-androideabi`, `i686-linux-android`,
@@ -26,7 +26,7 @@ build is started by a coder; edit only the one named file; do not reformat untou
   exits 0. **Accept:** the android branch contains the four-triple clean loop before the Tauri build and the two
   existence checks after it; no other line of the file differs.
 
-- [/] **M1-B1 Reopen checks cluster presence and length, not content.** File:
+- [X] **M1-B1 Reopen checks cluster presence and length, not content.** File:
   `crates/zim-cluster-cache/src/disk/catalog_schema.rs` only. In `reconcile_payload`, the condition that marks a
   row missing is currently `file_bytes(&path) != length || digest_file(&path).ok() != hash`. Make it
   `file_bytes(&path) != length || hash.is_none()` so no file content is read at reopen: a `complete` row survives
@@ -37,7 +37,7 @@ build is started by a coder; edit only the one named file; do not reformat untou
   **Verify:** `cargo check -p zim-cluster-cache --offline` exits 0 with no new warning from this file. **Accept:**
   `reconcile_payload` no longer calls `digest_file`; everything else in the file is unchanged.
 
-- [/] **M1-C1 A verified cluster is not re-hashed on every read.** File:
+- [X] **M1-C1 A verified cluster is not re-hashed on every read.** File:
   `crates/zim-cluster-cache/src/disk/store.rs` only. (1) Add to `struct DiskPackStore` the field
   `pub(super) verified: Mutex<std::collections::HashMap<u32, (u64, std::time::SystemTime)>>,` and initialise it
   with `Mutex::new(std::collections::HashMap::new())` wherever the struct is built (`construct`). (2) In
