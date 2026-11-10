@@ -79,8 +79,9 @@ build-manifest verifier) stay. Build preparation must also stop when a frontend
 command name has no registered handler. `tools/contract-gen validate` cannot be
 that gate yet: it checks the whole §24 binding table against generated TypeScript
 entities that are not in the repository, so it would fail every build today. Until
-those inputs exist, the gate is a direct comparison of the frontend `COMMANDS`
-literals with the `generate_handler!` list (open item, M1).
+those inputs exist, the gate is `scripts/check-ipc-commands.py`, run in build
+preparation: it compares the command names the frontend uses with the
+`generate_handler!` list and stops the build on any unregistered name.
 
 ## R5 — Accessibility
 

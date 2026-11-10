@@ -3,7 +3,6 @@ import { useHomeStore } from "../../stores/homeStore";
 import { ContinueReadingCard } from "./ContinueReadingCard";
 import { OpenPackCard } from "./OpenPackCard";
 import { useOnlineSubscription } from "./shared";
-import { MemoryInboxCard } from "./MemoryInboxCard";
 import { ReadinessPanel } from "./ReadinessPanel";
 import { RecentPacksList } from "./RecentPacksList";
 import { TaskInbox } from "./TaskInbox";
@@ -45,7 +44,6 @@ export function HomeView(): ReactNode {
         <ReadinessPanel />
         <RecentPacksList />
         <TaskInbox />
-        <MemoryInboxCard />
       </div>
     </main>
   );

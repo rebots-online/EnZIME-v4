@@ -252,6 +252,9 @@ def prepare_snapshot(repo, source_ref):
                 shutil.copy2(build.snapshot / name, repo / name)
         (repo / "release.lock").write_text(freeze)
         run(["pnpm", "install", "--frozen-lockfile"], build.snapshot, Path(result.log_path), "preparation")
+        # R1/R4: every command name the frontend uses must be in generate_handler!.
+        run([sys.executable, str(build.snapshot / "scripts/check-ipc-commands.py"), str(build.snapshot)],
+            build.snapshot, Path(result.log_path), "preparation")
         run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         run(["pnpm", "exec", "vite", "build"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         # A fresh workstation has not cached every target's crates. Fetch what the committed

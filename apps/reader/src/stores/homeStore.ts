@@ -54,8 +54,6 @@ export interface HomeState {
   loadMemoryInbox: () => Promise<void>;
   loadReadiness: () => Promise<void>;
   runReadinessCheck: () => Promise<void>;
-  acceptMemory: (memoryId: string) => Promise<void>;
-  dismissMemory: (memoryId: string) => Promise<void>;
   loadAll: () => Promise<void>;
 }
 
@@ -111,41 +109,6 @@ export const useHomeStore = create<HomeState>((set, get) => ({
       .catch((error: ServiceError) => {
         set({ readiness: finishError(get().readiness, error) });
       });
-  },
-
-  // M1 DEBT: `home_accept_memory` / `home_dismiss_memory` are not in §14.4
-  // (memory accept/reject should route through `lore_accept` / `lore_reject`).
-  // For M1 the buttons stay: optimistically remove the row from the slice, then
-  // fire-and-forget the existing call with errors swallowed so the UI never
-  // blocks on (or surfaces) the not-yet-contracted command.
-  acceptMemory(memoryId) {
-    const current = get().memoryInbox;
-    if (current.data) {
-      set({
-        memoryInbox: {
-          ...current,
-          data: current.data.filter((m) => m.memoryId !== memoryId),
-        },
-      });
-    }
-    return homeService.acceptMemory(memoryId).catch(() => {
-      /* M1 debt: swallowed intentionally — see comment above. */
-    });
-  },
-
-  dismissMemory(memoryId) {
-    const current = get().memoryInbox;
-    if (current.data) {
-      set({
-        memoryInbox: {
-          ...current,
-          data: current.data.filter((m) => m.memoryId !== memoryId),
-        },
-      });
-    }
-    return homeService.dismissMemory(memoryId).catch(() => {
-      /* M1 debt: swallowed intentionally — see comment above. */
-    });
   },
 
   // Single source of truth for Home hydration: ONE `home_snapshot` call, fanned

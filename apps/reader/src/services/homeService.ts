@@ -4,15 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 // The granular `home_load_*` commands that previously lived here were NOT in the
 // §14.4 registry and have been retired. `home_snapshot` returns the full payload
 // in one round-trip; the store fans it into the existing slices.
-//
-// M1 DEBT: `home_accept_memory` / `home_dismiss_memory` are also NOT in §14.4
-// (memory accept/reject is `lore_accept` / `lore_reject`). They are retained
-// here only as fire-and-forget calls so the M1 UI buttons do not block; the
-// store swallows their errors. Replace with the `lore_*` commands in a later mile.
 const COMMANDS = {
   snapshot: "home_snapshot",
-  acceptMemory: "home_accept_memory",
-  dismissMemory: "home_dismiss_memory",
   // Registered command (lib.rs generate_handler!, ipc/home.rs::readiness_get). It
   // returns the same SystemReadiness DTO that home_snapshot carries as `readiness`.
   runReadinessCheck: "readiness_get",
@@ -142,14 +135,6 @@ export const homeService = {
    */
   homeSnapshot(): Promise<HomeSnapshot> {
     return call<HomeSnapshot>(COMMANDS.snapshot);
-  },
-  // M1 DEBT: see file header — these two are not in §14.4 (lore_accept/lore_reject
-  // is the eventual contract). Kept fire-and-forget by the store for M1.
-  acceptMemory(memoryId: string): Promise<void> {
-    return call<void>(COMMANDS.acceptMemory, { memoryId });
-  },
-  dismissMemory(memoryId: string): Promise<void> {
-    return call<void>(COMMANDS.dismissMemory, { memoryId });
   },
   runReadinessCheck(): Promise<ReadinessReport> {
     return call<ReadinessReport>(COMMANDS.runReadinessCheck);
