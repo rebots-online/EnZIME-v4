@@ -127,19 +127,19 @@ Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause
 written before dispatch.
 
 - [ ] **D1** Install plan shows "Computing…" for minutes with no progress figure (release standard R3: 3 s).
-- [ ] **D2** A storage budget of 0.1 GiB is rejected as not a "safe whole byte count".
+- [X] **D2** (fixed by M2-D2; merged, not yet observed in a build) A storage budget of 0.1 GiB is rejected as not a "safe whole byte count".
 - [ ] **D3** Reader shows a blank page for a script-built main page, with no message.
-- [ ] **D4** Home "Continue reading" shows loading bars indefinitely when there is nothing to continue.
-- [ ] **D5** An installed pack still reads "not opened" after being opened.
-- [ ] **D6** Home "Task inbox" text and the side rail refer to Ask, Memory and backup, which are not in this build.
-- [ ] **D7** Home offers "Open a ZIM file", listed as a void path in the M1 rubric.
+- [X] **D4** (fixed by M2-D4; observed on v1.23.06045) Home "Continue reading" shows loading bars indefinitely when there is nothing to continue.
+- [X] **D5** (fixed by M2-D5a/b; visit recording observed on v1.23.06045) An installed pack still reads "not opened" after being opened.
+- [X] **D6** (wording fixed by M2-D6a, merged, not yet in a build; Ask and Memory remain in the side rail) Home "Task inbox" text and the side rail refer to Ask, Memory and backup, which are not in this build.
+- [X] **D7** (fixed by M2-D7; observed on v1.23.06045) Home offers "Open a ZIM file", listed as a void path in the M1 rubric.
 - [ ] **D8** Settings shows "Purchasing isn't available in this build" (`SettingsView.tsx:222`, `billing.rs:101`);
   placeholder content, all platforms (operator, 2026-11-10).
 - [ ] **D9** Reader frame is white below the end of a short article while the article area is dark.
 - [ ] **D10** Plan for a 1.8 MB pack states "66 MB kept" and a 66 MB final footprint.
-- [ ] **D12** Library shows a malformed opened time (`11745-4294851302-...T02:30:39Z`); the date text built in
+- [X] **D12** (fixed by M2-D12; merged, not yet in a build) Library shows a malformed opened time (`11745-4294851302-...T02:30:39Z`); the date text built in
   `ipc/library.rs` is wrong. Seen on v1.23.06045.
-- [ ] **D13** Home snapshot shapes differ between backend and frontend: "Continue reading" shows no titles and
+- [X] **D13** (fixed by M2-D13; merged, not yet in a build) Home snapshot shapes differ between backend and frontend: "Continue reading" shows no titles and
   "Recent packs" rows read "undefined articles". Seen on v1.23.06045.
 
 Observed on the v1.23.06045 AppImage (`dist/rubric-runs/v1.23.06045-appimage/RESULTS.md`): M2-D4 ✅, M2-D7 ✅,
