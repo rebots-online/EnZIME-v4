@@ -147,7 +147,7 @@ export function TaskInbox(): ReactNode {
         tone="info"
         icon="✓"
         title="No active tasks"
-        detail="Start a download, ask a question, or run a backup to see progress here."
+        detail="Start a download to see progress here."
         actions={
           <LinkButton to="/library" navigate={navigate} variant="ghost">
             Open library
