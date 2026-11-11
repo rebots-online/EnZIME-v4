@@ -222,3 +222,36 @@ report on backends (in progress) is to be organised by that range of hardware as
   in-app with atomic-chat's llama.cpp". The navigator's dependence on an external Ollama server is to be replaced by
   inference built into the app, using the llama.cpp that atomic-chat uses. The Ollama connection problem is therefore
   not to be fixed.
+
+## 2026-11-10 — Ollama connection from ThinkSpace Navigator v1.107: what was checked
+
+**Operator's words:** "it might probably have to be fixed only for our development because atomic chat is not a fast
+thing to implement in 15 minutes so we need ollama to work in the meanwhile if it's an easy fix (it used to work)".
+This supersedes "not to be fixed" above: Ollama is wanted working for development until in-app inference exists.
+
+**Observed on this machine (asrock, 192.168.0.57), Ollama 0.34.2:**
+
+| Check | Result |
+|---|---|
+| Service | active; `OLLAMA_HOST=0.0.0.0:11434`, `OLLAMA_ORIGINS=*` |
+| `GET /api/tags` on 127.0.0.1 and on 192.168.0.57 | HTTP 200, 15 models incl. `qwen3-embedding:0.6b`, `qwen3-embedding:8b` |
+| Cross-origin header for five page origins (localhost:5173, claude.ai, null, tauri://localhost, http://tauri.localhost) | `Access-Control-Allow-Origin: *` for all |
+| Preflight for POST with `content-type, authorization` | HTTP 204, headers allowed |
+| `POST /api/embeddings` (the endpoint v1.107 calls) with `qwen3-embedding:0.6b` | HTTP 200, 1024-dimension vector |
+| `POST /api/embed` (newer endpoint) | HTTP 200, 1024-dimension vector |
+| Preflight carrying `Access-Control-Request-Private-Network: true` | HTTP 204 but no `Access-Control-Allow-Private-Network` header |
+
+**Conclusion:** the Ollama server and the navigator's request code (lines 285-348) agree with each other; nothing was
+found wrong in either. The failure is therefore on the browser side, between the page and the server. Not reproduced:
+it depends on where the page is opened from, which is not known here. Candidates, unverified:
+
+1. Page served over `https://` calling `http://192.168.x.x:11434`: blocked as mixed content (localhost is exempt, a
+   LAN address is not).
+2. Browser local-network permission (Chrome's Local Network Access): a page from a public origin needs a permission
+   grant to reach localhost or LAN addresses, and inside an embedded frame the grant must be delegated by the host
+   page. This rolled out in Chrome within the last year, which would fit "it used to work".
+3. Page opened as a hosted artifact: the host's content policy blocks requests to arbitrary addresses regardless of
+   what Ollama answers.
+
+The navigator's own error text ("likely CORS ... or host unreachable") cannot distinguish these. The discriminating
+fact is the address-bar origin of the page and the exact message in the browser console.
