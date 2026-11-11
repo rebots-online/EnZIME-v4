@@ -108,6 +108,9 @@ export function buildSandboxedDoc(rawHtml: string, packId: string, articleKey: s
       if (style !== null) el.setAttribute("style", rewriteCss(style, articleKey, packId, resources));
       if (el.tagName === "STYLE") el.textContent = rewriteCss(el.textContent ?? "", articleKey, packId, resources);
     }
+    if ((doc.body.textContent ?? "").trim() === "" && doc.body.querySelector("img,picture,video,audio,table,figure") === null) {
+      const notice = doc.createElement("p"); notice.textContent = "This page builds its content with scripts, which the reader does not run. Use the title search above to open an article."; doc.body.append(notice);
+    }
     const sources = resources.cspSources.filter(source => /^(?:enzime-resource:|https?:\/\/[a-z0-9.-]+(?::[0-9]+)?)$/i.test(source)).join(" ");
     const policy = `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline' ${sources}; img-src ${sources} data:; media-src ${sources}; font-src ${sources}; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'`;
     const csp = doc.createElement("meta"); csp.httpEquiv = "Content-Security-Policy"; csp.content = policy; doc.head.prepend(csp);
