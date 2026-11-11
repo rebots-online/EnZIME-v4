@@ -52,6 +52,24 @@ pub fn recent_reader_history(
     Ok(out)
 }
 
+/// Record one reader visit (§6.2) by inserting a single `reader_history` row.
+pub fn record_reader_visit(
+    conn: &Connection,
+    history_id: &str,
+    pack_id: &str,
+    article_key: &str,
+    title: &str,
+    visited_at_ms: i64,
+) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "INSERT INTO reader_history\n\
+         \x20\x20(history_id, pack_id, article_key, title, visited_at_ms)\n\
+         \x20\x20VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![history_id, pack_id, article_key, title, visited_at_ms],
+    )?;
+    Ok(())
+}
+
 // ===========================================================================
 // §6.2 `packs` + `pack_versions` — recent packs
 // ===========================================================================
