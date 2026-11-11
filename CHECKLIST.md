@@ -121,6 +121,16 @@ the snapshot's reader-history item into the Home entry. The backend contract (§
   string of `visitedAtMs`), or null when the raw item is null. Other snapshot fields pass through unchanged.
   Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
 
+### Defect round 5 (2026-11-10) — one one-file coder task
+
+- [/] **M2-D3 A page with nothing to show says so.** File: `apps/reader/src/routes/reader/ArticleContent.tsx` only.
+  Cause: `buildSandboxedDoc` removes every script from pack content (by design), so a page whose content is built
+  by its own scripts ends up with an empty body and the reader shows a blank frame. In `buildSandboxedDoc`, after
+  the sanitising loop and before the bridge script is appended to `doc.body`, if the body has no non-whitespace
+  text and contains no `img`, `picture`, `video`, `audio`, `table` or `figure` element, append one paragraph to the
+  body reading: "This page builds its content with scripts, which the reader does not run. Use the title search
+  above to open an article." Change nothing else. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
