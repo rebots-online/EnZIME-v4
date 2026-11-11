@@ -79,7 +79,7 @@ build is started by a coder; edit only the one named file; do not reformat untou
 
 ### Defect round 2 (2026-11-10) — two one-file coder tasks
 
-- [/] **M2-D5b Opening an article records a reader visit.** File: `apps/reader/src-tauri/src/ipc/reader.rs` only. In
+- [X] **M2-D5b Opening an article records a reader visit.** File: `apps/reader/src-tauri/src/ipc/reader.rs` only. In
   `reader_article`, after `let document = archive.article(&key).await.map_err(err_str)?;` and before the
   `Ok(ArticleResponse { ... })`, record the visit: clone `state.conn`, and inside
   `tokio::task::spawn_blocking` lock it (same pattern as `home_snapshot` in `ipc/home.rs`) and call
@@ -87,7 +87,7 @@ build is started by a coder; edit only the one named file; do not reformat untou
   with the document's article key and title cloned beforehand. A failure to record must not fail the read: ignore
   the result of the recording (both the join error and the SQL error) and still return the article. Verify:
   `cargo check -p reader --offline` exits 0 (use the package name from `apps/reader/src-tauri/Cargo.toml`).
-- [/] **M2-D7 Home no longer offers "Open a ZIM file".** File: `apps/reader/src/components/home/HomeView.tsx` only.
+- [X] **M2-D7 Home no longer offers "Open a ZIM file".** File: `apps/reader/src/components/home/HomeView.tsx` only.
   Remove the rendering of `<OpenPackCard />` and its import line. Change nothing else; do not delete
   `OpenPackCard.tsx`. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
 
