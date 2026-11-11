@@ -9,6 +9,8 @@ const COMMANDS = {
   // Registered command (lib.rs generate_handler!, ipc/home.rs::readiness_get). It
   // returns the same SystemReadiness DTO that home_snapshot carries as `readiness`.
   runReadinessCheck: "readiness_get",
+  // Registered command (lib.rs generate_handler!, ipc/library.rs::pack_list).
+  packList: "pack_list",
 } as const;
 
 export type ArticleLocator = {
@@ -83,6 +85,30 @@ export type HomeSnapshot = {
   readonly readiness: ReadinessReport;
 };
 
+/**
+ * Wire DTOs as the Rust commands actually send them (not exported);
+ * `homeSnapshot` adapts these into the view types above.
+ */
+type WireContinueReading = {
+  readonly packId: string;
+  readonly articleKey: string;
+  readonly title: string;
+  readonly visitedAtMs: number;
+};
+
+type WirePackListRow = {
+  readonly packId: string;
+  readonly displayName: string;
+  readonly description: string;
+  readonly articleCount: number;
+  readonly sizeBytes: number;
+  readonly lastOpenedAt?: string | null;
+};
+
+type WirePackListPage = {
+  readonly items: readonly WirePackListRow[];
+};
+
 export type ServiceErrorKind =
   | "recoverable"
   | "non-recoverable"
@@ -128,13 +154,51 @@ async function call<T>(
 
 export const homeService = {
   /**
-   * The single Home payload call. Replaces the five granular `home_load_*`
-   * commands that were not in the §14.4 registry. The Rust `home_snapshot`
-   * handler is implemented in parallel; the frontend calls it by this exact
-   * name and builds green against this type.
+   * The single Home payload call. Adapts the raw wire shape of `home_snapshot`
+   * into HomeSnapshot, joining titles from the `pack_list` page fetched in parallel.
    */
-  homeSnapshot(): Promise<HomeSnapshot> {
-    return call<HomeSnapshot>(COMMANDS.snapshot);
+  async homeSnapshot(): Promise<HomeSnapshot> {
+    const [snapshot, packPage] = await Promise.all([
+      call<{
+        readonly continueReading: WireContinueReading | null;
+        readonly taskInbox: HomeSnapshot["taskInbox"];
+        readonly memoryInbox: HomeSnapshot["memoryInbox"];
+        readonly readiness: HomeSnapshot["readiness"];
+      }>(COMMANDS.snapshot),
+      call<WirePackListPage>(COMMANDS.packList, { offset: 0, limit: 12 }),
+    ]);
+
+    const recentPacks: PackSummary[] = packPage.items.map((row) => ({
+      packId: row.packId,
+      title: row.displayName,
+      subtitle: row.description !== "" ? row.description : null,
+      sizeBytes: row.sizeBytes,
+      articleCount: row.articleCount,
+      lastOpenedAt: row.lastOpenedAt ?? null,
+    }));
+
+    const wireContinue = snapshot.continueReading;
+    const continueReading: ContinueReadingEntry | null =
+      wireContinue === null
+        ? null
+        : {
+            packId: wireContinue.packId,
+            packTitle:
+              packPage.items.find((row) => row.packId === wireContinue.packId)
+                ?.displayName ?? "",
+            articleKey: wireContinue.articleKey,
+            articleTitle: wireContinue.title,
+            scrollAnchor: null,
+            lastOpenedAt: new Date(wireContinue.visitedAtMs).toISOString(),
+          };
+
+    return {
+      continueReading,
+      recentPacks,
+      taskInbox: snapshot.taskInbox,
+      memoryInbox: snapshot.memoryInbox,
+      readiness: snapshot.readiness,
+    };
   },
   runReadinessCheck(): Promise<ReadinessReport> {
     return call<ReadinessReport>(COMMANDS.runReadinessCheck);
