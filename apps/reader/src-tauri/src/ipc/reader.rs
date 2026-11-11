@@ -139,6 +139,25 @@ pub async fn reader_article(
     let key = domain::identity::ArticleKey(article_key.clone());
     let document = archive.article(&key).await.map_err(err_str)?;
 
+    // Best-effort visit history (§6.2): a failed write must never fail the read.
+    let conn = state.conn.clone();
+    let pack_id_copy = pack_id.clone();
+    let article_key_copy = document.article_key.0.clone();
+    let title_copy = document.title.clone();
+    let _ = tokio::task::spawn_blocking(move || {
+        if let Ok(g) = conn.lock() {
+            let _ = storage_sqlite::query::record_reader_visit(
+                &g,
+                &ulid::Ulid::new().to_string(),
+                &pack_id_copy,
+                &article_key_copy,
+                &title_copy,
+                now_ms(),
+            );
+        }
+    })
+    .await;
+
     Ok(ArticleResponse {
         pack_id,
         article_key: document.article_key.0,
