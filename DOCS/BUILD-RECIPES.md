@@ -457,3 +457,21 @@ Android triples against the lane's `CARGO_TARGET_DIR`. After the Tauri build
 returns, and before signing, fail with a clear message if
 `generated/TauriActivity.kt` or `generated/WryActivity.kt` is absent. The next
 `build_all.sh` run is the verification; it bears a new version (1.19 or later).
+
+## 2026-11-10 — unified build attempt v1.21.06024: Android lane failed (8 of 11)
+
+Source commit `d9ec060`. Linux (AppImage, deb, rpm), web, source, SBOM and Windows lanes produced their artifacts;
+APK, AAB and symbols ZIP were not produced.
+
+**Failure:** while compiling the app library for `i686-linux-android`:
+`error: failed to build archive at .../i686-linux-android/release/deps/libenzime_reader_lib.a: Bad address (os error 14)`.
+All workspace crates, including the five changed in this round, had compiled for that target; the failure is in
+writing the static library, not in the source.
+
+**Related observation the same hour:** a `cargo check -p reader` on the host crashed inside the compiler on the
+dependency `syn` (kernel log 20:42:36: `rustc: segfault ... in librustc_driver`), and the identical rerun passed.
+Two memory faults in compiler processes on unrelated inputs point at the machine (memory or kernel), not the code.
+Not diagnosed further.
+
+**Remedy:** run `./build_all.sh` again (new version for every platform). If a compiler process faults again, the
+machine needs a memory test before further builds are trusted.

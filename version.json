@@ -1,10 +1,10 @@
 {
-  "version": "1.20.05778",
-  "semver": "1.20.5778",
-  "versionBase": "1.20",
-  "buildNumber": "05778",
-  "versionCode": 100020,
-  "buildDate": "2026-11-10T16:38:47-05:00",
+  "version": "1.21.06024",
+  "semver": "1.21.6024",
+  "versionBase": "1.21",
+  "buildNumber": "06024",
+  "versionCode": 100021,
+  "buildDate": "2026-11-10T20:44:23-05:00",
   "productName": "EnZIME Reader",
   "internalName": "enzime-reader",
   "packageName": "mba.robin.enzime"
