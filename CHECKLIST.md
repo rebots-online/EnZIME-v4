@@ -131,6 +131,18 @@ the snapshot's reader-history item into the Home entry. The backend contract (§
   body reading: "This page builds its content with scripts, which the reader does not run. Use the title search
   above to open an article." Change nothing else. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
 
+### Defect round 6 (2026-11-10) — two one-file coder tasks
+
+Decision (orchestrator; operator: "a wording choice is never a blocker"): the plan's index allowance is a reserve,
+so D10 is fixed by wording that says so.
+
+- [/] **M2-D10a Storage bar says "reserved".** File: `apps/reader/src/routes/library/StorageImpactBar.tsx` only.
+  The legend text `{formatBytes(finalBytes)} kept` becomes `up to {formatBytes(finalBytes)} reserved`. Change
+  nothing else. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+- [/] **M2-D10b Plan summary says "Reserved (maximum)".** File:
+  `apps/reader/src/routes/library/InstallPlanSummary.tsx` only. The row label `Final footprint` becomes
+  `Reserved (maximum)`. Change nothing else. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
