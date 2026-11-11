@@ -489,3 +489,15 @@ third-party libraries date from the 13:05 build that succeeded (v1.20.05778). Ca
 **Remedy to try:** delete only the 32-bit x86 Android cache directory (a regenerable build cache) and run
 `./build_all.sh` again, so that target is compiled from nothing. If the same error returns with a fresh cache, the
 cause is in the toolchain or in the five source changes since v1.20.05778, and the next step is a coder task.
+
+## 2026-11-10 — unified build v1.23.06045: complete after clearing the 32-bit x86 Android cache
+
+Source commit `032f935`. With `target/build-set-cache/android/i686-linux-android` deleted beforehand, the Android
+lane completed and the set is complete. The two preceding failures (v1.21.06024, v1.22.06035) were therefore caused
+by something inside that cache directory, not by the source and not by the toolchain. "Bad address" while writing an
+archive is what a process gets when a file it is reading through a memory map is shorter on disk than expected, so a
+damaged cached library or object file is the likely cause. Which file was not identified: the directory was deleted
+before it was examined, so that evidence is gone.
+
+Open point: the per-attempt clean added in M0-A1 covers only the `tauri` and `wry` packages. A damaged file
+elsewhere in a target's cache will fail every later build until that target's cache is removed by hand.

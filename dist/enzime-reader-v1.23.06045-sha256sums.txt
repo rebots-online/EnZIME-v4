@@ -1,0 +1,11 @@
+45f25fd7fb9146c956816b06235c999b031da6a86a38ab4ef97a46f7e547787b  enzime-reader-v1.23.06045-source.tar.gz
+c2c1aa758369b72f3b0d515fb93da9c2abe7ed24e803b25069ccc50bfb8960c7  enzime-reader-v1.23.06045-web.tar.gz
+3d4210c13660eabbdcc60aa6a795188f0ab0e0ead40d804ca1c0b66c56cdf13b  enzime-reader-v1.23.06045-windows-x64-setup.exe
+e2bb4375929dcc72757362390d508bd356eabbe657484b62ae7faa1299b7eb7e  enzime-reader-v1.23.06045-windows-x64.exe
+02b01e071a6689b17f3bda70928b13c3c690fd55105d3ac218793a5046a1fc4b  enzime-reader-v1.23.06045-sbom.cdx.json
+563988cb0a08f69a9b0fcf613ec4145afab10e1b9912236eb178ce5798582d0a  enzime-reader-v1.23.06045-linux-amd64.deb
+c9ee552958402df6d4e96b8be563e43bcf32005ce914823cde3e5c4a06e3a0e1  enzime-reader-v1.23.06045-linux-amd64.rpm
+9b41df32b403b08c779adb68691ad39c71c7174acae869cb5aa3aefe37e3d3ce  enzime-reader-v1.23.06045-linux-amd64.AppImage
+804a746cbdc572373dd80c9a28f5744dcd975833b0c11c3ffb8b3707fbde26a2  enzime-reader-v1.23.06045-android-universal-release-signed.apk
+89496c796a06c10f80a914338aceb72a0f5ef20a54e74a1693adfccf1d2582de  enzime-reader-v1.23.06045-android-universal-release-signed.aab
+8652284a77053c9ed23a66e895da46f885766e75a6c5c4401033a95047cc06af  enzime-reader-v1.23.06045-android-native-debug-symbols.zip
