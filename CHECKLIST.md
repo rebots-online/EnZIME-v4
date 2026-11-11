@@ -123,7 +123,7 @@ the snapshot's reader-history item into the Home entry. The backend contract (§
 
 ### Defect round 5 (2026-11-10) — one one-file coder task
 
-- [/] **M2-D3 A page with nothing to show says so.** File: `apps/reader/src/routes/reader/ArticleContent.tsx` only.
+- [X] **M2-D3 A page with nothing to show says so.** File: `apps/reader/src/routes/reader/ArticleContent.tsx` only.
   Cause: `buildSandboxedDoc` removes every script from pack content (by design), so a page whose content is built
   by its own scripts ends up with an empty body and the reader shows a blank frame. In `buildSandboxedDoc`, after
   the sanitising loop and before the bridge script is appended to `doc.body`, if the body has no non-whitespace
@@ -138,7 +138,7 @@ written before dispatch.
 
 - [ ] **D1** Install plan shows "Computing…" for minutes with no progress figure (release standard R3: 3 s).
 - [X] **D2** (fixed by M2-D2; merged, not yet observed in a build) A storage budget of 0.1 GiB is rejected as not a "safe whole byte count".
-- [ ] **D3** Reader shows a blank page for a script-built main page, with no message.
+- [X] **D3** (fixed by M2-D3; merged, not yet in a build; a page whose body holds only a style block would still show blank) Reader shows a blank page for a script-built main page, with no message.
 - [X] **D4** (fixed by M2-D4; observed on v1.23.06045) Home "Continue reading" shows loading bars indefinitely when there is nothing to continue.
 - [X] **D5** (fixed by M2-D5a/b; visit recording observed on v1.23.06045) An installed pack still reads "not opened" after being opened.
 - [X] **D6** (wording fixed by M2-D6a, merged, not yet in a build; Ask and Memory remain in the side rail) Home "Task inbox" text and the side rail refer to Ask, Memory and backup, which are not in this build.
