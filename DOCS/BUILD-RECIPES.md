@@ -532,3 +532,7 @@ right.
 
 **Remedy:** operator's: memory test (one kit at a time), then a filesystem scrub, then reinstall the Rust
 toolchain, then rebuild. No further build is started before that.
+
+Addendum, same evening: the Rust toolchain's `libcore-*.rmeta` file read from start to end without error when
+tested (file dated 2026-07-12, 64 MB). That read may have been served from memory rather than from the drive, so it
+neither confirms nor clears the file. The toolchain was not reinstalled and nothing on the system was changed.
