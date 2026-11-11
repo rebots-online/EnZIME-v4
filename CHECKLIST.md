@@ -77,6 +77,20 @@ build is started by a coder; edit only the one named file; do not reformat untou
   neighbouring functions, with a doc comment. Do not call it from anywhere (the caller is task M2-D5b, not yet
   written). Verify: `cargo check -p storage-sqlite --offline` exits 0.
 
+### Defect round 2 (2026-11-10) — two one-file coder tasks
+
+- [/] **M2-D5b Opening an article records a reader visit.** File: `apps/reader/src-tauri/src/ipc/reader.rs` only. In
+  `reader_article`, after `let document = archive.article(&key).await.map_err(err_str)?;` and before the
+  `Ok(ArticleResponse { ... })`, record the visit: clone `state.conn`, and inside
+  `tokio::task::spawn_blocking` lock it (same pattern as `home_snapshot` in `ipc/home.rs`) and call
+  `storage_sqlite::query::record_reader_visit(&g, &ulid::Ulid::new().to_string(), &pack_id, &article_key, &title, now_ms())`
+  with the document's article key and title cloned beforehand. A failure to record must not fail the read: ignore
+  the result of the recording (both the join error and the SQL error) and still return the article. Verify:
+  `cargo check -p reader --offline` exits 0 (use the package name from `apps/reader/src-tauri/Cargo.toml`).
+- [/] **M2-D7 Home no longer offers "Open a ZIM file".** File: `apps/reader/src/components/home/HomeView.tsx` only.
+  Remove the rendering of `<OpenPackCard />` and its import line. Change nothing else; do not delete
+  `OpenPackCard.tsx`. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
