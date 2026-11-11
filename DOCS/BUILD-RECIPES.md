@@ -501,3 +501,34 @@ before it was examined, so that evidence is gone.
 
 Open point: the per-attempt clean added in M0-A1 covers only the `tauri` and `wry` packages. A damaged file
 elsewhere in a target's cache will fail every later build until that target's cache is removed by hand.
+
+## 2026-11-10 — unified build attempt v1.24.06085: Android lane failed (8 of 11); cause of all three failures found
+
+Source commit `b89f157`. This time the compiler crashed (segfault in `libLLVM` during link-time optimisation of
+`zim-cluster-cache` for `i686-linux-android`, kernel log 21:52:53).
+
+**Cause, established from the kernel log and filesystem counters (read-only checks):**
+
+- The root filesystem (btrfs on `/dev/nvme0n1p2`) reports **820,818 checksum (corruption) errors**; 37 checksum
+  failures were logged in the last four days.
+- Two of them, at **20:54:01 and 21:04:20**, are on one file (inode 24334697, offset 43421696). Those are the exact
+  times of the v1.21.06024 and v1.22.06035 Android failures. That file was inside the i686 Android cache; reading it
+  is what returned "Bad address". Deleting the cache removed the file, which is why v1.23.06045 then completed.
+- Another damaged file is the Rust toolchain's own
+  `~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcore-*.rmeta`
+  (10 failures). A damaged toolchain file is consistent with the compiler crashes.
+- The kernel logged 8 segfaults in four days in unrelated programs (chrome, gnome-software, rustc, LLVM) on five
+  different processor cores.
+- The drive reports itself healthy (0 media and data integrity errors, 100 % spare). Data that fails its checksum on
+  a healthy drive was damaged before it was stored, which points at memory. The machine has two different memory
+  kits installed (Corsair CMK16GX4M2B3000C15 and G.Skill F4-3200C16-8GVKB), all running at 2133.
+- Other files with checksum failures: several under `~/Admin-Manual/.staging/sanctissimissa-*`, one under
+  `~/Admin-Manual/BACKUPS/zclaude-20260929T0710`, one under `~/github/natally-8nov2026-...`.
+- This repository: `git fsck` passes; none of the damaged files is inside it.
+
+**Consequence:** builds on this machine cannot be trusted until the memory is tested, including builds that
+complete. The entry for v1.22.06035 that withdrew the machine explanation was wrong; the entry for v1.21.06024 was
+right.
+
+**Remedy:** operator's: memory test (one kit at a time), then a filesystem scrub, then reinstall the Rust
+toolchain, then rebuild. No further build is started before that.
