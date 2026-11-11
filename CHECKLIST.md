@@ -91,6 +91,21 @@ build is started by a coder; edit only the one named file; do not reformat untou
   Remove the rendering of `<OpenPackCard />` and its import line. Change nothing else; do not delete
   `OpenPackCard.tsx`. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
 
+### Defect round 3 (2026-11-10) — two one-file coder tasks
+
+- [/] **M2-D12 Opened time is a valid date.** File: `apps/reader/src-tauri/src/ipc/library.rs` only. In
+  `civil_from_days`, the year-of-era line computes `(doe - doe / 1_460 + doe / 36_524 - doe / 146_096)` without the
+  final division by 365 that the algorithm requires, so every date is wrong. Divide that expression by 365. Change
+  nothing else. Verify: `cargo check -p reader --offline` exits 0.
+- [/] **M2-D6a Task inbox text names only what this build does.** File: the one file under `apps/reader/src` that
+  contains the sentence "Start a download, ask a question, or run a backup to see progress here." Replace that
+  sentence with "Start a download to see progress here." Change nothing else. Verify:
+  `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+
+D13 (Home snapshot shapes) is not dispatched: the backend sends the pack manifest shape and the Home screen expects
+a summary shape with an article count the snapshot does not carry. Which side changes is a contract decision
+(§14.4), not a one-file edit.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
