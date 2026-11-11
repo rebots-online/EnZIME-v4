@@ -29,8 +29,8 @@ import { StorageImpactBar } from "./StorageImpactBar";
 import { InstallPlanSummary } from "./InstallPlanSummary";
 
 export function budgetBytesFor(value: string, unit: "MiB" | "GiB"): number | undefined {
-  const amount = Number(value), bytes = amount * (unit === "MiB" ? 1024 ** 2 : 1024 ** 3);
-  return value.trim() && Number.isFinite(amount) && amount > 0 && Number.isSafeInteger(bytes) ? bytes : undefined;
+  const amount = Number(value), bytes = Math.floor(amount * (unit === "MiB" ? 1024 ** 2 : 1024 ** 3));
+  return value.trim() && Number.isFinite(amount) && amount > 0 && Number.isSafeInteger(bytes) && bytes >= 1 ? bytes : undefined;
 }
 
 export function DownloadPlanDialog(): ReactNode {
