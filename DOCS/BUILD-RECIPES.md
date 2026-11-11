@@ -475,3 +475,17 @@ Not diagnosed further.
 
 **Remedy:** run `./build_all.sh` again (new version for every platform). If a compiler process faults again, the
 machine needs a memory test before further builds are trusted.
+
+## 2026-11-10 — unified build attempt v1.22.06035: Android lane failed again (8 of 11)
+
+Source commit `3f13d83`. Same failure at the same step as v1.21.06024:
+`failed to build archive at .../i686-linux-android/release/deps/libenzime_reader_lib.a: Bad address (os error 14)`.
+No new compiler segfault in the kernel log during this attempt. A failure that repeats at the same step is not a
+random memory fault, so the "machine" explanation recorded for v1.21.06024 is withdrawn as the primary cause.
+
+Observed: the 32-bit x86 cache (`target/build-set-cache/android/i686-linux-android`, 2.3 GB) has no empty files; its
+third-party libraries date from the 13:05 build that succeeded (v1.20.05778). Cause not established.
+
+**Remedy to try:** delete only the 32-bit x86 Android cache directory (a regenerable build cache) and run
+`./build_all.sh` again, so that target is compiled from nothing. If the same error returns with a fresh cache, the
+cause is in the toolchain or in the five source changes since v1.20.05778, and the next step is a coder task.
