@@ -6674,3 +6674,26 @@ The bounded P2-05 title-search refinement is defined by
 production archive title search through native IPC and the Reader, preserves
 retained offline scope and unsaved annotation guards, and requires an independent
 Windows packaged screencast cycle. It does not close unrelated P2-05/P2-07 work.
+
+## AMD-7 (2026-11-10) — Record of changes and directions since AMD-6
+
+This amendment records; it does not redesign. Storage design (§1.2, §6.1, §6.3) is unchanged.
+
+**Implemented and built in v1.20.05778 (specified in the sub-documents named):**
+
+| Change | Specified in |
+|---|---|
+| One command, `build_all.sh` at the repository root, builds every Linux-host artifact from one source snapshot under one version; Windows MSI/MSIX from `build_all_windows.ps1` | `DOCS/ARCHITECTURE/unified-build.md`, "2026-11-10 amendments" |
+| Android lane regenerates the generated Kotlin on every attempt | same, row UB03 |
+| Android release libraries are stripped; debug symbols ship only in the symbols ZIP | same, AndroidRelease packaging row |
+| Frontend command names are checked against the registered handlers before the build | same, `check_ipc_commands` row |
+| Cluster digests are verified once per file state, not at every reopen and every read | `DOCS/ARCHITECTURE/dyndon-range-acquisition.md`, "Cluster verification timing — 2026-11-10" |
+
+**Operator directions given 2026-11-10, not yet designed (source: `DOCS/TODO-LEDGER.md`, `DOCS/PRD.md` v5.0.0 draft):**
+
+| Direction | Bears on |
+|---|---|
+| Commercial model is a one-time activation with an offline entitlement token; no renewal; Google Play billing on Android, Google Pay on desktop | §13 commerce; `DOCS/ARCHITECTURE/billing-and-analytics.md` (currently describes Chargebee plans including subscriptions) |
+| Knowledge Pysanky navigator is one of two main viewer modes for pack content, toggled with the reader or shown as a swappable inset | Reader surface; no section exists yet |
+| Local inference is built in, offline, from strong GPU to no GPU; Ollama is replaced in-app by the llama.cpp that Atomic Chat uses | **AMD-2**, which names wllama3 as the sole engine on all platforms. Research in `DOCS/LOCAL-INFERENCE-BACKENDS.md` finds Atomic Chat's default engine is upstream llama.cpp, the same engine wllama compiles to WebAssembly. Whether AMD-2 stands, or a native llama.cpp build is added beside wllama, is the operator's decision and is not made here |
+| No placeholder content on any platform; never show "purchasing is not available" beside an upsell | Settings and entitlement surfaces |

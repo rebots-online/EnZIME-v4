@@ -57,6 +57,21 @@ build is started by a coder; edit only the one named file; do not reformat untou
   whose length and modification time match its `verified` entry returns without `digest_file`; every
   `state='missing'` update for an index is paired with removal of that index from `verified`.
 
+### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
+
+Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
+written before dispatch. Rubric rows R-READ, R-REOPEN and R-OFFLINE are still unobserved.
+
+- [ ] **D1** Install plan shows "Computing…" for minutes with no progress figure (release standard R3: 3 s).
+- [ ] **D2** A storage budget of 0.1 GiB is rejected as not a "safe whole byte count".
+- [ ] **D3** Reader shows a blank page for a script-built main page, with no message.
+- [ ] **D4** Home "Continue reading" shows loading bars indefinitely when there is nothing to continue.
+- [ ] **D5** An installed pack still reads "not opened" after being opened.
+- [ ] **D6** Home "Task inbox" text and the side rail refer to Ask, Memory and backup, which are not in this build.
+- [ ] **D7** Home offers "Open a ZIM file", listed as a void path in the M1 rubric.
+- [ ] **D8** Settings shows "Purchasing isn't available in this build" (`SettingsView.tsx:222`, `billing.rs:101`);
+  placeholder content, all platforms (operator, 2026-11-10).
+
 ## Current independent iteration — P2-05-TITLE (2026-11-03)
 
 This is a bounded refinement of existing P2-05/P2-07, not a replacement checklist
