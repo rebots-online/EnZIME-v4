@@ -147,6 +147,11 @@ written before dispatch.
   placeholder content, all platforms (operator, 2026-11-10).
 - [ ] **D9** Reader frame is white below the end of a short article while the article area is dark.
 - [ ] **D10** Plan for a 1.8 MB pack states "66 MB kept" and a 66 MB final footprint.
+  Cause located: the plan reserves an index allowance of `min(64 MiB, budget / 8)`
+  (`apps/reader/src-tauri/src/ipc/dyndon/prepare.rs:157`); with the default 1 GiB budget that is 64 MiB, and the
+  dialog adds it to the 1.8 MB of content and labels the sum "kept". The figure is a reserved maximum, not what
+  will be stored. Not dispatched: whether to relabel it ("up to") or show the actual index size is a wording and
+  contract choice for the operator.
 - [X] **D12** (fixed by M2-D12; merged, not yet in a build) Library shows a malformed opened time (`11745-4294851302-...T02:30:39Z`); the date text built in
   `ipc/library.rs` is wrong. Seen on v1.23.06045.
 - [X] **D13** (fixed by M2-D13; merged, not yet in a build) Home snapshot shapes differ between backend and frontend: "Continue reading" shows no titles and
