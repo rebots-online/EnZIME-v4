@@ -30,3 +30,26 @@ Observer: the orchestrating agent, reading each screenshot. Network: on.
 6. Home "Task inbox" text mentions asking a question and running a backup; Ask and Memory remain in the side
    rail (greyed). Neither feature is in this build (02).
 7. Home still offers "Open a ZIM file", which the M1 rubric lists as a void path (02).
+
+## Second session, 2026-11-10 (same artifact, same profile; screenshots 18-28)
+
+| Row | Result | Evidence |
+|---|---|---|
+| R-REOPEN | Observed. After a full stop and restart the installed pack and the completed download are listed, status "Ready" | 19 |
+| R-PLAN (text pack) | Observed. "InfluxData Docs" (1.8 MB): plan shown within 45 s of "Compute plan": 157 articles, 19 resources, FITS | 22, 23 |
+| R-DOWNLOAD (text pack) | Observed. Completed within 40 s; listed as installed, 157 articles | 24 |
+| R-READ | Observed. Main page renders as text; title search for "influx" returns 10 matches; a linked article opens with headings and links | 25, 27, 28 |
+| R-OFFLINE | Observed, with a limit. App restarted with every proxy variable pointed at a closed local port. Library shows "Kiwix unavailable (offline); showing cached entries"; both packs listed; text pack opens, title search works, article opens | 26, 27, 28 |
+
+Limit of the offline run: a true no-interface run was not possible without root on this machine (`unshare -rn`,
+`bwrap --unshare-net` and user `PrivateNetwork=yes` were all refused or ineffective). The dead-proxy method blocks
+the app's HTTP traffic, which the app's own "unavailable (offline)" message confirms, but it is not the same as
+airplane mode.
+
+Defects added in this session:
+
+9. Below the end of a short article the reader frame is white while the article area is dark (28).
+10. The plan for a 1.8 MB pack states "66 MB kept" and "Final footprint 66 MB" (22, 23).
+11. Defect 5 confirmed again: "InfluxData Docs" still reads "not opened" after being opened and after a restart (26).
+
+Still not run: defects 1-4 and 6-7 were not re-tested; no row was run on Android or Windows.

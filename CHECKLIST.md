@@ -60,7 +60,7 @@ build is started by a coder; edit only the one named file; do not reformat untou
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
-written before dispatch. Rubric rows R-READ, R-REOPEN and R-OFFLINE are still unobserved.
+written before dispatch.
 
 - [ ] **D1** Install plan shows "Computing…" for minutes with no progress figure (release standard R3: 3 s).
 - [ ] **D2** A storage budget of 0.1 GiB is rejected as not a "safe whole byte count".
@@ -71,6 +71,11 @@ written before dispatch. Rubric rows R-READ, R-REOPEN and R-OFFLINE are still un
 - [ ] **D7** Home offers "Open a ZIM file", listed as a void path in the M1 rubric.
 - [ ] **D8** Settings shows "Purchasing isn't available in this build" (`SettingsView.tsx:222`, `billing.rs:101`);
   placeholder content, all platforms (operator, 2026-11-10).
+- [ ] **D9** Reader frame is white below the end of a short article while the article area is dark.
+- [ ] **D10** Plan for a 1.8 MB pack states "66 MB kept" and a 66 MB final footprint.
+
+Rubric rows R-READ, R-REOPEN and R-OFFLINE were observed on the AppImage in the second session (RESULTS.md);
+R-OFFLINE by blocking the app's HTTP traffic, not by removing the network interface.
 
 ## Current independent iteration — P2-05-TITLE (2026-11-03)
 
