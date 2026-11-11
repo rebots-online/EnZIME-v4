@@ -106,6 +106,21 @@ D13 (Home snapshot shapes) is not dispatched: the backend sends the pack manifes
 a summary shape with an article count the snapshot does not carry. Which side changes is a contract decision
 (§14.4), not a one-file edit.
 
+### Defect round 4 (2026-11-10) — one one-file coder task
+
+Assumption recorded (orchestrator, operator has not answered): D13 is fixed on the frontend service, in one file,
+by reading Home's pack rows from the `pack_list` command the Library already uses correctly, and by translating
+the snapshot's reader-history item into the Home entry. The backend contract (§14.4) is left unchanged.
+
+- [/] **M2-D13 Home shows pack and article titles.** File: `apps/reader/src/services/homeService.ts` only. In
+  `homeService.homeSnapshot`, fetch the raw snapshot and `pack_list` (offset 0, limit 12) together, then return a
+  `HomeSnapshot` whose `recentPacks` are built from the pack list (`title` = `displayName`, `subtitle` =
+  `description` or null when empty, `sizeBytes`, `articleCount`, `lastOpenedAt` or null) and whose
+  `continueReading` is built from the raw snapshot's item (`packId`, `articleKey`, `articleTitle` = `title`,
+  `packTitle` = the matching pack's `displayName` or an empty string, `scrollAnchor` null, `lastOpenedAt` = ISO
+  string of `visitedAtMs`), or null when the raw item is null. Other snapshot fields pass through unchanged.
+  Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
