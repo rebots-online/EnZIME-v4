@@ -57,6 +57,26 @@ build is started by a coder; edit only the one named file; do not reformat untou
   whose length and modification time match its `verified` entry returns without `digest_file`; every
   `state='missing'` update for an index is paired with removal of that index from `verified`.
 
+### Defect round 1 (2026-11-10) — three one-file coder tasks
+
+- [/] **M2-D2 Fractional storage budgets are accepted.** File: `apps/reader/src/routes/library/DownloadPlanDialog.tsx`
+  only. In `budgetBytesFor`, the byte count is `amount * multiplier`, which is not a whole number for inputs such as
+  0.1 GiB, so `Number.isSafeInteger` rejects it. Change the computation to
+  `Math.floor(amount * multiplier)` and require the result to be at least 1 as well as a safe integer. Do not change
+  the function's signature or return type. Verify: `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+- [/] **M2-D4 Home cards leave the loading state when a snapshot returns nothing.** File:
+  `apps/reader/src/components/home/shared.tsx` only. In `resolveState`, a slice with `status === "ready"` and
+  `data === null` falls through to the final `return "loading"`. Add, immediately before that final return, a branch
+  returning `"empty"` when `slice.status === "ready"`. Change nothing else in the function or the file. Verify:
+  `pnpm --filter @enzime/reader exec tsc --noEmit` exits 0.
+- [/] **M2-D5a Storage function to record a reader visit.** File: `crates/storage-sqlite/src/query.rs` only. Nothing
+  writes `reader_history` (schema: `schemas/sqlite/0001_initial.sql` line 201), so "Continue reading" and each
+  pack's "opened" time never appear. Directly after `recent_reader_history`, add
+  `pub fn record_reader_visit(conn: &Connection, history_id: &str, pack_id: &str, article_key: &str, title: &str, visited_at_ms: i64) -> Result<(), rusqlite::Error>`
+  that inserts one row into `reader_history` with those five columns, using `params!`, in the same style as the
+  neighbouring functions, with a doc comment. Do not call it from anywhere (the caller is task M2-D5b, not yet
+  written). Verify: `cargo check -p storage-sqlite --offline` exits 0.
+
 ### Defects observed on v1.20.05778 (AppImage), not yet specified to file level
 
 Source: `dist/rubric-runs/v1.20.05778-appimage/RESULTS.md`. Each needs its cause located and a one-file coder task
