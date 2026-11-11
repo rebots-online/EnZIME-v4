@@ -29,6 +29,7 @@ export function resolveState<T>(
   if (slice.status === "ready" && slice.data !== null) {
     return hasData(slice.data) ? "populated" : "empty";
   }
+  if (slice.status === "ready") return "empty";
   return "loading";
 }
 
