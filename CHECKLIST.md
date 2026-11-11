@@ -107,6 +107,13 @@ written before dispatch.
   placeholder content, all platforms (operator, 2026-11-10).
 - [ ] **D9** Reader frame is white below the end of a short article while the article area is dark.
 - [ ] **D10** Plan for a 1.8 MB pack states "66 MB kept" and a 66 MB final footprint.
+- [ ] **D12** Library shows a malformed opened time (`11745-4294851302-...T02:30:39Z`); the date text built in
+  `ipc/library.rs` is wrong. Seen on v1.23.06045.
+- [ ] **D13** Home snapshot shapes differ between backend and frontend: "Continue reading" shows no titles and
+  "Recent packs" rows read "undefined articles". Seen on v1.23.06045.
+
+Observed on the v1.23.06045 AppImage (`dist/rubric-runs/v1.23.06045-appimage/RESULTS.md`): M2-D4 ✅, M2-D7 ✅,
+M2-D5a/b record the visit but its display is wrong (D12, D13); M2-D2 not yet observed.
 
 Rubric rows R-READ, R-REOPEN and R-OFFLINE were observed on the AppImage in the second session (RESULTS.md);
 R-OFFLINE by blocking the app's HTTP traffic, not by removing the network interface.
