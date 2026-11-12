@@ -167,7 +167,7 @@ Authority: `DOCS/ARCHITECTURE.md`, "Catalog display and size-controlled acquisit
 PR, build, deployment and observed behavior. Preserve unrelated work. Implementation
 is constrained to that amendment's entities, formulas, strings and named files.
 
-- [ ] **CAT-1 Real available downloads.**
+- [X] **CAT-1 Real available downloads.** ✅ Component/service checks observed passing; live deployment acceptance remains separate below.
   **Do:** In `CatalogBrowser.tsx`, replace the provider-branded header with
   `Available downloads` and neutral source hints. Replace the skeleton with
   `Fetching available downloads…` (`role=status`). In `libraryStore.ts`, expose
@@ -184,7 +184,7 @@ is constrained to that amendment's entities, formulas, strings and named files.
   **Verify:** `pnpm --filter @enzime/reader exec vitest run --config vitest.config.ts src/routes/library/library-dyndon.test.tsx`.
   **Accept:** Exits 0; the assertions cover the stated rendering and lifecycle.
 
-- [ ] **CAT-2 Honest size bounds and preferred-size slider.**
+- [X] **CAT-2 Honest size bounds and preferred-size slider.** ✅ Type checking and five arithmetic plus nineteen Library checks pass.
   **Do:** Add `DiskPackPolicy::available_bytes(free:u64)->u64` in disk/manifest.rs
   using the amendment's system-reserve formula. Extend `StorageDestinationDto`
   and frontend `StorageDestination` with `freeBytes`/`availableBytes`; refresh the
@@ -212,7 +212,7 @@ is constrained to that amendment's entities, formulas, strings and named files.
   `pnpm --filter @enzime/reader exec vitest run --config vitest.config.ts src/routes/library/downloadBudget.test.ts src/routes/library/library-dyndon.test.tsx`.
   **Accept:** All commands exit 0; bounds and peak assertions pass.
 
-- [ ] **CAT-3 Meaningful domain priority and evenly spread cuts.**
+- [X] **CAT-3 Meaningful domain priority and evenly spread cuts.** ✅ On msi4090, twenty cluster/cache tests and four native install tests pass, including actual differing retained cluster files.
   **Do:** In disk/selection.rs, define serializable/default `CutStrategy` with
   `even` and `prefer_domain`, `subject_matches(key:&str,terms:&[String])->bool`,
   and async `apply_selection_preference(store:&DiskPackStore,index:&RemoteZimIndex,
