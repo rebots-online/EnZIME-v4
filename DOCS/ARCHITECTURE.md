@@ -6859,16 +6859,11 @@ Pull the published revision on
 builds on `asrock`, and is not cleared by a successful compiler exit. Use existing
 build/sign/version machinery and retain exact artifact hashes and lane results.
 
-Deploy the resulting native release to an isolated application-data profile on
-the build host. WebKitWebDriver/tauri-driver can operate the genuine release UI;
-do not inject a fake Tauri bridge. Observe live catalog population, text/language
-filters, neutral heading, a selected real archive, the storage maximum and slider,
-stale-plan invalidation, both strategy controls, a computed byte-bounded plan, and
-a completed real acquisition readable from the installed pack. Record screenshots
-at desktop and a narrow viewport, including scrolled dialog actions. Verify subject
-selection and even ordering on a multi-cluster deterministic test archive as well
-as the live catalog. This protocol is runtime evidence, not an idempotent checklist
-Accept clause. `DOCS/TEST_RUBRIC.md` carries the corresponding acceptance rows.
+The previous native UI/behavior protocol is suspended by the operator's explicit
+stop. Its historical acceptance rows remain in `DOCS/TEST_RUBRIC.md`, clearly
+labelled as suspended. Retain existing evidence without rerunning it. Deployment
+continues from the published merged source; do not launch an acceptance session
+or infer observed behavior from compilation and packaging.
 
 ## Mandatory common resource storage — correction, 2026-11-12
 
