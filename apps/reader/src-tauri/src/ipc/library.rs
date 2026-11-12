@@ -196,7 +196,7 @@ pub async fn catalog_search(
             limit,
         )?;
         cached.notice =
-            Some("Category filter applies to cached Kiwix results; total is unknown.".into());
+            Some("Category filter applies to cached catalog results; total is unknown.".into());
         Ok(cached)
     } else {
         Ok(page)
