@@ -6773,8 +6773,10 @@ on retained storage, labelled `Reserved (maximum)`, never “kept”.
 `temporaryBytes = workspaceReserve`; `peak = finalBytes + temporaryBytes <= B`;
 `freeBytesAfter = freeBytesBefore - finalBytes`. Show the content bytes, index reserve,
 workspace reserve and peak separately. Neither reserve is added to download bytes.
-Mandatory metadata/main-page capacity errors remain actionable rather than being
-hidden by a positive fit badge. A plan binds the exact entry, root, B and strategy;
+Mandatory metadata/main-page capacity errors say `This archive's required index
+and main page do not fit within the preferred storage size. Increase the size and
+compute the plan again.` They are never hidden by a positive fit badge.
+A plan binds the exact entry, root, B and strategy;
 changing any of these prevents starting the stale plan until recomputed.
 
 The modal uses `createPortal` into `document.body`, with
@@ -6846,6 +6848,12 @@ line 1. The named paths are the complete implementation scope for CAT-1..CAT-3.
 Preserve the original checkout and historical worktrees. Publish this contract and
 the derived checklist before implementation; publish the implementation on the
 dedicated branch and open a PR against `master`. Pull the published revision on
+`msi4090` only after merging the implementation PR for final build and deployment.
+Operator direction on 2026-11-12 supersedes the earlier testing sequence: no more
+test suites, component checks or UI automation before merge. Keep delivery within
+this architecture; only the originally requested behavior confirmation follows
+merge and deployment. Prior test records describe history, not a pre-merge gate.
+Pull the published revision on
 `msi4090` for a native build: the recorded filesystem-corruption hold applies to
 builds on `asrock`, and is not cleared by a successful compiler exit. Use existing
 build/sign/version machinery and retain exact artifact hashes and lane results.
