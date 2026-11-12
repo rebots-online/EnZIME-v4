@@ -12,6 +12,7 @@
   padding: clamp(1rem, 4vw, 3rem);
   animation: lib-fade-in var(--ez-duration-normal) ease both;
 }
+.lib-dialog__backdrop.lib-surface { max-width: none; margin: 0; gap: 0; }
 .lib-dialog {
   width: min(40rem, 100%);
   max-height: min(40rem, 88vh);

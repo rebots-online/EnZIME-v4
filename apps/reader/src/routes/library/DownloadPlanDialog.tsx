@@ -15,6 +15,7 @@
 // animated centrepiece.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useLibraryStore } from "../../stores/libraryStore";
 import { libraryService, type CatalogEntry, type CutStrategy } from "../../services/libraryService";
 import {
@@ -124,9 +125,9 @@ export function DownloadPlanDialog(): ReactNode {
     plan.cutStrategy === cutStrategy && plan.finalBytes + plan.temporaryBytes <= (budgetBytes ?? 0);
   const compute = () => { if (entry && selectedRootId && budgetBytes && budgetValid && selectionValid) { setComputedBudget(budgetBytes); setComputedSelection(selectionKey); return computePlan(entry.catalogEntryId, selectedRootId, budgetBytes, cutStrategy, domain); } return Promise.resolve(); };
 
-  return (
+  return createPortal(
     <div
-      className="lib-dialog__backdrop"
+      className="lib-surface lib-dialog__backdrop"
       role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
@@ -256,6 +257,7 @@ export function DownloadPlanDialog(): ReactNode {
           ) : null}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

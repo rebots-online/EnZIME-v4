@@ -118,6 +118,13 @@ describe("catalog loading", () => {
 });
 
 describe("budgeted install flow", () => {
+  it("keeps the modal outside a transformed scrolling route", () => {
+    seedDialog();
+    render(<div data-testid="route" style={{ transform: "translateY(0)" }}><DownloadPlanDialog /></div>);
+    expect(within(screen.getByTestId("route")).queryByRole("dialog")).toBeNull();
+    expect(screen.getByRole("dialog").parentElement?.parentElement).toBe(document.body);
+    expect(screen.getByRole("dialog").parentElement?.classList.contains("lib-surface")).toBe(true);
+  });
   it("synchronizes the preferred-size slider with exact numeric bytes", () => {
     seedDialog(); render(<DownloadPlanDialog />);
     fireEvent.change(screen.getByLabelText("Preferred storage size"), { target: { value: String(512 * 1024 ** 2) } });
