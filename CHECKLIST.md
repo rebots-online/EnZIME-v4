@@ -198,7 +198,12 @@ is constrained to that amendment's entities, formulas, strings and named files.
   `Preferred storage size`, the existing precise numeric/unit controls, initial
   min(1 GiB,max), clamping on destination changes, max validation and a stale-plan
   guard. Use actual probe size after planning. Replace storage/planning skeletons
-  with named status text and elapsed planning seconds. In `StoragePlanner`, show
+  with named status text and elapsed planning seconds. Render the modal through
+  react-dom `createPortal` into document.body, retaining lib-surface tokens on the
+  backdrop. In styles/downloads.css remove the combined backdrop's page width cap,
+  margin and grid gap; this keeps it outside transformed route containers. Include
+  a transformed-route regression assertion and verify the rebuilt narrow viewport.
+  In `StoragePlanner`, show
   fresh free/available values. In `InstallPlanSummary` and `StorageImpactBar`, label
   finalBytes `Reserved (maximum)` / `up to … reserved`, separately show payload,
   index reserve, workspace and peak. Correct native `freeBytesAfter` to free minus

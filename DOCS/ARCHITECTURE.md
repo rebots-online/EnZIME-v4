@@ -6777,6 +6777,16 @@ Mandatory metadata/main-page capacity errors remain actionable rather than being
 hidden by a positive fit badge. A plan binds the exact entry, root, B and strategy;
 changing any of these prevents starting the stale plan until recomputed.
 
+The modal uses `createPortal` into `document.body`, with
+`lib-surface lib-dialog__backdrop` on its root to retain the existing design tokens.
+The backdrop has no content-width cap or inherited page margin. It lives outside
+transformed route containers and remains anchored to the viewport at every catalog
+scroll position. At the native 720-pixel minimum width, top controls and scrolled
+actions must stay within the window. The native visual check exposed this
+containing-block defect. CodeGraph does not parse `styles/downloads.css`; its dialog
+rules and `styles/catalog.css` token declarations received one targeted coverage-gap
+read. Their established styling is retained.
+
 ### Content selection
 
 `cutStrategy` is the closed set `even | prefer_domain`, default `even`.
@@ -6822,6 +6832,7 @@ line 1. The named paths are the complete implementation scope for CAT-1..CAT-3.
 | `DiskPackPolicy::available_bytes` | `crates/zim-cluster-cache/src/disk/manifest.rs:17` | Saturating free-minus-reserve formula shared by native roots and planner | CAT-2 |
 | `MIN_BUDGET_BYTES`, `payloadCapacity`, `downloadBudgetBounds` | `apps/reader/src/routes/library/downloadBudget.ts:1` | Pure bounded arithmetic and binary search; exported for tests | CAT-2 |
 | `DownloadPlanDialog`, `budgetBytesFor` | `apps/reader/src/routes/library/DownloadPlanDialog.tsx:31` | Slider, precise size entry, mode/subject controls; exact stale-plan guard | CAT-2, CAT-3 |
+| `lib-dialog__backdrop.lib-surface` | `apps/reader/src/routes/library/styles/downloads.css:1` | Viewport-root portal styling; remove page width cap and margin | CAT-2 |
 | `StoragePlanner`, `StorageImpactBar`, `InstallPlanSummary` | `apps/reader/src/routes/library/{StoragePlanner,StorageImpactBar,InstallPlanSummary}.tsx:12` | Real live capacity; explicit status; accurate reserve/content/peak labels | CAT-2 |
 | `DynDonInstallRequest`, `prepare_dyndon_install` | `apps/reader/src-tauri/src/ipc/dyndon/{mod,prepare}.rs:16` | Default strategy, validated subject; strategy identity; fresh capacity; result fields | CAT-3 |
 | `CutStrategy`, `apply_selection_preference`, `subject_matches` | `crates/zim-cluster-cache/src/disk/selection.rs:1` | Serializable closed enum; metadata-derived priority; actionable no-match error | CAT-3 |
