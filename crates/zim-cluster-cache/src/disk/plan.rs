@@ -1,7 +1,7 @@
 use super::store::{err, sql};
 use super::{DiskPackStore, DiskRangeSource};
 use anzimmerman::range::{ClusterByteRange, RangeReadLimits, RemoteZimIndex};
-use dyndon::{ClusterManifest, ClusterManifestEntry, SelectionIntent};
+use dyndon::{ClusterManifestEntry, SelectionIntent};
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -40,6 +40,16 @@ pub async fn plan_disk_fit(
     index: Arc<RemoteZimIndex>,
     intent: SelectionIntent,
     pinned_clusters: &[u32],
+) -> Result<PlanSummary, String> {
+    plan_disk_fit_with_preference(store, index, intent, pinned_clusters, None).await
+}
+
+pub async fn plan_disk_fit_with_preference(
+    store: Arc<DiskPackStore>,
+    index: Arc<RemoteZimIndex>,
+    intent: SelectionIntent,
+    pinned_clusters: &[u32],
+    preferred_domain: Option<&str>,
 ) -> Result<PlanSummary, String> {
     let _catalog = store.catalog_gate.lock().await;
     let count = index.header().cluster_count;
@@ -81,6 +91,7 @@ pub async fn plan_disk_fit(
         }
         tx.commit().map_err(err)?;
     }
+    super::apply_selection_preference(&store, &planning, preferred_domain).await?;
     let _metadata = store.metadata_gate.lock().await;
     select_candidates(&store, &intent, pinned_clusters)
 }
@@ -149,38 +160,19 @@ fn select_candidates(
         offset = offset
             .checked_add(batch.len() as u64)
             .ok_or("integer_overflow")?;
-        let total = batch.iter().try_fold(0u64, |n, e| {
-            n.checked_add(e.byte_len).ok_or("integer_overflow")
-        })?;
-        let fit = dyndon::plan_fit(
-            &ClusterManifest {
-                pack_version_id: String::new(),
-                cluster_count: batch.len() as u32,
-                total_bytes: total,
-                entries: batch,
-            },
-            &SelectionIntent {
-                domains: vec![],
-                breadth_limit: None,
-                depth_limit: None,
-                budget_bytes: budget - used,
-            },
-        );
         let tx = conn.transaction().map_err(err)?;
-        for id in fit.selected {
-            tx.execute(
-                "UPDATE clusters SET selected=1 WHERE cluster_index=?1",
-                [id],
-            )
-            .map_err(err)?;
+        for entry in batch {
+            if entry.byte_len <= budget - used {
+                tx.execute(
+                    "UPDATE clusters SET selected=1 WHERE cluster_index=?1",
+                    [entry.cluster_index],
+                ).map_err(err)?;
+                used += entry.byte_len;
+            } else {
+                skipped = skipped.checked_add(1).ok_or("integer_overflow")?;
+            }
         }
         tx.commit().map_err(err)?;
-        used = used
-            .checked_add(fit.total_bytes)
-            .ok_or("integer_overflow")?;
-        skipped = skipped
-            .checked_add(fit.skipped_count as u64)
-            .ok_or("integer_overflow")?;
     }
     conn.execute(
         "INSERT OR REPLACE INTO policy VALUES('plan.skipped',?1)",
@@ -264,7 +256,7 @@ pub async fn install_selected(store: Arc<DiskPackStore>) -> Result<PlanSummary, 
 
 // All sorting indices are built while the tables are empty. Their subsequent
 // growth and rollback journals are charged to the main database quota.
-const CANDIDATE_SCAN: &str = "SELECT cluster_index,start_byte,byte_length,domain,topic,priority,article_count FROM plan_eligible INDEXED BY plan_eligible_rank WHERE pinned=0 ORDER BY priority DESC,article_count DESC,cluster_index ASC LIMIT 4096 OFFSET ?1";
+const CANDIDATE_SCAN: &str = "SELECT cluster_index,start_byte,byte_length,domain,topic,priority,article_count FROM plan_eligible INDEXED BY plan_eligible_rank WHERE pinned=0 ORDER BY priority DESC,spread_rank ASC,cluster_index ASC LIMIT 4096 OFFSET ?1";
 const GROUP_SCAN: &str = "SELECT domain_present,domain,topic_present,topic FROM plan_groups INDEXED BY plan_groups_rank ORDER BY score DESC,domain_present ASC,domain ASC,topic_present ASC,topic ASC LIMIT ?1";
 const PRIORITY_SCAN: &str = "SELECT priority FROM plan_priorities ORDER BY priority DESC LIMIT ?1";
 fn stage_candidates(conn: &rusqlite::Connection, intent: &SelectionIntent) -> Result<(), String> {
@@ -276,8 +268,8 @@ fn stage_candidates(conn: &rusqlite::Connection, intent: &SelectionIntent) -> Re
         CREATE TABLE plan_priorities(priority INTEGER PRIMARY KEY,selected INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE plan_groups(domain_present INTEGER,domain TEXT,topic_present INTEGER,topic TEXT,score INTEGER,selected INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(domain_present,domain,topic_present,topic)) WITHOUT ROWID;
         CREATE INDEX plan_groups_rank ON plan_groups(score DESC,domain_present ASC,domain ASC,topic_present ASC,topic ASC);
-        CREATE TABLE plan_eligible(cluster_index INTEGER PRIMARY KEY,start_byte INTEGER,byte_length INTEGER,domain TEXT,topic TEXT,priority INTEGER,article_count INTEGER,pinned INTEGER);
-        CREATE INDEX plan_eligible_rank ON plan_eligible(priority DESC,article_count DESC,cluster_index ASC,start_byte,byte_length,domain,topic,pinned);").map_err(err)?;
+        CREATE TABLE plan_eligible(cluster_index INTEGER PRIMARY KEY,start_byte INTEGER,byte_length INTEGER,domain TEXT,topic TEXT,priority INTEGER,article_count INTEGER,pinned INTEGER,spread_rank INTEGER);
+        CREATE INDEX plan_eligible_rank ON plan_eligible(priority DESC,spread_rank ASC,cluster_index ASC,start_byte,byte_length,domain,topic,article_count,pinned);").map_err(err)?;
     for domain in &intent.domains {
         conn.execute("INSERT OR IGNORE INTO plan_domains VALUES(?1)", [domain])
             .map_err(err)?;
@@ -289,7 +281,7 @@ fn stage_candidates(conn: &rusqlite::Connection, intent: &SelectionIntent) -> Re
         let topic: Option<String> = row.get(4).map_err(err)?;
         let priority: i64 = row.get(5).map_err(err)?;
         conn.execute(
-            "INSERT INTO plan_eligible VALUES(?1,?2,?3,?4,?5,?6,?7,?8)",
+            "INSERT INTO plan_eligible VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9)",
             params![
                 row.get::<_, i64>(0).map_err(err)?,
                 row.get::<_, i64>(1).map_err(err)?,
@@ -298,7 +290,8 @@ fn stage_candidates(conn: &rusqlite::Connection, intent: &SelectionIntent) -> Re
                 topic,
                 priority,
                 row.get::<_, i64>(6).map_err(err)?,
-                row.get::<_, i64>(7).map_err(err)?
+                row.get::<_, i64>(7).map_err(err)?,
+                u64::from(row.get::<_, u32>(0).map_err(err)?.reverse_bits())
             ],
         )
         .map_err(err)?;

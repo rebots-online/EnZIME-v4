@@ -27,6 +27,8 @@ async fn native_http_partial_install_restart_and_annotation() {
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     let plan = prepare_dyndon_install(&state, request.clone())
         .await
@@ -203,6 +205,8 @@ async fn failed_and_cancelled_downloads_resume_durable_plan_without_false_activa
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     for budget in [1, u64::MAX] {
         let mut invalid = request.clone();
@@ -297,6 +301,8 @@ async fn published_digest_distinct_budget_editions_share_one_active_location() {
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     let first = prepare_dyndon_install(&state, request.clone())
         .await
@@ -336,6 +342,39 @@ async fn published_digest_distinct_budget_editions_share_one_active_location() {
     }
     assert_eq!(original.manifest().unwrap().metadata.article_count, 0);
     drop(original);
+    drop(state);
+    server.abort();
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[tokio::test]
+async fn native_strategy_is_bound_to_the_plan_and_rejects_unmatched_subjects() {
+    let (source, server) = serve(fixture(), false).await;
+    let root = root();
+    let state = make_state(&root, source);
+    let entry = search_kiwix_catalog(&state, "", None, 0, 20).await.unwrap().items.remove(0);
+    let mut request = DynDonInstallRequest {
+        catalog_entry_id: entry.catalog_entry_id,
+        destination_storage_root_id: "chosen".into(),
+        budget_bytes: 16 * 1024 * 1024,
+        selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
+    };
+    let even = prepare_dyndon_install(&state, request.clone()).await.unwrap();
+    assert!(even.final_bytes + even.temporary_bytes <= request.budget_bytes);
+    assert_eq!(even.free_bytes_after, even.free_bytes_before - even.final_bytes);
+    assert!(even.destination.available_bytes < even.destination.free_bytes);
+    request.cut_strategy = zim_cluster_cache::disk::CutStrategy::PreferDomain;
+    request.preferred_domain = Some("Home".into());
+    let preferred = prepare_dyndon_install(&state, request.clone()).await.unwrap();
+    assert_ne!(even.install_plan_id, preferred.install_plan_id);
+    assert_eq!(preferred.preferred_domain.as_deref(), Some("home"));
+    assert_eq!(serde_json::to_value(&preferred).unwrap()["cutStrategy"], "prefer_domain");
+    request.preferred_domain = Some("no-article-has-this-subject".into());
+    assert!(prepare_dyndon_install(&state, request.clone()).await.unwrap_err().contains("No source domain labels or article titles match"));
+    request.preferred_domain = Some(", ,".into());
+    assert!(prepare_dyndon_install(&state, request).await.unwrap_err().contains("Enter a domain or topic"));
     drop(state);
     server.abort();
     std::fs::remove_dir_all(root).unwrap();

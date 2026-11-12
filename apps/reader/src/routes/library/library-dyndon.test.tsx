@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
-import { libraryService, type CatalogEntry, type CatalogPage, type InstallPlan, type DownloadJob } from "../../services/libraryService";
+import { libraryService, withDeadline, type CatalogEntry, type CatalogPage, type InstallPlan, type DownloadJob } from "../../services/libraryService";
 import { readerService } from "../../services/readerService";
 import { useLibraryStore } from "../../stores/libraryStore";
 import { budgetBytesFor, DownloadPlanDialog } from "./DownloadPlanDialog";
@@ -11,13 +11,13 @@ import { DownloadQueue } from "./DownloadQueue";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 const entry: CatalogEntry = { catalogEntryId: "wiki", title: "Wikipedia", description: "Knowledge", languageBcp47: "eng", category: "encyclopedia", publisher: "Kiwix", artifactUrl: "https://download.kiwix.org/wiki.zim", artifactSizeBytes: 100 * 1024 ** 3, artifactSha256: null };
-const root = { storageRootId: "root", displayName: "Local storage", writable: true };
-const plan: InstallPlan = { installPlanId: "plan", catalogEntry: entry, destination: root, transferMode: "ranged", downloadBytes: 500 * 1024 ** 2, temporaryBytes: 32 * 1024 ** 2, finalBytes: 1024 ** 3, freeBytesBefore: 10 * 1024 ** 3, freeBytesAfter: 9 * 1024 ** 3, verification: { expectedSizeBytes: entry.artifactSizeBytes, expectedSha256: null, signatureRequired: false, zimStructureCheck: true } };
+const root = { storageRootId: "root", displayName: "Local storage", writable: true, freeBytes: 10 * 1024 ** 3, availableBytes: 9 * 1024 ** 3 };
+const plan: InstallPlan = { installPlanId: "plan", catalogEntry: entry, destination: root, cutStrategy: "even", preferredDomain: null, transferMode: "ranged", downloadBytes: 500 * 1024 ** 2, temporaryBytes: 256 * 1024 ** 2, finalBytes: 564 * 1024 ** 2, freeBytesBefore: 10 * 1024 ** 3, freeBytesAfter: 10 * 1024 ** 3 - 564 * 1024 ** 2, verification: { expectedSizeBytes: entry.artifactSizeBytes, expectedSha256: null, signatureRequired: false, zimStructureCheck: true } };
 const job: DownloadJob = { downloadJobId: "job", state: "completed", bytesVerified: 0, bytesRetained: 500 * 1024 ** 2, expectedSizeBytes: entry.artifactSizeBytes, transferScope: "partial", errorDetail: null };
 const initial = useLibraryStore.getState();
 const ready = <T,>(data: T) => ({ status: "ready" as const, data, error: null, lastUpdated: null });
-beforeEach(() => { vi.clearAllMocks(); useLibraryStore.setState(initial, true); vi.mocked(invoke).mockResolvedValue({ items: [] }); });
-afterEach(() => cleanup());
+beforeEach(() => { vi.restoreAllMocks(); vi.clearAllMocks(); useLibraryStore.setState(initial, true); vi.mocked(invoke).mockResolvedValue({ items: [] }); });
+afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 function seedDialog() { useLibraryStore.setState({ online: true, activeCatalogEntryId: "wiki", selectedStorageRootId: "root", catalogEntries: ready([entry]), storageRoots: ready([root]) }); }
 
@@ -55,6 +55,40 @@ describe("DynDon wire contracts", () => {
 });
 
 describe("catalog loading", () => {
+  it("renders real titles under the neutral catalog heading", async () => {
+    useLibraryStore.setState({ catalogEntries: ready([{ ...entry, publisher: "Wikimedia" }]), catalogSource: "live" });
+    render(<CatalogBrowser />);
+    expect(screen.getByRole("heading", { name: "Available downloads" })).toBeTruthy();
+    expect(screen.getByText("Wikipedia")).toBeTruthy();
+    expect(screen.getByText("Live catalog")).toBeTruthy();
+    expect(screen.queryByText(/Kiwix/)).toBeNull();
+  });
+  it("replaces an unsettled native search with a retryable timeout", async () => {
+    vi.useFakeTimers();
+    vi.mocked(invoke).mockImplementation(() => new Promise(() => {}));
+    const request = initial.searchCatalog({ query: "wiki" });
+    await vi.advanceTimersByTimeAsync(20_000);
+    await request;
+    expect(useLibraryStore.getState().catalogEntries.status).toBe("error");
+    render(<CatalogBrowser />);
+    expect(screen.getByText(/Catalog request timed out/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Retry search" })).toBeTruthy();
+  });
+  it("clears the deadline timer after a successful request", async () => {
+    vi.useFakeTimers();
+    expect(await withDeadline(Promise.resolve("real response"), 20_000)).toBe("real response");
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("invalidates a previous response as soon as input changes", async () => {
+    let finish!: (page: CatalogPage) => void;
+    vi.spyOn(libraryService, "catalogSearch").mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    const pending = initial.searchCatalog({ query: "old" });
+    render(<CatalogBrowser />);
+    fireEvent.change(screen.getByLabelText("Search catalog"), { target: { value: "new" } });
+    await act(async () => { finish({ items: [entry], source: "live" }); await pending; });
+    expect(screen.queryByText("Wikipedia")).toBeNull();
+    expect(screen.getByRole("status").textContent).toContain("Fetching available downloads");
+  });
   it("normalizes supported languages without treating an invalid code as a real filter", () => {
     expect(catalogLanguage(" en ")).toBe("eng"); expect(catalogLanguage("fr")).toBe("fra"); expect(catalogLanguage("jpn")).toBe("jpn"); expect(catalogLanguage("invalid")).toBeUndefined();
   });
@@ -84,12 +118,41 @@ describe("catalog loading", () => {
 });
 
 describe("budgeted install flow", () => {
-  it("sends the chosen budget, retains the failed plan and retries the same ID", async () => {
+  it("keeps the modal outside a transformed scrolling route", () => {
+    seedDialog();
+    render(<div data-testid="route" style={{ transform: "translateY(0)" }}><DownloadPlanDialog /></div>);
+    expect(within(screen.getByTestId("route")).queryByRole("dialog")).toBeNull();
+    expect(screen.getByRole("dialog").parentElement?.parentElement).toBe(document.body);
+    expect(screen.getByRole("dialog").parentElement?.classList.contains("lib-surface")).toBe(true);
+  });
+  it("synchronizes the preferred-size slider with exact numeric bytes", () => {
+    seedDialog(); render(<DownloadPlanDialog />);
+    fireEvent.change(screen.getByLabelText("Preferred storage size"), { target: { value: String(512 * 1024 ** 2) } });
+    expect((screen.getByLabelText("Storage budget") as HTMLInputElement).value).toBe("0.5");
+    expect((screen.getByLabelText("Preferred storage size") as HTMLInputElement).max).toBe(String(root.availableBytes));
+    fireEvent.change(screen.getByLabelText("Storage budget"), { target: { value: "20" } });
+    expect((screen.getByRole("button", { name: "Compute plan" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it("binds domain priority to a newly computed plan and invalidates even mode", async () => {
     seedDialog(); const compute = vi.spyOn(libraryService, "installPlan").mockResolvedValue(plan);
+    render(<DownloadPlanDialog />);
+    fireEvent.click(screen.getByRole("button", { name: "Compute plan" }));
+    await screen.findByRole("button", { name: "Start download" });
+    fireEvent.click(screen.getByLabelText("Prioritize a domain"));
+    expect(screen.queryByRole("button", { name: "Start download" })).toBeNull();
+    expect((screen.getByRole("button", { name: "Compute plan" }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText("Preferred domain or topic"), { target: { value: "medicine, heart" } });
+    compute.mockResolvedValue({ ...plan, cutStrategy: "prefer_domain", preferredDomain: "medicine, heart" });
+    fireEvent.click(screen.getByRole("button", { name: "Compute plan" }));
+    await screen.findByRole("button", { name: "Start download" });
+    expect(compute).toHaveBeenLastCalledWith(expect.objectContaining({ cutStrategy: "prefer_domain", preferredDomain: "medicine, heart" }));
+  });
+  it("sends the chosen budget, retains the failed plan and retries the same ID", async () => {
+    seedDialog(); const compute = vi.spyOn(libraryService, "installPlan").mockResolvedValue({ ...plan, downloadBytes: 300 * 1024 ** 2, finalBytes: 364 * 1024 ** 2, temporaryBytes: 128 * 1024 ** 2 });
     const start = vi.spyOn(libraryService, "installStart").mockRejectedValueOnce({ kind: "recoverable", message: "Network interrupted", cause: null }).mockResolvedValue(job);
     render(<DownloadPlanDialog />); fireEvent.change(screen.getByLabelText("Storage budget"), { target: { value: "512" } }); fireEvent.change(screen.getByLabelText("Storage budget unit"), { target: { value: "MiB" } });
     fireEvent.click(screen.getByRole("button", { name: "Compute plan" })); await screen.findByRole("button", { name: "Start download" });
-    expect(compute).toHaveBeenCalledWith({ catalogEntryId: "wiki", destinationStorageRootId: "root", budgetBytes: 536870912 });
+    expect(compute).toHaveBeenCalledWith({ catalogEntryId: "wiki", destinationStorageRootId: "root", budgetBytes: 536870912, cutStrategy: "even", preferredDomain: undefined });
     fireEvent.click(screen.getByRole("button", { name: "Start download" })); await screen.findByText("Network interrupted");
     expect(useLibraryStore.getState().installPlan.data?.installPlanId).toBe("plan"); expect(useLibraryStore.getState().activeCatalogEntryId).toBe("wiki");
     fireEvent.click(screen.getByRole("button", { name: "Retry download" })); await waitFor(() => expect(useLibraryStore.getState().activeCatalogEntryId).toBeNull());

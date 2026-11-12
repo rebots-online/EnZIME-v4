@@ -219,6 +219,8 @@ pub struct StorageDestinationDto {
     pub storage_root_id: String,
     pub display_name: String,
     pub writable: bool,
+    pub free_bytes: u64,
+    pub available_bytes: u64,
 }
 
 /// `pack_list` row — installed pack manifest for the Library view.
@@ -331,6 +333,8 @@ pub struct InstallPlanDto {
     pub free_bytes_after: u64,
     pub verification: InstallPlanVerificationDto,
     pub offline_catalog: Option<OfflineCatalogProgressDto>,
+    pub cut_strategy: zim_cluster_cache::disk::CutStrategy,
+    pub preferred_domain: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize)]

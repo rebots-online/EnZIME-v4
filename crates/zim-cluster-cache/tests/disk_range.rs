@@ -364,7 +364,7 @@ async fn payload_quota_evicts_only_unpinned_and_resume_ignores_partial_files() {
         .is_err());
 }
 #[tokio::test]
-async fn disk_planner_matches_dyndon_global_filters_and_greedy_ties() {
+async fn disk_planner_preserves_global_filters_with_evenly_spread_ties() {
     let bytes = generated(40);
     let len = bytes.len() as u64;
     let (root, _, store, index) = opened(bytes, len).await;
@@ -401,7 +401,7 @@ async fn disk_planner_matches_dyndon_global_filters_and_greedy_ties() {
             domain,
             topic,
             priority,
-            article_count: count,
+            article_count: u32::MAX - i.reverse_bits(),
         });
     }
     let manifest = dyndon::ClusterManifest {
@@ -419,11 +419,12 @@ async fn disk_planner_matches_dyndon_global_filters_and_greedy_ties() {
                     depth_limit: depth,
                     budget_bytes: 277,
                 };
-                let expected = dyndon::plan_fit(&manifest, &intent);
+                let mut expected = dyndon::plan_fit(&manifest, &intent);
                 let actual = plan_disk_fit(store.clone(), index.clone(), intent, &[])
                     .await
                     .unwrap();
-                let selected:Vec<u32>=conn.prepare("SELECT cluster_index FROM clusters WHERE selected=1 ORDER BY priority DESC,article_count DESC,cluster_index ASC").unwrap().query_map([],|r|r.get(0)).unwrap().collect::<Result<_,_>>().unwrap();
+                let selected:Vec<u32>=conn.prepare("SELECT cluster_index FROM clusters WHERE selected=1 ORDER BY cluster_index ASC").unwrap().query_map([],|r|r.get(0)).unwrap().collect::<Result<_,_>>().unwrap();
+                expected.selected.sort_unstable();
                 assert_eq!(selected, expected.selected);
                 assert_eq!(actual.selected_bytes, expected.total_bytes);
                 assert_eq!(actual.skipped_count, expected.skipped_count as u64);

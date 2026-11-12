@@ -51,12 +51,17 @@ pub async fn storage_roots_list(
     Ok(rows
         .into_iter()
         .filter(|r| r.writable)
-        .map(|r| StorageDestinationDto {
-            storage_root_id: r.storage_root_id,
-            display_name: r.display_name,
-            writable: r.writable,
+        .map(|r| {
+            let free = fs2::available_space(&r.platform_locator).map_err(err_str)?;
+            Ok(StorageDestinationDto {
+                storage_root_id: r.storage_root_id,
+                display_name: r.display_name,
+                writable: r.writable,
+                free_bytes: free,
+                available_bytes: zim_cluster_cache::disk::DiskPackPolicy::available_bytes(free),
+            })
         })
-        .collect())
+        .collect::<Result<Vec<_>, String>>()?)
 }
 
 /// §14.4 `pack_list({ offset?, limit? })`. Pages installed packs. Article
@@ -191,7 +196,7 @@ pub async fn catalog_search(
             limit,
         )?;
         cached.notice =
-            Some("Category filter applies to cached Kiwix results; total is unknown.".into());
+            Some("Category filter applies to cached catalog results; total is unknown.".into());
         Ok(cached)
     } else {
         Ok(page)
@@ -205,17 +210,21 @@ pub async fn install_plan(
     destination_storage_root_id: String,
     selection_profile_id: Option<String>,
     budget_bytes: Option<u64>,
+    cut_strategy: Option<zim_cluster_cache::disk::CutStrategy>,
+    preferred_domain: Option<String>,
 ) -> Result<InstallPlanDto, String> {
-    dyndon::prepare_dyndon_install(
+    tokio::time::timeout(std::time::Duration::from_secs(180), dyndon::prepare_dyndon_install(
         &state,
         dyndon::DynDonInstallRequest {
             catalog_entry_id,
             destination_storage_root_id,
             budget_bytes: budget_bytes.unwrap_or(0),
             selection_profile_id,
+            cut_strategy: cut_strategy.unwrap_or_default(),
+            preferred_domain,
         },
-    )
-    .await
+    ))
+    .await.map_err(|_| "Planning timed out while inspecting the source. Retry or choose a smaller archive.".to_string())?
 }
 #[tauri::command]
 pub async fn install_start(

@@ -59,7 +59,7 @@ pub fn cached_catalog(
         next_offset: more.then_some(offset.saturating_add(limit)),
         source: "cache".into(),
         notice: Some(
-            "Cached Kiwix entries; availability and advertised sizes may have changed.".into(),
+            "Cached catalog entries; availability and advertised sizes may have changed.".into(),
         ),
     })
 }
@@ -76,14 +76,16 @@ pub async fn search_kiwix_catalog(
     let limit = limit.clamp(1, 100);
     let language = language_code(language);
     let client = KiwixCatalogClient::new(state.transfer_source.clone());
-    let result = client
+    let result = tokio::time::timeout(std::time::Duration::from_secs(15), client
         .search(&KiwixQuery {
             text: (!query.trim().is_empty()).then(|| query.trim().into()),
             language: language.clone(),
             offset,
             limit,
-        })
-        .await;
+        }))
+        .await
+        .map_err(|_| "Catalog request timed out. Check your connection and retry.".to_string())
+        .and_then(|result| result.map_err(err_str));
     let page = match result {
         Ok(page) => page,
         Err(error) => {
@@ -91,11 +93,11 @@ pub async fn search_kiwix_catalog(
                 cached_catalog(state, query, language.as_deref(), None, offset, limit)?;
             if cached.items.is_empty() {
                 return Err(format!(
-                    "Kiwix catalog unavailable and no matching cached entries: {error}"
+                    "Catalog unavailable and no matching cached entries: {error}"
                 ));
             }
             cached.notice = Some(format!(
-                "Kiwix unavailable ({error}); showing cached entries."
+                "Catalog source unavailable ({error}); showing cached entries."
             ));
             return Ok(cached);
         }

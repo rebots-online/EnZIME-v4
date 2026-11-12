@@ -6697,3 +6697,174 @@ This amendment records; it does not redesign. Storage design (§1.2, §6.1, §6.
 | Knowledge Pysanky navigator is one of two main viewer modes for pack content, toggled with the reader or shown as a swappable inset | Reader surface; no section exists yet |
 | Local inference is built in, offline, from strong GPU to no GPU; Ollama is replaced in-app by the llama.cpp that Atomic Chat uses | **AMD-2**, which names wllama3 as the sole engine on all platforms. Research in `DOCS/LOCAL-INFERENCE-BACKENDS.md` finds Atomic Chat's default engine is upstream llama.cpp, the same engine wllama compiles to WebAssembly. Whether AMD-2 stands, or a native llama.cpp build is added beside wllama, is the operator's decision and is not made here |
 | No placeholder content on any platform; never show "purchasing is not available" beside an upsell | Settings and entitlement surfaces |
+
+## Catalog display and size-controlled acquisition — 2026-11-12
+
+This amendment is the normative end state for the operator's catalog request.
+It supersedes conflicting catalog and install-planning details above and in the
+DynDon subdocuments. It does not require merging historical branches. The existing
+Aurora Glass structured components remain the UI source; this change extends their
+controls and bindings rather than substituting a screenshot-derived design.
+
+### Verified implementation boundary
+
+CodeGraph was initialized, synced and SQLite-checked against `beef1d9` before this
+amendment. The actual composition is `LibraryView` → `CatalogBrowser` →
+`useLibraryStore.searchCatalog` → `libraryService.catalogSearch` → Tauri
+`catalog_search` → `search_kiwix_catalog` → `KiwixCatalogClient.search`. The current
+adapter caches real OPDS entries in SQLite. The adapter's name and cache IDs are
+implementation identities, not the EnZIME catalog's public brand. There is no
+browser HTTP command backend in this composition; acceptance is performed against
+an installed native release with its real Tauri bridge and live upstream service.
+
+`install_plan` delegates to `prepare_dyndon_install`, which pins the remote ZIM,
+creates a disk pack, plans whole compressed clusters, discovers readable entries,
+and persists the plan before `install_start`. `DiskPackPolicy` already accounts for
+metadata and workspace separately. The existing UI has no size slider or selection
+strategy input; the storage-root DTO omits live capacity. These are required changes,
+not capabilities attested as already implemented. The old interpretation of an
+index allowance as actual content bytes is expressly superseded below.
+
+### Required catalog behavior
+
+Opening Library requests real catalog entries immediately after the existing
+280 ms input debounce. Text and language filters use the same live service. Every
+request settles into results, an actual empty result, or an actionable failure.
+The native live search has a 15-second deadline and falls back only to real matching
+cached entries, explicitly labelled. The frontend catalog request has a 20-second
+deadline; timer cleanup occurs on both success and failure. Older generations
+cannot overwrite a newer search or page request. Input changes invalidate the
+previous generation before the debounce, including invalid language input.
+
+Render `Fetching available downloads…` as an accessible status while loading, retain
+real results during pagination, and render `Retry search` on failure. Skeleton bars,
+fabricated entries and release-mode mock data are prohibited in this flow. The
+heading is `Available downloads`; the source hint is `Live catalog`, `Cached results`
+or `Catalog`. No page branding, status or failure message calls EnZIME “Kiwix”.
+Publisher attribution in actual catalog records remains accurate.
+
+### Storage and size arithmetic
+
+All arithmetic uses nonnegative whole bytes, with safe JavaScript integer validation.
+Writable roots are freshly probed on every `storage_roots_list`. Return `freeBytes`
+and `availableBytes`, where `available = free - max(256 MiB, floor(free / 20))`,
+saturating at zero. Probe failure is an error, never invented capacity.
+
+For budget B, `metadataReserve = min(64 MiB, floor(B / 8))`,
+`workspaceReserve = min(512 MiB, floor(B / 4))`, and
+`payloadCapacity = B - metadataReserve - workspaceReserve`. Minimum B is 16 MiB.
+For advertised archive size S > 0, binary-search the smallest B >= 16 MiB with
+`payloadCapacity >= S`; the slider maximum is the smaller of that B and the root's
+available bytes. Unknown S uses available bytes without inventing an archive size.
+If available bytes are below 16 MiB, report insufficient space and prevent planning.
+
+The labelled native `range` input `Preferred storage size` spans the computed
+minimum/maximum in whole bytes, with an adjacent precise MiB/GiB numeric input.
+Initial B is min(1 GiB, maximum). Destination changes clamp B into the new valid
+range. Display maximum storage size and maximum content payload separately; payload
+is capped at the known source size. Before a plan resolves these are capacity bounds,
+not a claim that this many useful articles exist. Once a plan resolves, the probe's
+actual source length supersedes the advertised length for the bounds.
+
+The backend repeats bounds validation before waiting for the acquisition gate and
+re-probes available space. The actual selected compressed-cluster bytes are
+`downloadBytes`. `finalBytes = downloadBytes + metadataReserve` is an upper bound
+on retained storage, labelled `Reserved (maximum)`, never “kept”.
+`temporaryBytes = workspaceReserve`; `peak = finalBytes + temporaryBytes <= B`;
+`freeBytesAfter = freeBytesBefore - finalBytes`. Show the content bytes, index reserve,
+workspace reserve and peak separately. Neither reserve is added to download bytes.
+Mandatory metadata/main-page capacity errors say `This archive's required index
+and main page do not fit within the preferred storage size. Increase the size and
+compute the plan again.` They are never hidden by a positive fit badge.
+A plan binds the exact entry, root, B and strategy;
+changing any of these prevents starting the stale plan until recomputed.
+
+The modal uses `createPortal` into `document.body`, with
+`lib-surface lib-dialog__backdrop` on its root to retain the existing design tokens.
+The backdrop has no content-width cap or inherited page margin. It lives outside
+transformed route containers and remains anchored to the viewport at every catalog
+scroll position. At the native 720-pixel minimum width, top controls and scrolled
+actions must stay within the window. The native visual check exposed this
+containing-block defect. CodeGraph does not parse `styles/downloads.css`; its dialog
+rules and `styles/catalog.css` token declarations received one targeted coverage-gap
+read. Their established styling is retained.
+
+### Content selection
+
+`cutStrategy` is the closed set `even | prefer_domain`, default `even`.
+`preferredDomain` is a trimmed string of comma-separated subject terms, at most
+120 characters; `prefer_domain` requires at least one nonempty term. The UI labels
+are `Spread cuts evenly` and `Prioritize a domain`, plus `Preferred domain or topic`.
+Explain that domain labels and article title/URL terms determine priority; do not
+invent a publisher taxonomy or imply semantic classifications absent from the source.
+
+Whole compressed clusters are indivisible. Keep the mandatory main-page cluster.
+Even mode traverses optional clusters in deterministic bit-reversed cluster-index
+order (`u32::reverse_bits`) so retention covers the archive instead of retaining
+only its prefix. Priority mode first ranks real matching clusters above the others,
+then uses the same even ordering within each priority. Match source domain labels
+case-insensitively and match normalized article keys (underscores become spaces)
+against the nonempty subject terms. Resolve redirect chains through the existing
+remote-index API. Scan real source metadata, never payload bodies merely to classify.
+If no cluster matches, fail explicitly and request another subject or even mode.
+Do not silently run even mode under a priority label.
+
+The selected strategy and normalized terms are included in the edition identity,
+so plans with different priorities cannot alias the same disk store. Existing
+selection-profile filters continue to constrain eligibility. Selection still uses
+the actual compressed byte lengths and skips an oversized cluster while considering
+later smaller clusters. Catalog pruning continues to protect the mandatory page.
+The plan result carries `cutStrategy` and `preferredDomain` for an auditable summary.
+Planning has a 180-second native deadline with a concrete retryable error. Loading
+shows a named operation and elapsed time, never skeleton output.
+
+### Entity table and engaged-by contract
+
+Line anchors identify the existing definitions before amendment; new rows start at
+line 1. The named paths are the complete implementation scope for CAT-1..CAT-3.
+
+| Exact entity | Target file:line | Contract | Engaged by |
+|---|---|---|---|
+| `CatalogBrowser`, `catalogLanguage` | `apps/reader/src/routes/library/CatalogBrowser.tsx:28` | Neutral real-results catalog; explicit request status, retry and invalid-language state | CAT-1 |
+| `withDeadline`, `call`, `StorageDestination`, `InstallPlan`, `libraryService` | `apps/reader/src/services/libraryService.ts:36` | Existing bridge; 20 s catalog deadline; root capacity; strategy wire fields | CAT-1, CAT-2, CAT-3 |
+| `invalidateCatalogSearch`, `searchCatalog`, `computePlan`, `LibraryState` | `apps/reader/src/stores/libraryStore.ts:67` | Generation invalidation and passing exact strategy to native planning | CAT-1, CAT-3 |
+| `search_kiwix_catalog`, `cached_catalog` | `apps/reader/src-tauri/src/ipc/kiwix.rs:33` | Real OPDS search under 15 s deadline; neutral notices, real cache only | CAT-1 |
+| `storage_roots_list`, `install_plan` | `apps/reader/src-tauri/src/ipc/library.rs:3` | Fresh free-space DTO; strategy forwarding; 180 s planner deadline | CAT-2, CAT-3 |
+| `StorageDestinationDto`, `InstallPlanDto` | `apps/reader/src-tauri/src/ipc/dto.rs:218` | Add free/available bytes and result strategy, preserving existing fields | CAT-2, CAT-3 |
+| `DiskPackPolicy::available_bytes` | `crates/zim-cluster-cache/src/disk/manifest.rs:17` | Saturating free-minus-reserve formula shared by native roots and planner | CAT-2 |
+| `MIN_BUDGET_BYTES`, `payloadCapacity`, `downloadBudgetBounds` | `apps/reader/src/routes/library/downloadBudget.ts:1` | Pure bounded arithmetic and binary search; exported for tests | CAT-2 |
+| `DownloadPlanDialog`, `budgetBytesFor` | `apps/reader/src/routes/library/DownloadPlanDialog.tsx:31` | Slider, precise size entry, mode/subject controls; exact stale-plan guard | CAT-2, CAT-3 |
+| `lib-dialog__backdrop.lib-surface` | `apps/reader/src/routes/library/styles/downloads.css:1` | Viewport-root portal styling; remove page width cap and margin | CAT-2 |
+| `StoragePlanner`, `StorageImpactBar`, `InstallPlanSummary` | `apps/reader/src/routes/library/{StoragePlanner,StorageImpactBar,InstallPlanSummary}.tsx:12` | Real live capacity; explicit status; accurate reserve/content/peak labels | CAT-2 |
+| `DynDonInstallRequest`, `prepare_dyndon_install` | `apps/reader/src-tauri/src/ipc/dyndon/{mod,prepare}.rs:16` | Default strategy, validated subject; strategy identity; fresh capacity; result fields | CAT-3 |
+| `CutStrategy`, `apply_selection_preference`, `subject_matches` | `crates/zim-cluster-cache/src/disk/selection.rs:1` | Serializable closed enum; metadata-derived priority; actionable no-match error | CAT-3 |
+| `plan_disk_fit_with_preference`, `plan_disk_fit`, `stage_candidates`, `CANDIDATE_SCAN` | `crates/zim-cluster-cache/src/disk/plan.rs:38` | Existing API wraps even mode; new API applies preference; indexed even traversal | CAT-3 |
+| disk exports | `crates/zim-cluster-cache/src/disk/mod.rs:14` | Export new strategy and planner without hiding the existing API | CAT-3 |
+| `vitest.config.ts` test registration | `apps/reader/vitest.config.ts:6` | Include the new byte-arithmetic tests in the existing explicit test allowlist | CAT-2 |
+| catalog and fit tests | `apps/reader/src/routes/library/library-dyndon.test.tsx:1`, `apps/reader/src/routes/library/downloadBudget.test.ts:1`, `apps/reader/src-tauri/tests/dyndon_install.rs:1`, `crates/zim-cluster-cache/tests/disk_range.rs:367`, `crates/zim-cluster-cache/tests/offline_catalog.rs:1` and its `tests/selection/cases.rs` child, selection module tests | Real arithmetic, stale/error lifecycle, changed selection and byte bounds; update the old article-count tie oracle to the specified even tie order; the child keeps the existing 476-line test file below its size limit | CAT-1, CAT-2, CAT-3 |
+
+### Delivery and operator verification protocol
+
+Preserve the original checkout and historical worktrees. Publish this contract and
+the derived checklist before implementation; publish the implementation on the
+dedicated branch and open a PR against `master`. Pull the published revision on
+`msi4090` only after merging the implementation PR for final build and deployment.
+Operator direction on 2026-11-12 supersedes the earlier testing sequence: no more
+test suites, component checks or UI automation before merge. Keep delivery within
+this architecture; only the originally requested behavior confirmation follows
+merge and deployment. Prior test records describe history, not a pre-merge gate.
+Pull the published revision on
+`msi4090` for a native build: the recorded filesystem-corruption hold applies to
+builds on `asrock`, and is not cleared by a successful compiler exit. Use existing
+build/sign/version machinery and retain exact artifact hashes and lane results.
+
+Deploy the resulting native release to an isolated application-data profile on
+the build host. WebKitWebDriver/tauri-driver can operate the genuine release UI;
+do not inject a fake Tauri bridge. Observe live catalog population, text/language
+filters, neutral heading, a selected real archive, the storage maximum and slider,
+stale-plan invalidation, both strategy controls, a computed byte-bounded plan, and
+a completed real acquisition readable from the installed pack. Record screenshots
+at desktop and a narrow viewport, including scrolled dialog actions. Verify subject
+selection and even ordering on a multi-cluster deterministic test archive as well
+as the live catalog. This protocol is runtime evidence, not an idempotent checklist
+Accept clause. `DOCS/TEST_RUBRIC.md` carries the corresponding acceptance rows.

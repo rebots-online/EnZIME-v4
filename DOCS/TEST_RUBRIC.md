@@ -123,3 +123,21 @@ and the observation is written down with the artifact version and SHA-256. Rows 
 
 Rows R-ANNOTATE, R-ANNOTATION-RESTART and R-ANNOTATION-FAILURE of the M1 table above are unchanged and are not
 re-certified by this iteration.
+
+## Catalog and size selection acceptance — 2026-11-12
+
+Authority: ARCHITECTURE.md, Catalog display and size-controlled acquisition.
+Execute on the built native release with the real Tauri bridge and live catalog.
+
+| ID | Required observed behavior | Acceptance |
+|---|---|---|
+| CAT-R1 | Open Library; search and filter language | Real catalog titles and sizes appear; filters return real matching entries; no indefinite bars or fabricated results |
+| CAT-R2 | Inspect catalog heading and notices | EnZIME available downloads; no provider branding attached to the page |
+| CAT-R3 | Select a real entry and destination; move the size slider and edit numeric size | Bounds reflect freshly probed available space and source size; preferred size is synchronized and plan's peak fits the selected whole-byte budget |
+| CAT-R4 | Compare even mode and a matching preferred subject under cuts | Real selected cluster identities differ; mandatory page remains; unmatched subject gives an actionable failure; stale plan cannot start |
+| CAT-R5 | Compute and start a real bounded plan | Download finishes, appears installed, opens actual retained content; content/reserve/workspace labels match the plan values |
+| CAT-R6 | Inspect desktop and narrow layout, scroll the dialog | Inputs and actions are readable and reachable; screenshots recorded from the deployed release |
+| CAT-R7 | Observe a failed search or timed-out request and retry | Named failure replaces loading, retry works, older requests cannot replace newer results |
+
+A test-double pass does not attest live delivery. Record exact source commit,
+artifact SHA-256, deployment path, observations and screenshots with the run.
