@@ -159,7 +159,10 @@ function stringifyError(raw: unknown): string {
 }
 
 function classifyError(raw: unknown): ServiceError {
-  const message = stringifyError(raw);
+  const detail = stringifyError(raw);
+  const message = /budget_exceeded.*(?:catalog|metadata|main.page)/i.test(detail)
+    ? "This archive's required index and main page do not fit within the preferred storage size. Increase the size and compute the plan again."
+    : detail;
   if (/capability|denied|permission|forbidden/i.test(message)) {
     return { kind: "capability-denied", message, cause: raw };
   }
