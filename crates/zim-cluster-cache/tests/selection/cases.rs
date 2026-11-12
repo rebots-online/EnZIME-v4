@@ -4,7 +4,10 @@ async fn selected_clusters(subject: Option<&str>) -> (Vec<u32>, PlanSummary) {
     let mut builder = support::ZimBuilder::default();
     for i in 0..8 {
         builder = builder.add_article(
-            b'A', format!("topic_{i}"), format!("Topic {i}"), "text/html",
+            b'A',
+            format!("topic_{i}"),
+            format!("Topic {i}"),
+            "text/html",
             vec![b'x'; 3 * 1024 * 1024],
         );
     }
@@ -14,15 +17,29 @@ async fn selected_clusters(subject: Option<&str>) -> (Vec<u32>, PlanSummary) {
     let len = bytes.len() as u64;
     let (root, _, store, index) = opened(bytes, len).await;
     let summary = plan_disk_fit_with_preference(
-        store.clone(), index.clone(), dyndon::SelectionIntent {
-            domains: vec![], breadth_limit: None, depth_limit: None,
+        store.clone(),
+        index.clone(),
+        dyndon::SelectionIntent {
+            domains: vec![],
+            breadth_limit: None,
+            depth_limit: None,
             budget_bytes: 10 * 1024 * 1024,
-        }, &[0], subject,
-    ).await.unwrap();
-    assert!(summary.selected_bytes + summary.metadata_reserved_bytes + summary.workspace_reserved_bytes <= summary.disk_budget_bytes);
-    discover_offline_entries(store.clone(), index).await.unwrap();
+        },
+        &[0],
+        subject,
+    )
+    .await
+    .unwrap();
+    assert!(
+        summary.selected_bytes + summary.metadata_reserved_bytes + summary.workspace_reserved_bytes
+            <= summary.disk_budget_bytes
+    );
+    discover_offline_entries(store.clone(), index)
+        .await
+        .unwrap();
     install_selected(store).await.unwrap();
-    let mut selected: Vec<u32> = std::fs::read_dir(root.join("clusters")).unwrap()
+    let mut selected: Vec<u32> = std::fs::read_dir(root.join("clusters"))
+        .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .filter_map(|name| name.strip_suffix(".bin").and_then(|n| n.parse().ok()))
         .collect();
@@ -46,10 +63,18 @@ async fn unmatched_subjects_fail_without_claiming_the_even_plan_is_prioritized()
     let len = bytes.len() as u64;
     let (_, _, store, index) = opened(bytes, len).await;
     let error = plan_disk_fit_with_preference(
-        store, index, dyndon::SelectionIntent {
-            domains: vec![], breadth_limit: None, depth_limit: None,
+        store,
+        index,
+        dyndon::SelectionIntent {
+            domains: vec![],
+            breadth_limit: None,
+            depth_limit: None,
             budget_bytes: 1024 * 1024,
-        }, &[0], Some("a-subject-absent-from-this-archive"),
-    ).await.unwrap_err();
+        },
+        &[0],
+        Some("a-subject-absent-from-this-archive"),
+    )
+    .await
+    .unwrap_err();
     assert!(error.contains("No source domain labels or article titles match"));
 }

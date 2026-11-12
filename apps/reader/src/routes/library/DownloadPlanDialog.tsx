@@ -96,7 +96,7 @@ export function DownloadPlanDialog(): ReactNode {
   const domain = cutStrategy === "prefer_domain" ? preferredDomain.trim() : undefined;
   const selectionKey = JSON.stringify([cutStrategy, domain]);
   const budgetValid = budgetBytes !== undefined && budgetBytes >= bounds.min && budgetBytes <= bounds.max;
-  const selectionValid = cutStrategy === "even" || (!!domain && domain.length <= 120);
+  const selectionValid = cutStrategy === "even" || (!!domain && domain.length <= 120 && domain.split(',').some(term => term.trim()));
 
   useEffect(() => {
     if (bounds.max < bounds.min) return;
@@ -120,7 +120,8 @@ export function DownloadPlanDialog(): ReactNode {
   }, [planning]);
 
   const canCompute = !!entry && !!selectedRootId && budgetValid && selectionValid && !planning && !starting && !planResolved;
-  const canStart = planResolved && !planning && !starting;
+  const canStart = planResolved && selectionValid && !planning && !starting && !!plan &&
+    plan.cutStrategy === cutStrategy && plan.finalBytes + plan.temporaryBytes <= (budgetBytes ?? 0);
   const compute = () => { if (entry && selectedRootId && budgetBytes && budgetValid && selectionValid) { setComputedBudget(budgetBytes); setComputedSelection(selectionKey); return computePlan(entry.catalogEntryId, selectedRootId, budgetBytes, cutStrategy, domain); } return Promise.resolve(); };
 
   return (

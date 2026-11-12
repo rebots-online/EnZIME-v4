@@ -57,7 +57,8 @@ pub async fn prepare_dyndon_install(
             if domain.chars().count() > 120 || !domain.split(',').any(|term| !term.trim().is_empty()) {
                 return Err("Enter a domain or topic of at most 120 characters to prioritize.".into());
             }
-            Some(domain.to_lowercase())
+            Some(domain.split(',').map(|term| term.trim().to_lowercase())
+                .filter(|term| !term.is_empty()).collect::<Vec<_>>().join(", "))
         }
     };
     let entry = super::super::kiwix::load_entry(state, &request.catalog_entry_id)?;
