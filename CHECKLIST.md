@@ -2062,3 +2062,25 @@ Do not commit/push generated artifacts or unrelated files; root handles publicat
 Do not edit architecture. Missing contract fact returns an explicit question to root,
 while independent in-scope implementation continues. You are not alone in the repo;
 preserve concurrent work and adapt rather than reverting other changes.
+
+**SHARE continuation details (same task, no scope change):** The first bounded
+coder invocation reached its turn limit after writing `.env.example`, `build.rs`
+and `shared_storage.rs`. Continue those partial files; do not re-derive their API.
+`SharedStoragePolicy::roots().await -> Result<Vec<SharedStorageRoot>, String>` and
+`require_shared_root(&canonical_path).await -> Result<StorageMedium, String>` are
+the native wiring points. `AcquisitionLease::acquire(&canonical_path)` returns a
+guard held in the plan/install future. `StorageMedium::label()` and `root_kind()`
+produce the exact friendly name and existing schema kind. The mobile response JSON
+is `primaryDirectory`, `removableDirectories`, `accessGranted`. The new module's
+access function must be named `request_access` (ordinary async helper); the Tauri
+command `shared_storage_request_access` lives in ipc/library.rs and delegates to
+it, as the original contract requires. Correct `is_single_component` to require
+exactly one `Component::Normal` and reject both slash kinds, `.` and `..` across
+build hosts; `.env` is build configuration, not a permission to create a private
+fallback. Complete the remaining SHARE-1/2 wiring before reporting completion.
+SHARE-2 additionally owns the existing typed `root` fixture in
+`apps/reader/src/routes/library/library-dyndon.test.tsx`, adding only required
+`shared: true, medium: "internal"` so the production TypeScript build (include src)
+can compile the changed DTO. Do not add, expand or run tests. This fixture change
+is type compatibility, not a testing task. No compilation/check commands until
+root performs the required build after the PR is merged.

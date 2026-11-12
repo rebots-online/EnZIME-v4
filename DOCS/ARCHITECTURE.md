@@ -6937,6 +6937,7 @@ The existing size formulas, slider and selection modes remain normative.
 | Entity | Target file:line | Contract | Task |
 |---|---|---|---|
 | `SharedStoragePolicy`, `SharedStorageRoot`, `StorageMedium`, `init`, `request_access` | `apps/reader/src-tauri/src/shared_storage.rs:1` (new) | Compiled common-root configuration; primary/removable enumeration, allowed-root validation, access recovery, cross-process acquisition lease | SHARE-1 |
+| `SharedStoragePolicy::roots`, `SharedStoragePolicy::require_shared_root`, `AcquisitionLease::acquire`, `StorageMedium::label`, `StorageMedium::root_kind` | same shared storage module | Async real roots and allowed canonical-root check returning StorageMedium; file lease returning AcquisitionLease; friendly label and existing SQLite kind | SHARE-1 |
 | `SharedStoragePlugin`, `volumes`, `requestAccess` | `apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/SharedStoragePlugin.kt:1` (new) | Mounted real volumes and Android system access flow through Tauri Plugin/Invoke | SHARE-1 |
 | shared storage permissions | `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml:3` | All-files API30+, legacy read/write maxSdk29; no background model service | SHARE-1 |
 | `main` build configuration | `apps/reader/src-tauri/build.rs:1`, `.env.example:1` (new) | Read allowlisted build configuration; rerun on env/file changes; bake keys into Rust; reject non-common scope | SHARE-1 |
@@ -6948,6 +6949,7 @@ The existing size formulas, slider and selection modes remain normative.
 | `loadStorageRoots`, `setSelectedStorageRoot` | `apps/reader/src/stores/libraryStore.ts:153` | Accept common roots only; preserve valid selection or choose internal; invalidate stale plan if selected medium disappears | SHARE-2 |
 | `StoragePlanner`, `InstallPlanSummary`, `DownloadPlanDialog` | `apps/reader/src/routes/library/{StoragePlanner,InstallPlanSummary,DownloadPlanDialog}.tsx:1` | Human medium labels; one-root summary; access recovery; card guidance; writable/shared guard | SHARE-2 |
 | `apply_selection_preference` | `crates/zim-cluster-cache/src/disk/selection.rs:19` | Yield cooperatively while scanning so existing native deadline can fire; avoid repeatedly updating already-prioritized clusters | SHARE-2 |
+| existing `root` DTO fixture | `apps/reader/src/routes/library/library-dyndon.test.tsx:14` | Add required shared/medium fields solely to keep the changed DTO compatible with the production TypeScript compilation, which includes src tests; no new tests or execution | SHARE-2 |
 
 CodeGraph provided the named source definitions. It does not parse the SQL schema
 or build shell; the single storage_roots CHECK definition was read to retain its
