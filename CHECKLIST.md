@@ -2091,3 +2091,11 @@ legacy maxSdk29 read/write permissions. This supports the existing raw-file comm
 store on Android10. API30+ continues to use actual all-files access. Source:
 https://developer.android.com/about/versions/11/privacy/storage#maintain-compatibility-with-android-10
 No new permission UI, background service or private fallback is authorized.
+
+SHARE-1 build-stop integration, same owned `scripts/build_set.py`: in
+`prepare_snapshot`, when process env `ENZIME_SKIP_APP_CHECKS` equals `1`, skip the
+two supplementary preflight invocations `check-ipc-commands.py` and `tsc --noEmit`,
+and log that they were omitted under the operator stop. Always run Vite's emitting
+build and normal native compilation/packaging/signing/artifact manifest work.
+No new CLI, product control, dependencies or test code. Default behavior remains
+unchanged. Root's required post-merge build will set this process-only flag.

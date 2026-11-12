@@ -6959,3 +6959,11 @@ documented register_android_plugin/PluginHandle mobile boundary. No app runtime
 checks, test suites, UI automation or new test project are authorized for these
 tasks. Build compilation and packaging remain part of delivery. Retain the
 published source revision with its corresponding built/deployed artifacts.
+
+For this delivery, `prepare_snapshot` honors build-process-only
+`ENZIME_SKIP_APP_CHECKS=1`: omit the supplementary `check-ipc-commands.py` and
+`tsc --noEmit` preflight processes. Vite's emitting build, native compilation,
+packaging, signing and artifact/source manifest generation continue normally.
+Log the omission explicitly; never claim those app checks passed. This is an
+operator-stop control on the existing build, not a product setting or a new test
+workflow. The default build behavior is unchanged for other invocations.
