@@ -1948,3 +1948,117 @@ Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCod
 **Do:** Implement PackGrid.openInstalledPack in apps/reader/src/routes/library/PackGrid.tsx using readerService.readerOpen, matching identity and nonempty mainPageKey validation, encoded pack/key route, single-flight ref plus disabled tiles, mounted guard and retryable Library error. Existing shared StatusBanner only. Correct OpenPackResponse.mainPageKey to string|null in apps/reader/src/services/readerService.ts; apps/reader/src/stores/readerStore.ts open rejects absent main before state/article calls. Own apps/reader/src/routes/library/pack-entry.test.tsx for router/native boundary regression and vitest.config.ts to include that exact test. In apps/reader/src/routes/reader/ReaderStyles.tsx error/empty containers use explicit opaque dark background/foreground for contrast. Read-only dependencies: libraryService.ts PackManifest, libraryStore.ts, home/shared.tsx StatusBanner, readerStore existing tests and vitest.config.ts. In apps/reader/src/routes/reader/ReaderView.tsx pass the already-decoded useParams article key directly to loadArticle; remove duplicate decodeURIComponent so literal percent sequences survive. Do not change downloader/cache or build snapshot.
 **Verify:** pnpm --dir apps/reader exec vitest run --config vitest.config.ts src/routes/library/pack-entry.test.tsx src/routes/library/library-dyndon.test.tsx src/routes/reader/reader-canvas.test.tsx; pnpm --dir apps/reader exec tsc --noEmit. Use actual existing reader store test path if inventory differs.
 **Accept:** native main key survives routing; double click calls once; failure/null main retry without navigation; unmount ignores response; existing tests/typecheck pass. Packaged download/open/offline/canvas trial remains separate operator verification, followed by whole build-set invocation.
+
+## SHARE-1 / SHARE-2 — Mandatory common resources, physical medium choice
+
+Authority: DOCS/ARCHITECTURE.md, `Mandatory common resource storage — correction,
+2026-11-12`. This restores an existing requirement, not an optional new storage
+mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
+`codex/shared-resource-storage`, base merged PR2 `29b86165dcbf`. Preserve other work.
+
+- [ ] **SHARE-1 — Real common storage at the native acquisition boundary.**
+  **Do:** Own only `.env.example`, `apps/reader/src-tauri/build.rs`,
+  `apps/reader/src-tauri/src/{shared_storage,state,lib}.rs`,
+  `apps/reader/src-tauri/src/ipc/{library,dto}.rs`,
+  `apps/reader/src-tauri/src/ipc/dyndon/{prepare,install}.rs`,
+  `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml`,
+  `apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/SharedStoragePlugin.kt`,
+  and `scripts/build_set.py`. New module/plugin/example have no existing home:
+  `state.rs` manages profile/services and `MainActivity.kt` manages the activity,
+  neither owns resource policy/mobile IPC. Reuse existing crates; add no dependency.
+  Read named files through CodeGraph; config files missing from the graph may be
+  read directly. Read-only dependencies: `apps/reader/src-tauri/src/ipc/{mod.rs,rows.rs}`
+  (actual composition file is `src/ipc.rs`, rows is `src/ipc/rows.rs`),
+  `schemas/sqlite/0001_initial.sql`, `crates/zim-cluster-cache/src/disk/{manifest,store}.rs`.
+  Implement `StorageMedium` serialized as `internal|sdcard`, `SharedStorageRoot`
+  holding path/medium, and `SharedStoragePolicy` holding the compiled primary root,
+  optional configured card and cached real mounted roots. `new(&Path)` derives the
+  desktop common primary from the app-data directory's parent plus `mba.robin`,
+  Android defaults `/storage/emulated/0/mba.robin`. Require absolute roots ending
+  in the configured org storage namespace; reject app-private descendants. Fields
+  in `.env` are build-only: `VITE_APP_NAMESPACE=mba.robin.enzime`,
+  `VITE_STORAGE_SCOPE=common`, `ENZIME_STORAGE_NAMESPACE=mba.robin`,
+  `ENZIME_SHARED_STORAGE_ROOT`, `ENZIME_SHARED_STORAGE_ROOT_ANDROID`,
+  `ENZIME_SHARED_SDCARD_ROOT`. Empty optional roots mean platform defaults/no
+  configured card. Build.rs reads only these keys from root/crate `.env`, process
+  env wins, emits cargo rerun-if-changed/env-changed and rustc-env; reject any scope
+  other than common. `storage_environment` forwards these six keys only into the
+  build snapshot `.env` before lanes copy it; never copy unrelated secrets into
+  snapshot/source archive. Existing source archive exclusions remain intact.
+  Add `AppState.shared_storage: SharedStoragePolicy` initialized by new_with_transfer;
+  private SQLite/annotations remain private. `shared_storage::init` registers the
+  Android Kotlin class `mba.robin.enzime.SharedStoragePlugin` with Tauri's mobile
+  plugin boundary and manages PluginHandle. Android `volumes` returns primary
+  directory, mounted removable directories and accessGranted; API30+ use
+  StorageVolume.directory and Environment.isExternalStorageManager, older supported
+  versions derive the volume from getExternalFilesDirs and use legacy permissions.
+  Kotlin `requestAccess` opens ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION for API30+
+  (fallback system all-files screen), legacy requests actual read/write permission.
+  Always resolve/reject the Invoke; no background runner/service. Manifest declares
+  MANAGE_EXTERNAL_STORAGE and legacy READ/WRITE_EXTERNAL_STORAGE maxSdkVersion29.
+  `request_access` delegates to mobile plugin; desktop needs no access prompt.
+  `storage_roots_list` receives AppHandle, enumerates only real shared roots,
+  creates primary common directory, requires card mount parent already exists,
+  never creates a card mount. If Android access missing, return actionable
+  `shared_storage_access_required`; do not prevent opening the catalog. Upsert IDs
+  `sr-<sha256(canonical path)>`, friendly names `Internal storage` / `SD card`,
+  schema kinds `user_selected` / `removable`. Return only these approved rows,
+  fresh freeBytes and availableBytes using existing policy. DTO adds required
+  `shared: bool` always true and `medium: StorageMedium`. Expose command
+  `shared_storage_request_access` via existing ipc export/generate_handler.
+  At prepare and install start require selected path matches a current policy root
+  and acquire a common `.acquisition.lock` using fs2 try_lock_exclusive, held for
+  the acquisition operation, with an actionable busy error. Keep private legacy
+  restoration read compatibility, disallow new private plan/start. Identical pack
+  edition in `common-root/packs/<version>` reopens existing manifest/bytes. Plan
+  destination returns shared/medium too. No per-app fallback, mock data or silent
+  second copy. Keep current size/strategy formulas intact.
+  **Verify:** Product testing/checking is explicitly stopped. Do not run tests,
+  compiler checks, linters, UI automation, browser/device observations or acceptance
+  exercises in this coder task. Re-read authored regions for implementation
+  consistency; report implementation and any factual gaps. Build only after root
+  publishes and merges the implementation PR, through the sole build_all.sh path.
+  **Accept:** The named implementation is committed and reachable; shared policy,
+  real access recovery and DTO fields are wired end to end. Runtime behavior is
+  unobserved under the operator stop; do not mark it verified.
+
+- [ ] **SHARE-2 — Shared medium presentation and bounded planning.**
+  **Do:** Own `apps/reader/src/services/libraryService.ts`,
+  `apps/reader/src/stores/libraryStore.ts`,
+  `apps/reader/src/routes/library/{StoragePlanner,InstallPlanSummary,DownloadPlanDialog}.tsx`,
+  `crates/zim-cluster-cache/src/disk/selection.rs`. Dependencies read-only:
+  `apps/reader/src/components/home/shared.tsx`, `apps/reader/src/routes/library/downloadBudget.ts`.
+  `StorageDestination` gains required readonly `shared: boolean`,
+  `medium: "internal"|"sdcard"`. Add `libraryService.requestSharedStorageAccess()`
+  invoking `shared_storage_request_access`. `loadStorageRoots` accepts writable
+  common roots only, preserves a valid selected ID or defaults internal then first
+  actual card, invalidates installPlan/planGeneration if selected medium disappears.
+  `setSelectedStorageRoot` accepts only actual writable common roots; no arbitrary ID.
+  `StoragePlanner` uses a plain summary for one medium and existing selectable rows
+  for multiple media, with meaningful internal/card labels and `Shared across your
+  apps`; no namespace string or private-sharing toggle. Root rows disabled while
+  plan/install in flight. Show actual free/available bytes. Loading is named status,
+  not skeleton. Access-required error offers `Allow shared storage access`, wired to
+  the actual command, with errors surfaced and root list refreshed when window
+  regains focus/visibility after system settings. No dependence on network online
+  flag to enumerate local storage. Explain selected SD card: `SD cards can be slower
+  and can be removed. Internal storage is recommended for model files because
+  loading and memory-mapped access can be affected.` The intro explains downloads
+  reuse shared resources across ecosystem apps; user selects medium only.
+  Plan summary names `Storage` using medium + shared status. DownloadPlanDialog
+  canCompute/canStart require selected root shared and writable as well as all
+  existing byte/strategy/stale guards. Retain the viewport portal and design tokens.
+  In apply_selection_preference, yield_now every 64 directory entries before any
+  continue so the existing 180-second timeout stays cooperative; update priority
+  only WHERE priority=0 to avoid repeated writes to an already matched cluster.
+  Never mislabel even mode as successful domain priority. No inference-service work.
+  **Verify:** Same explicit stop as SHARE-1; no tests, UI or compiler checks. Re-read
+  edits for consistency and report changes, without invented behavioral evidence.
+  **Accept:** Source committed/reachable and the actual bridge, state and controls
+  implement the shared-medium contract. Report runtime unobserved, not verified.
+
+Coder report: list task, touched files, actual commands and unobserved behavior.
+Do not commit/push generated artifacts or unrelated files; root handles publication.
+Do not edit architecture. Missing contract fact returns an explicit question to root,
+while independent in-scope implementation continues. You are not alone in the repo;
+preserve concurrent work and adapt rather than reverting other changes.
