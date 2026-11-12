@@ -1956,7 +1956,7 @@ Authority: DOCS/ARCHITECTURE.md, `Mandatory common resource storage — correcti
 mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
 `codex/shared-resource-storage`, base merged PR2 `29b86165dcbf`. Preserve other work.
 
-- [ ] **SHARE-1 — Real common storage at the native acquisition boundary.**
+- [X] **SHARE-1 — Real common storage at the native acquisition boundary.**
   **Do:** Own only `.env.example`, `apps/reader/src-tauri/build.rs`,
   `apps/reader/src-tauri/src/{shared_storage,state,lib}.rs`,
   `apps/reader/src-tauri/src/ipc/{library,dto}.rs`,
@@ -2022,7 +2022,7 @@ mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
   real access recovery and DTO fields are wired end to end. Runtime behavior is
   unobserved under the operator stop; do not mark it verified.
 
-- [ ] **SHARE-2 — Shared medium presentation and bounded planning.**
+- [X] **SHARE-2 — Shared medium presentation and bounded planning.**
   **Do:** Own `apps/reader/src/services/libraryService.ts`,
   `apps/reader/src/stores/libraryStore.ts`,
   `apps/reader/src/routes/library/{StoragePlanner,InstallPlanSummary,DownloadPlanDialog}.tsx`,
@@ -2099,3 +2099,12 @@ and log that they were omitted under the operator stop. Always run Vite's emitti
 build and normal native compilation/packaging/signing/artifact manifest work.
 No new CLI, product control, dependencies or test code. Default behavior remains
 unchanged. Root's required post-merge build will set this process-only flag.
+
+SHARE-1 source consistency detail, same `storage_roots_list` and common root
+module: deduplicate canonical root paths after their namespace directories exist,
+so an initially absent card namespace found through both `.env` and platform
+enumeration produces one row. Establish real write access by opening the existing
+common `.acquisition.lock` file for write/create (without truncation or acquiring
+the operation lock) before returning writable=true. This prepares the real
+coordination metadata, with no synthetic probe files. Omit unwritable cards;
+report actionable primary failures. Do not run a filesystem experiment or check.

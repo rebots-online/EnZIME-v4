@@ -6899,6 +6899,11 @@ pack paths retain the deterministic `packs/<pack_version_id>` convention, so
 another ecosystem app opening the same edition reuses its persisted bytes and
 manifest rather than acquiring another app-local copy. A cross-process file lease
 at the common root serializes acquisition writes between cooperating apps.
+Medium enumeration deduplicates canonical roots after namespace directory
+creation, including a fresh card named both by configuration and platform volume
+enumeration. Opening the actual acquisition-lease file for write establishes
+access before returning `writable: true`; capacity alone does not establish write
+access. Unwritable cards are absent and primary access failures are actionable.
 Private profile SQLite, notes and credentials remain separate from reusable large
 resource files. Foreground apps open common model files directly. This amendment
 does not introduce a background inference service or change the inference engine.
