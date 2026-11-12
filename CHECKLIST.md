@@ -2084,3 +2084,10 @@ SHARE-2 additionally owns the existing typed `root` fixture in
 can compile the changed DTO. Do not add, expand or run tests. This fixture change
 is type compatibility, not a testing task. No compilation/check commands until
 root performs the required build after the PR is merged.
+
+Android10 compatibility detail for SHARE-1: add
+`android:requestLegacyExternalStorage="true"` on `<application>` alongside the
+legacy maxSdk29 read/write permissions. This supports the existing raw-file common
+store on Android10. API30+ continues to use actual all-files access. Source:
+https://developer.android.com/about/versions/11/privacy/storage#maintain-compatibility-with-android-10
+No new permission UI, background service or private fallback is authorized.

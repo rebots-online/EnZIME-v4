@@ -6906,7 +6906,8 @@ does not introduce a background inference service or change the inference engine
 On Android the direct filesystem store needs genuine shared-file access. A small
 Tauri mobile plugin enumerates mounted volumes and opens the system's storage
 permission screen on an explicit `Allow shared storage access` action. Declare
-all-files access for API30+ and legacy read/write permission through API29.
+all-files access for API30+ and legacy read/write permission through API29, with
+`android:requestLegacyExternalStorage="true"` for the Android10 compatibility path.
 Until granted, return `shared_storage_access_required` with the real recovery
 action; catalog browsing remains available. Never claim a private directory is
 shared. A packaged permission declaration does not itself grant access or imply
@@ -6939,7 +6940,7 @@ The existing size formulas, slider and selection modes remain normative.
 | `SharedStoragePolicy`, `SharedStorageRoot`, `StorageMedium`, `init`, `request_access` | `apps/reader/src-tauri/src/shared_storage.rs:1` (new) | Compiled common-root configuration; primary/removable enumeration, allowed-root validation, access recovery, cross-process acquisition lease | SHARE-1 |
 | `SharedStoragePolicy::roots`, `SharedStoragePolicy::require_shared_root`, `AcquisitionLease::acquire`, `StorageMedium::label`, `StorageMedium::root_kind` | same shared storage module | Async real roots and allowed canonical-root check returning StorageMedium; file lease returning AcquisitionLease; friendly label and existing SQLite kind | SHARE-1 |
 | `SharedStoragePlugin`, `volumes`, `requestAccess` | `apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/SharedStoragePlugin.kt:1` (new) | Mounted real volumes and Android system access flow through Tauri Plugin/Invoke | SHARE-1 |
-| shared storage permissions | `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml:3` | All-files API30+, legacy read/write maxSdk29; no background model service | SHARE-1 |
+| shared storage permissions | `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml:3` | All-files API30+, legacy read/write maxSdk29 plus requestLegacyExternalStorage for Android10; no background model service | SHARE-1 |
 | `main` build configuration | `apps/reader/src-tauri/build.rs:1`, `.env.example:1` (new) | Read allowlisted build configuration; rerun on env/file changes; bake keys into Rust; reject non-common scope | SHARE-1 |
 | `storage_environment`, `prepare_snapshot` | `scripts/build_set.py:215` | Forward only the six named storage keys from local `.env`/process into committed-source build snapshots; preserve secret exclusion | SHARE-1 |
 | `AppState::new_with_transfer`, `AppState.shared_storage`, `run` | `apps/reader/src-tauri/src/state.rs:39`, `apps/reader/src-tauri/src/lib.rs:31` | Shared policy and mobile plugin composition; existing private profile preserved | SHARE-1 |
