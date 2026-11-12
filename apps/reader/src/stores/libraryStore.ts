@@ -17,6 +17,7 @@ import {
   libraryService,
   type CatalogEntry,
   type CatalogSearchRequest,
+  type CutStrategy,
   type DownloadJob,
   type InstallPlan,
   type PackManifest,
@@ -93,6 +94,7 @@ export interface LibraryState {
   loadPacks: () => Promise<void>;
   loadDownloads: () => Promise<void>;
   searchCatalog: (request: CatalogSearchRequest) => Promise<void>;
+  invalidateCatalogSearch: () => void;
 
   /** Computes an install plan for `catalogEntryId` into `storageRootId`.
    *  Stores the result in `installPlan` (or an error on that slice). */
@@ -100,6 +102,8 @@ export interface LibraryState {
     catalogEntryId: string,
     storageRootId: string,
     budgetBytes?: number,
+    cutStrategy?: CutStrategy,
+    preferredDomain?: string,
   ) => Promise<void>;
 
   /** Starts the install for a computed plan, then refreshes the download
@@ -194,6 +198,12 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
       });
   },
 
+  invalidateCatalogSearch() {
+    catalogGeneration++;
+    pageLoading = false;
+    set({ catalogEntries: startLoading(emptySlice()), catalogNextOffset: null, catalogTotal: null, catalogNotice: null, catalogSource: null });
+  },
+
   async searchCatalog(request) {
     const generation = ++catalogGeneration; pageLoading = false;
     const query = { ...request, offset: 0, limit: request.limit ?? DEFAULT_PAGE_LIMIT };
@@ -223,7 +233,7 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     } finally { if (generation === catalogGeneration) pageLoading = false; }
   },
 
-  computePlan(catalogEntryId, storageRootId, budgetBytes) {
+  computePlan(catalogEntryId, storageRootId, budgetBytes, cutStrategy, preferredDomain) {
     if (get().installStarting) return Promise.resolve();
     const generation = ++planGeneration;
     set({
@@ -236,6 +246,8 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
         catalogEntryId,
         destinationStorageRootId: storageRootId,
         budgetBytes,
+        cutStrategy,
+        preferredDomain,
       })
       .then((plan) => {
         if (generation !== planGeneration) return;

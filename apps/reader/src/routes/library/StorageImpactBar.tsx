@@ -82,7 +82,7 @@ export function StorageImpactBar({
       <div
         className="lib-bar"
         role="img"
-        aria-label={`Storage fit bar: ${formatBytes(finalBytes)} durable plus ${formatBytes(tempBytes)} temporary of ${formatBytes(free)} free, leaving ${formatBytes(Math.max(0, after))}.`}
+        aria-label={`Storage fit bar: up to ${formatBytes(finalBytes)} reserved plus ${formatBytes(tempBytes)} workspace of ${formatBytes(free)} free, leaving ${formatBytes(Math.max(0, after))} after install.`}
       >
         <span className="lib-bar__track-free" />
         <span
@@ -117,7 +117,7 @@ export function StorageImpactBar({
               background: "linear-gradient(90deg, var(--lib-accent), var(--lib-teal))",
             }}
           />
-          {formatBytes(finalBytes)} kept
+          up to {formatBytes(finalBytes)} reserved
         </span>
         <span>
           <span

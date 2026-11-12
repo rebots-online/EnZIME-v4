@@ -12,7 +12,6 @@ import { useLibraryStore } from "../../stores/libraryStore";
 import type { CatalogEntry } from "../../services/libraryService";
 import {
   RetryButton,
-  SkeletonBlock,
   StatusBanner,
   formatBytes,
 } from "../../components/home/shared";
@@ -33,6 +32,7 @@ export function CatalogBrowser(): ReactNode {
   const loadMore = useLibraryStore(s => s.loadMoreCatalog);
   const slice = useLibraryStore((s) => s.catalogEntries);
   const searchCatalog = useLibraryStore((s) => s.searchCatalog);
+  const invalidateCatalogSearch = useLibraryStore(s => s.invalidateCatalogSearch);
   const setActiveCatalogEntry = useLibraryStore(
     (s) => s.setActiveCatalogEntry,
   );
@@ -62,8 +62,10 @@ export function CatalogBrowser(): ReactNode {
   const entries = slice.data ?? [];
 
   let body: ReactNode;
-  if (state === "loading") {
-    body = <SkeletonBlock lines={4} />;
+  if (language.trim() && !catalogLanguage(language)) {
+    body = null;
+  } else if (state === "loading") {
+    body = <p role="status" aria-live="polite">Fetching available downloads…</p>;
   } else if (state === "populated") {
     body = (
       <ul className="lib-list" aria-label="Catalog results">
@@ -133,9 +135,9 @@ export function CatalogBrowser(): ReactNode {
     <section className="lib-card" aria-labelledby="lib-catalog-heading">
       <header className="lib-card__header">
         <h2 className="lib-card__title" id="lib-catalog-heading">
-          Catalog
+          Available downloads
         </h2>
-        <span className="lib-card__hint">Kiwix · {source === "cache" ? "cached results" : source === "live" ? "live catalog" : "catalog"}</span>
+        <span className="lib-card__hint">{source === "cache" ? "Cached results" : source === "live" ? "Live catalog" : "Catalog"}</span>
       </header>
 
       <div className="lib-search">
@@ -145,7 +147,7 @@ export function CatalogBrowser(): ReactNode {
           inputMode="search"
           placeholder="Search packs — e.g. Wikipedia, TED, Project Gutenberg…"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => { invalidateCatalogSearch(); setQuery(e.target.value); }}
           aria-label="Search catalog"
         />
         <input
@@ -153,7 +155,7 @@ export function CatalogBrowser(): ReactNode {
           type="text"
           placeholder="eng, fra, deu…"
           value={language}
-          onChange={(e) => setLanguage(e.target.value)}
+          onChange={(e) => { invalidateCatalogSearch(); setLanguage(e.target.value); }}
           aria-label="Filter by language (ISO 639-3)"
           style={{ flex: "0 0 8rem" }}
         />

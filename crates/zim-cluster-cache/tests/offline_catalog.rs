@@ -473,3 +473,6 @@ async fn online_miss_persists_canonical_record_before_offline_use() {
         .to_string()
         .contains("catalog_mime_corrupt"));
 }
+
+#[path = "selection/cases.rs"]
+mod selection_cases;

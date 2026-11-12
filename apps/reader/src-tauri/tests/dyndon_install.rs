@@ -27,6 +27,8 @@ async fn native_http_partial_install_restart_and_annotation() {
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     let plan = prepare_dyndon_install(&state, request.clone())
         .await
@@ -203,6 +205,8 @@ async fn failed_and_cancelled_downloads_resume_durable_plan_without_false_activa
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     for budget in [1, u64::MAX] {
         let mut invalid = request.clone();
@@ -297,6 +301,8 @@ async fn published_digest_distinct_budget_editions_share_one_active_location() {
         destination_storage_root_id: "chosen".into(),
         budget_bytes: 16 * 1024 * 1024,
         selection_profile_id: None,
+        cut_strategy: zim_cluster_cache::disk::CutStrategy::Even,
+        preferred_domain: None,
     };
     let first = prepare_dyndon_install(&state, request.clone())
         .await

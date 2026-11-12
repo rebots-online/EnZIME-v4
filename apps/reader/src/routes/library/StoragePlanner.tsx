@@ -12,7 +12,6 @@ import { type ReactNode } from "react";
 import { useLibraryStore } from "../../stores/libraryStore";
 import {
   RetryButton,
-  SkeletonBlock,
   StatusBanner,
   formatBytes,
   resolveState,
@@ -40,16 +39,12 @@ export function StoragePlanner(): ReactNode {
       />
     );
   } else if (state === "loading") {
-    body = <SkeletonBlock lines={2} />;
+    body = <p role="status">Checking available storage…</p>;
   } else if (state === "populated") {
     body = (
       <ul className="lib-list" aria-label="Storage destinations">
         {roots.map((root) => {
           const isSelected = root.storageRootId === selectedId;
-          const showFree =
-            isSelected &&
-            plan &&
-            plan.destination.storageRootId === root.storageRootId;
           return (
             <li key={root.storageRootId}>
               <button
@@ -65,9 +60,7 @@ export function StoragePlanner(): ReactNode {
                   <span className="lib-row__label">{root.displayName}</span>
                   <span className="lib-row__meta">
                     {root.writable ? "writable" : "read-only"}
-                    {showFree && plan ? (
-                      <> · {formatBytes(plan.freeBytesBefore)} free</>
-                    ) : null}
+                    {" · "}{formatBytes(root.freeBytes)} free · {formatBytes(root.availableBytes)} available after system reserve
                   </span>
                 </span>
                 {isSelected ? (

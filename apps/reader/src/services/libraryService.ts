@@ -37,6 +37,8 @@ export type StorageDestination = {
   readonly storageRootId: string;
   readonly displayName: string;
   readonly writable: boolean;
+  readonly freeBytes: number;
+  readonly availableBytes: number;
 };
 
 export type PackManifest = {
@@ -74,6 +76,7 @@ export type CatalogSearchRequest = {
 export interface CatalogPage extends PageResult<CatalogEntry> { readonly source: "live" | "cache"; readonly notice?: string | null }
 
 export type TransferMode = "ranged" | "full" | "local_copy";
+export type CutStrategy = "even" | "prefer_domain";
 
 export type InstallPlanVerification = {
   readonly expectedSizeBytes: number;
@@ -107,6 +110,8 @@ export type InstallPlan = {
   readonly freeBytesAfter: number;
   readonly verification: InstallPlanVerification;
   readonly offlineCatalog?: OfflineCatalogProgress | null;
+  readonly cutStrategy: CutStrategy;
+  readonly preferredDomain: string | null;
 };
 
 export type DownloadJobState =
@@ -164,12 +169,27 @@ function classifyError(raw: unknown): ServiceError {
   return { kind: "recoverable", message, cause: raw };
 }
 
+export async function withDeadline<T>(operation: Promise<T>, milliseconds: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => reject(new Error("Catalog request timed out. Check your connection and retry search.")), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function call<T>(
   command: string,
   args?: Record<string, unknown>,
 ): Promise<T> {
   try {
-    return await invoke<T>(command, args);
+    const operation = invoke<T>(command, args);
+    return await (command === "catalog_search" ? withDeadline(operation, 20_000) : operation);
   } catch (raw) {
     throw classifyError(raw);
   }
@@ -228,6 +248,8 @@ export const libraryService = {
     destinationStorageRootId: string;
     selectionProfileId?: string;
     budgetBytes?: number;
+    cutStrategy?: CutStrategy;
+    preferredDomain?: string;
   }): Promise<InstallPlan> {
     return call<InstallPlan>(
       "install_plan",
@@ -236,6 +258,8 @@ export const libraryService = {
         destinationStorageRootId: args.destinationStorageRootId,
         selectionProfileId: args.selectionProfileId,
         budgetBytes: args.budgetBytes,
+        cutStrategy: args.cutStrategy,
+        preferredDomain: args.preferredDomain,
       }),
     );
   },

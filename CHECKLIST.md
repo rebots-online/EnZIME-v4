@@ -233,7 +233,9 @@ is constrained to that amendment's entities, formulas, strings and named files.
   input `Preferred domain or topic` in DownloadPlanDialog, with the architecture's
   explanation of title/domain matching. Include both in stale-plan guards and
   result DTO/summary. Wrap native planning in a 180-second deadline. Update the
-  named native test constructors. Test actual chosen cluster identities for even
+  named native test constructors. The existing offline_catalog fixture is reused
+  by a child `crates/zim-cluster-cache/tests/selection/cases.rs` to keep the parent
+  below 500 lines. Test actual chosen cluster identities for even
   spread, domain priority, no match, indivisible oversized clusters, mandatory
   main page, strategy identity and peak byte bounds. Check disk/plan.rs's existing
   query-plan test still verifies indexed scans. Do not change publication or

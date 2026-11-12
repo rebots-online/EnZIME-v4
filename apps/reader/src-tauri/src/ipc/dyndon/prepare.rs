@@ -50,7 +50,16 @@ pub async fn prepare_dyndon_install(
     state: &AppState,
     request: DynDonInstallRequest,
 ) -> Result<InstallPlanDto, String> {
-    let _gate = state.acquisition_gate.lock().await;
+    let preferred_domain = match request.cut_strategy {
+        CutStrategy::Even => None,
+        CutStrategy::PreferDomain => {
+            let domain = request.preferred_domain.as_deref().unwrap_or("").trim();
+            if domain.chars().count() > 120 || !domain.split(',').any(|term| !term.trim().is_empty()) {
+                return Err("Enter a domain or topic of at most 120 characters to prioritize.".into());
+            }
+            Some(domain.to_lowercase())
+        }
+    };
     let entry = super::super::kiwix::load_entry(state, &request.catalog_entry_id)?;
     let root = {
         let conn = state.conn.lock().map_err(err_str)?;
@@ -62,8 +71,7 @@ pub async fn prepare_dyndon_install(
         return Err("storage_root_read_only".into());
     }
     let free = fs2::available_space(&root.platform_locator).map_err(err_str)?;
-    let reserve = (256 * 1024 * 1024u64).max(free / 20);
-    let available = free.saturating_sub(reserve);
+    let available = DiskPackPolicy::available_bytes(free);
     let budget = if request.budget_bytes == 0 {
         (1024 * 1024 * 1024).min(available)
     } else {
@@ -74,6 +82,7 @@ pub async fn prepare_dyndon_install(
             "budget_exceeded: requested {budget}, available after reserve {available}"
         ));
     }
+    let _gate = state.acquisition_gate.lock().await;
     let acquisition =
         catalog_openzim::kiwix::KiwixCatalogClient::new(state.transfer_source.clone())
             .resolve(&entry)
@@ -132,7 +141,7 @@ pub async fn prepare_dyndon_install(
     let pack_id = format!("pack-{}", digest(entry.id.as_bytes()));
     let intent = selection_intent(state, request.selection_profile_id.as_deref(), budget)?;
     let edition_hash =
-        digest(&serde_json::to_vec(&(&identity_hash, &intent, budget)).map_err(err_str)?);
+        digest(&serde_json::to_vec(&(&identity_hash, &intent, budget, request.cut_strategy, &preferred_domain)).map_err(err_str)?);
     let pack_version_id = format!("version-{edition_hash}");
     let main_page = main.key.0.clone();
     let metadata = ZimMetadata {
@@ -206,7 +215,7 @@ pub async fn prepare_dyndon_install(
     // Persist and pin the actual redirect target's metadata before planning sweeps.
     index.main_entry().await.map_err(err_str)?;
 
-    plan_disk_fit(store.clone(), index.clone(), intent, &[main_cluster]).await?;
+    plan_disk_fit_with_preference(store.clone(), index.clone(), intent, &[main_cluster], preferred_domain.as_deref()).await?;
     discover_offline_entries(store.clone(), index).await?;
     let offline_catalog = store.catalog_planned_progress()?;
     let summary = store.planned_summary()?;
@@ -245,13 +254,17 @@ pub async fn prepare_dyndon_install(
             storage_root_id: root.storage_root_id,
             display_name: root.display_name,
             writable: true,
+            free_bytes: free,
+            available_bytes: available,
         },
         transfer_mode: TransferModeDto::Ranged,
         download_bytes: summary.selected_bytes,
         temporary_bytes: summary.workspace_reserved_bytes,
         final_bytes: summary.selected_bytes + summary.metadata_reserved_bytes,
         free_bytes_before: free,
-        free_bytes_after: free - budget,
+        free_bytes_after: free - summary.selected_bytes - summary.metadata_reserved_bytes,
+        cut_strategy: request.cut_strategy,
+        preferred_domain,
         offline_catalog: Some(OfflineCatalogProgressDto::from(offline_catalog)),
         verification: InstallPlanVerificationDto {
             expected_size_bytes: probe.size_bytes,

@@ -19,6 +19,7 @@ export function InstallPlanSummary({
   return (
     <div className="lib-summary" aria-label="Install plan summary">
       <Row k="Destination" v={plan.destination.displayName} />
+      <Row k="Content selection" v={plan.cutStrategy === "prefer_domain" ? `Prioritize: ${plan.preferredDomain}` : "Spread cuts evenly"} />
       <Row
         k="Transfer mode"
         v={transferLabel(plan.transferMode)}
@@ -35,8 +36,10 @@ export function InstallPlanSummary({
         <p>Planned entries become available offline after their content finishes downloading. Metadata traffic is separate from the planned content download; retained metadata uses your storage budget.</p>
         {!catalog.complete ? <p role="status">Partial catalog discovery: {catalog.stopReason === "metadata_budget" ? "the metadata storage budget was reached" : "the metadata transfer allowance was reached"}. This plan covers the indexed subset shown above, not every article in the source archive.</p> : null}
       </> : null}
-      <Row k="Temporary scratch" v={formatBytes(plan.temporaryBytes)} />
-      <Row k="Final footprint" v={formatBytes(plan.finalBytes)} />
+      <Row k="Index reserve (maximum)" v={formatBytes(Math.max(0, plan.finalBytes - plan.downloadBytes))} />
+      <Row k="Workspace reserve" v={formatBytes(plan.temporaryBytes)} />
+      <Row k="Reserved (maximum)" v={formatBytes(plan.finalBytes)} />
+      <Row k="Peak storage (maximum)" v={formatBytes(plan.finalBytes + plan.temporaryBytes)} />
       <Row k="Free before" v={formatBytes(plan.freeBytesBefore)} />
       <Row
         k="Free after"

@@ -15,6 +15,9 @@ pub struct DiskPackPolicy {
     pub offline: bool,
 }
 impl DiskPackPolicy {
+    pub fn available_bytes(free: u64) -> u64 {
+        free.saturating_sub((256 * 1024 * 1024).max(free / 20))
+    }
     pub fn payload_budget(&self) -> Result<u64, String> {
         self.disk_budget_bytes
             .checked_sub(self.metadata_budget_bytes)

@@ -6827,7 +6827,7 @@ line 1. The named paths are the complete implementation scope for CAT-1..CAT-3.
 | `CutStrategy`, `apply_selection_preference`, `subject_matches` | `crates/zim-cluster-cache/src/disk/selection.rs:1` | Serializable closed enum; metadata-derived priority; actionable no-match error | CAT-3 |
 | `plan_disk_fit_with_preference`, `plan_disk_fit`, `stage_candidates`, `CANDIDATE_SCAN` | `crates/zim-cluster-cache/src/disk/plan.rs:38` | Existing API wraps even mode; new API applies preference; indexed even traversal | CAT-3 |
 | disk exports | `crates/zim-cluster-cache/src/disk/mod.rs:14` | Export new strategy and planner without hiding the existing API | CAT-3 |
-| catalog and fit tests | `apps/reader/src/routes/library/library-dyndon.test.tsx:1`, `apps/reader/src/routes/library/downloadBudget.test.ts:1`, `apps/reader/src-tauri/tests/dyndon_install.rs:1`, `crates/zim-cluster-cache/tests/offline_catalog.rs:1`, selection module tests | Real arithmetic, stale/error lifecycle, changed selection and byte bounds | CAT-1, CAT-2, CAT-3 |
+| catalog and fit tests | `apps/reader/src/routes/library/library-dyndon.test.tsx:1`, `apps/reader/src/routes/library/downloadBudget.test.ts:1`, `apps/reader/src-tauri/tests/dyndon_install.rs:1`, `crates/zim-cluster-cache/tests/offline_catalog.rs:1` and its `tests/selection/cases.rs` child, selection module tests | Real arithmetic, stale/error lifecycle, changed selection and byte bounds; the child keeps the existing 476-line test file below its size limit | CAT-1, CAT-2, CAT-3 |
 
 ### Delivery and operator verification protocol
 

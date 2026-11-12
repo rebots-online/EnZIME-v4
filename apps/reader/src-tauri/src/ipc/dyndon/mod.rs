@@ -2,7 +2,7 @@
 use super::*;
 use std::path::PathBuf;
 use zim_cluster_cache::disk::{
-    discover_offline_entries, install_selected, open_disk_archive, plan_disk_fit, DiskPackManifest,
+    discover_offline_entries, install_selected, open_disk_archive, plan_disk_fit_with_preference, CutStrategy, DiskPackManifest,
     DiskPackPolicy, DiskPackStore, DiskRangeSource, OfflineCatalogProgress, PlanSummary,
     SourceIdentity,
 };
@@ -18,6 +18,10 @@ pub struct DynDonInstallRequest {
     pub destination_storage_root_id: String,
     pub budget_bytes: u64,
     pub selection_profile_id: Option<String>,
+    #[serde(default)]
+    pub cut_strategy: CutStrategy,
+    #[serde(default)]
+    pub preferred_domain: Option<String>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DynDonPlanRecord {
