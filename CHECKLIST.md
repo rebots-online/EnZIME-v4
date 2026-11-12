@@ -159,6 +159,93 @@ written before dispatch.
   placeholder content, all platforms (operator, 2026-11-10).
 - [ ] **D9** Reader frame is white below the end of a short article while the article area is dark.
 - [ ] **D10** Plan for a 1.8 MB pack states "66 MB kept" and a 66 MB final footprint.
+
+## Catalog and size selection — operator request 2026-11-12
+
+Authority: `DOCS/ARCHITECTURE.md`, "Catalog display and size-controlled acquisition
+— 2026-11-12". The operator explicitly authorized implementation through published
+PR, build, deployment and observed behavior. Preserve unrelated work. Implementation
+is constrained to that amendment's entities, formulas, strings and named files.
+
+- [ ] **CAT-1 Real available downloads.**
+  **Do:** In `CatalogBrowser.tsx`, replace the provider-branded header with
+  `Available downloads` and neutral source hints. Replace the skeleton with
+  `Fetching available downloads…` (`role=status`). In `libraryStore.ts`, expose
+  `invalidateCatalogSearch()` to advance the generation and invalidate a pending
+  query before input debounce; keep real pagination results. Continue guarding
+  success and failure by generation. In `libraryService.ts`, implement
+  `withDeadline<T>(Promise<T>, milliseconds)` with a cleared timer and apply a
+  20-second deadline only to `catalog_search`. In native `ipc/kiwix.rs`, wrap the
+  live search in a 15-second Tokio deadline and route failure through the existing
+  real-cache branch; remove provider branding from user-facing notices/errors.
+  Preserve source IDs, cache schema, actual publisher attribution and live parser.
+  Update `library-dyndon.test.tsx` to cover actual result rendering, neutral heading,
+  timeout-to-retry and stale-request rejection without release-mode test doubles.
+  **Verify:** `pnpm --filter @enzime/reader exec vitest run --config vitest.config.ts src/routes/library/library-dyndon.test.tsx`.
+  **Accept:** Exits 0; the assertions cover the stated rendering and lifecycle.
+
+- [ ] **CAT-2 Honest size bounds and preferred-size slider.**
+  **Do:** Add `DiskPackPolicy::available_bytes(free:u64)->u64` in disk/manifest.rs
+  using the amendment's system-reserve formula. Extend `StorageDestinationDto`
+  and frontend `StorageDestination` with `freeBytes`/`availableBytes`; refresh the
+  OS probe for every writable root in `storage_roots_list`. Extend the plan's
+  embedded destination likewise. Add `downloadBudget.ts` exporting
+  `MIN_BUDGET_BYTES=16*1024**2`, `payloadCapacity(budget:number):number`, and
+  `downloadBudgetBounds(available:number,sourceSize:number):{min:number,max:number}`.
+  Binary-search the smallest full-archive budget, cap by available, and handle
+  unknown size and insufficient space exactly as the architecture states.
+  Bind these helpers in `DownloadPlanDialog` to the native range input labelled
+  `Preferred storage size`, the existing precise numeric/unit controls, initial
+  min(1 GiB,max), clamping on destination changes, max validation and a stale-plan
+  guard. Use actual probe size after planning. Replace storage/planning skeletons
+  with named status text and elapsed planning seconds. In `StoragePlanner`, show
+  fresh free/available values. In `InstallPlanSummary` and `StorageImpactBar`, label
+  finalBytes `Reserved (maximum)` / `up to … reserved`, separately show payload,
+  index reserve, workspace and peak. Correct native `freeBytesAfter` to free minus
+  finalBytes and retain peak <= requested budget. Revalidate before acquisition
+  lock. Update existing test fixtures for the new root fields and add
+  `downloadBudget.test.ts` for fractional bytes, source caps, zero/low capacity,
+  unit changes and invariants. No synthetic capacities or fake fit results.
+  **Verify:** `pnpm --filter @enzime/reader exec tsc --noEmit` and
+  `pnpm --filter @enzime/reader exec vitest run --config vitest.config.ts src/routes/library/downloadBudget.test.ts src/routes/library/library-dyndon.test.tsx`.
+  **Accept:** All commands exit 0; bounds and peak assertions pass.
+
+- [ ] **CAT-3 Meaningful domain priority and evenly spread cuts.**
+  **Do:** In disk/selection.rs, define serializable/default `CutStrategy` with
+  `even` and `prefer_domain`, `subject_matches(key:&str,terms:&[String])->bool`,
+  and async `apply_selection_preference(store:&DiskPackStore,index:&RemoteZimIndex,
+  preferred_domain:Option<&str>)->Result<(),String>`. Normalize comma-separated
+  subject terms, compare real source domain labels and normalized article keys,
+  resolve redirects with `resolve_records`, and mark matching clusters priority 1.
+  Error on empty or >120-character priority input and on no matches. Never silently
+  fall back. Existing plan.rs gets `plan_disk_fit_with_preference` with the same
+  first four parameters as `plan_disk_fit` plus `preferred_domain:Option<&str>`;
+  `plan_disk_fit` wraps it with None. Apply metadata-derived priority after all
+  cluster ranges are known and before `stage_candidates`. Add an integer
+  `spread_rank` to the on-disk planning table, computed from cluster_index's
+  `reverse_bits`; scan by priority DESC, spread_rank ASC, cluster_index ASC using
+  a matching covering index. Preserve profile filters, pinned clusters, byte
+  bounds, bounded batches and existing exports; export the new entities in
+  disk/mod.rs. Extend `DynDonInstallRequest`, `install_plan`, service and store
+  computePlan with optional/default strategy and preferredDomain; validate before
+  waiting for acquisition and include normalized strategy/subject in edition
+  identity. Bind radio controls `Spread cuts evenly` / `Prioritize a domain` and
+  input `Preferred domain or topic` in DownloadPlanDialog, with the architecture's
+  explanation of title/domain matching. Include both in stale-plan guards and
+  result DTO/summary. Wrap native planning in a 180-second deadline. Update the
+  named native test constructors. Test actual chosen cluster identities for even
+  spread, domain priority, no match, indivisible oversized clusters, mandatory
+  main page, strategy identity and peak byte bounds. Check disk/plan.rs's existing
+  query-plan test still verifies indexed scans. Do not change publication or
+  entitlement behavior.
+  **Verify:** `cargo test -p zim-cluster-cache --lib --tests --offline` and
+  `cargo test -p reader --test dyndon_install --offline`, plus CAT-2 frontend checks.
+  **Accept:** Commands exit 0; selected bytes and peak stay within the stated bounds,
+  and strategy tests demonstrate different retained cluster identities under cuts.
+
+Runtime acceptance: use the amendment's operator verification protocol and the
+catalog rows in `DOCS/TEST_RUBRIC.md`. Runtime checks are recorded separately from
+these idempotent Accept clauses. Written is `[X]`; observed passing commands are ✅.
   Cause located: the plan reserves an index allowance of `min(64 MiB, budget / 8)`
   (`apps/reader/src-tauri/src/ipc/dyndon/prepare.rs:157`); with the default 1 GiB budget that is 64 MiB, and the
   dialog adds it to the 1.8 MB of content and labels the sum "kept". The figure is a reserved maximum, not what
