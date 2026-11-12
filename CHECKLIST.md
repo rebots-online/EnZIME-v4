@@ -205,7 +205,9 @@ is constrained to that amendment's entities, formulas, strings and named files.
   finalBytes and retain peak <= requested budget. Revalidate before acquisition
   lock. Update existing test fixtures for the new root fields and add
   `downloadBudget.test.ts` for fractional bytes, source caps, zero/low capacity,
-  unit changes and invariants. No synthetic capacities or fake fit results.
+  unit changes and invariants. Register the test in apps/reader/vitest.config.ts,
+  whose existing explicit include list otherwise excludes new files. No synthetic
+  capacities or fake fit results.
   **Verify:** `pnpm --filter @enzime/reader exec tsc --noEmit` and
   `pnpm --filter @enzime/reader exec vitest run --config vitest.config.ts src/routes/library/downloadBudget.test.ts src/routes/library/library-dyndon.test.tsx`.
   **Accept:** All commands exit 0; bounds and peak assertions pass.
