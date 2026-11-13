@@ -2132,3 +2132,11 @@ that record but UUID lookup returns 404 in the current reader; path lookup retur
 the exact revision 1 and matching digest. Root has actually retrieved that content.
 An unrun Rust test-only fixture is not a production build prerequisite. Do not
 expand native test work under the operator stop; continue the source delivery.
+
+SHARE-1 final source alignment: in `build.rs::main`, emit rerun-if-changed for
+both known `.env` paths before attempting to read them, including when a file is
+currently absent, so creating `.env` later triggers recompilation. In `state.rs`
+and `lib.rs`, replace the stale app_data_dir comments claiming it is the default
+download/storage root: it now holds the private profile/SQLite/annotation state,
+while shared_storage owns the large-resource roots. Do not change behavior beyond
+the required build-file tracking or run any commands/checks.
