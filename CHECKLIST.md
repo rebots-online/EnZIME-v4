@@ -2140,3 +2140,15 @@ and `lib.rs`, replace the stale app_data_dir comments claiming it is the default
 download/storage root: it now holds the private profile/SQLite/annotation state,
 while shared_storage owns the large-resource roots. Do not change behavior beyond
 the required build-file tracking or run any commands/checks.
+
+SHARE-1 build-snapshot `.env` forwarding: `build_all.sh` does not source `.env`, so
+`storage_environment(env=None, root=None)` itself must read only the six named keys
+from `<root>/.env`, with crate-local `.env` as fallback, before applying process
+environment and fixed defaults. Root defaults to this script's repository parent;
+`prepare_snapshot` passes `root=repo`. Precedence matches build.rs: process wins,
+then root `.env`, then crate-local `.env`, then defaults. Missing files are normal;
+other I/O failures remain explicit. Ignore comments/unrecognized keys, parse
+literal KEY=VALUE and matching quoted values without executing/interpolating
+anything, never log file contents or copy any other key. Validate common scope
+after resolution. This completes the existing six-key contract; no new files,
+dependencies or test/check commands. Only scripts/build_set.py is writable.
