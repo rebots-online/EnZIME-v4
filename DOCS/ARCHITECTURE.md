@@ -6991,7 +6991,7 @@ Authority: Robin's explicit instruction: always use build_all.sh for the full pl
 
 | Exact entity | Target | Responsibility |
 |---|---|---|
-| `build_all.sh` | `build_all.sh:1` | Existing sole build entry. Run its existing child normally instead of exec. Under existing set -euo pipefail, only after child success, advance the next source version, commit only the two canonical version files with [skip ci], push, and report built versus next-source versions. |
+| `build_all.sh` | `build_all.sh:1` | Existing sole build entry. Run its existing child normally instead of exec. Under existing set -euo pipefail, only after child success, advance the next source version, commit only the two canonical version files with a v<next-source-version>: prefix and [skip ci], push, and report built versus next-source versions. |
 | `version.txt` | `version.txt:1` | Existing canonical MAJOR.MINOR.BUILD. Post-success increment keeps MAJOR, adds one to MINOR, and computes BUILD using the existing epoch-minutes modulo 100000 scheme; display BUILD padded to five digits. |
 | `version.json` | `version.json:1` | Preserve existing product fields. Reflect the same next version in version, semver (unpadded numeric BUILD), versionBase, buildNumber, versionCode, buildDate; builtAt is null for the next unbuilt source state. |
 
