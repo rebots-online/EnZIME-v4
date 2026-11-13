@@ -467,7 +467,7 @@ Purpose: adjust policies and protect work without exposing application internals
 | Local AI: actual model selection/resource state | Dedicated optional group | Keeps setup available without making it a prerequisite. Common-file reuse is explained where helpful. |
 | Activation and Restore | Purchase group with actual entitlement status | One-time purchase only, actual store information, no account/enterprise tier. |
 | Backup / Restore | Data group with file/passphrase, scope and restore preview | Protects personal work. Show real progress and conflicts; preserve last-good state on failure. Never hard-code encryption or success claims absent from the service. |
-| Privacy / analytics consent | Explicit opt-in controls and concise data explanation | Lets people control actual collection, never a fake privacy badge. |
+| Privacy / analytics consent | Explicit opt-in controls and concise data explanation | The existing optional analytics records screen visits and feature-use events under a random installation identifier; it excludes article titles, queries, notes, recordings, filenames and licence keys. Label it “Share anonymous usage statistics,” not crash reporting. No additional crash-reporting service is introduced by a generated screen. The build-time configuration determines the enabled provider. |
 | Help / shortcuts | Task-based guidance: acquire, fit, read, annotate, explore, export, restore | Explains unfamiliar user actions. It does not ask readers to understand M1, internal readiness or namespaces. |
 | About / licences / diagnostics export | Secondary group | Meets attribution/support needs without cluttering Home. Diagnostics preview/redaction and explicit export preserve consent. Version is actual. |
 

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Settings and Help</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#ffba43",
+            "secondary": "#46ebdf",
+            "inverse-surface": "#e2e1ee",
+            "inverse-on-surface": "#2e3039",
+            "primary-container": "#7c8cff",
+            "surface-bright": "#373942",
+            "on-tertiary-fixed": "#281800",
+            "on-primary-container": "#001892",
+            "surface": "#11131b",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed": "#ffddaf",
+            "secondary-fixed": "#59f9ed",
+            "on-primary": "#041c94",
+            "inverse-primary": "#4353c3",
+            "surface-container-lowest": "#0c0e16",
+            "primary-fixed": "#dfe0ff",
+            "surface-dim": "#11131b",
+            "on-secondary": "#003733",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-container": "#1d1f28",
+            "surface-container-highest": "#33343e",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "surface-tint": "#bcc3ff",
+            "primary-fixed-dim": "#bcc3ff",
+            "error": "#ffb4ab",
+            "on-tertiary-container": "#402900",
+            "on-secondary-fixed-variant": "#00504b",
+            "secondary-container": "#00cec3",
+            "tertiary-container": "#c88900",
+            "tertiary": "#ffba43",
+            "primary": "#bcc3ff",
+            "on-secondary-container": "#00534e",
+            "error-container": "#93000a",
+            "on-background": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-error": "#690005",
+            "on-primary-fixed": "#000c60",
+            "on-surface": "#e2e1ee",
+            "on-tertiary": "#442c00",
+            "surface-container-high": "#282a32",
+            "outline": "#8f8f9f",
+            "on-primary-fixed-variant": "#2839aa",
+            "outline-variant": "#454653",
+            "surface-variant": "#33343e",
+            "secondary-fixed-dim": "#2eddd1",
+            "surface-container-low": "#191b24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "card": "22px",
+            "field": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "gutter": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin": "1rem",
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem"
+          },
+          "fontFamily": {
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom aurora ambient background layer */
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(ellipse 70% 45% at 20% 15%, rgba(124, 140, 255, 0.08), transparent 75%),
+        radial-gradient(ellipse 60% 40% at 85% 75%, rgba(52, 224, 212, 0.05), transparent 70%),
+        radial-gradient(ellipse 50% 50% at 50% 40%, rgba(29, 31, 40, 0.6), transparent 100%);
+    }
+
+    /* Glass card styling adhering to specs */
+    .glass-card {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 22px;
+    }
+
+    .glass-field {
+      background: rgba(14, 17, 27, 0.85);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 14px;
+      color: #F4F6FF;
+    }
+
+    .glass-field:focus-within {
+      border-color: #7C8CFF;
+      box-shadow: 0 0 0 2px rgba(124, 140, 255, 0.2);
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(9, 11, 19, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.18);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(189, 198, 255, 0.35);
+    }
+  </style>
+</head>
+<body class="relative min-h-screen text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Aurora Backing -->
+<div class="aurora-bg"></div>
+<!-- ======================================================== -->
+<!-- DESKTOP LEFT RAIL (EXACT 104px FIXED WIDTH AS REQUIRED) -->
+<!-- ======================================================== -->
+<aside class="hidden md:flex flex-col items-center justify-between fixed left-0 top-0 h-screen z-50 py-space-lg select-none" style="width: 104px; background: rgba(23, 28, 44, 0.72); backdrop-filter: blur(24px); border-right: 1px solid rgba(189, 198, 255, 0.14);">
+<!-- Brand Mark (Z Logo) -->
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 rounded-xl flex items-center justify-center bg-surface-container-high/80 border border-outline-variant/40 shadow-inner group">
+<span class="font-headline-lg text-headline-lg font-bold text-primary tracking-tighter select-none">Z</span>
+</div>
+<span class="mt-2 text-[10px] tracking-widest font-mono uppercase text-outline">READER</span>
+</div>
+<!-- Nav Items (Stacked Icon + Label) -->
+<!-- Tab items: Home, Library, Ask, Notes, Memory, Settings (Active) -->
+<nav class="flex flex-col items-center gap-1.5 w-full px-2">
+<!-- 1. Home -->
+<a class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group" href="#" title="Home">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">home</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-medium">Home</span>
+</a>
+<!-- 2. Library -->
+<a class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group" href="#" title="Library">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">local_library</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-medium">Library</span>
+</a>
+<!-- 3. Ask -->
+<a class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group" href="#" title="Ask">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">contact_support</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-medium">Ask</span>
+</a>
+<!-- 4. Notes -->
+<a class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group" href="#" title="Notes">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">description</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-medium">Notes</span>
+</a>
+<!-- 5. Memory -->
+<a class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group" href="#" title="Memory">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform">memory</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-medium">Memory</span>
+</a>
+<!-- 6. Settings [ACTIVE] -->
+<a aria-current="page" class="w-full h-[58px] flex flex-col items-center justify-center rounded-xl text-primary bg-primary/10 border border-primary/30 shadow-[0_0_16px_rgba(124,140,255,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px] text-primary" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 tracking-tight font-semibold text-primary">Settings</span>
+</a>
+</nav>
+<!-- Rail Footer Utilities -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-secondary/80 shadow-[0_0_8px_#34E0D4]" title="Offline Ready"></div>
+<span class="font-label-mono-sm text-[9px] text-outline font-mono">LOCAL</span>
+</div>
+</aside>
+<!-- ======================================================== -->
+<!-- TOP APP BAR                                             -->
+<!-- Desktop: 104px left margin & explicit width              -->
+<!-- Mobile: standard flex banner                            -->
+<!-- Desktop content: ONLY Z logo EnZIME Reader & Search Bar -->
+<!-- ======================================================== -->
+<header class="sticky top-0 z-40 h-16 flex items-center justify-between px-space-md md:px-space-lg backdrop-blur-md" id="main-topbar" style="background: rgba(23, 28, 44, 0.72); border-bottom: 1px solid rgba(189, 198, 255, 0.14);">
+<!-- Left Section: Z logo + Brand Name (EnZIME Reader) -->
+<div class="flex items-center gap-3">
+<!-- Mobile brand mark (hidden on desktop because of rail) -->
+<div class="md:hidden w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-high border border-outline-variant/40">
+<span class="text-primary font-bold text-lg">Z</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">EnZIME Reader</span>
+<span class="hidden sm:inline-block text-outline font-body-md text-body-md">/</span>
+<span class="hidden sm:inline-block font-body-md text-body-md text-on-surface-variant font-medium">Settings</span>
+</div>
+</div>
+<!-- Center/Right: Search Bar -->
+<div class="relative w-48 sm:w-72 md:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-body-md font-body-md rounded-lg glass-field text-on-surface placeholder:text-outline focus:outline-none text-sm transition-all" placeholder="Search settings, topics, keys..." type="search"/>
+</div>
+</header>
+<!-- Script to enforce exact style constraint on Desktop for TopBar -->
+<script>
+    function updateDesktopDimensions() {
+      const topbar = document.getElementById('main-topbar');
+      const mainContent = document.getElementById('main-canvas');
+      if (window.innerWidth >= 768) {
+        topbar.style.marginLeft = '104px';
+        topbar.style.width = 'calc(100% - 104px)';
+        mainContent.style.marginLeft = '104px';
+        mainContent.style.width = 'calc(100% - 104px)';
+      } else {
+        topbar.style.marginLeft = '0px';
+        topbar.style.width = '100%';
+        mainContent.style.marginLeft = '0px';
+        mainContent.style.width = '100%';
+      }
+    }
+    window.addEventListener('resize', updateDesktopDimensions);
+    window.addEventListener('DOMContentLoaded', updateDesktopDimensions);
+  </script>
+<!-- ======================================================== -->
+<!-- MAIN CONTENT AREA                                        -->
+<!-- Desktop: explicit style ml:104px & width calc(100%-104px) -->
+<!-- ======================================================== -->
+<main class="relative z-10 px-4 md:px-8 py-6 pb-28 md:pb-16 max-w-7xl" id="main-canvas">
+<!-- Page Header Title block -->
+<section class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/[0.06] pb-6"><div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1 max-w-2xl">
+Manage your storage, reading preferences, offline model, and backups.
+</p>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#storage">Storage</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#downloads">Downloads</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#reading">Reading</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#local-ai">Local AI</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" href="#data">Data</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-label-mono-md font-medium text-primary bg-primary/10 transition-colors" href="#help">Help</a>
+</div></section>
+<!-- SETTINGS MODULE GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- ======================================================== -->
+<!-- 1. STORAGE SECTION (ACTUAL BOUND VALUES ONLY)           -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-8 flex flex-col justify-between" id="storage"><div class="space-y-4">
+<div class="flex items-center gap-2.5 mb-2">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">folder_special</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Storage</h2>
+<p class="font-label-mono-sm text-outline">Device storage location</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+Large downloads are shared with your other apps to avoid duplicate copies.
+</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+<label class="cursor-pointer border border-primary/40 bg-surface-container-high/40 rounded-xl p-4 flex flex-col justify-between transition-all hover:border-primary min-h-[44px]">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">save</span>
+<span class="font-body-md font-medium text-on-surface">Internal storage</span>
+</div>
+<input checked="" class="text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" name="storage_medium" type="radio"/>
+</div>
+<p class="text-xs text-outline font-body-md mt-3">Primary local device storage for downloads and books.</p>
+</label>
+<label class="cursor-pointer border border-outline-variant/30 bg-surface-container-lowest/50 rounded-xl p-4 flex flex-col justify-between transition-all hover:border-outline min-h-[44px]">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[20px]">sd_card</span>
+<span class="font-body-md font-medium text-on-surface">Removable SD Card</span>
+</div>
+<input class="text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" name="storage_medium" type="radio"/>
+</div>
+<p class="text-xs text-outline font-body-md mt-3">A memory card can hold more books. Models may respond more slowly from a card.</p>
+</label>
+</div>
+</div></div>
+<!-- Script for SD Guidance Toggle -->
+<script>
+        function toggleSdGuidance(isChecked) {
+          const banner = document.getElementById('sd-guidance');
+          if (isChecked) {
+            banner.classList.remove('hidden');
+          } else {
+            banner.classList.add('hidden');
+          }
+        }
+        // Listen to radio changes
+        document.querySelectorAll('input[name="storage_medium"]').forEach(r => {
+          r.addEventListener('change', function() {
+            toggleSdGuidance(document.getElementById('sd-card-option').querySelector('input').checked);
+          });
+        });
+      </script>
+<!-- ======================================================== -->
+<!-- 2. DOWNLOADS SECTION (NETWORK POLICY)                   -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-4 flex flex-col justify-between" id="downloads"><div>
+<div class="flex items-center gap-2.5 mb-4">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">cloud_download</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Downloads</h2>
+<p class="font-label-mono-sm text-outline">Download connection &amp; transfer preferences</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-5">
+Control how and when books and knowledge packs download to your device.
+</p>
+<div class="space-y-4">
+<div>
+<label class="block font-label-mono-md text-xs text-on-surface-variant mb-2">Network policy</label>
+<div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-container-lowest border border-outline-variant/30">
+<button class="min-h-[40px] px-3 py-2 rounded-lg text-xs font-medium bg-primary/20 text-primary border border-primary/40 flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span>Wi-Fi only</span>
+</button>
+<button class="min-h-[40px] px-3 py-2 rounded-lg text-xs font-medium text-outline hover:text-on-surface flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">cell_tower</span>
+<span>Any connection</span>
+</button>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono-md text-xs text-on-surface-variant">Simultaneous downloads</label>
+<span class="font-mono text-xs text-primary">2</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-lowest rounded-lg appearance-none cursor-pointer accent-primary" max="4" min="1" type="range" value="2"/>
+<div class="flex justify-between text-[10px] text-outline font-mono mt-1">
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</div>
+</div>
+<label class="min-h-[44px] flex items-center justify-between cursor-pointer pt-2 border-t border-white/[0.04]">
+<span class="text-xs font-body-md text-on-surface">Auto-resume downloads</span>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" type="checkbox"/>
+</label>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 3. READING SECTION (TYPOGRAPHY PREFERENCES)             -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-12" id="reading">
+<div class="flex items-center gap-2.5 mb-4">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">auto_stories</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Reading</h2>
+<p class="font-label-mono-sm text-outline">Article canvas typography, spacing &amp; ocular comfort</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Font Family Selector -->
+<div class="space-y-2">
+<label class="block font-label-mono-md text-xs text-on-surface-variant font-medium">Reader Typeface</label>
+<div class="space-y-2">
+<label class="min-h-[44px] px-3.5 py-2.5 rounded-xl border border-primary/40 bg-primary/10 flex items-center justify-between cursor-pointer">
+<div>
+<div class="font-body-md font-semibold text-on-surface">Inter</div>
+<div class="text-[11px] text-outline font-mono">Modern geometric sans</div>
+</div>
+<input checked="" class="text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" name="font_family" type="radio"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+</label>
+<label class="min-h-[44px] px-3.5 py-2.5 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/40 hover:border-outline flex items-center justify-between cursor-pointer transition-colors">
+<div>
+<div class="font-body-editorial font-serif text-on-surface">Literata</div>
+<div class="text-[11px] text-outline font-mono">Book serif for prolonged reading</div>
+</div>
+<input class="text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" name="font_family" type="radio"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+</label>
+<label class="min-h-[44px] px-3.5 py-2.5 rounded-xl border border-outline-variant/30 bg-surface-container-lowest/40 hover:border-outline flex items-center justify-between cursor-pointer transition-colors">
+<div>
+<div class="text-sm font-sans text-on-surface">System Default</div>
+<div class="text-[11px] text-outline font-mono">OS platform rendering</div>
+</div>
+<input class="text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" name="font_family" type="radio"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Text Size Slider -->
+<div class="space-y-3 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono-md text-xs text-on-surface-variant font-medium">Text Size</label>
+<span class="font-mono text-xs text-primary font-semibold" id="text-size-val">16 px</span>
+</div>
+<input class="w-full h-2 bg-surface-container-lowest rounded-lg appearance-none cursor-pointer accent-primary" max="28" min="12" oninput="document.getElementById('text-size-val').innerText = this.value + ' px'; document.getElementById('preview-p').style.fontSize = this.value + 'px';" step="1" type="range" value="16"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+<div class="flex justify-between text-[11px] text-outline font-mono mt-2">
+<span>Compact (12px)</span>
+<span>Default (16px)</span>
+<span>Large (28px)</span>
+</div>
+</div>
+<!-- Margin Width Slider -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono-md text-xs text-on-surface-variant font-medium">Margin Width</label>
+<span class="font-mono text-xs text-primary font-semibold" id="margin-width-val">Comfortable (68ch)</span>
+</div>
+<input class="w-full h-2 bg-surface-container-lowest rounded-lg appearance-none cursor-pointer accent-primary" max="95" min="45" oninput="document.getElementById('margin-width-val').innerText = this.value + 'ch';" step="1" type="range" value="68"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+<div class="flex justify-between text-[11px] text-outline font-mono mt-2">
+<span>Narrow (45ch)</span>
+<span>Optimal (68ch)</span>
+<span>Full (95ch)</span>
+</div>
+</div>
+</div>
+<!-- Line Spacing Slider -->
+<div class="space-y-3 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono-md text-xs text-on-surface-variant font-medium">Line Spacing</label>
+<span class="font-mono text-xs text-primary font-semibold" id="line-height-val">1.65</span>
+</div>
+<input class="w-full h-2 bg-surface-container-lowest rounded-lg appearance-none cursor-pointer accent-primary" max="2.2" min="1.2" oninput="document.getElementById('line-height-val').innerText = this.value; document.getElementById('preview-p').style.lineHeight = this.value;" step="0.05" type="range" value="1.65"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+<div class="flex justify-between text-[11px] text-outline font-mono mt-2">
+<span>Tight (1.2)</span>
+<span>Relaxed (1.65)</span>
+<span>Expansive (2.2)</span>
+</div>
+</div>
+<!-- Hyphenation & Justification -->
+<div class="space-y-2 pt-2 border-t border-white/[0.04]">
+<label class="min-h-[44px] flex items-center justify-between cursor-pointer">
+<span class="text-xs font-body-md text-on-surface">Offline CSS Hyphenation</span>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" type="checkbox"/><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Live Typography Micro-Preview -->
+<div class="rounded-xl p-4 bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-between"><div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-mono uppercase tracking-wider text-outline">Live Canvas Preview</span>
+<span class="material-symbols-outlined text-[16px] text-outline">visibility</span>
+</div>
+<p class="text-on-surface-variant text-[16px] leading-[1.65] font-body-md transition-all pt-2" id="preview-p">
+Make reading comfortable for you.
+</p>
+</div>
+<div class="mt-3 pt-2 border-t border-white/[0.04] text-[10px] font-mono text-outline flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Preview updates automatically</span>
+</div></div>
+</div>
+</div>
+<!-- ======================================================== -->
+<!-- 4. LOCAL AI SECTION (OFFLINE INFERENCE MODEL)          -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-7 flex flex-col justify-between" id="local-ai"><div class="space-y-4">
+<div class="flex items-center gap-2.5 mb-2">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Local AI</h2>
+<p class="font-label-mono-sm text-outline">Offline questions &amp; summarization</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+Choose a shared model for offline questions.
+</p>
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<div class="text-xs font-semibold text-on-surface">Current model</div>
+<div class="text-[11px] text-outline font-mono mt-0.5">No model selected</div>
+</div>
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shrink-0" type="button">
+<span class="material-symbols-outlined text-[16px]">folder_open</span>
+<span>Choose model</span>
+</button>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 5. ACTIVATION SECTION (NO FAKE TIERS/PRICES)            -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-5 flex flex-col justify-between" id="activation"><div class="space-y-4">
+<div class="flex items-center gap-2.5 mb-2">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Activation</h2>
+<p class="font-label-mono-sm text-outline">Software licensing and activation</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+Software licensing and activation.
+</p>
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30">
+<div class="text-xs font-mono uppercase tracking-wider text-outline mb-1">Entitlement status</div>
+<div class="text-xs text-on-surface-variant font-mono">No active license registered</div>
+</div>
+<div class="space-y-3 pt-1">
+<button class="w-full min-h-[44px] px-4 py-2.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary transition-all font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(124,140,255,0.25)] focus:ring-2 focus:ring-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span>One-time activation</span>
+</button>
+<button class="w-full min-h-[44px] px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container hover:text-on-surface border border-outline-variant/30 text-on-surface-variant text-xs font-medium transition-colors flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">sync_saved_locally</span>
+<span>Restore purchase</span>
+</button>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 6. YOUR DATA (BACKUP & RESTORE WITH MODAL PREVIEW)      -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-8 flex flex-col justify-between" id="data"><div>
+<div class="flex items-center gap-2.5 mb-4">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">database</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Your Data</h2>
+<p class="font-label-mono-sm text-outline">Backup and restoration</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+Back up your notes and settings, or restore an earlier backup.
+</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 font-semibold text-sm text-on-surface mb-1">
+<span class="material-symbols-outlined text-primary text-[18px]">archive</span>
+<span>Export backup</span>
+</div>
+<p class="text-xs text-outline mb-3">Save your notes, bookmarks, and reader preferences to a single file.</p>
+<div class="mb-3">
+<input class="w-full text-xs px-3 py-2 rounded-lg glass-field placeholder:text-outline focus:outline-none" placeholder="Passphrase (optional)" type="password"/>
+</div>
+</div>
+<button class="w-full min-h-[44px] px-3 py-2 rounded-lg bg-primary-container text-on-primary-container font-semibold text-xs hover:bg-primary transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Export backup</span>
+</button>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 font-semibold text-sm text-on-surface mb-1">
+<span class="material-symbols-outlined text-secondary text-[18px]">unarchive</span>
+<span>Restore backup</span>
+</div>
+<p class="text-xs text-outline mb-3">Restore notes and settings from a previously saved backup file.</p>
+<div class="mb-3">
+<input class="hidden" id="backup-file-input" onchange="simulateRestorePreview()" type="file"/>
+<button class="w-full min-h-[38px] px-3 py-1.5 rounded-lg border border-dashed border-outline-variant hover:border-outline text-xs text-outline hover:text-on-surface flex items-center justify-center gap-1.5 transition-colors" onclick="document.getElementById('backup-file-input').click()" type="button">
+<span class="material-symbols-outlined text-[16px]">attach_file</span>
+<span id="restore-filename-display">Choose backup file...</span>
+</button>
+</div>
+</div>
+<button class="w-full min-h-[44px] px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface border border-outline-variant/40 text-xs font-medium transition-colors flex items-center justify-center gap-2" onclick="openRestoreConflictModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">rule</span>
+<span>Choose backup</span>
+</button>
+</div>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 7. PRIVACY SECTION (EXPLICIT ZERO-TELEMETRY RULES)      -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-4 flex flex-col justify-between" id="privacy"><div class="space-y-4">
+<div class="flex items-center gap-2.5 mb-2">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Privacy</h2>
+<p class="font-label-mono-sm text-outline">Device privacy policy</p>
+</div>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/30 space-y-2">
+<p class="text-xs text-on-surface-variant leading-relaxed">
+Notes, search queries, reading history, and highlights never leave this device.
+</p>
+</div>
+<div class="pt-2">
+<label class="min-h-[44px] flex items-start justify-between gap-3 cursor-pointer">
+<div class="space-y-1">
+<span class="text-xs font-semibold text-on-surface block">Anonymous crash reports</span>
+<span class="text-[11px] text-outline block leading-normal">
+Help improve EnZIME Reader by sharing anonymous error information.
+</span>
+</div>
+<input class="w-5 h-5 mt-0.5 rounded text-primary focus:ring-0 focus:ring-offset-0 bg-surface-container-lowest border-outline" type="checkbox"/>
+</label>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 8. HELP SECTION (TASK-BASED OFFLINE ACCORDION)          -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-12" id="help"><div>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant/30">
+<span class="material-symbols-outlined text-[20px]">help_center</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Help &amp; Offline Field Manual</h2>
+<p class="font-label-mono-sm text-outline">Guides and answers for reading offline</p>
+</div>
+</div>
+<span class="text-xs font-mono text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span>6 Guides Available</span>
+</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">download_for_offline</span>
+<span>Getting a knowledge pack</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Knowledge packs contain complete offline websites, encyclopedias, or books. To add one:</p>
+<ol class="list-decimal pl-4 space-y-1 text-outline">
+<li>Download a pack file to your device or memory card.</li>
+<li>Open the Library tab in the navigation rail.</li>
+<li>Select the file to start reading offline immediately.</li>
+</ol>
+</div>
+</details>
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">pie_chart</span>
+<span>Managing storage budget</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Large knowledge packs can take up substantial device memory. To manage space:</p>
+<ul class="list-disc pl-4 space-y-1 text-outline">
+<li>Store larger collections on a removable memory card.</li>
+<li>Choose text-only editions when available to save room.</li>
+<li>Remove unneeded downloads from your library anytime.</li>
+</ul>
+</div>
+</details>
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">find_in_page</span>
+<span>Reader navigation &amp; search</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Easily browse and find articles while reading offline:</p>
+<ul class="list-disc pl-4 space-y-1 text-outline">
+<li>Use the search bar at the top of the screen to find topics quickly.</li>
+<li>Tap section headers in an article to jump through the table of contents.</li>
+<li>Save articles to your favorites for quick return access.</li>
+</ul>
+</div>
+</details>
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">edit_note</span>
+<span>Working with annotations &amp; notes</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Highlight text and save personal thoughts as you read:</p>
+<ul class="list-disc pl-4 space-y-1 text-outline">
+<li>Highlight any sentence by selecting it on the page.</li>
+<li>Add personal notes attached directly to highlights.</li>
+<li>Review and organize your notes in the Notes tab.</li>
+</ul>
+</div>
+</details>
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">devices</span>
+<span>Sharing files across devices</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Transfer knowledge packs between your devices without an internet connection:</p>
+<ul class="list-disc pl-4 space-y-1 text-outline">
+<li>Copy pack files using a USB drive or memory card.</li>
+<li>Connect to other devices running the reader on your local network.</li>
+</ul>
+</div>
+</details>
+<details class="group rounded-xl bg-surface-container-lowest border border-outline-variant/30 p-4 open:border-primary/40 transition-all">
+<summary class="min-h-[36px] flex items-center justify-between cursor-pointer list-none select-none font-medium text-sm text-on-surface">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px]">restore_page</span>
+<span>Backup &amp; recovery</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform text-[18px]">expand_more</span>
+</summary>
+<div class="mt-3 text-xs text-on-surface-variant space-y-2 border-t border-white/[0.04] pt-3 leading-relaxed">
+<p>Keep your research and reflections safe across updates:</p>
+<ul class="list-disc pl-4 space-y-1 text-outline">
+<li>Export regular backups from the Your Data section.</li>
+<li>Restore your notes onto any new device in seconds.</li>
+<li>Add a passphrase for extra protection if desired.</li>
+</ul>
+</div>
+</details>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- 9. ABOUT SECTION (VERSION, LICENSES, DIAGNOSTIC EXPORT) -->
+<!-- ======================================================== -->
+<div class="glass-card p-6 lg:col-span-12 flex flex-col justify-between" id="about"><div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/[0.06]">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">About EnZIME Reader</h2>
+</div>
+<p class="text-body-md text-on-surface-variant max-w-xl">
+Engineered for resilient offline research, reading, and knowledge preservation.
+</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface-variant hover:text-on-surface border border-outline-variant/40 text-xs font-medium transition-colors flex items-center gap-2" onclick="openLicenseModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">policy</span>
+<span>Open source licences</span>
+</button>
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-primary border border-primary/30 text-xs font-medium transition-colors flex items-center gap-2" onclick="openDiagnosticModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">bug_report</span>
+<span>Export diagnostic report</span>
+</button>
+</div>
+</div>
+<div class="mt-4 flex flex-col sm:flex-row items-center justify-end gap-2 text-xs text-outline font-mono">
+<div class="text-outline text-xs">
+EnZIME Reader v1.29.08988
+</div>
+</div></div>
+</div>
+</main>
+<!-- ======================================================== -->
+<!-- MODAL: RESTORE CONFLICT SCOPE & CONFIRMATION            -->
+<!-- ======================================================== -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" id="restore-conflict-modal"><div class="glass-card max-w-xl w-full p-6 space-y-5 border border-primary/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high text-secondary flex items-center justify-center border border-secondary/30">
+<span class="material-symbols-outlined text-[24px]">rule</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Restore Confirmation</h3>
+<p class="text-xs text-outline font-mono">Inspect backup items before restoring</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-on-surface" onclick="closeRestoreModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 text-xs text-on-surface-variant">
+<p>No conflicts detected. Your existing notes and reading preferences will be preserved.</p>
+</div>
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface-variant text-xs font-medium" onclick="closeRestoreModal()" type="button">
+Cancel
+</button>
+<button class="min-h-[44px] px-5 py-2 rounded-lg bg-primary-container text-on-primary-container font-semibold text-xs hover:bg-primary transition-colors flex items-center gap-1.5 shadow-[0_0_12px_rgba(124,140,255,0.3)]" onclick="closeRestoreModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Confirm restore</span>
+</button>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- MODAL: REDACTED JSON DIAGNOSTIC PREVIEW                  -->
+<!-- ======================================================== -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" id="diagnostic-modal"><div class="glass-card max-w-2xl w-full p-6 space-y-4 border border-outline-variant/40 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Export Diagnostic Report</h3>
+<p class="text-xs text-outline">Sanitized configuration preview</p>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-on-surface" onclick="closeDiagnosticModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+Review the diagnostic information before exporting. No personal reading history or notes are included.
+</p>
+<pre class="bg-surface-container-lowest p-4 rounded-xl text-[11px] font-mono text-on-surface-variant border border-outline-variant/30 overflow-x-auto max-h-64 leading-relaxed"><code>{
+  "app_version": "1.29.08988",
+  "diagnostic_payload": {}
+}</code></pre>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[11px] text-secondary font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span>
+<span>Zero identifiers included</span>
+</span>
+<div class="flex gap-2">
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface-variant text-xs font-medium" onclick="closeDiagnosticModal()" type="button">
+Dismiss
+</button>
+<button class="min-h-[44px] px-4 py-2 rounded-lg bg-primary-container text-on-primary-container font-semibold text-xs hover:bg-primary transition-colors flex items-center gap-1.5" onclick="closeDiagnosticModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export report</span>
+</button>
+</div>
+</div>
+</div></div>
+<!-- ======================================================== -->
+<!-- MODAL: OPEN SOURCE LICENSES                              -->
+<!-- ======================================================== -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" id="license-modal">
+<div class="glass-card max-w-xl w-full p-6 space-y-4 border border-outline-variant/40 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Open Source Licenses</h3>
+<p class="text-xs text-outline font-mono">EnZIME reader third-party dependencies</p>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-on-surface" onclick="closeLicenseModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-xs text-on-surface-variant max-h-72 overflow-y-auto pr-1">
+<div class="p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-bold text-on-surface">libzim (OpenZIM Project)</div>
+<div class="text-outline font-mono text-[10px]">GPL-3.0-or-later</div>
+<p class="mt-1 text-on-surface-variant">Reference implementation for reading and creating ZIM file containers.</p>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-bold text-on-surface">SQLite</div>
+<div class="text-outline font-mono text-[10px]">Public Domain / Dedicated</div>
+<p class="mt-1 text-on-surface-variant">In-process transactional database engine storing annotations and schemas.</p>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
+<div class="font-bold text-on-surface">llama.cpp / ggml</div>
+<div class="text-outline font-mono text-[10px]">MIT License</div>
+<p class="mt-1 text-on-surface-variant">On-device neural model inference with integer quantization.</p>
+</div>
+</div>
+<div class="flex justify-end pt-2">
+<button class="min-h-[44px] px-5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface text-xs font-medium" onclick="closeLicenseModal()" type="button">
+          Close
+        </button>
+</div>
+</div>
+</div>
+<!-- ======================================================== -->
+<!-- MOBILE BOTTOM NAV BAR (md:hidden)                        -->
+<!-- Items: Home, Library, Notes, More (ACTIVE for Settings)  -->
+<!-- ======================================================== -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe" style="background: rgba(23, 28, 44, 0.90); backdrop-filter: blur(24px); border-top: 1px solid rgba(189, 198, 255, 0.14); box-shadow: 0 -8px 24px rgba(0,0,0,0.5);">
+<!-- 1. Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5">Home</span>
+</a>
+<!-- 2. Library -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5">Library</span>
+</a>
+<!-- 3. Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5">Notes</span>
+</a>
+<!-- 4. More (Settings & Help Active) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">more_horiz</span>
+<span class="font-label-mono-sm text-[10px] mt-0.5 font-semibold text-primary">More</span>
+</a>
+</nav>
+<!-- Interaction Logic for Modals & File simulation -->
+<script>
+    function simulateRestorePreview() {
+      const input = document.getElementById('backup-file-input');
+      if (input.files && input.files[0]) {
+        document.getElementById('restore-filename-display').innerText = input.files[0].name;
+      }
+    }
+
+    function openRestoreConflictModal() {
+      document.getElementById('restore-conflict-modal').classList.remove('hidden');
+    }
+
+    function closeRestoreModal() {
+      document.getElementById('restore-conflict-modal').classList.add('hidden');
+    }
+
+    function openDiagnosticModal() {
+      document.getElementById('diagnostic-modal').classList.remove('hidden');
+    }
+
+    function closeDiagnosticModal() {
+      document.getElementById('diagnostic-modal').classList.add('hidden');
+    }
+
+    function openLicenseModal() {
+      document.getElementById('license-modal').classList.remove('hidden');
+    }
+
+    function closeLicenseModal() {
+      document.getElementById('license-modal').classList.add('hidden');
+    }
+  </script>
+</body></html>

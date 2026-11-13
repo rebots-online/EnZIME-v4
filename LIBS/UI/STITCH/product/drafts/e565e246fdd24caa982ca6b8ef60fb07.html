@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - S11 Memory</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter & Literata Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary-fixed-dim": "#ffba43",
+          "secondary": "#46ebdf",
+          "inverse-surface": "#e2e1ee",
+          "inverse-on-surface": "#2e3039",
+          "primary-container": "#7c8cff",
+          "surface-bright": "#373942",
+          "on-tertiary-fixed": "#281800",
+          "on-primary-container": "#001892",
+          "surface": "#11131b",
+          "on-error-container": "#ffdad6",
+          "tertiary-fixed": "#ffddaf",
+          "secondary-fixed": "#59f9ed",
+          "on-primary": "#041c94",
+          "inverse-primary": "#4353c3",
+          "surface-container-lowest": "#0c0e16",
+          "primary-fixed": "#dfe0ff",
+          "surface-dim": "#11131b",
+          "on-secondary": "#003733",
+          "on-tertiary-fixed-variant": "#614000",
+          "surface-container": "#1d1f28",
+          "surface-container-highest": "#33343e",
+          "on-surface-variant": "#c6c5d5",
+          "background": "#11131b",
+          "surface-tint": "#bcc3ff",
+          "primary-fixed-dim": "#bcc3ff",
+          "error": "#ffb4ab",
+          "on-tertiary-container": "#402900",
+          "on-secondary-fixed-variant": "#00504b",
+          "secondary-container": "#00cec3",
+          "tertiary-container": "#c88900",
+          "tertiary": "#ffba43",
+          "primary": "#bcc3ff",
+          "on-secondary-container": "#00534e",
+          "error-container": "#93000a",
+          "on-background": "#e2e1ee",
+          "on-secondary-fixed": "#00201e",
+          "on-error": "#690005",
+          "on-primary-fixed": "#000c60",
+          "on-surface": "#e2e1ee",
+          "on-tertiary": "#442c00",
+          "surface-container-high": "#282a32",
+          "outline": "#8f8f9f",
+          "on-primary-fixed-variant": "#2839aa",
+          "outline-variant": "#454653",
+          "surface-variant": "#33343e",
+          "secondary-fixed-dim": "#2eddd1",
+          "surface-container-low": "#191b24"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "space-lg": "1.5rem",
+          "gutter": "1rem",
+          "gutter-lg": "1.5rem",
+          "margin-md": "1.5rem",
+          "space-sm": "0.5rem",
+          "margin-lg": "2.5rem",
+          "space-md": "1rem",
+          "space-xl": "2.5rem",
+          "margin": "1rem"
+        },
+        "fontFamily": {
+          "label-mono-md": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "label-mono-sm": ["Inter"],
+          "headline-md": ["Inter"],
+          "display-lg-mobile": ["Inter"],
+          "body-editorial": ["Literata"],
+          "body-lg": ["Inter"],
+          "display-lg": ["Inter"],
+          "body-md": ["Inter"],
+          "headline-lg": ["Inter"],
+          "label-mono-lg": ["Inter"]
+        },
+        "fontSize": {
+          "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+          "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+          "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+          "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+          "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+          "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+          "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+          "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+          "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+          "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+        }
+      },
+    },
+  }
+  </script>
+<style>
+    /* Direct style tokens matching system guidance */
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(ellipse 65% 50% at 20% 15%, rgba(124, 140, 255, 0.08), transparent 70%),
+        radial-gradient(ellipse 55% 45% at 85% 75%, rgba(52, 224, 212, 0.05), transparent 70%),
+        radial-gradient(circle 800px at 50% -10%, rgba(30, 36, 56, 0.5), transparent 85%);
+    }
+
+    .glass-surface-panel {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 22px;
+    }
+
+    .glass-field {
+      background: rgba(14, 17, 27, 0.8);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 14px;
+    }
+
+    .glass-nav-rail {
+      background: rgba(23, 28, 44, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(189, 198, 255, 0.14);
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- Subtle Restrained Ambient Aurora Canvas -->
+<div aria-hidden="true" class="aurora-bg"></div>
+<!-- =========================================================================
+       DESKTOP LEFT RAIL (EXACT 104px FIXED WIDTH)
+       Active Item: Memory
+       ========================================================================= -->
+<aside aria-label="Main Navigation" class="hidden md:flex fixed top-0 left-0 bottom-0 z-50 flex-col items-center py-space-lg glass-nav-rail" style="width: 104px;">
+<!-- Top Geometric Z Mark Anchor -->
+<div class="flex items-center justify-center w-12 h-12 mb-space-xl rounded-xl bg-surface-container-high/60 border border-outline-variant/30 text-primary shadow-sm" title="EnZIME Reader">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Z</span>
+</div>
+<!-- Navigation Stack (6 items: Home, Library, Ask, Notes, Memory [ACTIVE], Settings) -->
+<nav class="flex-1 flex flex-col gap-space-sm w-full px-2">
+<!-- 1. Home -->
+<a class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all duration-150 min-h-[52px] group" href="#home">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:text-primary transition-colors">home</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Home</span>
+</a>
+<!-- 2. Library -->
+<a class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all duration-150 min-h-[52px] group" href="#library">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:text-primary transition-colors">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Library</span>
+</a>
+<!-- 3. Ask -->
+<a class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all duration-150 min-h-[52px] group" href="#ask">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:text-primary transition-colors">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Ask</span>
+</a>
+<!-- 4. Notes -->
+<a class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all duration-150 min-h-[52px] group" href="#notes">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:text-primary transition-colors">description</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Notes</span>
+</a>
+<!-- 5. Memory (ACTIVE DESTINATION) -->
+<a aria-current="page" class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-primary bg-surface-container-high/70 border border-primary/30 shadow-[0_0_16px_rgba(124,140,255,0.18)] min-h-[52px]" href="#memory">
+<span class="material-symbols-outlined text-[24px] mb-1 text-primary" style="font-variation-settings: 'FILL' 1;">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Memory</span>
+</a>
+<!-- 6. Settings -->
+<a class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all duration-150 min-h-[52px] group" href="#settings">
+<span class="material-symbols-outlined text-[24px] mb-1 group-hover:text-primary transition-colors">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium tracking-tight">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- =========================================================================
+       TOP BAR (DESKTOP & MOBILE)
+       Desktop has explicit margin-left: 104px; width: calc(100% - 104px);
+       Has ONLY Z logo EnZIME Reader and Search bar (No offline status or system badges).
+       ========================================================================= -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md lg:px-space-lg h-14 bg-surface-container/70 backdrop-blur-md border-b border-outline-variant/30" style="@media (min-width: 768px) { margin-left: 104px; width: calc(100% - 104px); }">
+<div class="flex items-center gap-space-md flex-1 max-w-xl">
+<!-- Mobile Logo Icon -->
+<div class="md:hidden flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-high/60 border border-outline-variant/30 text-primary">
+<span class="font-headline-md text-headline-md font-bold">Z</span>
+</div>
+<!-- Brand Logo / Product Name -->
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight whitespace-nowrap">
+        EnZIME Reader
+      </span>
+<!-- Search Field (Glass rounded 14px) -->
+<div class="relative w-full max-w-sm hidden sm:block ml-space-md">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full glass-field pl-10 pr-4 py-2 text-on-surface text-body-md font-body-md placeholder:text-outline focus:outline-none focus:border-primary/60 transition-colors h-[40px]" placeholder="Search memories or sources..." type="text"/>
+</div>
+</div>
+<!-- Right Side Actions (Quiet & Minimal) -->
+<div class="flex items-center gap-space-sm">
+<button aria-label="Search" class="sm:hidden flex items-center justify-center w-11 h-11 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+</div>
+</header>
+<!-- =========================================================================
+       MAIN CONTENT CANVAS
+       CRITICAL: Desktop style="margin-left: 104px; width: calc(100% - 104px);"
+       ========================================================================= -->
+<main class="relative z-10 p-space-md sm:p-space-lg lg:p-space-xl pb-24 md:pb-12" style="@media (min-width: 768px) { margin-left: 104px; width: calc(100% - 104px); }">
+<div class="max-w-4xl mx-auto flex flex-col gap-space-lg">
+<!-- Screen S11 Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-sm pt-2">
+<div>
+<h1 class="font-headline-lg text-headline-lg md:text-display-lg md:font-display-lg font-semibold text-on-surface tracking-tight">
+            Memory
+          </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Keep useful connections to what you have read.</p>
+</div>
+</div>
+<!-- Secondary Tab Navigation Switch ("To review" [ACTIVE], "Graph", "Timeline") -->
+<div class="flex border-b border-outline-variant/30 gap-space-lg overflow-x-auto no-scrollbar">
+<button class="pb-space-sm font-body-md text-body-md text-primary border-b-2 border-primary font-medium tracking-tight whitespace-nowrap min-h-[44px] flex items-center transition-all" id="tab-btn-review" onclick="switchTab('review')">
+          To review
+        </button>
+<button class="pb-space-sm font-body-md text-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent font-medium tracking-tight whitespace-nowrap min-h-[44px] flex items-center transition-all" id="tab-btn-graph" onclick="switchTab('graph')">
+          Graph
+        </button>
+<button class="pb-space-sm font-body-md text-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent font-medium tracking-tight whitespace-nowrap min-h-[44px] flex items-center transition-all" id="tab-btn-timeline" onclick="switchTab('timeline')">
+          Timeline
+        </button>
+</div>
+<!-- =====================================================================
+           PANEL: "TO REVIEW" TAB CONTENT
+           ===================================================================== -->
+<div class="flex flex-col gap-space-lg" id="view-review">
+<!-- Empty State Glass Card (22px Radius) -->
+<section class="glass-surface-panel p-8 sm:p-12 text-center flex flex-col items-center justify-center min-h-[280px]">
+<div class="w-12 h-12 rounded-2xl bg-surface-container-high/60 border border-outline-variant/30 flex items-center justify-center text-primary/70 mb-space-md">
+<span class="material-symbols-outlined text-[28px]">inbox_customize</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-medium text-on-surface tracking-tight mb-2">
+            Nothing to review.
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto leading-relaxed">
+            Proposed memories appear here with their sources. You decide what to keep.
+          </p>
+</section>
+<!-- Dynamic Proposals Container (Rendered when proposals exist) -->
+<div class="flex flex-col gap-space-md hidden" id="proposals-target-list">
+<!-- Dynamically populated from #memory-proposal-template -->
+</div>
+<!-- Saved Memories Section (Minimal tactile workstation display) -->
+<div class="mt-4"><div class="flex items-center justify-between mb-space-md"><span class="font-label-mono-sm text-label-mono-sm text-outline uppercase tracking-wider">Accepted Knowledge</span></div><div class="flex flex-col gap-space-md" data-empty="true" id="saved-memories-list"></div></div>
+</div>
+<!-- =====================================================================
+           PANEL: "GRAPH" TAB CONTENT
+           ===================================================================== -->
+<div class="hidden" id="view-graph">
+<section class="glass-surface-panel p-12 text-center flex flex-col items-center justify-center min-h-[360px]"><div class="w-12 h-12 rounded-2xl bg-surface-container-high/60 border border-outline-variant/30 flex items-center justify-center text-outline mb-space-md"><span class="material-symbols-outlined text-[28px]">hub</span></div><h2 class="font-headline-md text-headline-md font-medium text-on-surface tracking-tight mb-2">Graph</h2><p class="font-body-md text-body-md text-on-surface-variant max-w-sm mx-auto leading-relaxed">Connections appear here as you keep memories.</p></section>
+</div>
+<!-- =====================================================================
+           PANEL: "TIMELINE" TAB CONTENT
+           ===================================================================== -->
+<div class="hidden" id="view-timeline">
+<section class="glass-surface-panel p-12 text-center flex flex-col items-center justify-center min-h-[360px]"><div class="w-12 h-12 rounded-2xl bg-surface-container-high/60 border border-outline-variant/30 flex items-center justify-center text-outline mb-space-md"><span class="material-symbols-outlined text-[28px]">timeline</span></div><h2 class="font-headline-md text-headline-md font-medium text-on-surface tracking-tight mb-2">Timeline</h2><p class="font-body-md text-body-md text-on-surface-variant max-w-sm mx-auto leading-relaxed">Memories you keep appear here in order.</p></section>
+</div>
+</div>
+<!-- Bottom-right quiet plain text: NO badge, NO glowing dot, NO border -->
+<div class="fixed bottom-4 right-6 hidden md:block z-30 pointer-events-none">
+<span class="font-label-mono-sm text-label-mono-sm text-outline opacity-60">
+        EnZIME Reader v1.29.08988
+      </span>
+</div>
+</main>
+<!-- =========================================================================
+       RESPONSIVE MOBILE BOTTOM NAV BAR
+       4 Tabs: Home, Library, Notes, More
+       ========================================================================= -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="font-label-mono-sm text-label-mono-sm">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#library">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="font-label-mono-sm text-label-mono-sm">Notes</span>
+</a>
+<!-- More (Access to Memory & Settings) -->
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#memory">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm">More</span>
+</a>
+</nav>
+<!-- =========================================================================
+       INERT HTML TEMPLATES (Memory Proposals & Saved Items)
+       ========================================================================= -->
+<!-- Real proposal template inside inert <template id="memory-proposal-template">:
+       proposed text node, evidence source links container, and actions [Accept], [Reject], [Correct] -->
+<template id="memory-proposal-template"><article class="proposal-card glass-surface-panel p-space-lg border-primary/20 flex flex-col gap-space-md animate-fadeIn" data-proposal-id=""><div class="flex items-start justify-between gap-space-md"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[20px]">auto_awesome</span><span class="font-label-mono-sm text-label-mono-sm text-secondary font-medium uppercase tracking-wider">Proposed Memory</span></div></div><p class="proposal-text font-body-md text-body-md text-on-surface leading-relaxed" data-content=""></p><div class="evidence-sources flex flex-wrap items-center gap-2 pt-2 border-t border-outline-variant/20"><span class="font-label-mono-sm text-label-mono-sm text-outline">Sources:</span><a class="evidence-link text-primary hover:underline font-label-mono-sm text-label-mono-sm flex items-center gap-1" data-source-url="" href="#"><span class="material-symbols-outlined text-[14px]">link</span><span class="source-title" data-source-title=""></span></a></div><div class="flex items-center justify-end gap-space-sm pt-2"><button class="btn-reject px-space-md py-2 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors min-h-[44px]" type="button">Reject</button><button class="btn-correct px-space-md py-2 rounded-lg border border-outline-variant/40 text-on-surface hover:border-primary/40 hover:text-primary transition-colors min-h-[44px]" type="button">Correct</button><button class="btn-accept px-space-lg py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary transition-colors font-medium min-h-[44px]" type="button">Accept</button></div></article></template>
+<!-- Saved memory template inside inert <template id="saved-memory-template">:
+       saved text node, pinned toggle [Pin], [Delete] -->
+<template id="saved-memory-template"><article class="saved-card glass-surface-panel p-space-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md transition-all hover:border-primary/30" data-memory-id=""><div class="flex items-start gap-space-md"><span class="material-symbols-outlined text-outline text-[20px] mt-0.5 icon-pin-status">notes</span><div><p class="saved-text font-body-md text-body-md text-on-surface leading-relaxed" data-text=""></p><span class="saved-source font-label-mono-sm text-label-mono-sm text-outline mt-1 inline-block" data-source=""></span></div></div><div class="flex items-center gap-space-sm self-end sm:self-center"><button class="btn-pin w-11 h-11 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container-high transition-colors" title="Pin memory" type="button"><span class="material-symbols-outlined text-[20px]">push_pin</span></button><button class="btn-delete w-11 h-11 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-surface-container-high transition-colors" title="Delete" type="button"><span class="material-symbols-outlined text-[20px]">delete</span></button></div></article></template>
+<!-- =========================================================================
+       MODAL 1: CORRECT / EDIT MEMORY DIALOG
+       Labelled textarea "Edit memory", with [Cancel] and [Save] buttons
+       ========================================================================= -->
+<div aria-labelledby="modal-edit-title" aria-modal="true" class="fixed inset-0 z-50 hidden flex items-center justify-center p-space-md bg-black/60 backdrop-blur-sm" id="modal-edit" role="dialog">
+<div class="glass-surface-panel w-full max-w-lg p-space-lg sm:p-space-xl shadow-2xl flex flex-col gap-space-md border border-outline-variant/40 bg-surface-container-low/95">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface" id="modal-edit-title">
+        Edit memory
+      </h2>
+<div class="flex flex-col gap-2">
+<label class="font-label-mono-sm text-label-mono-sm text-on-surface-variant" for="edit-memory-field">
+          Memory text node
+        </label>
+<textarea class="w-full glass-field p-3.5 text-on-surface text-body-md font-body-md focus:outline-none focus:border-primary/60 transition-colors resize-none" id="edit-memory-field" placeholder="Adjust conceptual context or correct factual boundaries..." rows="4"></textarea>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-2">
+<button class="px-space-md py-2.5 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors min-h-[44px]" onclick="toggleModal('modal-edit')" type="button">
+          Cancel
+        </button>
+<button class="px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary transition-colors font-medium text-body-md min-h-[44px]" onclick="toggleModal('modal-edit')" type="button">
+          Save
+        </button>
+</div>
+</div>
+</div>
+<!-- =========================================================================
+       MODAL 2: DELETE CONFIRMATION DIALOG
+       Warning text "Remove this memory? The original source text in your knowledge pack will be kept unchanged."
+       with [Keep memory] and [Remove] buttons
+       ========================================================================= -->
+<div aria-labelledby="modal-delete-title" aria-modal="true" class="fixed inset-0 z-50 hidden flex items-center justify-center p-space-md bg-black/60 backdrop-blur-sm" id="modal-delete" role="dialog">
+<div class="glass-surface-panel w-full max-w-md p-space-lg sm:p-space-xl shadow-2xl flex flex-col gap-space-md border border-outline-variant/40 bg-surface-container-low/95">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-error-container/20 text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">delete</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface" id="modal-delete-title">
+          Remove memory
+        </h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Remove this memory? The original source text in your knowledge pack will be kept unchanged.
+      </p>
+<div class="flex items-center justify-end gap-space-sm pt-3">
+<button class="px-space-md py-2.5 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors min-h-[44px]" onclick="toggleModal('modal-delete')" type="button">
+          Keep memory
+        </button>
+<button class="px-space-lg py-2.5 rounded-lg bg-error-container text-on-error-container hover:bg-error transition-colors font-medium text-body-md min-h-[44px]" onclick="toggleModal('modal-delete')" type="button">
+          Remove
+        </button>
+</div>
+</div>
+</div>
+<!-- =========================================================================
+       VANILLA JS FOR INTERACTION & TAB SWITCHING
+       ========================================================================= -->
+<script>
+    function switchTab(tabName) {
+      // Hide all panels
+      document.getElementById('view-review').classList.add('hidden');
+      document.getElementById('view-graph').classList.add('hidden');
+      document.getElementById('view-timeline').classList.add('hidden');
+
+      // Reset Tab Styles
+      const btnReview = document.getElementById('tab-btn-review');
+      const btnGraph = document.getElementById('tab-btn-graph');
+      const btnTimeline = document.getElementById('tab-btn-timeline');
+
+      const inactiveClass = 'text-on-surface-variant hover:text-on-surface border-transparent';
+      const activeClass = 'text-primary border-primary';
+
+      [btnReview, btnGraph, btnTimeline].forEach(btn => {
+        btn.classList.remove('text-primary', 'border-primary');
+        btn.classList.add('text-on-surface-variant', 'border-transparent');
+      });
+
+      // Activate Selected
+      if (tabName === 'review') {
+        document.getElementById('view-review').classList.remove('hidden');
+        btnReview.classList.remove('text-on-surface-variant', 'border-transparent');
+        btnReview.classList.add('text-primary', 'border-primary');
+      } else if (tabName === 'graph') {
+        document.getElementById('view-graph').classList.remove('hidden');
+        btnGraph.classList.remove('text-on-surface-variant', 'border-transparent');
+        btnGraph.classList.add('text-primary', 'border-primary');
+      } else if (tabName === 'timeline') {
+        document.getElementById('view-timeline').classList.remove('hidden');
+        btnTimeline.classList.remove('text-on-surface-variant', 'border-transparent');
+        btnTimeline.classList.add('text-primary', 'border-primary');
+      }
+    }
+
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.toggle('hidden');
+      }
+    }
+
+    // Interactive helper to demonstrate <template id="memory-proposal-template"> usage
+    function addSampleProposal() {
+      const template = document.getElementById('memory-proposal-template');
+      const target = document.getElementById('proposals-target-list');
+      if (!template || !target) return;
+
+      const clone = template.content.cloneNode(true);
+      const textNode = clone.querySelector('.proposal-text');
+      textNode.textContent = "Offline reader cache indexes chunked ZIM pointers using LZMA2 compression buffers to prevent RAM exhaustion.";
+      
+      const btnAccept = clone.querySelector('.btn-accept');
+      const btnReject = clone.querySelector('.btn-reject');
+      const btnCorrect = clone.querySelector('.btn-correct');
+
+      btnAccept.addEventListener('click', function(e) {
+        const card = e.target.closest('.proposal-card');
+        if (card) card.remove();
+        if (target.children.length === 0) target.classList.add('hidden');
+      });
+
+      btnReject.addEventListener('click', function(e) {
+        const card = e.target.closest('.proposal-card');
+        if (card) card.remove();
+        if (target.children.length === 0) target.classList.add('hidden');
+      });
+
+      btnCorrect.addEventListener('click', function() {
+        toggleModal('modal-edit');
+      });
+
+      target.prepend(clone);
+      target.classList.remove('hidden');
+    }
+  </script>
+</body></html>

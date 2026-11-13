@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Purchase Pending</title>
+<!-- Inter & Literata Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#4353c3",
+            "on-error-container": "#ffdad6",
+            "error": "#ffb4ab",
+            "on-primary-fixed": "#000c60",
+            "surface-variant": "#33343e",
+            "inverse-on-surface": "#2e3039",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "secondary": "#46ebdf",
+            "on-error": "#690005",
+            "primary-container": "#7c8cff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-secondary": "#003733",
+            "on-primary-fixed-variant": "#2839aa",
+            "primary": "#bcc3ff",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "on-surface-variant": "#c6c5d5",
+            "on-secondary-fixed-variant": "#00504b",
+            "on-primary-container": "#001892",
+            "outline-variant": "#454653",
+            "surface-tint": "#bcc3ff",
+            "outline": "#8f8f9f",
+            "surface-dim": "#11131b",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-highest": "#33343e",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed-dim": "#ffba43",
+            "background": "#11131b",
+            "on-secondary-container": "#00534e",
+            "on-tertiary": "#442c00",
+            "secondary-container": "#00cec3",
+            "on-background": "#e2e1ee",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "surface-container-high": "#282a32",
+            "on-surface": "#e2e1ee",
+            "tertiary": "#ffba43",
+            "on-secondary-fixed": "#00201e",
+            "primary-fixed": "#dfe0ff",
+            "surface-container-lowest": "#0c0e16",
+            "surface-container-low": "#191b24",
+            "surface-container": "#1d1f28",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "on-tertiary-fixed": "#281800",
+            "on-tertiary-container": "#402900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.375rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "space-xl": "2.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Inter", "sans-serif"],
+            "label-mono-lg": ["Inter", "sans-serif"],
+            "display-lg-mobile": ["Inter", "sans-serif"],
+            "label-mono-md": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-editorial": ["Literata", "serif"],
+            "label-mono-sm": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.15);
+      border-radius: 9999px;
+    }
+    @keyframes spin-calm {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-calm {
+      animation: spin-calm 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-surface-container-lowest text-on-surface antialiased flex flex-col relative selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+<!-- Ambient Aurora Backdrops -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-40 left-1/3 w-[640px] h-[520px] rounded-full blur-[140px] opacity-20 pointer-events-none" style="background: radial-gradient(circle, #7C8CFF 0%, transparent 70%);"></div>
+<div class="absolute bottom-10 right-1/4 w-[480px] h-[480px] rounded-full blur-[160px] opacity-15 pointer-events-none" style="background: radial-gradient(circle, #34E0D4 0%, transparent 70%);"></div>
+</div>
+<!-- Docked Left Rail Navigation (Compact 104px Desktop Rail) -->
+<aside class="fixed left-0 top-0 h-screen w-[104px] z-50 flex flex-col items-center justify-between py-6 px-2 border-r border-outline-variant/30 bg-surface-container-low/80 backdrop-blur-lg select-none">
+<!-- Top Brand Mark Anchor -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-11 h-11 rounded-xl bg-surface-container-high/80 border border-outline-variant/30 flex items-center justify-center text-primary shadow-sm">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter">Z</span>
+</div>
+</div>
+<!-- Navigation Items -->
+<nav aria-label="Main Navigation" class="flex flex-col items-center gap-2 w-full my-auto">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="contact_support">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="memory">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1">Memory</span>
+</a>
+<!-- Settings (Active Context: Account & Purchase Flow) -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-high/70 text-primary border border-primary/30 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none shadow-sm" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="settings">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 font-medium">Settings</span>
+</a>
+</nav>
+<!-- Rail Footer Info -->
+<div class="flex flex-col items-center gap-2 pt-2">
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" title="Sync Status" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="sync">sync</span>
+</button>
+</div>
+</aside>
+<!-- Main Canvas Area (Offset by 104px left rail) -->
+<div class="ml-[104px] w-[calc(100%-104px)] min-h-screen flex flex-col relative z-10">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-lg h-14 border-b border-outline-variant/30 bg-surface-container/70 backdrop-blur-md"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant/30 flex items-center justify-center text-primary font-bold text-headline-md">Z</div><span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">Complete your purchase</span></div><div class="flex items-center gap-3"><button aria-label="Close and return" class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" title="Close" type="button"><span class="material-symbols-outlined text-[20px]" data-icon="close">close</span></button></div></header>
+<!-- Main Content Workspace -->
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-4xl mx-auto w-full">
+<!-- Step Indicator (Step 3 of 4: Active Confirmation) -->
+<nav aria-label="Activation Progress" class="w-full max-w-xl mb-8"><div class="flex items-center justify-center gap-2 mb-2"><span class="w-2 h-2 rounded-full bg-primary/40" title="Step 1"></span><span class="w-2 h-2 rounded-full bg-primary/40" title="Step 2"></span><span class="w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-primary/30" title="Step 3: Confirmation (Active)"></span><span class="w-2 h-2 rounded-full bg-outline-variant/40" title="Step 4"></span></div><div class="text-center"><span class="text-label-mono-sm font-label-mono-sm text-on-surface-variant">Step 3: Confirmation</span></div></nav>
+<!-- Glass Central Card (22px radius, authentic confirmation flow) -->
+<section class="w-full max-w-xl rounded-2xl bg-surface-container-low/75 backdrop-blur-md border border-[rgba(189,198,255,0.14)] p-8 sm:p-10 shadow-2xl relative overflow-hidden" style="border-radius: 22px;">
+<!-- Discreet subtle upper glow inside card -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Heading & Contextual Note -->
+<div class="text-center mb-8 relative z-10"><h1 class="text-headline-lg font-headline-lg font-semibold text-on-surface tracking-tight mb-2">Complete your purchase</h1><p class="text-body-md font-body-md text-on-surface-variant max-w-md mx-auto leading-relaxed">Complete checkout in the payment window, then return here.</p></div>
+<!-- Active Store Checkout Confirmation State -->
+<div class="flex flex-col items-center text-center relative z-10"><div aria-live="polite" class="my-6 relative flex items-center justify-center"><svg class="w-16 h-16 animate-spin-calm text-outline-variant/30" fill="none" viewbox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-linecap="round" stroke-width="3"></circle><circle cx="32" cy="32" r="28" stroke="#7C8CFF" stroke-dasharray="175" stroke-dashoffset="125" stroke-linecap="round" stroke-width="3.5"></circle></svg><div class="absolute inset-0 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[22px]" data-icon="shopping_bag">shopping_bag</span></div></div><div class="mb-3"><h2 class="text-headline-md font-headline-md font-medium text-on-surface">Waiting for store confirmation…</h2></div><p class="text-body-md font-body-md text-on-surface-variant max-w-md mb-8 leading-relaxed">Please complete the checkout in your platform store window. EnZIME will automatically detect your completed activation.</p><div class="w-full flex flex-col sm:flex-row items-center justify-center gap-3"><button class="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-body-md text-body-md font-semibold hover:bg-primary transition-all duration-150 shadow-sm focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none flex items-center justify-center gap-2" type="button"><span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span><span>Retry confirmation</span></button><button class="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-lg bg-surface-container/60 hover:bg-surface-container border border-outline-variant/30 text-on-surface font-body-md text-body-md transition-all duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none flex items-center justify-center gap-2" type="button"><span>Cancel and go back</span></button></div><div class="mt-6 pt-5 border-t border-outline-variant/20 w-full flex items-center justify-between text-left"><div class="pr-2"><span class="text-body-md font-body-md text-on-surface block font-medium">Already purchased?</span><span class="text-label-mono-sm font-label-mono-sm text-on-surface-variant block">Verify an existing license directly from your app store</span></div><button class="min-h-[44px] px-3.5 py-1.5 rounded-lg text-primary hover:bg-surface-container-high/60 transition-colors text-body-md font-body-md font-medium focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none shrink-0" type="button">Restore purchase</button></div></div>
+<!-- Reassuring Footer Guidance -->
+<div class="mt-8 pt-4 border-t border-outline-variant/15 text-center">
+<p class="text-label-mono-sm font-label-mono-sm text-outline leading-normal">
+            If you closed the purchase window by accident, you can retry confirmation or restart checkout anytime.
+          </p>
+</div>
+</section>
+</main>
+<!-- Bottom Footer Layout with Quiet Plain Version Text (No Status UI, No dots) -->
+<footer class="w-full px-space-lg py-4 flex items-center justify-between border-t border-outline-variant/20 text-on-surface-variant"><div></div><div class="text-label-mono-sm font-label-mono-sm text-on-surface-variant select-all">EnZIME Reader v1.29.08988</div></footer>
+</div>
+<!-- Mobile Bottom Navigation (Preserving Responsive Pivot per guidelines) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="local_library">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm font-medium">Settings</span>
+</a>
+</nav>
+<!-- Restore Purchase Dialog Overlay (Controlled via template structure) -->
+<!-- Inert Template for Restore Flow & Authentic Entitlement Failure State -->
+<!-- Interactive Script for micro-interaction states -->
+<script>
+    function triggerRetryFeedback(btn) {
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `
+        <span class="material-symbols-outlined text-[18px] animate-spin" data-icon="refresh">refresh</span>
+        <span>Re-checking store…</span>
+      `;
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }, 1600);
+    }
+
+    function showRestoreModal() {
+      const container = document.getElementById('restore-modal-container');
+      const mount = document.getElementById('restore-card-mount');
+      const template = document.getElementById('restore-flow-template');
+      
+      mount.innerHTML = '';
+      mount.appendChild(template.content.cloneNode(true));
+      container.classList.remove('hidden');
+
+      // Simulate genuine entitlement response lookup
+      setTimeout(() => {
+        const checkingState = mount.querySelector('#restore-checking-state');
+        const resultState = mount.querySelector('#restore-result-state');
+        if (checkingState && resultState) {
+          checkingState.classList.add('hidden');
+          resultState.classList.remove('hidden');
+          resultState.classList.add('flex');
+        }
+      }, 1400);
+    }
+
+    function retryRestoreSimulation() {
+      const mount = document.getElementById('restore-card-mount');
+      const checkingState = mount.querySelector('#restore-checking-state');
+      const resultState = mount.querySelector('#restore-result-state');
+      
+      if (checkingState && resultState) {
+        resultState.classList.add('hidden');
+        resultState.classList.remove('flex');
+        checkingState.classList.remove('hidden');
+        
+        setTimeout(() => {
+          checkingState.classList.add('hidden');
+          resultState.classList.remove('hidden');
+          resultState.classList.add('flex');
+        }, 1200);
+      }
+    }
+
+    function closeRestoreModal() {
+      const container = document.getElementById('restore-modal-container');
+      container.classList.add('hidden');
+    }
+  </script>
+</body></html>

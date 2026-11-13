@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - One-time activation</title>
+<!-- Google Fonts: Inter & Literata -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,wght@0,400;0,500;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Custom Tailwind Configuration conforming strictly to Design Tokens -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#4353c3",
+            "on-error-container": "#ffdad6",
+            "error": "#ffb4ab",
+            "on-primary-fixed": "#000c60",
+            "surface-variant": "#33343e",
+            "inverse-on-surface": "#2e3039",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "secondary": "#46ebdf",
+            "on-error": "#690005",
+            "primary-container": "#7c8cff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-secondary": "#003733",
+            "on-primary-fixed-variant": "#2839aa",
+            "primary": "#bcc3ff",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "on-surface-variant": "#c6c5d5",
+            "on-secondary-fixed-variant": "#00504b",
+            "on-primary-container": "#001892",
+            "outline-variant": "#454653",
+            "surface-tint": "#bcc3ff",
+            "outline": "#8f8f9f",
+            "surface-dim": "#11131b",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-highest": "#33343e",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed-dim": "#ffba43",
+            "background": "#11131b",
+            "on-secondary-container": "#00534e",
+            "on-tertiary": "#442c00",
+            "secondary-container": "#00cec3",
+            "on-background": "#e2e1ee",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "surface-container-high": "#282a32",
+            "on-surface": "#e2e1ee",
+            "tertiary": "#ffba43",
+            "on-secondary-fixed": "#00201e",
+            "primary-fixed": "#dfe0ff",
+            "surface-container-lowest": "#0c0e16",
+            "surface-container-low": "#191b24",
+            "surface-container": "#1d1f28",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "on-tertiary-fixed": "#281800",
+            "on-tertiary-container": "#402900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "card": "22px",
+            "control": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "space-xl": "2.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Inter"],
+            "label-mono-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "body-editorial": ["Literata"],
+            "label-mono-sm": ["Inter"]
+          },
+          "fontSize": {
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle restrained atmospheric radial glow */
+    .aurora-bg {
+      background: radial-gradient(circle at 50% 20%, rgba(124, 140, 255, 0.08) 0%, transparent 65%),
+                  radial-gradient(circle at 85% 75%, rgba(52, 224, 212, 0.04) 0%, transparent 50%),
+                  #090B13;
+    }
+
+    /* Glass card styling */
+    .glass-card {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 22px;
+    }
+
+    /* Skeleton shimmer */
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .skeleton-shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(124, 140, 255, 0.08) 50%, transparent 100%);
+      animation: shimmer 1.8s infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#090B13] text-[#F4F6FF] font-body-md min-h-screen antialiased flex overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Left Compact Navigation Rail (Fixed 104px wide) -->
+<aside aria-label="Application Navigation" class="fixed left-0 top-0 h-screen w-[104px] z-50 flex flex-col justify-between items-center py-space-lg px-space-xs bg-[rgba(23,28,44,0.72)] backdrop-blur-md border-r border-[rgba(189,198,255,0.14)] select-none">
+<!-- Top Brand Mark -->
+<div class="flex flex-col items-center">
+<div class="w-11 h-11 rounded-control bg-primary-container/20 border border-[rgba(189,198,255,0.2)] flex items-center justify-center text-primary mb-space-lg shadow-sm" title="EnZIME Reader">
+<span class="font-display-lg text-headline-lg font-bold text-primary tracking-tight">Z</span>
+</div>
+<!-- Navigation Items Stacked Vertically with Icons and Labels -->
+<nav class="flex flex-col items-center gap-space-sm w-full">
+<!-- Home -->
+<a class="group flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#home">
+<span class="material-symbols-outlined text-[22px] mb-1">home</span>
+<span class="font-label-mono-sm text-[11px] leading-tight">Home</span>
+</a>
+<!-- Library -->
+<a class="group flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#library">
+<span class="material-symbols-outlined text-[22px] mb-1">local_library</span>
+<span class="font-label-mono-sm text-[11px] leading-tight">Library</span>
+</a>
+<!-- Ask -->
+<a class="group flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#ask">
+<span class="material-symbols-outlined text-[22px] mb-1">contact_support</span>
+<span class="font-label-mono-sm text-[11px] leading-tight">Ask</span>
+</a>
+<!-- Notes -->
+<a class="group flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#notes">
+<span class="material-symbols-outlined text-[22px] mb-1">description</span>
+<span class="font-label-mono-sm text-[11px] leading-tight">Notes</span>
+</a>
+<!-- Memory -->
+<a class="group flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#memory">
+<span class="material-symbols-outlined text-[22px] mb-1">memory</span>
+<span class="font-label-mono-sm text-[11px] leading-tight">Memory</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Nav Anchor: Settings (Active in activation context) -->
+<div class="w-full flex flex-col items-center">
+<a aria-current="page" class="flex flex-col items-center justify-center w-full min-h-[44px] py-space-xs rounded-control text-primary bg-surface-container-high/60 border border-[rgba(124,140,255,0.25)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#settings">
+<span class="material-symbols-outlined text-[22px] mb-1">settings</span>
+<span class="font-label-mono-sm text-[11px] font-medium leading-tight">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main View Area (Offset by navigation rail: 104px) -->
+<div class="ml-[104px] w-[calc(100%-104px)] min-h-screen flex flex-col aurora-bg relative">
+<!-- Top Header -->
+<header class="h-16 w-full px-space-xl flex items-center justify-between border-b border-[rgba(189,198,255,0.1)] bg-[rgba(17,19,27,0.4)] backdrop-blur-sm z-30">
+<!-- Logo Brand & Title -->
+<div class="flex items-center gap-space-sm">
+<span class="text-headline-md font-headline-md font-semibold text-[#F4F6FF] tracking-tight">EnZIME Reader</span>
+</div>
+<!-- Center-Right Integrated Search Bar -->
+<div class="flex items-center gap-space-md w-full max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">search</span>
+<input aria-label="Search topics or ZIMs" class="w-full h-11 pl-10 pr-4 bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-control text-body-md font-body-md text-[#F4F6FF] placeholder-[#8E96B0] focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-all" placeholder="Search activation help, topics, or ZIMs..." type="search"/>
+</div>
+</div>
+<button aria-label="Close activation" class="min-h-[44px] px-3 rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-colors ml-4" title="Close activation" type="button"><span class="material-symbols-outlined text-[20px]">close</span><span class="font-body-md text-body-md">Close</span></button></header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col justify-center items-center px-space-md py-space-xl relative z-10">
+<!-- Step Indicator (4 steps) -->
+<nav aria-label="Activation Progress" class="w-full max-w-xl mb-8">
+<div class="flex items-center justify-between relative px-2">
+<!-- Connecting Background Bar -->
+<div aria-hidden="true" class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-surface-variant/40 -z-1">
+<!-- Active Fill to Step 2 -->
+<div class="h-full bg-primary-container w-1/3 transition-all duration-300"></div>
+</div>
+<!-- Step 1: Complete -->
+<div class="flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-secondary text-[#090B13] flex items-center justify-center font-label-mono-sm font-semibold shadow-[0_0_12px_rgba(70,235,223,0.3)]">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<span class="mt-2 font-label-mono-sm text-body-md text-[#B7BDD4]">Welcome</span>
+</div>
+<!-- Step 2: Active -->
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-container text-[#090B13] flex items-center justify-center font-label-mono-sm font-semibold shadow-[0_0_16px_rgba(124,140,255,0.4)] ring-4 ring-[rgba(124,140,255,0.15)]">
+              2
+            </div>
+<span class="mt-2 font-label-mono-sm text-body-md text-[#F4F6FF] font-medium">Activation</span>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex flex-col items-center opacity-60">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/50 text-[#B7BDD4] flex items-center justify-center font-label-mono-sm">
+              3
+            </div>
+<span class="mt-2 font-label-mono-sm text-body-md text-[#B7BDD4]">Confirmation</span>
+</div>
+<!-- Step 4: Ready -->
+<div class="flex flex-col items-center opacity-60">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/50 text-[#B7BDD4] flex items-center justify-center font-label-mono-sm">
+              4
+            </div>
+<span class="mt-2 font-label-mono-sm text-body-md text-[#B7BDD4]">Ready</span>
+</div>
+</div>
+</nav>
+<!-- Glass Activation Card -->
+<section aria-labelledby="activation-heading" class="glass-card w-full max-w-xl p-8 sm:p-10 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)]">
+<!-- Header & Explanatory Text -->
+<div class="text-center mb-6">
+<h1 class="text-headline-lg font-headline-lg text-[#F4F6FF] tracking-tight mb-2" id="activation-heading">
+            One-time activation
+          </h1>
+<p class="font-body-md text-body-md text-[#B7BDD4] leading-relaxed max-w-md mx-auto">EnZIME is a one-time purchase with no recurring subscription. Platform and store services handle checkout securely.</p>
+</div>
+<!-- Dynamic Store Offer Container -->
+<div class="my-6" id="offer-container">
+<!-- Initial Loading State -->
+<div class="relative overflow-hidden rounded-control bg-[rgba(14,17,27,0.7)] border border-[rgba(189,198,255,0.14)] p-5 min-h-[96px] flex flex-col justify-center items-center text-center skeleton-shimmer">
+<div aria-live="polite" class="flex items-center gap-3 mb-2" role="status">
+<svg aria-hidden="true" class="animate-spin h-5 w-5 text-primary" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<span class="text-body-md font-body-md text-[#F4F6FF] font-medium">Loading purchase details…</span>
+</div>
+<p class="font-label-mono-sm text-label-mono-sm text-[#8E96B0]">
+              Connecting directly to platform store catalog
+            </p>
+</div>
+</div>
+<!-- Failure State Template (Ready for programmatic invocation) -->
+<template id="purchase-error-template">
+<div class="rounded-control bg-error-container/20 border border-error/30 p-5 flex flex-col items-center text-center">
+<span aria-hidden="true" class="material-symbols-outlined text-error text-[28px] mb-2">error_outline</span>
+<p class="text-body-md font-body-md text-[#F4F6FF] font-medium mb-1">
+              Purchase details could not be loaded.
+            </p>
+<p class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-4">
+              Please check your connection and retry, or restore an existing license.
+            </p>
+<div class="flex items-center gap-3">
+<button class="min-h-[44px] px-5 rounded-control bg-surface-container-high text-[#F4F6FF] hover:bg-surface-bright text-body-md font-body-md border border-[rgba(189,198,255,0.14)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all" type="button">
+                Retry
+              </button>
+<button class="min-h-[44px] px-5 rounded-control text-primary hover:text-[#F4F6FF] text-body-md font-body-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all" type="button">
+                Restore purchase
+              </button>
+</div>
+</div>
+</template><template id="purchase-offer-template"><div class="rounded-control bg-[rgba(14,17,27,0.7)] border border-[rgba(189,198,255,0.14)] p-5 flex items-center justify-between"><div class="flex flex-col"><span class="font-headline-md text-headline-md font-semibold text-[#F4F6FF]">EnZIME Reader License</span><span class="font-label-mono-sm text-label-mono-sm text-[#8E96B0]">Full offline access, perpetual license</span></div><div class="text-right"><span class="font-headline-md text-headline-md font-bold text-primary" data-bind="offer-price"></span></div></div></template>
+<!-- Primary & Secondary Actions -->
+<div class="space-y-4 pt-2">
+<!-- Primary CTA Button (Disabled while offer is empty/loading) -->
+<button aria-disabled="true" class="w-full min-h-[44px] rounded-control bg-primary-container text-[#090B13] font-body-md text-body-md font-semibold flex items-center justify-center gap-2 opacity-50 cursor-not-allowed transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" disabled="" id="btn-activate" type="button">
+<span>Activate EnZIME</span>
+</button>
+<!-- Secondary Actions -->
+<div class="flex items-center justify-between pt-1">
+<button class="min-h-[44px] px-4 rounded-control text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 font-body-md text-body-md flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back</span>
+</button>
+<button class="min-h-[44px] px-4 rounded-control text-primary hover:text-[#F4F6FF] hover:bg-surface-container/60 font-body-md text-body-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-colors" type="button">
+              Restore purchase
+            </button>
+</div>
+</div>
+<!-- Reassuring Footer Note -->
+<div class="mt-8 pt-5 border-t border-[rgba(255,255,255,0.06)] flex items-start gap-3"><span aria-hidden="true" class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">verified_user</span><p class="font-body-md text-body-md text-[#B7BDD4] leading-normal">Once activated, EnZIME works entirely offline.</p></div>
+</section>
+</main>
+<!-- Plain Bottom-Right Version Info (Quiet, unadorned, non-telemetry) -->
+<footer class="w-full px-space-xl py-space-sm flex justify-end items-center select-none z-10 pointer-events-none">
+<span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0]/80">
+        EnZIME Reader v1.29.08988
+      </span>
+</footer>
+</div>
+</body></html>

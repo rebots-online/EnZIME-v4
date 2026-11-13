@@ -1,0 +1,96 @@
+{
+  "project": "17076380137565911053",
+  "status": "assembly-in-progress-unfrozen",
+  "sources": [
+    {
+      "screen": "S01 Setup",
+      "id": "239bbcd47563448381998f5149b4afa9",
+      "path": "drafts/239bbcd47563448381998f5149b4afa9.html"
+    },
+    {
+      "screen": "S02 Home desktop",
+      "id": "2d56e0fcadb04bcbbf075fca550a5583",
+      "path": "drafts/2d56e0fcadb04bcbbf075fca550a5583.html"
+    },
+    {
+      "screen": "S02 Home mobile",
+      "id": "21b38eef11314cad9df1bdfe4c1df222",
+      "path": "drafts/21b38eef11314cad9df1bdfe4c1df222.html"
+    },
+    {
+      "screen": "S03 Library",
+      "id": "5c5a53b2b6df4773a57fd4993c62cf71",
+      "path": "drafts/5c5a53b2b6df4773a57fd4993c62cf71.html"
+    },
+    {
+      "screen": "S04 Plan",
+      "id": "ba4c62ff41954c2989fd83a8cc22125c",
+      "path": "drafts/ba4c62ff41954c2989fd83a8cc22125c.html"
+    },
+    {
+      "screen": "S09 Notes - EnZIME Reader",
+      "id": "1f61b6a92a874221ac0735257974315a",
+      "path": "drafts/1f61b6a92a874221ac0735257974315a.html"
+    },
+    {
+      "screen": "S07 Navigator - EnZIME Reader",
+      "id": "1dc940687b204910b8bd867d570760c4",
+      "path": "drafts/1dc940687b204910b8bd867d570760c4.html"
+    },
+    {
+      "screen": "S06 Reader - EnZIME Reader",
+      "id": "7bf5111e289e48a8b2642a97c8ee4c87",
+      "path": "drafts/7bf5111e289e48a8b2642a97c8ee4c87.html"
+    },
+    {
+      "screen": "S12 Search - EnZIME Reader",
+      "id": "6061c5031b084a89b28b6a15b9f38e79",
+      "path": "drafts/6061c5031b084a89b28b6a15b9f38e79.html"
+    },
+    {
+      "screen": "S05 Downloads - EnZIME Reader",
+      "id": "4abd508a87bb476a9dd3d703c15afc76",
+      "path": "drafts/4abd508a87bb476a9dd3d703c15afc76.html"
+    },
+    {
+      "screen": "S08 Annotation",
+      "id": "d6c333a402c8488bb8f89eef305f8a58",
+      "path": "drafts/d6c333a402c8488bb8f89eef305f8a58.html"
+    },
+    {
+      "screen": "S10 Ask",
+      "id": "af133ef8d97b452eac8cc20d1d2c89ba",
+      "path": "drafts/af133ef8d97b452eac8cc20d1d2c89ba.html"
+    },
+    {
+      "screen": "S11 Memory",
+      "id": "e565e246fdd24caa982ca6b8ef60fb07",
+      "path": "drafts/e565e246fdd24caa982ca6b8ef60fb07.html"
+    },
+    {
+      "screen": "S13 Settings",
+      "id": "12de473e646a428284fd8ed2ec61a292",
+      "path": "drafts/12de473e646a428284fd8ed2ec61a292.html"
+    },
+    {
+      "screen": "S14 Welcome - EnZIME Reader",
+      "id": "ced6cbeb988644cb90a0409e9b08c630",
+      "path": "drafts/ced6cbeb988644cb90a0409e9b08c630.html"
+    },
+    {
+      "screen": "S15 One-time activation - EnZIME Reader",
+      "id": "4ab8de7633574fd8b6b2bfbfca8c1da5",
+      "path": "drafts/4ab8de7633574fd8b6b2bfbfca8c1da5.html"
+    },
+    {
+      "screen": "S16 Purchase pending/restore - EnZIME Reader",
+      "id": "b5cf8b48e087495ead39becd730fb643",
+      "path": "drafts/b5cf8b48e087495ead39becd730fb643.html"
+    },
+    {
+      "screen": "S17 Activated - EnZIME Reader",
+      "id": "f7fe0aa3f3ee427cbda35820f9b4b0c7",
+      "path": "drafts/f7fe0aa3f3ee427cbda35820f9b4b0c7.html"
+    }
+  ]
+}

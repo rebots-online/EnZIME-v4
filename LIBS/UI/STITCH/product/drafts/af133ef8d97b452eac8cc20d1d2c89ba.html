@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Ask</title>
+<!-- Google Fonts: Inter & Literata -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#ffba43",
+            "secondary": "#46ebdf",
+            "inverse-surface": "#e2e1ee",
+            "inverse-on-surface": "#2e3039",
+            "primary-container": "#7c8cff",
+            "surface-bright": "#373942",
+            "on-tertiary-fixed": "#281800",
+            "on-primary-container": "#001892",
+            "surface": "#11131b",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed": "#ffddaf",
+            "secondary-fixed": "#59f9ed",
+            "on-primary": "#041c94",
+            "inverse-primary": "#4353c3",
+            "surface-container-lowest": "#0c0e16",
+            "primary-fixed": "#dfe0ff",
+            "surface-dim": "#11131b",
+            "on-secondary": "#003733",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-container": "#1d1f28",
+            "surface-container-highest": "#33343e",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "surface-tint": "#bcc3ff",
+            "primary-fixed-dim": "#bcc3ff",
+            "error": "#ffb4ab",
+            "on-tertiary-container": "#402900",
+            "on-secondary-fixed-variant": "#00504b",
+            "secondary-container": "#00cec3",
+            "tertiary-container": "#c88900",
+            "tertiary": "#ffba43",
+            "primary": "#bcc3ff",
+            "on-secondary-container": "#00534e",
+            "error-container": "#93000a",
+            "on-background": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-error": "#690005",
+            "on-primary-fixed": "#000c60",
+            "on-surface": "#e2e1ee",
+            "on-tertiary": "#442c00",
+            "surface-container-high": "#282a32",
+            "outline": "#8f8f9f",
+            "on-primary-fixed-variant": "#2839aa",
+            "outline-variant": "#454653",
+            "surface-variant": "#33343e",
+            "secondary-fixed-dim": "#2eddd1",
+            "surface-container-low": "#191b24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "gutter": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "margin": "1rem"
+          },
+          "fontFamily": {
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Baseline tokens from EnZIME Aurora Glass specs */
+    :root {
+      --bg-base: #090B13;
+      --glass-surface: rgba(23, 28, 44, 0.72);
+      --glass-surface-overlay: rgba(30, 36, 56, 0.82);
+      --glass-border: rgba(189, 198, 255, 0.14);
+      --text-main: #F4F6FF;
+      --text-muted: #B7BDD4;
+      --primary-accent: #7C8CFF;
+      --teal-accent: #34E0D4;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Aurora atmospheric glow backdrops (strictly restrained, non-distracting) */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle 750px at 15% 10%, rgba(124, 140, 255, 0.05), transparent 70%),
+        radial-gradient(circle 600px at 85% 80%, rgba(52, 224, 212, 0.035), transparent 65%),
+        radial-gradient(circle 900px at 50% 50%, rgba(9, 11, 19, 0.95), #090B13);
+    }
+
+    .glass-panel {
+      background-color: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .glass-modal {
+      background-color: var(--glass-surface-overlay);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+    }
+
+    .card-22 {
+      border-radius: 22px;
+    }
+
+    .field-14 {
+      border-radius: 14px;
+    }
+
+    /* Custom scrollbar matching nocturnal glass aesthetic */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(189, 198, 255, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Restrained Aurora Ambient Background -->
+<div aria-hidden="true" class="aurora-bg"></div>
+<!-- DESKTOP LEFT RAIL (Exact 104px fixed rail with stacked icon+label) -->
+<nav aria-label="Main Navigation" class="hidden md:flex fixed top-0 left-0 h-screen w-[104px] z-50 flex-col items-center py-6 glass-panel border-y-0 border-l-0">
+<!-- Compact Brand Glyph Header -->
+<a class="flex flex-col items-center group mb-8 focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1.5 outline-none" href="#home" title="EnZIME Reader Home">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high border border-[rgba(189,198,255,0.18)] flex items-center justify-center text-primary group-hover:border-primary/50 transition-colors">
+<span class="font-headline-md text-headline-md font-bold text-primary">Z</span>
+</div>
+<span class="mt-1 text-[10px] font-label-mono-sm text-outline tracking-tight">v1.29</span>
+</a>
+<!-- Primary Nav Stack (Stacked icon + label) -->
+<div class="flex-1 w-full flex flex-col items-center gap-1.5 px-2">
+<!-- Home -->
+<a class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none" href="#home">
+<span class="material-symbols-outlined text-[22px]" data-icon="home">home</span>
+<span class="text-[11px] font-medium mt-1 leading-none">Home</span>
+</a>
+<!-- Library -->
+<a class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none" href="#library">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library">local_library</span>
+<span class="text-[11px] font-medium mt-1 leading-none">Library</span>
+</a>
+<!-- Ask (ACTIVE NAVIGATION TAB) -->
+<a aria-current="page" class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl bg-surface-container-high/80 text-primary border border-primary/25 shadow-[0_0_16px_rgba(124,140,255,0.12)] focus-visible:ring-2 focus-visible:ring-primary outline-none" href="#ask">
+<span class="material-symbols-outlined text-[22px]" data-icon="contact_support" data-weight="fill" style="font-variation-settings: 'FILL' 1;">contact_support</span>
+<span class="text-[11px] font-semibold mt-1 leading-none text-primary">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none" href="#notes">
+<span class="material-symbols-outlined text-[22px]" data-icon="description">description</span>
+<span class="text-[11px] font-medium mt-1 leading-none">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none" href="#memory">
+<span class="material-symbols-outlined text-[22px]" data-icon="memory">memory</span>
+<span class="text-[11px] font-medium mt-1 leading-none">Memory</span>
+</a>
+<!-- Settings -->
+<a class="w-full h-[62px] min-h-[44px] flex flex-col items-center justify-center rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none mt-auto" href="#settings">
+<span class="material-symbols-outlined text-[22px]" data-icon="settings">settings</span>
+<span class="text-[11px] font-medium mt-1 leading-none">Settings</span>
+</a>
+</div>
+</nav>
+<!-- DESKTOP TOP BAR (ONLY Z logo EnZIME Reader and Search bar)
+       Enforcing EXACT style="margin-left: 104px; width: calc(100% - 104px);" on >=768px -->
+<header class="hidden md:flex h-14 items-center justify-between px-6 z-40 sticky top-0 glass-panel border-t-0 border-x-0" style="margin-left: 104px; width: calc(100% - 104px);">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold text-headline-md tracking-tight">Z</span>
+<h1 class="text-on-surface font-semibold text-body-lg tracking-tight">EnZIME Reader</h1>
+</div>
+<!-- Desktop Search Bar -->
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]" data-icon="search">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-lg bg-surface-container-lowest/80 border border-[rgba(189,198,255,0.12)] text-body-md text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all" placeholder="Search articles and notes..." type="text"/>
+</div>
+</div>
+</header>
+<!-- MOBILE TOP HEADER (md:hidden) -->
+<header class="md:hidden sticky top-0 z-40 w-full h-14 flex items-center justify-between px-4 glass-panel border-t-0 border-x-0">
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold text-headline-md">Z</span>
+<h1 class="text-on-surface font-semibold text-body-md">EnZIME Reader</h1>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Search" class="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</button>
+<button aria-label="Models" class="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface active:scale-95 transition-transform" onclick="document.getElementById('model-modal').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</button>
+</div>
+</header>
+<!-- MAIN VIEWPORT CONTAINER
+       Desktop requires EXACT style="margin-left: 104px; width: calc(100% - 104px);" -->
+<main class="relative z-10 flex flex-col min-h-[calc(100vh-3.5rem)] md:h-[calc(100vh-3.5rem)] pb-20 md:pb-0" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Inner Split Layout: Left Conversation Sub-panel & Main Ask Canvas -->
+<div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+<!-- LEFT CONVERSATION HISTORY SUB-PANEL (Initial empty state + action) -->
+<aside aria-label="Conversation History" class="w-full md:w-64 lg:w-72 shrink-0 border-b md:border-b-0 md:border-r border-[rgba(189,198,255,0.1)] glass-panel flex flex-col h-auto md:h-full">
+<!-- Sub-panel Action Header -->
+<div class="p-3 border-b border-[rgba(189,198,255,0.08)] flex items-center justify-between">
+<button class="w-full h-10 min-h-[44px] px-3.5 rounded-lg bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface border border-[rgba(189,198,255,0.14)] hover:border-primary/40 flex items-center justify-center gap-2 text-body-md font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary outline-none" id="new-conv-btn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary" data-icon="add">add</span>
+<span>+ New conversation</span>
+</button>
+</div>
+<!-- Initial Empty History State -->
+<div class="flex-1 p-6 flex flex-col items-center justify-center text-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-outline mb-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+</div>
+<p class="text-body-md text-on-surface-variant font-medium">No conversations</p>
+<p class="text-label-mono-sm text-outline mt-1 max-w-[180px]">Previous dialogues and answers will appear here.</p>
+</div>
+<!-- Mobile Scope Quick Bar Link -->
+<div class="p-3 md:hidden border-t border-[rgba(189,198,255,0.08)] bg-surface-container-low/40 flex items-center justify-between text-label-mono-sm">
+<span class="text-on-surface-variant">Active Scope</span>
+<span class="text-primary truncate max-w-[200px]">All installed packs and notes</span>
+</div>
+</aside>
+<!-- MAIN ASK WORKSPACE CANVAS -->
+<section class="flex-1 flex flex-col h-full overflow-y-auto relative p-4 md:p-6 lg:p-8">
+<!-- Top Header & Scope Selector Row -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[rgba(189,198,255,0.08)] mb-6">
+<div class="flex items-center gap-3">
+<h2 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Ask</h2>
+</div>
+<!-- Scope Selector Popover Control -->
+<div class="relative inline-block text-left" id="scope-dropdown-container">
+<button aria-expanded="false" aria-haspopup="true" class="h-10 min-h-[44px] px-3.5 rounded-lg glass-panel hover:bg-surface-container-high/60 text-on-surface flex items-center gap-2 border border-[rgba(189,198,255,0.14)] focus-visible:ring-2 focus-visible:ring-primary outline-none transition-colors" id="scope-menu-button" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary" data-icon="inventory_2">inventory_2</span>
+<span class="text-body-md text-on-surface font-medium" id="current-scope-label">Scope: All installed packs and notes</span>
+<span class="material-symbols-outlined text-[16px] text-outline ml-1" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+<!-- Real Installed Scopes Popover Menu -->
+<div class="hidden absolute right-0 mt-2 w-72 z-30 glass-modal field-14 p-1.5 border border-[rgba(189,198,255,0.18)] shadow-2xl" id="scope-popover"><div class="px-3 py-2 text-[11px] font-label-mono-sm text-outline border-b border-[rgba(189,198,255,0.08)] mb-1">INSTALLED KNOWLEDGE SCOPES</div><button class="w-full text-left px-3 py-2 min-h-[44px] flex items-center justify-between rounded-lg hover:bg-surface-container-high text-body-md text-on-surface transition-colors" onclick="selectScope('Scope: All installed packs and notes')" type="button"><span class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary" data-icon="select_all">select_all</span><span>All installed packs and notes</span></span><span class="material-symbols-outlined text-[16px] text-primary" data-icon="check">check</span></button></div>
+</div>
+</div>
+<!-- Scrollable Center Canvas -->
+<div class="flex-1 flex flex-col justify-center items-center max-w-3xl mx-auto w-full mb-6">
+<!-- MAIN EMPTY STATE GLASS CARD (22px radius) -->
+<div class="glass-panel card-22 p-6 md:p-8 w-full border border-[rgba(189,198,255,0.14)] shadow-xl relative overflow-hidden text-center md:text-left flex flex-col md:flex-row items-center gap-6">
+<div class="w-16 h-16 shrink-0 rounded-2xl bg-surface-container-high/80 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_24px_rgba(124,140,255,0.15)]">
+<span class="material-symbols-outlined text-[32px]" data-icon="psychology">psychology</span>
+</div>
+<div class="flex-1">
+<h3 class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">
+                Ask about your knowledge.
+              </h3>
+<p class="text-body-md text-on-surface-variant mt-2 leading-relaxed font-normal">
+                Choose what to include, then ask a question. Answers link back to their sources.
+              </p>
+</div>
+</div>
+<!-- MODEL-NEEDED INLINE NOTICE -->
+<div class="w-full mt-4 p-4 rounded-xl bg-surface-container-low/70 border border-[rgba(189,198,255,0.12)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px]" data-icon="storage">storage</span>
+<p class="text-body-md text-on-surface-variant font-normal">
+                Choose a local model to ask questions offline.
+              </p>
+</div>
+<button class="h-9 min-h-[44px] px-4 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-primary hover:text-on-surface border border-primary/30 hover:border-primary text-body-md font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary outline-none whitespace-nowrap" onclick="document.getElementById('model-modal').classList.remove('hidden')" type="button">
+              Choose model
+            </button>
+</div>
+<!-- Dynamic Output Stream Container (Holds inert failure/stream structures when active) -->
+<div class="w-full mt-4 hidden" id="active-response-container">
+<!-- Simulated In-Flight Failure State Container -->
+<div class="glass-panel card-22 p-5 border-error/30 bg-surface-container-low/90" id="failure-state-box"><div class="flex items-start gap-3"><span class="material-symbols-outlined text-error text-[20px] mt-0.5" data-icon="error_outline">error_outline</span><div class="flex-1"><h4 class="text-body-md font-medium text-error">The answer could not be completed.</h4><p class="text-body-md text-on-surface-variant mt-1 hidden" data-partial-output="" id="partial-output-display"></p><div class="flex items-center gap-3 mt-4"><button class="h-9 min-h-[44px] px-4 rounded-lg bg-primary text-on-primary font-medium text-body-md hover:bg-primary-fixed focus-visible:ring-2 focus-visible:ring-primary" type="button">Retry</button><button class="h-9 min-h-[44px] px-4 rounded-lg glass-panel hover:bg-surface-container-high text-on-surface-variant font-medium text-body-md" onclick="document.getElementById('active-response-container').classList.add('hidden')" type="button">Cancel</button></div></div></div></div>
+</div>
+</div>
+<!-- BOTTOM INPUT AREA -->
+<div class="max-w-3xl mx-auto w-full mt-auto pt-2">
+<form class="glass-panel card-22 p-2.5 md:p-3 border border-[rgba(189,198,255,0.16)] shadow-2xl relative" id="ask-form" onsubmit="event.preventDefault();">
+<label class="sr-only" for="question-input">Question</label>
+<div class="relative flex flex-col">
+<textarea class="w-full bg-transparent border-0 text-on-surface placeholder:text-outline text-body-md focus:ring-0 focus:outline-none resize-none px-3 pt-2 pb-1 leading-relaxed" id="question-input" oninput="updateInputState()" placeholder="Ask a question about your knowledge..." rows="2"></textarea>
+<div class="flex items-center justify-between border-t border-[rgba(189,198,255,0.06)] pt-2 px-2">
+<!-- Context/Selected model tag indication -->
+<div class="flex items-center gap-2">
+<span class="text-label-mono-sm text-outline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]" data-icon="tune">tune</span>
+<span id="selected-model-tag">No model selected</span>
+</span>
+</div>
+<!-- Action Button Group -->
+<div class="flex items-center gap-2">
+<!-- Inactive Template for Stop during generation -->
+<button class="hidden h-9 min-h-[44px] px-4 rounded-lg bg-surface-container-high hover:bg-error-container text-error border border-error/30 text-body-md font-medium transition-colors items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-error" id="stop-generation-btn" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="stop">stop</span>
+<span>Stop</span>
+</button>
+<!-- Send Button (Disabled until scope, model, and question exist) -->
+<button class="h-9 min-h-[44px] px-4 rounded-lg bg-primary-container text-on-primary-container font-semibold text-body-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-fixed focus-visible:ring-2 focus-visible:ring-primary outline-none" disabled="" id="send-question-btn" type="button">
+<span>Send</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</form>
+<!-- BOTTOM-RIGHT QUIET PLAIN TEXT FOOTER (NO badge, NO glowing dot, NO border) -->
+<div class="flex justify-end pt-3 pb-1">
+<span class="text-[12px] font-label-mono-md text-outline tracking-normal select-none">
+              EnZIME Reader v1.29.08988
+            </span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- MODEL CHOOSER DIALOG/SHEET (Accessible modal) -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md hidden" id="model-modal" role="dialog">
+<div class="glass-modal card-22 w-full max-w-lg p-6 border border-[rgba(189,198,255,0.18)] shadow-2xl relative">
+<div class="flex items-center justify-between pb-4 border-b border-[rgba(189,198,255,0.08)]">
+<h3 class="text-headline-md font-headline-md text-on-surface font-semibold" id="modal-title">
+          Select Local Knowledge Model
+        </h3>
+<button aria-label="Close modal" class="w-9 h-9 min-h-[44px] min-w-[44px] rounded-lg text-outline hover:text-on-surface flex items-center justify-center hover:bg-surface-container-high transition-colors" onclick="document.getElementById('model-modal').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+</div>
+<div class="py-4 space-y-4"><p class="text-body-md text-on-surface-variant">Local models run directly on your hardware and require available storage. All processing stays strictly on your device.</p><div class="pt-2"><label class="text-[11px] font-label-mono-sm text-outline tracking-wider">LOCAL GGUF MODEL</label><button class="w-full mt-1.5 h-11 min-h-[44px] px-4 rounded-xl border border-dashed border-[rgba(189,198,255,0.25)] hover:border-primary text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-2 text-body-md transition-colors" onclick="selectModel('Local GGUF Model')" type="button"><span class="material-symbols-outlined text-[18px] text-primary" data-icon="folder_open">folder_open</span><span>Choose local GGUF file from filesystem...</span></button></div></div>
+<div class="pt-4 border-t border-[rgba(189,198,255,0.08)] flex justify-end gap-2">
+<button class="h-9 min-h-[44px] px-4 rounded-lg glass-panel hover:bg-surface-container-high text-on-surface font-medium text-body-md" onclick="document.getElementById('model-modal').classList.add('hidden')" type="button">
+          Close
+        </button>
+</div>
+</div>
+</div>
+<!-- INERT CLEAN TEMPLATES FOR STREAMED MESSAGES & CITATION LINKS 
+       Strictly empty binding placeholders, NO fabricated dummy chat dialogues or hallucinated responses -->
+<template id="message-template">
+<article class="w-full py-4 space-y-2 border-b border-[rgba(189,198,255,0.06)]" data-role="">
+<header class="flex items-center justify-between text-label-mono-sm text-outline">
+<span class="sender-label font-medium"></span>
+<time class="timestamp"></time>
+</header>
+<div class="content font-body-editorial text-body-editorial text-on-surface leading-relaxed whitespace-pre-wrap"></div>
+<footer class="citations-container flex flex-wrap gap-2 pt-2"></footer>
+</article>
+</template>
+<template id="citation-template">
+<a class="citation-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container-high/60 border border-[rgba(189,198,255,0.12)] hover:border-primary/50 text-[12px] font-label-mono-sm text-secondary transition-colors" href="#" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[14px]" data-icon="link">link</span>
+<span class="citation-title truncate max-w-[200px]"></span>
+<span class="citation-index text-outline font-normal"></span>
+</a>
+</template>
+<!-- MOBILE BOTTOM NAVIGATION (md:hidden, docked full-width) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 glass-panel border-x-0 border-b-0 py-1 px-4 flex justify-around items-center">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant min-h-[44px] min-w-[44px] py-1" href="#home">
+<span class="material-symbols-outlined text-[22px]" data-icon="home">home</span>
+<span class="text-[11px] font-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant min-h-[44px] min-w-[44px] py-1" href="#library">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library">local_library</span>
+<span class="text-[11px] font-label-mono-sm mt-0.5">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant min-h-[44px] min-w-[44px] py-1" href="#notes">
+<span class="material-symbols-outlined text-[22px]" data-icon="description">description</span>
+<span class="text-[11px] font-label-mono-sm mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant min-h-[44px] min-w-[44px] py-1" href="#more">
+<span class="material-symbols-outlined text-[22px]" data-icon="more_horiz">more_horiz</span>
+<span class="text-[11px] font-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Lightweight Inline Logic for UI States -->
+<script>
+    let currentSelectedModel = null;
+    let currentScope = "Scope: All installed packs and notes";
+
+    // Scope Dropdown Toggle
+    const scopeBtn = document.getElementById('scope-menu-button');
+    const scopePopover = document.getElementById('scope-popover');
+
+    scopeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = scopeBtn.getAttribute('aria-expanded') === 'true';
+      scopeBtn.setAttribute('aria-expanded', !isExpanded);
+      scopePopover.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      scopePopover.classList.add('hidden');
+      scopeBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    function selectScope(name) {
+      currentScope = name;
+      document.getElementById('current-scope-label').innerText = name;
+      scopePopover.classList.add('hidden');
+      scopeBtn.setAttribute('aria-expanded', 'false');
+      updateInputState();
+    }
+
+    function selectModel(modelName) {
+      currentSelectedModel = modelName;
+      document.getElementById('selected-model-tag').innerText = modelName;
+      document.getElementById('model-modal').classList.add('hidden');
+      updateInputState();
+    }
+
+    function updateInputState() {
+      const questionText = document.getElementById('question-input').value.trim();
+      const sendBtn = document.getElementById('send-question-btn');
+      
+      // Enabled when question exists, scope is defined, and a local model is chosen
+      const isValid = questionText.length > 0 && currentSelectedModel !== null;
+      sendBtn.disabled = !isValid;
+    }
+
+    // New conversation reset action
+    document.getElementById('new-conv-btn').addEventListener('click', () => {
+      document.getElementById('question-input').value = '';
+      document.getElementById('active-response-container').classList.add('hidden');
+      updateInputState();
+    });
+  </script>
+</body></html>
