@@ -6849,22 +6849,134 @@ Preserve the original checkout and historical worktrees. Publish this contract a
 the derived checklist before implementation; publish the implementation on the
 dedicated branch and open a PR against `master`. Pull the published revision on
 `msi4090` only after merging the implementation PR for final build and deployment.
-Operator direction on 2026-11-12 supersedes the earlier testing sequence: no more
-test suites, component checks or UI automation before merge. Keep delivery within
-this architecture; only the originally requested behavior confirmation follows
-merge and deployment. Prior test records describe history, not a pre-merge gate.
+Operator direction on 2026-11-12 supersedes the earlier testing sequence: product
+testing and behavior checking are stopped until explicitly reauthorized. Merge,
+build and deployment create no exception. Prior test records describe history;
+the runtime protocol below is suspended, not an authorized next action. Continue
+the architecture-defined implementation, publication, build and deployment.
 Pull the published revision on
 `msi4090` for a native build: the recorded filesystem-corruption hold applies to
 builds on `asrock`, and is not cleared by a successful compiler exit. Use existing
 build/sign/version machinery and retain exact artifact hashes and lane results.
 
-Deploy the resulting native release to an isolated application-data profile on
-the build host. WebKitWebDriver/tauri-driver can operate the genuine release UI;
-do not inject a fake Tauri bridge. Observe live catalog population, text/language
-filters, neutral heading, a selected real archive, the storage maximum and slider,
-stale-plan invalidation, both strategy controls, a computed byte-bounded plan, and
-a completed real acquisition readable from the installed pack. Record screenshots
-at desktop and a narrow viewport, including scrolled dialog actions. Verify subject
-selection and even ordering on a multi-cluster deterministic test archive as well
-as the live catalog. This protocol is runtime evidence, not an idempotent checklist
-Accept clause. `DOCS/TEST_RUBRIC.md` carries the corresponding acceptance rows.
+The previous native UI/behavior protocol is suspended by the operator's explicit
+stop. Its historical acceptance rows remain in `DOCS/TEST_RUBRIC.md`, clearly
+labelled as suspended. Retain existing evidence without rerunning it. Deployment
+continues from the published merged source; do not launch an acceptance session
+or infer observed behavior from compilation and packaging.
+
+## Mandatory common resource storage — correction, 2026-11-12
+
+This restores an established product requirement. It supersedes every app-private
+default, user-selectable sharing scope, capability-driven private fallback and
+raw namespace destination label above. Authority: Robin's explicit clarifications
+in this session, TC-NS `org-namespace-storage.md`, and SC3's collaborative
+interpretation procedure (Admin-Manual commits `8521f11`, `40b0e5b`). KStore record
+`01a1d206-d593-8001-b282-995d5575cdbe` preserves the correction and its rationale.
+The unchanged purpose is one reusable large resource across the ecosystem,
+reducing storage waste. The user may choose a physical medium; sharing is fixed.
+
+### Shared policy and physical media
+
+Build-time `.env` fixes `VITE_STORAGE_SCOPE=common` and
+`ENZIME_STORAGE_NAMESPACE=mba.robin`. `VITE_APP_NAMESPACE=mba.robin.enzime` describes
+the app identity and does not become the large-resource storage namespace.
+`ENZIME_SHARED_STORAGE_ROOT` optionally sets an absolute common directory ending
+in the storage namespace. Its default is `<platform data directory>/mba.robin`
+on desktop, resolved independently of the app identifier. The Android default is
+`/storage/emulated/0/mba.robin`; `ENZIME_SHARED_STORAGE_ROOT_ANDROID` can override
+it for an OEM/build. `ENZIME_SHARED_SDCARD_ROOT` optionally sets a mounted card's
+common directory. Android also enumerates actually mounted removable volumes and
+uses `<volume>/mba.robin`. Never create a missing card mount point on internal
+storage. Both roots are common, including removable storage. Invalid configuration
+fails explicitly; no fallback to an app-private directory is permitted.
+
+The root is validated against this build's shared policy at both planning and
+install start. Historical `storage_roots` rows cannot authorize new private
+downloads. Existing private files and notes are preserved; legacy restoration is
+read compatibility, not permission to start a private acquisition. New common
+pack paths retain the deterministic `packs/<pack_version_id>` convention, so
+another ecosystem app opening the same edition reuses its persisted bytes and
+manifest rather than acquiring another app-local copy. A cross-process file lease
+at the common root serializes acquisition writes between cooperating apps.
+Medium enumeration deduplicates canonical roots after namespace directory
+creation, including a fresh card named both by configuration and platform volume
+enumeration. Opening the actual acquisition-lease file for write establishes
+access before returning `writable: true`; capacity alone does not establish write
+access. Unwritable cards are absent and primary access failures are actionable.
+Private profile SQLite, notes and credentials remain separate from reusable large
+resource files. Foreground apps open common model files directly. This amendment
+does not introduce a background inference service or change the inference engine.
+
+On Android the direct filesystem store needs genuine shared-file access. A small
+Tauri mobile plugin enumerates mounted volumes and opens the system's storage
+permission screen on an explicit `Allow shared storage access` action. Declare
+all-files access for API30+ and legacy read/write permission through API29, with
+`android:requestLegacyExternalStorage="true"` for the Android10 compatibility path.
+Until granted, return `shared_storage_access_required` with the real recovery
+action; catalog browsing remains available. Never claim a private directory is
+shared. A packaged permission declaration does not itself grant access or imply
+Google Play policy approval.
+The zero-argument mobile commands carry an empty JSON object. Android-only helper
+types/functions use compile-time platform branches; desktop enumeration uses its
+real filesystem implementation without unreachable stub helpers.
+
+### Presentation and wiring
+
+`StoragePlanner` becomes the shared-storage medium control. Use `Internal storage`
+and `SD card`, with `Shared across your apps` and real free/available bytes. With
+one available medium render a summary, with multiple media allow selection. Do
+not show package identifiers or an app-private option. Default to the internal
+common root when present and invalidate a previous plan on medium changes. Missing
+SD cards are absent; do not invent unavailable rows. Explain when SD is selected:
+`SD cards can be slower and can be removed. Internal storage is recommended for
+model files because loading and memory-mapped access can be affected.` This is
+resource-placement guidance; it does not change the selected ZIM plan's bytes.
+The model runner remains in the foreground and reuses the common file.
+
+`StorageDestinationDto` and `StorageDestination` gain `shared: true` and
+`medium: internal | sdcard`; native construction is the authority. Planning returns
+the same fields. The bridge exposes `shared_storage_request_access`; returning
+from system settings refreshes the actual medium list. Plan/start is disabled
+while access is unavailable or the selected root is not a writable common root.
+The existing size formulas, slider and selection modes remain normative.
+Planning/start also require the root-list slice to be ready, so data retained from
+a failed permission refresh cannot enable an action. Sharing copy refers to the
+whole ecosystem (`your apps`), with a choice prompt only when multiple real media
+are present. The Android bridge retains its registered PluginHandle in a
+compile-time Android OnceLock; root-list IPC keeps its existing state-only input.
+
+### Exact implementation vocabulary
+
+| Entity | Target file:line | Contract | Task |
+|---|---|---|---|
+| `SharedStoragePolicy`, `SharedStorageRoot`, `StorageMedium`, `init`, `request_access` | `apps/reader/src-tauri/src/shared_storage.rs:1` (new) | Compiled common-root configuration; primary/removable enumeration, allowed-root validation, access recovery, cross-process acquisition lease | SHARE-1 |
+| `SharedStoragePolicy::roots`, `SharedStoragePolicy::require_shared_root`, `AcquisitionLease::acquire`, `StorageMedium::label`, `StorageMedium::root_kind` | same shared storage module | Async real roots and allowed canonical-root check returning StorageMedium; file lease returning AcquisitionLease; friendly label and existing SQLite kind | SHARE-1 |
+| `SharedStoragePlugin`, `volumes`, `requestAccess` | `apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/SharedStoragePlugin.kt:1` (new) | Mounted real volumes and Android system access flow through Tauri Plugin/Invoke | SHARE-1 |
+| shared storage permissions | `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml:3` | All-files API30+, legacy read/write maxSdk29 plus requestLegacyExternalStorage for Android10; no background model service | SHARE-1 |
+| `main` build configuration | `apps/reader/src-tauri/build.rs:1`, `.env.example:1` (new) | Read allowlisted build configuration; rerun on env/file changes; bake keys into Rust; reject non-common scope | SHARE-1 |
+| `storage_environment`, `prepare_snapshot` | `scripts/build_set.py:215` | Forward only the six named storage keys from local `.env`/process into committed-source build snapshots; preserve secret exclusion | SHARE-1 |
+| `AppState::new_with_transfer`, `AppState.shared_storage`, `run` | `apps/reader/src-tauri/src/state.rs:39`, `apps/reader/src-tauri/src/lib.rs:31` | Shared policy and mobile plugin composition; existing private profile preserved | SHARE-1 |
+| `storage_roots_list`, `shared_storage_request_access` | `apps/reader/src-tauri/src/ipc/library.rs:3` | Return only policy-approved common media; upsert stable path-derived IDs using existing user_selected/removable schema kinds; fresh native capacities | SHARE-1 |
+| `prepare_dyndon_install`, `run_dyndon_install` | `apps/reader/src-tauri/src/ipc/dyndon/{prepare,install}.rs:49` | Require allowed common root and lease before acquisition; reopen identical common edition instead of duplicate | SHARE-1 |
+| `StorageDestinationDto`, `StorageDestination`, `libraryService.requestSharedStorageAccess` | `apps/reader/src-tauri/src/ipc/dto.rs:218`, `apps/reader/src/services/libraryService.ts:36` | Required shared/medium fields and real access command | SHARE-1, SHARE-2 |
+| `loadStorageRoots`, `setSelectedStorageRoot` | `apps/reader/src/stores/libraryStore.ts:153` | Accept common roots only; preserve valid selection or choose internal; invalidate stale plan if selected medium disappears | SHARE-2 |
+| `StoragePlanner`, `InstallPlanSummary`, `DownloadPlanDialog` | `apps/reader/src/routes/library/{StoragePlanner,InstallPlanSummary,DownloadPlanDialog}.tsx:1` | Human medium labels; one-root summary; access recovery; card guidance; writable/shared guard | SHARE-2 |
+| `apply_selection_preference` | `crates/zim-cluster-cache/src/disk/selection.rs:19` | Yield cooperatively while scanning so existing native deadline can fire; avoid repeatedly updating already-prioritized clusters | SHARE-2 |
+| existing `root` DTO fixture | `apps/reader/src/routes/library/library-dyndon.test.tsx:14` | Add required shared/medium fields solely to keep the changed DTO compatible with the production TypeScript compilation, which includes src tests; no new tests or execution | SHARE-2 |
+
+CodeGraph provided the named source definitions. It does not parse the SQL schema
+or build shell; the single storage_roots CHECK definition was read to retain its
+existing enum rather than invent a migration. The new plugin follows Tauri's
+documented register_android_plugin/PluginHandle mobile boundary. No app runtime
+checks, test suites, UI automation or new test project are authorized for these
+tasks. Build compilation and packaging remain part of delivery. Retain the
+published source revision with its corresponding built/deployed artifacts.
+
+For this delivery, `prepare_snapshot` honors build-process-only
+`ENZIME_SKIP_APP_CHECKS=1`: omit the supplementary `check-ipc-commands.py` and
+`tsc --noEmit` preflight processes. Vite's emitting build, native compilation,
+packaging, signing and artifact/source manifest generation continue normally.
+Log the omission explicitly; never claim those app checks passed. This is an
+operator-stop control on the existing build, not a product setting or a new test
+workflow. The default build behavior is unchanged for other invocations.

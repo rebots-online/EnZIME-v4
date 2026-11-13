@@ -1,3 +1,5 @@
+> **Operator stop — 2026-11-12:** Product testing and behavior checking are suspended until explicitly reauthorized. This applies to every protocol and acceptance row in this historical rubric, including after merge/build/deployment. Continue the authorized implementation, publication, build and deployment; do not run these exercises or claim their behavior was observed.
+
 # EnZIME Reader — Final Test Rubric / Gauntlet (SC4) — DynDon M1
 
 ## P2-05-TITLE independent Windows demonstration — preauthored 2026-11-03

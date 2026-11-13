@@ -6,6 +6,23 @@ pub async fn run_dyndon_install(
     let _gate = state.acquisition_gate.lock().await;
     let plan = persistence::load(state, install_plan_id).await?;
     let store_path = persistence::path(state, &plan.record)?;
+    // Install start re-validates the destination against the current shared
+    // policy (planning validated it too): a root removed since planning —
+    // or a historical private row — cannot start a new acquisition.
+    // `persistence::path` returns <shared root>/packs/<version>, so the
+    // shared root itself is two levels above the store directory.
+    let root_path = store_path
+        .parent()
+        .and_then(std::path::Path::parent)
+        .ok_or("invalid_plan_path")?
+        .to_path_buf();
+    let _medium = state
+        .shared_storage
+        .require_shared_root(&root_path)
+        .await?;
+    // Cross-process lease held for the whole acquisition operation,
+    // cooperating with other ecosystem apps writing the same common root.
+    let _lease = crate::shared_storage::AcquisitionLease::acquire(&root_path)?;
     let existing = state
         .dyndon_stores
         .lock()

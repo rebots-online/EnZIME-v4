@@ -42,8 +42,10 @@ pub async fn apply_selection_preference(
         let mut rows = stmt.query([]).map_err(err)?;
         while let Some(row) = rows.next().map_err(err)? {
             if subject_matches(&row.get::<_, String>(1).map_err(err)?, &terms) {
+                // Only bump rows still at 0: an already matched cluster is
+                // never rewritten by a later matching domain/article.
                 conn.execute(
-                    "UPDATE clusters SET priority=1 WHERE cluster_index=?1",
+                    "UPDATE clusters SET priority=1 WHERE cluster_index=?1 AND priority=0",
                     [row.get::<_, u32>(0).map_err(err)?],
                 )
                 .map_err(err)?;
@@ -51,7 +53,13 @@ pub async fn apply_selection_preference(
         }
     }
     // Read directory metadata; install_selected acquires content payloads later.
+    // The scan runs inside the 180s install_plan timeout, so it yields to the
+    // runtime every 64 entries — including before each non-matching `continue`
+    // — to stay cooperative with other tasks on the same worker.
     for cursor in 0..index.header().entry_count {
+        if cursor % 64 == 0 {
+            tokio::task::yield_now().await;
+        }
         let records = index.resolve_records(cursor, 16).await.map_err(err)?;
         if !records
             .iter()
@@ -65,7 +73,7 @@ pub async fn apply_selection_preference(
                 .lock()
                 .map_err(err)?
                 .execute(
-                    "UPDATE clusters SET priority=1 WHERE cluster_index=?1",
+                    "UPDATE clusters SET priority=1 WHERE cluster_index=?1 AND priority=0",
                     params![article.cluster_number],
                 )
                 .map_err(err)?;

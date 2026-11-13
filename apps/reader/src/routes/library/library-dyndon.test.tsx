@@ -11,7 +11,7 @@ import { DownloadQueue } from "./DownloadQueue";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 const entry: CatalogEntry = { catalogEntryId: "wiki", title: "Wikipedia", description: "Knowledge", languageBcp47: "eng", category: "encyclopedia", publisher: "Kiwix", artifactUrl: "https://download.kiwix.org/wiki.zim", artifactSizeBytes: 100 * 1024 ** 3, artifactSha256: null };
-const root = { storageRootId: "root", displayName: "Local storage", writable: true, freeBytes: 10 * 1024 ** 3, availableBytes: 9 * 1024 ** 3 };
+const root = { storageRootId: "root", displayName: "Local storage", writable: true, freeBytes: 10 * 1024 ** 3, availableBytes: 9 * 1024 ** 3, shared: true, medium: "internal" as const };
 const plan: InstallPlan = { installPlanId: "plan", catalogEntry: entry, destination: root, cutStrategy: "even", preferredDomain: null, transferMode: "ranged", downloadBytes: 500 * 1024 ** 2, temporaryBytes: 256 * 1024 ** 2, finalBytes: 564 * 1024 ** 2, freeBytesBefore: 10 * 1024 ** 3, freeBytesAfter: 10 * 1024 ** 3 - 564 * 1024 ** 2, verification: { expectedSizeBytes: entry.artifactSizeBytes, expectedSha256: null, signatureRequired: false, zimStructureCheck: true } };
 const job: DownloadJob = { downloadJobId: "job", state: "completed", bytesVerified: 0, bytesRetained: 500 * 1024 ** 2, expectedSizeBytes: entry.artifactSizeBytes, transferScope: "partial", errorDetail: null };
 const initial = useLibraryStore.getState();

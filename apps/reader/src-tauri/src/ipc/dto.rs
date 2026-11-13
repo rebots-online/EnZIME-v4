@@ -1,4 +1,5 @@
 use super::*;
+use crate::shared_storage::StorageMedium;
 // ===========================================================================
 // DTOs — readiness
 // ===========================================================================
@@ -212,7 +213,9 @@ pub struct InternalLinkDto {
 // DTOs — Library / DynDon vertical (§14.4 wire contract)
 // ===========================================================================
 
-/// `storage_roots_list` row.
+/// `storage_roots_list` row. Every destination this build returns is a
+/// shared common root: `shared` is always `true` and `medium` names the
+/// physical medium the user chose.
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StorageDestinationDto {
@@ -221,6 +224,8 @@ pub struct StorageDestinationDto {
     pub writable: bool,
     pub free_bytes: u64,
     pub available_bytes: u64,
+    pub shared: bool,
+    pub medium: StorageMedium,
 }
 
 /// `pack_list` row — installed pack manifest for the Library view.

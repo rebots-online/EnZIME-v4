@@ -65,6 +65,18 @@ function pageOf(page: PageRequest): Required<Pick<PageRequest, "offset" | "limit
   };
 }
 
+/** Default shared destination: the internal common root when present, then
+ *  the first actual card. Missing media are simply absent, never invented. */
+function defaultStorageRootId(
+  roots: readonly StorageDestination[],
+): string | null {
+  return (
+    roots.find((root) => root.medium === "internal")?.storageRootId ??
+    roots.find((root) => root.medium === "sdcard")?.storageRootId ??
+    null
+  );
+}
+
 export interface LibraryState {
   online: boolean;
 
@@ -152,6 +164,15 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
   setSelectedStorageRoot(storageRootId) {
     if (get().installStarting || get().selectedStorageRootId === storageRootId) return;
+    // Only an actual writable common root from the enumerated shared list may
+    // be selected — never an arbitrary id or a private destination.
+    const roots = get().storageRoots.data ?? [];
+    const valid =
+      storageRootId !== null &&
+      roots.some(
+        (root) => root.storageRootId === storageRootId && root.shared && root.writable,
+      );
+    if (!valid) return;
     planGeneration++;
     set({ selectedStorageRootId: storageRootId, installPlan: emptySlice<InstallPlan | null>() });
   },
@@ -167,7 +188,32 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     return libraryService
       .storageRootsList()
       .then((roots) => {
-        set({ storageRoots: finishData<readonly StorageDestination[]>(roots) });
+        // Writable common roots only; sharing is fixed in this build and is
+        // never a per-app option.
+        const usable = roots.filter((root) => root.shared && root.writable);
+        const state = get();
+        const patch: Partial<LibraryState> = {
+          storageRoots: finishData<readonly StorageDestination[]>(usable),
+        };
+        if (!state.installStarting) {
+          const selectedStillValid =
+            state.selectedStorageRootId !== null &&
+            usable.some(
+              (root) => root.storageRootId === state.selectedStorageRootId,
+            );
+          if (!selectedStillValid) {
+            // Preserve a valid selection; otherwise default to the internal
+            // common root, then the first actual card. A plan whose selected
+            // medium disappeared is invalidated rather than silently
+            // re-targeted.
+            patch.selectedStorageRootId = defaultStorageRootId(usable);
+            if (state.selectedStorageRootId !== null) {
+              planGeneration++;
+              patch.installPlan = emptySlice<InstallPlan | null>();
+            }
+          }
+        }
+        set(patch);
       })
       .catch((error: ServiceError) => {
         set({ storageRoots: finishError(get().storageRoots, error) });

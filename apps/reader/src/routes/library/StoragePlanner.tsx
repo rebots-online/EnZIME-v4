@@ -1,48 +1,136 @@
-// StoragePlanner — destination picker for an install plan.
+// StoragePlanner — shared-storage medium control for an install plan.
 //
-// Reads the `storageRoots` slice and renders one row per writable
-// `StorageDestination`. The selected root is mirrored into
-// `selectedStorageRootId` on the store (the plan flow reads it back when
-// computing the plan). Once an `InstallPlan` is computed, the destination's
-// free space is surfaced from the plan (`freeBytesBefore`), since the
-// destination DTO itself does not carry live free-space — only the plan knows
-// the post-fit numbers.
+// Downloads land in one shared common location (`mba.robin`) so every
+// ecosystem app reuses the same bytes; sharing is fixed in this build and is
+// never a per-app option. The user selects only the physical medium:
+// internal storage or an SD card. With one available medium this renders a
+// plain summary; with multiple media it renders the existing selectable
+// rows. Enumeration is a local operation and never depends on the network
+// online flag, and missing SD cards are simply absent — no invented rows.
+//
+// On Android, shared-file access is a real system permission: until it is
+// granted, enumeration returns the actionable `shared_storage_access_required`
+// error, and this component offers `Allow shared storage access`, which
+// opens the system settings screen through the actual command. After the
+// user returns, the root list refreshes on window focus/visibility.
 
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useLibraryStore } from "../../stores/libraryStore";
+import {
+  libraryService,
+  type ServiceError,
+  type StorageDestination,
+} from "../../services/libraryService";
 import {
   RetryButton,
   StatusBanner,
   formatBytes,
-  resolveState,
 } from "../../components/home/shared";
 
+const ACCESS_REQUIRED_CODE = "shared_storage_access_required";
+
+const SD_CARD_NOTE =
+  "SD cards can be slower and can be removed. Internal storage is recommended for model files because loading and memory-mapped access can be affected.";
+
+function messageOf(error: unknown): string {
+  if (typeof error === "string") return error;
+  if (error !== null && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string") return message;
+  }
+  return "Unexpected error.";
+}
+
+function rootMeta(root: StorageDestination): string {
+  return `Shared across your apps · ${formatBytes(root.freeBytes)} free · ${formatBytes(
+    root.availableBytes,
+  )} available after system reserve`;
+}
+
 export function StoragePlanner(): ReactNode {
-  const online = useLibraryStore((s) => s.online);
   const slice = useLibraryStore((s) => s.storageRoots);
   const reload = useLibraryStore((s) => s.loadStorageRoots);
   const selectedId = useLibraryStore((s) => s.selectedStorageRootId);
   const setSelected = useLibraryStore((s) => s.setSelectedStorageRoot);
+  const planning = useLibraryStore((s) => s.installPlan.status === "loading");
+  const installing = useLibraryStore((s) => s.installStarting);
   const plan = useLibraryStore((s) => s.installPlan.data);
+  const busy = planning || installing;
 
-  const state = resolveState(online, slice, (data) => data.length > 0);
+  const [accessBusy, setAccessBusy] = useState(false);
+  const [accessError, setAccessError] = useState<string | null>(null);
+
+  // The system permission screen has no completion callback; re-enumerate
+  // the shared roots whenever the window regains focus or visibility so the
+  // granted state is observed on return.
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === "visible") void reload();
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const allowAccess = () => {
+    setAccessBusy(true);
+    setAccessError(null);
+    libraryService
+      .requestSharedStorageAccess()
+      .then(() => reload())
+      .catch((error: unknown) => setAccessError(messageOf(error)))
+      .finally(() => setAccessBusy(false));
+  };
+
   const roots = slice.data ?? [];
+  const selectedRoot = roots.find((root) => root.storageRootId === selectedId);
+  const error: ServiceError | null = slice.status === "error" ? slice.error : null;
+  const accessRequired =
+    slice.status === "error" && !!error?.message.includes(ACCESS_REQUIRED_CODE);
 
   let body: ReactNode;
-  if (state === "offline-empty") {
+  if (slice.status === "loading" || slice.status === "idle") {
+    body = <p role="status">Reading shared storage…</p>;
+  } else if (slice.status === "error" && accessRequired) {
     body = (
       <StatusBanner
-        tone="offline"
-        icon="!"
-        title="Storage offline"
-        detail="Reconnect to enumerate storage destinations."
+        tone="locked"
+        icon="∅"
+        title="Shared storage access is required"
+        detail="EnZIME keeps large downloads in a shared location every ecosystem app can reuse. Allow shared storage access, then return to this app to continue."
+        actions={
+          <RetryButton
+            onClick={allowAccess}
+            label={accessBusy ? "Opening settings…" : "Allow shared storage access"}
+          />
+        }
       />
     );
-  } else if (state === "loading") {
-    body = <p role="status">Checking available storage…</p>;
-  } else if (state === "populated") {
+  } else if (slice.status === "error") {
     body = (
-      <ul className="lib-list" aria-label="Storage destinations">
+      <StatusBanner
+        tone="warning"
+        icon="!"
+        title="Could not load shared storage"
+        detail={error?.message ?? "Unexpected error."}
+        actions={<RetryButton onClick={reload} label="Try again" />}
+      />
+    );
+  } else if (roots.length === 1) {
+    // One available medium: a summary, not a pointless choice.
+    const only = roots[0] as StorageDestination;
+    body = (
+      <p className="lib-row__meta" aria-label="Storage medium">
+        {only.displayName} · {rootMeta(only)}
+      </p>
+    );
+  } else if (roots.length > 1) {
+    body = (
+      <ul className="lib-list" aria-label="Storage media">
         {roots.map((root) => {
           const isSelected = root.storageRootId === selectedId;
           return (
@@ -51,17 +139,13 @@ export function StoragePlanner(): ReactNode {
                 type="button"
                 className={`lib-row${isSelected ? " lib-row--selected" : ""}`}
                 onClick={() => setSelected(root.storageRootId)}
-                disabled={!root.writable}
+                disabled={busy || !root.writable}
                 aria-pressed={isSelected}
-                aria-label={`Select destination ${root.displayName}`}
-                style={!root.writable ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
+                aria-label={`Select ${root.displayName} as the storage medium`}
               >
                 <span className="lib-row__main">
                   <span className="lib-row__label">{root.displayName}</span>
-                  <span className="lib-row__meta">
-                    {root.writable ? "writable" : "read-only"}
-                    {" · "}{formatBytes(root.freeBytes)} free · {formatBytes(root.availableBytes)} available after system reserve
-                  </span>
+                  <span className="lib-row__meta">{rootMeta(root)}</span>
                 </span>
                 {isSelected ? (
                   <span className="lib-pill lib-pill--ready">selected</span>
@@ -72,41 +156,14 @@ export function StoragePlanner(): ReactNode {
         })}
       </ul>
     );
-  } else if (state === "empty") {
-    body = (
-      <StatusBanner
-        tone="warning"
-        icon="!"
-        title="No writable storage"
-        detail="Add a storage root in Settings before installing a pack."
-      />
-    );
-  } else if (state === "recoverable") {
-    body = (
-      <StatusBanner
-        tone="warning"
-        icon="!"
-        title="Could not load storage roots"
-        detail={slice.error?.message ?? "Unexpected error."}
-        actions={<RetryButton onClick={reload} label="Try again" />}
-      />
-    );
-  } else if (state === "non-recoverable") {
-    body = (
-      <StatusBanner
-        tone="error"
-        icon="×"
-        title="Storage unavailable"
-        detail={slice.error?.message ?? "The storage index could not be read."}
-      />
-    );
   } else {
     body = (
       <StatusBanner
-        tone="locked"
-        icon="∅"
-        title="Storage access denied"
-        detail={slice.error?.message ?? "Cannot enumerate storage roots."}
+        tone="warning"
+        icon="!"
+        title="No shared storage available"
+        detail="No shared storage medium is currently available. Insert a card or free up internal storage, then try again."
+        actions={<RetryButton onClick={reload} label="Try again" />}
       />
     );
   }
@@ -115,7 +172,7 @@ export function StoragePlanner(): ReactNode {
     <section className="lib-card" aria-labelledby="lib-storage-heading">
       <header className="lib-card__header">
         <h2 className="lib-card__title" id="lib-storage-heading">
-          Destination
+          Storage
         </h2>
         {plan ? (
           <span className="lib-card__hint">
@@ -124,9 +181,15 @@ export function StoragePlanner(): ReactNode {
         ) : null}
       </header>
       <p className="lib-section-intro">
-        Choose where the pack lands. DynDon computes the fit per destination.
+        Downloads are shared across your EnZIME ecosystem apps, so an edition
+        is acquired only once and every app reuses it. Choose the physical
+        medium to store it on.
       </p>
       {body}
+      {accessError ? <p role="alert">{accessError}</p> : null}
+      {selectedRoot?.medium === "sdcard" ? (
+        <p role="note">{SD_CARD_NOTE}</p>
+      ) : null}
     </section>
   );
 }

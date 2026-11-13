@@ -33,12 +33,18 @@ export interface PageResult<T> {
 
 // ─── DTOs (§14.4 contract) ──────────────────────────────────────────────────
 
+export type StorageMedium = "internal" | "sdcard";
+
 export type StorageDestination = {
   readonly storageRootId: string;
   readonly displayName: string;
   readonly writable: boolean;
   readonly freeBytes: number;
   readonly availableBytes: number;
+  /** Every destination this build returns is a shared common root. */
+  readonly shared: boolean;
+  /** Physical medium holding the root; the user selects only this. */
+  readonly medium: StorageMedium;
 };
 
 export type PackManifest = {
@@ -217,9 +223,19 @@ function pageArgs(page: PageRequest): Record<string, unknown> {
 }
 
 export const libraryService = {
-  /** Lists writable storage destinations the user can install a pack into. */
+  /** Lists the real shared common storage destinations (internal storage and
+   *  actually mounted SD cards) the user can install a pack into. On Android
+   *  this rejects with an actionable `shared_storage_access_required` error
+   *  until shared-file access is granted. */
   storageRootsList(): Promise<StorageDestination[]> {
     return call<StorageDestination[]>("storage_roots_list");
+  },
+
+  /** Opens the system's shared-storage permission screen (Android); part of
+   *  the real access-recovery flow behind the `Allow shared storage access`
+   *  action. Desktop succeeds without a prompt. */
+  requestSharedStorageAccess(): Promise<void> {
+    return call<void>("shared_storage_request_access");
   },
 
   /** Pages the manifests of packs already installed in this profile. */

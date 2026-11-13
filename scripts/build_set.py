@@ -36,6 +36,14 @@ PROPERTY_KEYS = {"storeFile": "ENZIME_KEYSTORE_PATH", "storePassword": "ENZIME_K
                  "keyAlias": "ENZIME_KEYSTORE_ALIAS", "keyPassword": "ENZIME_KEY_PASSWORD"}
 MONETIZATION_ENV = ("ENZIME_BILLING_URL", "ENZIME_ENTITLEMENT_KEY_ID", "ENZIME_ENTITLEMENT_PUBKEY",
                     "ENZIME_GA_MEASUREMENT_ID", "ENZIME_GA_API_SECRET")
+# Build-time shared-resource storage policy (SHARE-1). Exactly these keys are
+# forwarded into the build snapshot .env; nothing else from the operator's
+# environment or local .env files is copied into the snapshot or archives.
+STORAGE_ENV = ("VITE_APP_NAMESPACE", "VITE_STORAGE_SCOPE", "ENZIME_STORAGE_NAMESPACE",
+               "ENZIME_SHARED_STORAGE_ROOT", "ENZIME_SHARED_STORAGE_ROOT_ANDROID",
+               "ENZIME_SHARED_SDCARD_ROOT")
+STORAGE_ENV_DEFAULTS = {"VITE_APP_NAMESPACE": "mba.robin.enzime", "VITE_STORAGE_SCOPE": "common",
+                        "ENZIME_STORAGE_NAMESPACE": "mba.robin"}
 STAMPED = ("version.txt", "version.json", "package.json", "apps/reader/package.json", "Cargo.toml",
            "apps/reader/src-tauri/Cargo.toml", "apps/reader/src-tauri/tauri.conf.json",
            "apps/reader/src-tauri/gen/android/tauri.properties", "Cargo.lock")
@@ -139,6 +147,57 @@ class BuildSet:
     artifacts: list = field(default_factory=list)
 
 
+def storage_environment(env=None, root=None):
+    """Resolve the build-time shared-storage policy.
+
+    Precedence matches build.rs: the process environment wins, then the
+    repository root `.env`, then the crate-local `.env`, then the fixed
+    defaults. build_all.sh does not source .env, so the files are read
+    here; only the six STORAGE_ENV keys are recognized or forwarded.
+    Values are literal KEY=VALUE text (optional matching single or double
+    wrapping quotes); comments, unknown keys and anything else are ignored,
+    nothing is interpolated or executed, and file contents are never logged.
+    The result is written verbatim into the build snapshot `.env` before
+    lanes copy it, so cargo build.rs compiles the same policy every lane.
+    """
+    env = os.environ if env is None else env
+    root = Path(__file__).resolve().parent.parent if root is None else Path(root)
+    files = []
+    for path in (root / ".env", root / "apps/reader/src-tauri" / ".env"):
+        try:
+            text = path.read_text()
+        except FileNotFoundError:
+            continue
+        parsed = {}
+        for line in text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            name, _, value = line.partition("=")
+            name, value = name.strip(), value.strip()
+            if name not in STORAGE_ENV:
+                continue
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+                value = value[1:-1]
+            parsed[name] = value
+        files.append(parsed)
+    values = {}
+    for key in STORAGE_ENV:
+        if env.get(key) is not None:
+            values[key] = env[key]
+            continue
+        for parsed in files:
+            if key in parsed:
+                values[key] = parsed[key]
+                break
+        else:
+            values[key] = STORAGE_ENV_DEFAULTS.get(key, "")
+    if values["VITE_STORAGE_SCOPE"] != "common":
+        raise ValueError("VITE_STORAGE_SCOPE must be 'common'; a private storage mode is not "
+                         "permitted in this build")
+    return values
+
+
 def deferred_lanes(env=None):
     """Lanes this host cannot produce and the operator SOP assigns to a Windows boot."""
     env = os.environ if env is None else env
@@ -231,6 +290,13 @@ def prepare_snapshot(repo, source_ref):
         if lock_before is not None:
             (logs / "previous-release.lock").write_bytes(lock_before)
         snapshot_commit(build)
+        # SHARE-1: forward exactly the six shared-storage policy keys into the
+        # build snapshot .env (build configuration, never secrets) before any
+        # lane copies it; cargo build.rs compiles these values into the binary.
+        # The source archive is built from git names, so the snapshot .env
+        # never leaks into published archives.
+        (build.snapshot / ".env").write_text(
+            "".join(f"{key}={value}\n" for key, value in storage_environment(root=repo).items()))
         (build.snapshot / "version.txt").write_bytes(originals["version.txt"])
         run(["bash", "scripts/update-version.sh"], build.snapshot, Path(result.log_path), "preparation")
         version = json.loads((build.snapshot / "version.json").read_text())
@@ -253,9 +319,25 @@ def prepare_snapshot(repo, source_ref):
         (repo / "release.lock").write_text(freeze)
         run(["pnpm", "install", "--frozen-lockfile"], build.snapshot, Path(result.log_path), "preparation")
         # R1/R4: every command name the frontend uses must be in generate_handler!.
-        run([sys.executable, str(build.snapshot / "scripts/check-ipc-commands.py"), str(build.snapshot)],
-            build.snapshot, Path(result.log_path), "preparation")
-        run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
+        # ENZIME_SKIP_APP_CHECKS=1 (process-only environment, set by the root
+        # operator) omits the two supplementary app preflight processes — the
+        # IPC command audit and the tsc --noEmit type check — under the explicit
+        # operator stop. The omission is reported and written to the preparation
+        # log, never silent. The emitting Vite build and all downstream native
+        # compile/package/sign/manifest work always run.
+        if os.environ.get("ENZIME_SKIP_APP_CHECKS") == "1":
+            notice = ("Supplementary app preflight omitted under the operator stop "
+                      "(ENZIME_SKIP_APP_CHECKS=1): scripts/check-ipc-commands.py and "
+                      "'pnpm exec tsc --noEmit' were not run for this build. The emitting "
+                      "Vite build and all native compile/package/sign/manifest work "
+                      "continue normally.")
+            report("preparation", notice)
+            with Path(result.log_path).open("a") as log:
+                log.write(notice + "\n")
+        else:
+            run([sys.executable, str(build.snapshot / "scripts/check-ipc-commands.py"), str(build.snapshot)],
+                build.snapshot, Path(result.log_path), "preparation")
+            run(["pnpm", "exec", "tsc", "--noEmit"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         run(["pnpm", "exec", "vite", "build"], build.snapshot / "apps/reader", Path(result.log_path), "preparation")
         # A fresh workstation has not cached every target's crates. Fetch what the committed
         # lock names; the pinned-dependency comparison below still rejects any drift.

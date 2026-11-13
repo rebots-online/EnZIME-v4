@@ -71,6 +71,14 @@ pub async fn prepare_dyndon_install(
     if !root.writable {
         return Err("storage_root_read_only".into());
     }
+    // The selected destination must match a shared root that is current
+    // under this build's compiled policy; a historical private
+    // `storage_roots` row can no longer authorize a new acquisition.
+    let root_path = std::fs::canonicalize(&root.platform_locator).map_err(err_str)?;
+    let medium = state
+        .shared_storage
+        .require_shared_root(&root_path)
+        .await?;
     let free = fs2::available_space(&root.platform_locator).map_err(err_str)?;
     let available = DiskPackPolicy::available_bytes(free);
     let budget = if request.budget_bytes == 0 {
@@ -84,6 +92,10 @@ pub async fn prepare_dyndon_install(
         ));
     }
     let _gate = state.acquisition_gate.lock().await;
+    // Cross-process lease serializing acquisition writes between cooperating
+    // ecosystem apps sharing the common root. Held for the whole planning
+    // operation; a held lock is an actionable busy error, never a wait.
+    let _lease = crate::shared_storage::AcquisitionLease::acquire(&root_path)?;
     let acquisition =
         catalog_openzim::kiwix::KiwixCatalogClient::new(state.transfer_source.clone())
             .resolve(&entry)
@@ -257,6 +269,10 @@ pub async fn prepare_dyndon_install(
             writable: true,
             free_bytes: free,
             available_bytes: available,
+            // The plan destination is the shared common root the medium was
+            // validated against; sharing is never optional in this build.
+            shared: true,
+            medium,
         },
         transfer_mode: TransferModeDto::Ranged,
         download_bytes: summary.selected_bytes,

@@ -3,6 +3,7 @@ pub mod billing;
 pub mod ipc;
 mod reader_resources;
 pub mod settings;
+pub mod shared_storage;
 pub mod state;
 
 use std::path::PathBuf;
@@ -31,6 +32,11 @@ fn resolve_db_path(app: &tauri::App) -> Result<PathBuf, Box<dyn std::error::Erro
 pub fn run() {
     reader_resources::register(tauri::Builder::default())
         .plugin(tauri_plugin_opener::init())
+        // Registers the Android Kotlin class `mba.robin.enzime.
+        // SharedStoragePlugin` with Tauri's mobile plugin boundary and keeps
+        // its PluginHandle for shared-storage volume enumeration and access
+        // recovery. Desktop registers nothing.
+        .plugin(shared_storage::init())
         .setup(|app| {
             let db_path = resolve_db_path(app)?;
             let conn = storage_sqlite::open_with_pragmas(&db_path)
@@ -39,10 +45,11 @@ pub fn run() {
                 .apply_initial()
                 .map_err(|e| Box::<dyn std::error::Error>::from(e.to_string()))?;
             storage_sqlite::apply_dyndon_schema(&conn)?;
-            // The app-data directory is the M1 default storage root when the
-            // `storage_roots` table has no user-chosen root yet. Resolve it
-            // from the Tauri path API; fall back to the DB's parent dir for
-            // dev runs where the resolver is unavailable.
+            // The app-data directory holds the private profile/SQLite/
+            // annotation state; the large-resource roots are owned by
+            // shared_storage. Resolve it from the Tauri path API; fall back
+            // to the DB's parent dir for dev runs where the resolver is
+            // unavailable.
             let app_data_dir = match app.path().app_data_dir() {
                 Ok(d) => d,
                 Err(_) => db_path
@@ -78,6 +85,7 @@ pub fn run() {
             ipc::reader_search_titles,
             // M1 Library / DynDon vertical (§14.4 wire contract).
             ipc::storage_roots_list,
+            ipc::shared_storage_request_access,
             ipc::pack_list,
             ipc::catalog_search,
             ipc::install_plan,

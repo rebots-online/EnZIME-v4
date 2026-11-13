@@ -1948,3 +1948,207 @@ Evidence from unified1.11.63172: Tauri generated app/tauri.properties versionCod
 **Do:** Implement PackGrid.openInstalledPack in apps/reader/src/routes/library/PackGrid.tsx using readerService.readerOpen, matching identity and nonempty mainPageKey validation, encoded pack/key route, single-flight ref plus disabled tiles, mounted guard and retryable Library error. Existing shared StatusBanner only. Correct OpenPackResponse.mainPageKey to string|null in apps/reader/src/services/readerService.ts; apps/reader/src/stores/readerStore.ts open rejects absent main before state/article calls. Own apps/reader/src/routes/library/pack-entry.test.tsx for router/native boundary regression and vitest.config.ts to include that exact test. In apps/reader/src/routes/reader/ReaderStyles.tsx error/empty containers use explicit opaque dark background/foreground for contrast. Read-only dependencies: libraryService.ts PackManifest, libraryStore.ts, home/shared.tsx StatusBanner, readerStore existing tests and vitest.config.ts. In apps/reader/src/routes/reader/ReaderView.tsx pass the already-decoded useParams article key directly to loadArticle; remove duplicate decodeURIComponent so literal percent sequences survive. Do not change downloader/cache or build snapshot.
 **Verify:** pnpm --dir apps/reader exec vitest run --config vitest.config.ts src/routes/library/pack-entry.test.tsx src/routes/library/library-dyndon.test.tsx src/routes/reader/reader-canvas.test.tsx; pnpm --dir apps/reader exec tsc --noEmit. Use actual existing reader store test path if inventory differs.
 **Accept:** native main key survives routing; double click calls once; failure/null main retry without navigation; unmount ignores response; existing tests/typecheck pass. Packaged download/open/offline/canvas trial remains separate operator verification, followed by whole build-set invocation.
+
+## SHARE-1 / SHARE-2 — Mandatory common resources, physical medium choice
+
+Authority: DOCS/ARCHITECTURE.md, `Mandatory common resource storage — correction,
+2026-11-12`. This restores an existing requirement, not an optional new storage
+mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
+`codex/shared-resource-storage`, base merged PR2 `29b86165dcbf`. Preserve other work.
+
+- [X] **SHARE-1 — Real common storage at the native acquisition boundary.**
+  **Do:** Own only `.env.example`, `apps/reader/src-tauri/build.rs`,
+  `apps/reader/src-tauri/src/{shared_storage,state,lib}.rs`,
+  `apps/reader/src-tauri/src/ipc/{library,dto}.rs`,
+  `apps/reader/src-tauri/src/ipc/dyndon/{prepare,install}.rs`,
+  `apps/reader/src-tauri/gen/android/app/src/main/AndroidManifest.xml`,
+  `apps/reader/src-tauri/gen/android/app/src/main/java/mba/robin/enzime/SharedStoragePlugin.kt`,
+  and `scripts/build_set.py`. New module/plugin/example have no existing home:
+  `state.rs` manages profile/services and `MainActivity.kt` manages the activity,
+  neither owns resource policy/mobile IPC. Reuse existing crates; add no dependency.
+  Read named files through CodeGraph; config files missing from the graph may be
+  read directly. Read-only dependencies: `apps/reader/src-tauri/src/ipc/{mod.rs,rows.rs}`
+  (actual composition file is `src/ipc.rs`, rows is `src/ipc/rows.rs`),
+  `schemas/sqlite/0001_initial.sql`, `crates/zim-cluster-cache/src/disk/{manifest,store}.rs`.
+  Implement `StorageMedium` serialized as `internal|sdcard`, `SharedStorageRoot`
+  holding path/medium, and `SharedStoragePolicy` holding the compiled primary root,
+  optional configured card and cached real mounted roots. `new(&Path)` derives the
+  desktop common primary from the app-data directory's parent plus `mba.robin`,
+  Android defaults `/storage/emulated/0/mba.robin`. Require absolute roots ending
+  in the configured org storage namespace; reject app-private descendants. Fields
+  in `.env` are build-only: `VITE_APP_NAMESPACE=mba.robin.enzime`,
+  `VITE_STORAGE_SCOPE=common`, `ENZIME_STORAGE_NAMESPACE=mba.robin`,
+  `ENZIME_SHARED_STORAGE_ROOT`, `ENZIME_SHARED_STORAGE_ROOT_ANDROID`,
+  `ENZIME_SHARED_SDCARD_ROOT`. Empty optional roots mean platform defaults/no
+  configured card. Build.rs reads only these keys from root/crate `.env`, process
+  env wins, emits cargo rerun-if-changed/env-changed and rustc-env; reject any scope
+  other than common. `storage_environment` forwards these six keys only into the
+  build snapshot `.env` before lanes copy it; never copy unrelated secrets into
+  snapshot/source archive. Existing source archive exclusions remain intact.
+  Add `AppState.shared_storage: SharedStoragePolicy` initialized by new_with_transfer;
+  private SQLite/annotations remain private. `shared_storage::init` registers the
+  Android Kotlin class `mba.robin.enzime.SharedStoragePlugin` with Tauri's mobile
+  plugin boundary and manages PluginHandle. Android `volumes` returns primary
+  directory, mounted removable directories and accessGranted; API30+ use
+  StorageVolume.directory and Environment.isExternalStorageManager, older supported
+  versions derive the volume from getExternalFilesDirs and use legacy permissions.
+  Kotlin `requestAccess` opens ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION for API30+
+  (fallback system all-files screen), legacy requests actual read/write permission.
+  Always resolve/reject the Invoke; no background runner/service. Manifest declares
+  MANAGE_EXTERNAL_STORAGE and legacy READ/WRITE_EXTERNAL_STORAGE maxSdkVersion29.
+  `request_access` delegates to mobile plugin; desktop needs no access prompt.
+  `storage_roots_list` uses AppState.shared_storage and the mobile module's
+  registered handle (Android OnceLock), enumerates only real shared roots,
+  creates primary common directory, requires card mount parent already exists,
+  never creates a card mount. If Android access missing, return actionable
+  `shared_storage_access_required`; do not prevent opening the catalog. Upsert IDs
+  `sr-<sha256(canonical path)>`, friendly names `Internal storage` / `SD card`,
+  schema kinds `user_selected` / `removable`. Return only these approved rows,
+  fresh freeBytes and availableBytes using existing policy. DTO adds required
+  `shared: bool` always true and `medium: StorageMedium`. Expose command
+  `shared_storage_request_access` via existing ipc export/generate_handler.
+  At prepare and install start require selected path matches a current policy root
+  and acquire a common `.acquisition.lock` using fs2 try_lock_exclusive, held for
+  the acquisition operation, with an actionable busy error. Keep private legacy
+  restoration read compatibility, disallow new private plan/start. Identical pack
+  edition in `common-root/packs/<version>` reopens existing manifest/bytes. Plan
+  destination returns shared/medium too. No per-app fallback, mock data or silent
+  second copy. Keep current size/strategy formulas intact.
+  **Verify:** Product testing/checking is explicitly stopped. Do not run tests,
+  compiler checks, linters, UI automation, browser/device observations or acceptance
+  exercises in this coder task. Re-read authored regions for implementation
+  consistency; report implementation and any factual gaps. Build only after root
+  publishes and merges the implementation PR, through the sole build_all.sh path.
+  **Accept:** The named implementation is committed and reachable; shared policy,
+  real access recovery and DTO fields are wired end to end. Runtime behavior is
+  unobserved under the operator stop; do not mark it verified.
+
+- [X] **SHARE-2 — Shared medium presentation and bounded planning.**
+  **Do:** Own `apps/reader/src/services/libraryService.ts`,
+  `apps/reader/src/stores/libraryStore.ts`,
+  `apps/reader/src/routes/library/{StoragePlanner,InstallPlanSummary,DownloadPlanDialog}.tsx`,
+  `crates/zim-cluster-cache/src/disk/selection.rs`. Dependencies read-only:
+  `apps/reader/src/components/home/shared.tsx`, `apps/reader/src/routes/library/downloadBudget.ts`.
+  `StorageDestination` gains required readonly `shared: boolean`,
+  `medium: "internal"|"sdcard"`. Add `libraryService.requestSharedStorageAccess()`
+  invoking `shared_storage_request_access`. `loadStorageRoots` accepts writable
+  common roots only, preserves a valid selected ID or defaults internal then first
+  actual card, invalidates installPlan/planGeneration if selected medium disappears.
+  `setSelectedStorageRoot` accepts only actual writable common roots; no arbitrary ID.
+  `StoragePlanner` uses a plain summary for one medium and existing selectable rows
+  for multiple media, with meaningful internal/card labels and `Shared across your
+  apps`; no namespace string or private-sharing toggle. Root rows disabled while
+  plan/install in flight. Show actual free/available bytes. Loading is named status,
+  not skeleton. Access-required error offers `Allow shared storage access`, wired to
+  the actual command, with errors surfaced and root list refreshed when window
+  regains focus/visibility after system settings. No dependence on network online
+  flag to enumerate local storage. Explain selected SD card: `SD cards can be slower
+  and can be removed. Internal storage is recommended for model files because
+  loading and memory-mapped access can be affected.` The intro explains downloads
+  reuse shared resources across ecosystem apps; user selects medium only.
+  Plan summary names `Storage` using medium + shared status. DownloadPlanDialog
+  canCompute/canStart require selected root shared and writable as well as all
+  existing byte/strategy/stale guards. Retain the viewport portal and design tokens.
+  In apply_selection_preference, yield_now every 64 directory entries before any
+  continue so the existing 180-second timeout stays cooperative; update priority
+  only WHERE priority=0 to avoid repeated writes to an already matched cluster.
+  Never mislabel even mode as successful domain priority. No inference-service work.
+  **Verify:** Same explicit stop as SHARE-1; no tests, UI or compiler checks. Re-read
+  edits for consistency and report changes, without invented behavioral evidence.
+  **Accept:** Source committed/reachable and the actual bridge, state and controls
+  implement the shared-medium contract. Report runtime unobserved, not verified.
+
+Coder report: list task, touched files, actual commands and unobserved behavior.
+Do not commit/push generated artifacts or unrelated files; root handles publication.
+Do not edit architecture. Missing contract fact returns an explicit question to root,
+while independent in-scope implementation continues. You are not alone in the repo;
+preserve concurrent work and adapt rather than reverting other changes.
+
+**SHARE continuation details (same task, no scope change):** The first bounded
+coder invocation reached its turn limit after writing `.env.example`, `build.rs`
+and `shared_storage.rs`. Continue those partial files; do not re-derive their API.
+`SharedStoragePolicy::roots().await -> Result<Vec<SharedStorageRoot>, String>` and
+`require_shared_root(&canonical_path).await -> Result<StorageMedium, String>` are
+the native wiring points. `AcquisitionLease::acquire(&canonical_path)` returns a
+guard held in the plan/install future. `StorageMedium::label()` and `root_kind()`
+produce the exact friendly name and existing schema kind. The mobile response JSON
+is `primaryDirectory`, `removableDirectories`, `accessGranted`. The new module's
+access function must be named `request_access` (ordinary async helper); the Tauri
+command `shared_storage_request_access` lives in ipc/library.rs and delegates to
+it, as the original contract requires. Correct `is_single_component` to require
+exactly one `Component::Normal` and reject both slash kinds, `.` and `..` across
+build hosts; `.env` is build configuration, not a permission to create a private
+fallback. Complete the remaining SHARE-1/2 wiring before reporting completion.
+SHARE-2 additionally owns the existing typed `root` fixture in
+`apps/reader/src/routes/library/library-dyndon.test.tsx`, adding only required
+`shared: true, medium: "internal"` so the production TypeScript build (include src)
+can compile the changed DTO. Do not add, expand or run tests. This fixture change
+is type compatibility, not a testing task. No compilation/check commands until
+root performs the required build after the PR is merged.
+
+Android10 compatibility detail for SHARE-1: add
+`android:requestLegacyExternalStorage="true"` on `<application>` alongside the
+legacy maxSdk29 read/write permissions. This supports the existing raw-file common
+store on Android10. API30+ continues to use actual all-files access. Source:
+https://developer.android.com/about/versions/11/privacy/storage#maintain-compatibility-with-android-10
+No new permission UI, background service or private fallback is authorized.
+
+SHARE-1 build-stop integration, same owned `scripts/build_set.py`: in
+`prepare_snapshot`, when process env `ENZIME_SKIP_APP_CHECKS` equals `1`, skip the
+two supplementary preflight invocations `check-ipc-commands.py` and `tsc --noEmit`,
+and log that they were omitted under the operator stop. Always run Vite's emitting
+build and normal native compilation/packaging/signing/artifact manifest work.
+No new CLI, product control, dependencies or test code. Default behavior remains
+unchanged. Root's required post-merge build will set this process-only flag.
+
+SHARE-1 source consistency detail, same `storage_roots_list` and common root
+module: deduplicate canonical root paths after their namespace directories exist,
+so an initially absent card namespace found through both `.env` and platform
+enumeration produces one row. Establish real write access by opening the existing
+common `.acquisition.lock` file for write/create (without truncation or acquiring
+the operation lock) before returning writable=true. This prepares the real
+coordination metadata, with no synthetic probe files. Omit unwritable cards;
+report actionable primary failures. Do not run a filesystem experiment or check.
+
+SHARE-1 mobile boundary detail, same `shared_storage.rs`: zero-argument mobile
+commands `volumes` and `requestAccess` pass an empty JSON object, not JSON null.
+Use compile-time `#[cfg(target_os = "android")]` / desktop branches in roots
+enumeration, so desktop builds do not need an unreachable Android helper that
+returns a stub error solely for type checking. Compile the Android response type,
+OnceLock import and Android helper only for Android. The real desktop common-root
+implementation remains intact. No new public API or runtime checking.
+
+Final SHARE-2 consistency details: `DownloadPlanDialog` requires the storage-roots
+slice status to be `ready` in `selectedRootUsable`, as well as shared+writable.
+Preserved data from a failed refresh must not enable planning or install start.
+`StoragePlanner` describes sharing across `your apps` (the whole ecosystem), and
+asks for a medium choice only when more than one real medium exists. Use the
+loading status `Reading shared storage…`; it represents production data loading.
+
+KStore retrieval reference for this task: pass the returned record **path**
+`agent-notes/decision/2d8f47bb1d21c0983324b4554017316501332fd0b0d8cb97acdcb77ff6764d00`
+to `kstore_read.document_id`. UUID `01a1d206-d593-8001-b282-995d5575cdbe` identifies
+that record but UUID lookup returns 404 in the current reader; path lookup returns
+the exact revision 1 and matching digest. Root has actually retrieved that content.
+An unrun Rust test-only fixture is not a production build prerequisite. Do not
+expand native test work under the operator stop; continue the source delivery.
+
+SHARE-1 final source alignment: in `build.rs::main`, emit rerun-if-changed for
+both known `.env` paths before attempting to read them, including when a file is
+currently absent, so creating `.env` later triggers recompilation. In `state.rs`
+and `lib.rs`, replace the stale app_data_dir comments claiming it is the default
+download/storage root: it now holds the private profile/SQLite/annotation state,
+while shared_storage owns the large-resource roots. Do not change behavior beyond
+the required build-file tracking or run any commands/checks.
+
+SHARE-1 build-snapshot `.env` forwarding: `build_all.sh` does not source `.env`, so
+`storage_environment(env=None, root=None)` itself must read only the six named keys
+from `<root>/.env`, with crate-local `.env` as fallback, before applying process
+environment and fixed defaults. Root defaults to this script's repository parent;
+`prepare_snapshot` passes `root=repo`. Precedence matches build.rs: process wins,
+then root `.env`, then crate-local `.env`, then defaults. Missing files are normal;
+other I/O failures remain explicit. Ignore comments/unrecognized keys, parse
+literal KEY=VALUE and matching quoted values without executing/interpolating
+anything, never log file contents or copy any other key. Validate common scope
+after resolution. This completes the existing six-key contract; no new files,
+dependencies or test/check commands. Only scripts/build_set.py is writable.
