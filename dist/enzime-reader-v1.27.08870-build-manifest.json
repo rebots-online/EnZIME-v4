@@ -1,0 +1,316 @@
+{
+  "schema": "mba.robin.enzime.build-set.v1",
+  "version": "1.27.08870",
+  "version_code": 100027,
+  "status": "complete",
+  "source": {
+    "commit": "81e5d675bd9d73bc7c4938cad000cd92f6fa53cc",
+    "archive_sha256": "490926ecbe39e4820c0e05d70769e4f4dd07bed3ccc391eb3cf3d0833a7e99f1",
+    "archive_filename": "enzime-reader-v1.27.08870-source.tar.gz"
+  },
+  "started_at": "2026-11-13T01:10:38.952339+00:00",
+  "finished_at": "2026-11-13T01:21:35.400624+00:00",
+  "lanes": [
+    {
+      "id": "preparation",
+      "status": "success",
+      "exit_code": 0,
+      "reason": "",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/preparation.log",
+      "started_at": "2026-11-13T01:10:38.952392+00:00",
+      "finished_at": "2026-11-13T01:10:46.244855+00:00",
+      "artifacts": [
+        "source",
+        "web"
+      ]
+    },
+    {
+      "id": "windows-native",
+      "status": "unavailable",
+      "exit_code": 69,
+      "reason": "Deferred to a Windows boot: MSI/MSIX are Store packaging built on Windows (CC11)",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/windows-native.log",
+      "started_at": "2026-11-13T01:10:46.248328+00:00",
+      "finished_at": "2026-11-13T01:10:46.248331+00:00",
+      "artifacts": []
+    },
+    {
+      "id": "windows-nsis",
+      "status": "success",
+      "exit_code": 0,
+      "reason": "",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/windows-nsis.log",
+      "started_at": "2026-11-13T01:10:46.248130+00:00",
+      "finished_at": "2026-11-13T01:11:43.827901+00:00",
+      "artifacts": [
+        "windows-nsis",
+        "windows-exe"
+      ]
+    },
+    {
+      "id": "linux",
+      "status": "success",
+      "exit_code": 0,
+      "reason": "",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/linux.log",
+      "started_at": "2026-11-13T01:10:46.247721+00:00",
+      "finished_at": "2026-11-13T01:13:05.733532+00:00",
+      "artifacts": [
+        "linux-deb",
+        "linux-rpm",
+        "linux-appimage"
+      ]
+    },
+    {
+      "id": "sbom",
+      "status": "success",
+      "exit_code": 0,
+      "reason": "",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/sbom.log",
+      "started_at": "2026-11-13T01:13:05.733584+00:00",
+      "finished_at": "2026-11-13T01:13:06.769919+00:00",
+      "artifacts": [
+        "sbom"
+      ]
+    },
+    {
+      "id": "android",
+      "status": "success",
+      "exit_code": 0,
+      "reason": "",
+      "log_path": "/home/robin/Admin-Manual/LOGS/EnZIME-v4/build-sets/20261113T011038.951488Z-81e5d675bd9d/android.log",
+      "started_at": "2026-11-13T01:11:43.827956+00:00",
+      "finished_at": "2026-11-13T01:21:35.400035+00:00",
+      "artifacts": [
+        "android-apk",
+        "android-aab",
+        "android-symbols"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "source",
+      "platform": "source",
+      "kind": "tar.gz",
+      "filename": "enzime-reader-v1.27.08870-source.tar.gz",
+      "size_bytes": 24864207,
+      "sha256": "490926ecbe39e4820c0e05d70769e4f4dd07bed3ccc391eb3cf3d0833a7e99f1",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-source.tar.gz",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "platform": "web",
+      "kind": "tar.gz",
+      "filename": "enzime-reader-v1.27.08870-web.tar.gz",
+      "size_bytes": 150439,
+      "sha256": "d3f9634d3ac71164c5a398edadbcf7cdbbc8f7b88ee858a09932883f3ee22ce0",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-web.tar.gz",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "windows-nsis",
+      "platform": "windows",
+      "kind": "nsis",
+      "filename": "enzime-reader-v1.27.08870-windows-x64-setup.exe",
+      "size_bytes": 5702119,
+      "sha256": "2e04372c7505f4905e475269052667839d5a28723c6ec3cafe6332eab845c0a2",
+      "signing": "unsigned",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-windows-x64-setup.exe",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "windows-exe",
+      "platform": "windows",
+      "kind": "exe",
+      "filename": "enzime-reader-v1.27.08870-windows-x64.exe",
+      "size_bytes": 21437440,
+      "sha256": "0879399ddd5c37fd7c36a6f37e9ec0683c126e9b506405a94033a1e9ef9cf881",
+      "signing": "unsigned",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-windows-x64.exe",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "linux-deb",
+      "platform": "linux",
+      "kind": "deb",
+      "filename": "enzime-reader-v1.27.08870-linux-amd64.deb",
+      "size_bytes": 10137972,
+      "sha256": "e458b30d7feb5c21ee36cff5dae639ecbf32378851009c2e7a3221a47868d458",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-linux-amd64.deb",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "linux-rpm",
+      "platform": "linux",
+      "kind": "rpm",
+      "filename": "enzime-reader-v1.27.08870-linux-amd64.rpm",
+      "size_bytes": 10138175,
+      "sha256": "44371230b615f3d936146bacbca2bd648ee469968f38bfcc4f214a53fa6c6165",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-linux-amd64.rpm",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "linux-appimage",
+      "platform": "linux",
+      "kind": "appimage",
+      "filename": "enzime-reader-v1.27.08870-linux-amd64.AppImage",
+      "size_bytes": 90352120,
+      "sha256": "114d6aeb8025c3e1ec5c4d3692328324676f32620a4424199ea80483c5898752",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-linux-amd64.AppImage",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "sbom",
+      "platform": "all",
+      "kind": "sbom",
+      "filename": "enzime-reader-v1.27.08870-sbom.cdx.json",
+      "size_bytes": 856146,
+      "sha256": "9328940a6d51e3de29dbccb740d35b34f4079dabf5259801aec57bc7851c4de9",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-sbom.cdx.json",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "android-apk",
+      "platform": "android",
+      "kind": "apk",
+      "filename": "enzime-reader-v1.27.08870-android-universal-release-signed.apk",
+      "size_bytes": 75220919,
+      "sha256": "578254f474354abdbaddf6ea6af840e4a05eef0dbf3484cc281c2486724c006f",
+      "signing": "verified",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-android-universal-release-signed.apk",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "android-aab",
+      "platform": "android",
+      "kind": "aab",
+      "filename": "enzime-reader-v1.27.08870-android-universal-release-signed.aab",
+      "size_bytes": 287346007,
+      "sha256": "8fdfdfb0e657afd4f69b95de5539a7d40c7661ddc4dcf6ebefef2d95a4d8877e",
+      "signing": "verified",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-android-universal-release-signed.aab",
+          "public": false
+        }
+      ]
+    },
+    {
+      "id": "android-symbols",
+      "platform": "android",
+      "kind": "symbols",
+      "filename": "enzime-reader-v1.27.08870-android-native-debug-symbols.zip",
+      "size_bytes": 255984143,
+      "sha256": "377d4ef18f094243219a7247ea67d6d2bdbf27ac41c397c1af97f27d234743d7",
+      "signing": "not-applicable",
+      "locations": [
+        {
+          "role": "canonical-workspace",
+          "transport": "local-fs",
+          "host": "msi4090",
+          "path": "/home/robin/CascadeProjects/EnZIME-v4-catalog-budget/dist/enzime-reader-v1.27.08870-android-native-debug-symbols.zip",
+          "public": false
+        }
+      ]
+    }
+  ],
+  "required_artifact_ids": [
+    "source",
+    "web",
+    "linux-appimage",
+    "linux-deb",
+    "linux-rpm",
+    "windows-nsis",
+    "windows-exe",
+    "android-apk",
+    "android-aab",
+    "android-symbols",
+    "sbom"
+  ],
+  "deferred_artifact_ids": [
+    "windows-msi",
+    "windows-msix"
+  ],
+  "host_platform": "linux",
+  "monetization_env": {
+    "ENZIME_BILLING_URL": "unset",
+    "ENZIME_ENTITLEMENT_KEY_ID": "unset",
+    "ENZIME_ENTITLEMENT_PUBKEY": "unset",
+    "ENZIME_GA_MEASUREMENT_ID": "unset",
+    "ENZIME_GA_API_SECRET": "unset"
+  }
+}
