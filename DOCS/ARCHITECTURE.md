@@ -6854,6 +6854,9 @@ testing and behavior checking are stopped until explicitly reauthorized. Merge,
 build and deployment create no exception. Prior test records describe history;
 the runtime protocol below is suspended, not an authorized next action. Continue
 the architecture-defined implementation, publication, build and deployment.
+Reading the actual implementation and comparing its semantics with this architecture
+and the checklist remain required. Report the source-review finding separately from
+build/deployment results and properties requiring runtime evidence.
 Pull the published revision on
 `msi4090` for a native build: the recorded filesystem-corruption hold applies to
 builds on `asrock`, and is not cleared by a successful compiler exit. Use existing

@@ -2017,7 +2017,8 @@ mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
   **Verify:** Product testing/checking is explicitly stopped. Do not run tests,
   compiler checks, linters, UI automation, browser/device observations or acceptance
   exercises in this coder task. Re-read authored regions for implementation
-  consistency; report implementation and any factual gaps. Build only after root
+  consistency and compare their semantics with this task's requirements; report
+  the source-conformance finding and any factual gaps. Build only after root
   publishes and merges the implementation PR, through the sole build_all.sh path.
   **Accept:** The named implementation is committed and reachable; shared policy,
   real access recovery and DTO fields are wired end to end. Runtime behavior is
@@ -2054,7 +2055,8 @@ mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
   only WHERE priority=0 to avoid repeated writes to an already matched cluster.
   Never mislabel even mode as successful domain priority. No inference-service work.
   **Verify:** Same explicit stop as SHARE-1; no tests, UI or compiler checks. Re-read
-  edits for consistency and report changes, without invented behavioral evidence.
+  edits and compare their semantics with this task's requirements; report the
+  source-conformance finding and changes, without invented runtime evidence.
   **Accept:** Source committed/reachable and the actual bridge, state and controls
   implement the shared-medium contract. Report runtime unobserved, not verified.
 
