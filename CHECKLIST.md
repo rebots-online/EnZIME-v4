@@ -2164,3 +2164,35 @@ dependencies or test/check commands. Only scripts/build_set.py is writable.
   **Accept:** The committed root entry calls the existing full builder, and its additional source-version update, scoped commit and push occur only after successful return. Existing increments and builders are intact. Root records the actual full-build result and the resulting source bump.
 
 BUMP-1 observed full BuildAll result: v1.28.08977 completed 11/11 required artifacts. The added success tail then automatically committed and pushed v1.29.08988 in 6f6a994, with the required leading version and [skip ci]. No individual platform builds, app tests or installation were performed for this run.
+
+
+## Isolated catalogue correction — 2026-11-13
+
+### [ ] ZIM-TLS-1 — Repair public HTTPS verifier used by Android downloads
+
+**Own only:** `crates/transfer-http/src/lib.rs`, `crates/transfer-http/Cargo.toml`,
+`Cargo.lock`, and this task's progress marker. Worktree:
+`/home/robin/CascadeProjects/EnZIME-v4-zim-download-discovery`.
+
+**Do:** In `HttpTransferSource::new`, before creating the client, construct
+`roots: Vec<reqwest::Certificate>` by iterating
+`webpki_root_certs::TLS_SERVER_ROOT_CERTS`, converting each with
+`reqwest::Certificate::from_der(cert.as_ref())`, and collecting
+`Result<Vec<_>, _>`. Map any conversion error to
+`TransferError::Transport(format!("public TLS roots: {e}"))` and propagate it.
+Apply `.tls_certs_only(roots)` to the existing `reqwest::Client::builder()` before
+its existing redirect policy and build. Add `webpki-root-certs = "1"` to direct
+normal dependencies in `crates/transfer-http/Cargo.toml`. Update Cargo.lock only
+to add this direct dependency to the transfer-http dependency array; the package
+is already locked at 1.0.9. Explain in a short source comment that reqwest 0.13's
+Android default platform verifier requires JVM/Kotlin initialization and that
+explicit public roots keep certificate/hostname validation without it. Preserve
+redirect/stream/range semantics, `with_client`, and all other files. Do not disable
+certificate validation or increase timeouts. Re-read the changed region.
+
+**Verify:** `cargo check -p transfer-http --locked`.
+**Accept:** command exits 0 and reports successful completion. Semantic review
+must trace new → tls_certs_only → explicit root verifier, and confirm no danger
+accept flags were introduced. Host compilation does not certify Android runtime.
+Mark `[X]` for written and add observed verification separately. Do not run a
+release build, change versions, commit or push; parent owns scoped delivery.

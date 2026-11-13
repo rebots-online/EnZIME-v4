@@ -6998,3 +6998,86 @@ Authority: Robin's explicit instruction: always use build_all.sh for the full pl
 Keep the existing build runner, pre-build increments, stamp script, platform set, artifact names, freeze and source archive behavior intact. Only build_all.sh gains executable behavior. Existing Python is already a build dependency, so its inline post-success version update needs no new helper file or dependency. Built artifacts retain their frozen build version. Never label the next source version as an existing package. Git commit/push failure remains a reported error. No application installation is part of this change.
 
 CodeGraph coverage: BuildSet, prepare_snapshot and finalize were read from the graph. Bash entry/stamper are a parser coverage gap; targeted reads of build_all.sh and scripts/update-version.sh established the existing entrypoint and version fields.
+
+
+## Android catalogue HTTPS correction — 2026-11-13
+
+Scope: isolated `codex/zim-download-discovery`; baseline a1ecaff. This correction
+repairs the native transfer path independently of the concurrent product redesign.
+
+### Cause and evidence boundary
+
+The catalogue, Metalink and archive download path uses `HttpTransferSource::new`.
+Cargo.lock selects reqwest 0.13.4 and rustls-platform-verifier 0.7.0. Its default
+Rustls verifier calls Android JVM state during certificate verification; the
+reader startup and MainActivity do not initialize that state or package the
+verifier's Kotlin component. Upstream's pinned Android source calls `expect` on
+that uninitialized state. Consequently this is a source-established Android TLS
+integration defect, not a search-filter defect. A panic in an asynchronous native
+request is consistent with the frontend's 20-second deadline expiring without
+receiving the native handler's 15-second error. Device stack-trace correlation is
+not yet observed: `adb devices -l` found no attached device.
+
+Primary references:
+- https://docs.rs/rustls-platform-verifier/0.7.0/src/rustls_platform_verifier/android.rs.html
+- https://github.com/seanmonstar/reqwest/issues/2966
+- reqwest 0.13.4 installed source: ClientBuilder::tls_certs_only uses supplied
+  roots and selects WebPKI instead of the platform verifier.
+
+The unfiltered endpoint returned HTTP 200, 20 entries, 25,105 bytes in 1.226170 s
+on asrock; English Wikipedia returned 65 entries in 0.867107 s. These workstation
+observations establish actual metadata availability, not Android acceptance.
+The predecessor rebots-online/EnZIME at 62161265 uses reqwest 0.12 and lists local
+then bundled metadata without networking. It is approach evidence, not a claim
+that all predecessor functionality was verified in this session.
+
+### Decision
+
+Use explicit Mozilla public roots from the already-locked webpki-root-certs
+1.0.9 package for the public download transport on every platform. Convert every
+DER root with reqwest::Certificate::from_der, propagate conversion failures,
+and pass the complete set to ClientBuilder::tls_certs_only before building.
+Retain all redirect restrictions, stream ceilings, range validation and hostname/
+certificate verification. Do not extend catalogue timeouts as a remedy.
+
+| Priority / criterion | Choice | Immediate | Next release | Maintenance |
+|---|---|---|---|---|
+| 1 Correct validated public HTTPS | Explicit public roots | Removes missing JVM requirement | Same verifier path on desktop/Android | Root bundle updated through Cargo.lock |
+| 1 Same criterion | Android JVM/Kotlin verifier integration | Requires extra platform lifecycle and packaging work | OS trust works after integration | More Android-specific coupling |
+| 2 Narrow change / shared download URLs | Explicit public roots | One transport factory | Covers catalogue, Metalink, archive transfer | Provider-independent HTTPS remains |
+| 2 Same criterion | Increase timeout | Does not initialize verifier | Broken path still present | Conceals cause behind longer waits |
+
+Public downloads intentionally use the public root bundle; custom private CA
+endpoints require an explicitly configured transport via existing with_client.
+Unrelated billing/analytics clients are not changed by this scoped task.
+
+### Entity contract
+
+| Exact entity | Target | Contract / role | Engaged by |
+|---|---|---|---|
+| HttpTransferSource::new | crates/transfer-http/src/lib.rs:45 | Existing Result<Self, TransferError>; build verified HTTP client with explicit bundled roots and existing redirect policy | ZIM-TLS-1 |
+| roots | crates/transfer-http/src/lib.rs:48 | Local Vec<reqwest::Certificate> constructed from every webpki_root_certs::TLS_SERVER_ROOT_CERTS DER entry; conversion error maps to TransferError::Transport | ZIM-TLS-1 |
+| webpki-root-certs | crates/transfer-http/Cargo.toml:dependencies | Direct dependency version 1; locked 1.0.9 reused | ZIM-TLS-1 |
+| transfer-http dependency record | Cargo.lock | Add webpki-root-certs to this package's dependency list, without unrelated version upgrades | ZIM-TLS-1 |
+
+### Product requirements retained for subsequent catalogue correction
+
+Blank fields expose the entire available catalogue, with pagination permitted.
+Opening Library immediately shows usable catalogue choices, including on first
+launch; refreshing metadata must not erase them. The first three requested choices
+are complete English Wikipedia text-only, full media, and images-only. The live
+Kiwix feed supplies nopic and maxi; no standalone complete images-only record was
+found among the 65 English Wikipedia results. The images-only source/selection
+meaning is pending the operator's response, and must not be fabricated or confused
+with mini (abridged articles). Kiwix is the temporary release provider; after
+release an owned curated catalogue supplies URLs from multiple providers.
+
+### Verification boundaries
+
+Compilation checks dependency/API integration. A live metadata call checks public
+TLS plus OPDS retrieval; neither substitutes for semantic flow review or Android
+acceptance. Operator protocol after packaging: on Android open Library with blank
+fields, observe actual entries promptly, select a complete English entry, and
+observe metadata/plan resolution without a verifier panic. This protocol is not
+an idempotent checklist Accept clause. No claim that this task alone implements
+immediate catalogue display or the three preferred entries.
