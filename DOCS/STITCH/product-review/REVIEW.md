@@ -14,7 +14,13 @@ This is a review of existing design sources, not a claim that generated designs 
 
 ## Enumeration gap
 
-The v5 project's list_screens endpoint returned an empty object twice. Individually fetching the four IDs recorded in `LIBS/UI/STITCH/activation/STITCH-SCREENS.md` succeeded. The project thumbnail shows another navigator design. It has been visually reviewed, but its screen ID/export has not yet been recovered. This discrepancy is not evidence that the project contains only four screens. Resolve through retained source references or the service before asserting exhaustive project coverage.
+The v5 project's list_screens endpoint returned an empty object twice. Individually fetching the four IDs recorded in `LIBS/UI/STITCH/activation/STITCH-SCREENS.md` succeeded. The project thumbnail shows another navigator design. It has been visually reviewed, but its screen ID/export has not yet been recovered. The retained native session `92cd0a17-467a-46c2-ae13-5e44c4fce47e` records its generation as background task `k0h2ujmt1`, which timed out without returning a screen ID. The paired Reader generation was declined, not completed. Four later activation responses supplied the recovered IDs. This establishes the known source lineage but does not prove the service has no additional screens. The API enumeration gap remains explicit.
+
+## Current prototype revision
+
+The new project contains drafts for all S01–S17 functions, including separate desktop/mobile Home. Exports under `LIBS/UI/STITCH/product/drafts/` are provenance material, not approved shipping assets. `draft-manifest.json` marks them unfrozen. Generated descriptions have repeatedly claimed removal of sample data while the HTML retained invented content or simulated saves; source and screenshot review, rather than those descriptions, determines disposition. Corrections are in progress before connection and freeze. No application tests or runtime acceptance checks have been run.
+
+Build-time `.env` governs all configurable values, including displayed identity and pricing. Design text is the named EnZIME product's visual reference; implementation binds the configured identity and offer without hard-coded commercial values. Store responses must correspond to that configuration. No administrative key is a client-visible design field.
 
 ## Principles applied to every source
 

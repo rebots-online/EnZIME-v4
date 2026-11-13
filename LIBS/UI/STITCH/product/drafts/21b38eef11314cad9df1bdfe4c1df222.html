@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>EnZIME Reader - Home</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#dfe0ff",
+            "surface-container-high": "#282a32",
+            "on-error": "#690005",
+            "secondary-container": "#00cec3",
+            "on-tertiary-fixed-variant": "#614000",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed-variant": "#00504b",
+            "on-primary-container": "#001892",
+            "inverse-on-surface": "#2e3039",
+            "on-primary": "#041c94",
+            "surface-container": "#1d1f28",
+            "outline": "#8f8f9f",
+            "tertiary-container": "#c88900",
+            "on-tertiary-fixed": "#281800",
+            "on-surface": "#e2e1ee",
+            "surface-container-lowest": "#0c0e16",
+            "primary-fixed-dim": "#bcc3ff",
+            "surface-dim": "#11131b",
+            "outline-variant": "#454653",
+            "surface-container-low": "#191b24",
+            "on-primary-fixed": "#000c60",
+            "surface-variant": "#33343e",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "primary-container": "#7c8cff",
+            "surface-container-highest": "#33343e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-surface-variant": "#c6c5d5",
+            "error-container": "#93000a",
+            "error": "#ffb4ab",
+            "on-secondary-container": "#00534e",
+            "on-background": "#e2e1ee",
+            "inverse-surface": "#e2e1ee",
+            "surface": "#11131b",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-container": "#402900",
+            "on-secondary": "#003733",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "tertiary": "#ffba43",
+            "tertiary-fixed": "#ffddaf",
+            "background": "#11131b",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#ffba43",
+            "on-tertiary": "#442c00",
+            "on-secondary-fixed": "#00201e",
+            "secondary-fixed": "#59f9ed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.5rem",
+            "margin-md": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "label-mono-sm": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-lg": ["Inter"],
+            "label-mono-md": ["JetBrains Mono"],
+            "display-lg-mobile": ["Inter"],
+            "label-mono-lg": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Physical baseline styling and delicate aurora glow */
+    body {
+      background-color: #090B13;
+      color: #F0F2FA;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      min-height: 100dvh;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    /* Tactile subtle aura */
+    .aurora-glow {
+      background: radial-gradient(circle at 50% 35%, rgba(124, 140, 255, 0.12) 0%, rgba(52, 224, 212, 0.04) 45%, transparent 75%);
+    }
+
+    /* Ambient hardware bar gradient */
+    .utility-bar-glow {
+      box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.06);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#090B13] flex flex-col justify-between items-center min-h-[884px] w-full selection:bg-primary/30 selection:text-white">
+<!-- Mobile Screen Container constrained to 412px target width -->
+<div class="relative w-full max-w-[412px] min-h-[884px] flex flex-col justify-between bg-[#090B13] overflow-hidden aurora-glow border-x border-white/[0.04]">
+<!-- Atmospheric Ambient Elements -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- 1. Mobile Header (TopNavBar Anchor Execution) -->
+<!-- Executing TopNavBar styles: docked full-width top-0, backdrop-blur-md, min-h 44px targets -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md h-14 bg-surface-container/70 dark:bg-surface-container/70 backdrop-blur-md">
+<!-- Left: Logo & Product Name -->
+<div class="flex items-center gap-space-sm">
+<div aria-label="EnZIME geometric Z logo mark" class="w-8 h-8 rounded-lg bg-surface-container-high/80 border border-white/10 flex items-center justify-center text-primary shadow-sm">
+<!-- Stylized geometric Z glyph -->
+<svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<polyline points="4 7 20 7 8 17 20 17"></polyline>
+</svg>
+</div>
+<span class="text-headline-md font-headline-md font-semibold text-on-surface dark:text-on-surface tracking-tight">
+          EnZIME Reader
+        </span>
+</div>
+<!-- Right: Search Action & Subtle Offline Readiness Icon -->
+<div class="flex items-center gap-1">
+<!-- Search icon button (44px min tap bounds) -->
+<button aria-label="Search offline knowledge" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</button>
+<!-- Offline Status Indicator Icon (44px touch target) -->
+</div>
+</header>
+<!-- 2. Center Content - Intentional First-Launch Empty State -->
+<main class="flex-1 flex flex-col justify-center items-center px-6 py-8 z-10 w-full">
+<!-- Vault Geometric Knowledge Emblem -->
+<div class="relative mb-6">
+<div class="w-20 h-20 rounded-[22px] bg-surface-container-low/80 border border-white/[0.08] backdrop-blur-xl flex items-center justify-center shadow-[0_12px_32px_-4px_rgba(0,0,0,0.6)]"><div class="w-12 h-12 rounded-[14px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[28px] text-primary" data-icon="local_library">local_library</span></div></div>
+<!-- Atmospheric ambient halo around mark -->
+<div class="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10"></div>
+</div>
+<!-- Headlines & Descriptions -->
+<div class="text-center max-w-xs mb-8">
+<h1 class="text-2xl font-medium text-[#F0F2FA] tracking-tight">
+          Your knowledge, kept close.
+        </h1>
+<p class="text-sm text-[#8E96B0] mt-2 px-4 leading-relaxed font-body-md text-body-md">
+          Open a ZIM file or find knowledge to keep offline.
+        </p>
+</div>
+<!-- Action Stack (Strict 44px+ tactile heights, no decorative fluff) -->
+<div class="w-full flex flex-col gap-3 max-w-[340px]"><button class="w-full min-h-[48px] h-12 px-4 bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-medium rounded-[14px] flex items-center justify-center gap-2 transition-all duration-150 shadow-[0_0_16px_rgba(124,140,255,0.25)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none" type="button"><span class="material-symbols-outlined text-[20px]" data-icon="file_open">file_open</span><span class="text-body-md font-body-md font-semibold tracking-tight">Open a ZIM</span></button><button class="w-full min-h-[48px] h-12 px-4 bg-[rgba(23,28,44,0.72)] hover:bg-surface-container-high/80 text-[#F0F2FA] border border-white/10 font-medium rounded-[14px] flex items-center justify-center gap-2 transition-all duration-150 backdrop-blur-md active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button"><span class="material-symbols-outlined text-[20px] text-on-surface-variant" data-icon="download_for_offline">download_for_offline</span><span class="text-body-md font-body-md font-medium">Find a download</span></button></div>
+<!-- Reassurance Context Note -->
+<p class="text-xs text-[#8E96B0]/75 text-center mt-5 px-6 leading-relaxed">
+        Large downloads are shared across your apps to save space.
+      </p>
+<!-- Semantic hidden slot templates reserved for populated state without rendering false dummy telemetry -->
+<div aria-hidden="true" class="hidden" data-template-slot="populated-state-manifest">
+<section aria-labelledby="section-continue-reading" data-bind="state.recentArticles"></section>
+<section aria-labelledby="section-recent-packs" data-bind="state.mountedZims"></section>
+<section aria-labelledby="section-background-downloads" data-bind="state.queuedTransfers"></section>
+</div>
+<!-- Hardware & Storage Micro-readout Tag -->
+<div class="w-full flex justify-end mt-8 pr-2"><span class="text-xs text-on-surface-variant/50 font-sans select-none tracking-normal">EnZIME Reader v1.29.08988</span></div>
+</main>
+<!-- Contextual "More" Submenu Modal / Bottom Sheet Drawer (Accessible & Keyboard Dismissible) -->
+<div aria-label="Expanded actions" aria-modal="true" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-200 opacity-0" id="more-drawer" role="dialog">
+<div class="absolute inset-0 bg-[#090B13]/70 backdrop-blur-sm pointer-events-none transition-opacity duration-200" id="more-overlay"></div>
+<div class="absolute bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[412px] p-4 pointer-events-auto transform translate-y-full transition-transform duration-200 ease-out" id="more-sheet">
+<div class="bg-surface-container/95 border border-white/10 rounded-2xl p-2 backdrop-blur-2xl shadow-[0_-12px_32px_rgba(0,0,0,0.7)] flex flex-col gap-1">
+<div class="px-3 py-2 flex items-center justify-between border-b border-white/[0.05]">
+<span class="text-label-mono-sm font-label-mono-sm uppercase text-[#8E96B0] tracking-wider">More</span>
+<button aria-label="Close menu" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-surface-variant hover:text-on-surface" id="close-drawer" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container-high transition-colors min-h-[44px] text-on-surface" href="#ask">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="contact_support">contact_support</span>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md font-medium">Ask</span>
+</div>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container-high transition-colors min-h-[44px] text-on-surface" href="#memory">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="memory">memory</span>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md font-medium">Memory</span>
+</div>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-surface-container-high transition-colors min-h-[44px] text-on-surface" href="#settings">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="settings">settings</span>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md font-medium">Settings</span>
+</div>
+</a>
+</div>
+</div>
+</div>
+<!-- 3. BottomNavBar (Shared Component Execution) -->
+<!-- Executing exact tokens: labels ["Home", "Library", "Notes", "More"] -->
+<!-- style_active_navigation: "flex flex-col items-center justify-center text-primary dark:text-primary bg-primary/10 dark:bg-primary/10 rounded-xl px-space-md py-space-xs" -->
+<!-- style_inactive_navigation: "flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs" -->
+<!-- Note: Top and bottom border lines prohibited by Semantic Shell Mandate; subtle tonal shift and shadow applied. -->
+<nav aria-label="Bottom Navigation" class="w-full z-40 bg-surface-container/90 dark:bg-surface-container/90 backdrop-blur-xl shadow-[0_-8px_24px_rgba(0,0,0,0.5)] flex justify-around items-center px-space-sm py-space-xs pb-[calc(env(safe-area-inset-bottom,0.75rem)+0.25rem)]"><a aria-current="page" class="flex flex-col items-center justify-center text-primary dark:text-primary bg-primary/10 dark:bg-primary/10 rounded-xl px-space-md py-space-xs active:scale-95 transition-transform duration-100 min-h-[44px] min-w-[44px]" href="#home"><span class="material-symbols-outlined text-[20px]" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span><span class="text-xs font-sans mt-0.5 font-medium">Home</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs hover:text-on-surface dark:hover:text-on-surface transition-colors duration-150 active:scale-95 min-h-[44px] min-w-[44px]" href="#library"><span class="material-symbols-outlined text-[20px]" data-icon="local_library">local_library</span><span class="text-xs font-sans mt-0.5 font-normal">Library</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs hover:text-on-surface dark:hover:text-on-surface transition-colors duration-150 active:scale-95 min-h-[44px] min-w-[44px]" href="#notes"><span class="material-symbols-outlined text-[20px]" data-icon="description">description</span><span class="text-xs font-sans mt-0.5 font-normal">Notes</span></a><button aria-expanded="false" aria-haspopup="dialog" class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs hover:text-on-surface dark:hover:text-on-surface transition-colors duration-150 active:scale-95 min-h-[44px] min-w-[44px]" id="more-trigger" type="button"><span class="material-symbols-outlined text-[20px]" data-icon="more_horiz">more_horiz</span><span class="text-xs font-sans mt-0.5 font-normal">More</span></button></nav>
+</div>
+<!-- Interactive script for More bottom drawer -->
+<script>
+    const moreBtn = document.getElementById('more-trigger');
+    const drawer = document.getElementById('more-drawer');
+    const overlay = document.getElementById('more-overlay');
+    const sheet = document.getElementById('more-sheet');
+    const closeBtn = document.getElementById('close-drawer');
+
+    function openMore() {
+      drawer.classList.remove('pointer-events-none', 'opacity-0');
+      overlay.classList.remove('pointer-events-none');
+      sheet.classList.remove('translate-y-full');
+      moreBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMore() {
+      drawer.classList.add('opacity-0', 'pointer-events-none');
+      overlay.classList.add('pointer-events-none');
+      sheet.classList.add('translate-y-full');
+      moreBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    moreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = moreBtn.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        closeMore();
+      } else {
+        openMore();
+      }
+    });
+
+    closeBtn.addEventListener('click', closeMore);
+    overlay.addEventListener('click', closeMore);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMore();
+    });
+  </script>
+</body></html>

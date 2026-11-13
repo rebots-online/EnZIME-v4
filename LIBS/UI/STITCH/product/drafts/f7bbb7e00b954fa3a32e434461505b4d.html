@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - S06 Reader</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter & Literata Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-error": "#690005",
+            "primary-fixed": "#dfe0ff",
+            "on-primary-fixed-variant": "#2839aa",
+            "surface-variant": "#33343e",
+            "on-primary-fixed": "#000c60",
+            "inverse-on-surface": "#2e3039",
+            "on-tertiary": "#442c00",
+            "on-surface": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-secondary-container": "#00534e",
+            "surface-container": "#1d1f28",
+            "secondary": "#46ebdf",
+            "surface-container-highest": "#33343e",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "error": "#ffb4ab",
+            "surface-dim": "#11131b",
+            "on-tertiary-container": "#402900",
+            "tertiary-container": "#c88900",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "on-tertiary-fixed": "#281800",
+            "on-background": "#e2e1ee",
+            "secondary-container": "#00cec3",
+            "on-primary": "#041c94",
+            "tertiary": "#ffba43",
+            "on-primary-container": "#001892",
+            "primary-container": "#7c8cff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline": "#8f8f9f",
+            "surface": "#11131b",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-low": "#191b24",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "surface-tint": "#bcc3ff",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-lowest": "#0c0e16",
+            "on-secondary": "#003733",
+            "surface-container-high": "#282a32",
+            "outline-variant": "#454653"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-mono-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "body-editorial": ["Literata"],
+            "label-mono-sm": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-mono-lg": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+            "display-lg": ["40px", {"lineHeight": "48px", "fontWeight": "600"}],
+            "label-mono-md": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+            "display-lg-mobile": ["30px", {"lineHeight": "36px", "fontWeight": "600"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+            "headline-lg-mobile": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "body-editorial": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "label-mono-sm": ["11px", {"lineHeight": "14px", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Aurora radial gradations */
+    .aurora-bg {
+      background-color: #090B13;
+      background-image: 
+        radial-gradient(circle at 18% 24%, rgba(124, 140, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 82% 76%, rgba(52, 224, 212, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(30, 36, 56, 0.35) 0%, transparent 80%);
+    }
+
+    .glass-panel {
+      background-color: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+
+    .glass-card {
+      background-color: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 22px;
+    }
+
+    .interactive-focus:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px #090B13, 0 0 0 4px #7C8CFF;
+    }
+  </style>
+</head>
+<body class="aurora-bg text-on-surface antialiased min-h-screen flex flex-col font-body-md select-none overflow-x-hidden">
+<!-- Desktop & Tablet Left Navigation Rail (104px compact rail) -->
+<aside aria-label="Main Navigation" class="hidden md:flex flex-col items-center justify-between w-[104px] fixed left-0 top-0 h-screen z-50 py-space-lg glass-panel border-r border-outline-variant/30">
+<div class="flex flex-col items-center w-full gap-space-lg">
+<!-- Minimal Brand Glyph Mark -->
+<a aria-label="EnZIME Reader Home" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-high/60 text-primary hover:text-white transition-colors duration-150 interactive-focus" href="#">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter">Z</span>
+</a>
+<!-- 6 Main Tabs (Icon + Label Stacked) -->
+<nav aria-label="Primary Rail Navigation" class="flex flex-col items-center gap-space-xs w-full px-2">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm">Home</span>
+</a>
+<!-- Library (Active Destination) -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1 text-secondary" data-icon="local_library">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="contact_support">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="memory">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm">Memory</span>
+</a>
+<!-- Settings -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150 min-h-[44px] interactive-focus" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Quiet Base Anchor -->
+</aside>
+<!-- Main Content Layout Area Offset by 104px on Desktop/Tablet -->
+<div class="flex-1 flex flex-col md:ml-[104px] min-h-screen" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Top Bar: ONLY Brand & Search -->
+<header class="sticky top-0 z-40 w-full h-14 glass-panel border-b border-outline-variant/30 px-space-md lg:px-space-lg flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm min-w-max">
+<span class="font-headline-md text-headline-md font-semibold text-primary tracking-tight">Z</span>
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">EnZIME Reader</span>
+</div>
+<!-- Centered/Left Search -->
+<div class="flex-1 max-w-lg mx-auto">
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest/80 text-on-surface placeholder:text-outline border border-outline-variant/30 rounded-[14px] font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all duration-150 interactive-focus" placeholder="Search packs, articles, offline index..." type="search"/>
+</div>
+</div>
+</header>
+<!-- Sub-header: Context Bar -->
+<div class="sticky top-14 z-30 w-full glass-panel border-b border-outline-variant/20 px-space-md lg:px-space-lg py-2 flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<!-- Back Navigation -->
+<button aria-label="Navigate Back" class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-150 interactive-focus" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<!-- Forward Navigation -->
+<button aria-label="Navigate Forward" class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-outline-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-150 disabled:opacity-40 interactive-focus" disabled="" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<div class="h-5 w-px bg-outline-variant/30 mx-1"></div>
+<!-- Mode Toggle Segmented Control -->
+<div aria-label="View Mode" class="inline-flex p-1 rounded-xl bg-surface-container-lowest/90 border border-outline-variant/20" role="tablist">
+<button aria-selected="true" class="px-3.5 py-1.5 rounded-lg text-primary bg-primary/15 font-label-mono-md text-label-mono-md font-medium flex items-center gap-1.5 min-h-[36px] interactive-focus" role="tab" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="menu_book">menu_book</span>
+            Reader
+          </button>
+<button aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-mono-md text-label-mono-md flex items-center gap-1.5 min-h-[36px] interactive-focus" role="tab" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="explore">explore</span>
+            Navigator
+          </button>
+</div>
+</div>
+<!-- Trailing Controls in Context Bar -->
+<div class="flex items-center gap-space-xs">
+<!-- Contents Dropdown Trigger -->
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high flex items-center gap-2 font-label-mono-md text-label-mono-md transition-colors duration-150 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="toc">toc</span>
+          Contents
+        </button>
+<!-- Search this pack -->
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high flex items-center gap-2 font-label-mono-md text-label-mono-md transition-colors duration-150 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="find_in_page">find_in_page</span>
+          Search this pack
+        </button>
+<!-- Text settings -->
+<button aria-label="Reader Display and Typography Settings" class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-150 interactive-focus" onclick="document.getElementById('text-settings-drawer').classList.toggle('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="format_size">format_size</span>
+</button>
+</div>
+</div>
+<!-- Main Dynamic Canvas -->
+<main class="flex-1 flex flex-col p-space-md lg:p-space-lg relative max-w-6xl w-full mx-auto justify-center">
+<!-- Central Actual Empty State -->
+<section aria-label="Reader Empty State" class="my-auto py-12 px-6 flex flex-col items-center justify-center text-center max-w-lg mx-auto">
+<div class="w-20 h-20 rounded-[22px] glass-card flex items-center justify-center mb-space-lg shadow-sm border border-outline-variant/30">
+<span class="material-symbols-outlined text-[40px] text-primary" data-icon="auto_stories">auto_stories</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg font-semibold text-on-surface mb-2 tracking-tight">
+          Open a pack to start reading.
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-xl max-w-sm">
+          Load an offline ZIM knowledge pack from internal storage, SD card, or browse your downloaded items.
+        </p>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row items-center gap-space-md w-full justify-center">
+<button class="w-full sm:w-auto px-6 py-2.5 min-h-[44px] rounded-xl bg-primary-container text-surface-container-lowest font-label-mono-lg text-label-mono-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary transition-colors duration-150 shadow-[0_0_16px_rgba(124,140,255,0.35)] interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="folder_open">folder_open</span>
+            Open a ZIM
+          </button>
+<button class="w-full sm:w-auto px-6 py-2.5 min-h-[44px] rounded-xl glass-panel text-on-surface hover:text-white border border-outline-variant/40 font-label-mono-lg text-label-mono-lg flex items-center justify-center gap-2 transition-colors duration-150 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="collections_bookmark">collections_bookmark</span>
+            Browse library
+          </button>
+</div>
+</section>
+<!-- Contextual Annotation Toolbar (Docked/Floating contextual state template) -->
+<aside aria-label="Annotation Toolbar" class="hidden glass-panel rounded-2xl px-2 py-1.5 border border-primary/30 shadow-2xl flex items-center gap-1 mx-auto my-2 z-20">
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="ink_highlighter">ink_highlighter</span>
+          Highlight
+        </button>
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="note_add">note_add</span>
+          Note
+        </button>
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="draw">draw</span>
+          Ink
+        </button>
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="mic">mic</span>
+          Voice
+        </button>
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="photo_camera">photo_camera</span>
+          Photo
+        </button>
+<button class="px-3 py-1.5 min-h-[44px] rounded-lg text-on-surface hover:bg-surface-container-high font-label-mono-md text-label-mono-md flex items-center gap-1.5 interactive-focus" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="videocam">videocam</span>
+          Video
+        </button>
+</aside>
+<!-- Semantic Inactive Article Container (ReaderPane Structural Markup Template) -->
+<template id="article-view-template"><article class="glass-card p-6 md:p-12 mb-space-xl max-w-3xl mx-auto w-full"><header class="border-b border-outline-variant/20 pb-4 mb-6"><h1 class="font-headline-lg text-headline-lg font-semibold text-on-surface" data-article-title=""></h1><p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant mt-1" data-article-source=""></p></header><nav aria-label="Table of Contents" class="p-4 rounded-xl bg-surface-container-lowest/60 border border-outline-variant/20 mb-6" data-article-sections=""><h2 class="font-label-mono-md text-label-mono-md font-semibold text-secondary uppercase tracking-wider mb-2">Table of Contents</h2><ul class="space-y-1 font-body-md text-body-md"></ul></nav><section class="font-body-editorial text-body-editorial text-on-surface space-y-4 leading-relaxed" data-article-body=""></section></article></template>
+<!-- Companion Inset Template ('Ask about this' and Navigator Inset) -->
+<aside aria-label="Companion Inset" class="hidden glass-card p-4 max-w-sm ml-auto mb-4 border border-outline-variant/30 flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+<span class="font-label-mono-md text-label-mono-md font-semibold text-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="smart_toy">smart_toy</span>
+            Ask about this
+          </span>
+<div class="flex items-center gap-1">
+<button aria-label="Swap pane" class="p-1 rounded text-on-surface-variant hover:text-on-surface interactive-focus" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="swap_horiz">swap_horiz</span>
+</button>
+<button aria-label="Expand pane" class="p-1 rounded text-on-surface-variant hover:text-on-surface interactive-focus" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="open_in_full">open_in_full</span>
+</button>
+</div>
+</div>
+<div class="p-3 bg-surface-container-lowest/80 rounded-xl border border-outline-variant/20 text-on-surface-variant font-body-md text-body-md">
+          Ask questions contextual to the active section.
+        </div>
+</aside>
+<!-- Missing Retained Article State Modal / Template -->
+<div aria-labelledby="missing-title" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-container-lowest/80 backdrop-blur-sm" id="missing-article-modal" role="dialog">
+<div class="glass-card max-w-md w-full p-6 border border-outline-variant/40 shadow-2xl flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-error/10 text-error flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="sync_problem">sync_problem</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface mb-2" id="missing-title">This article was not included in your download.</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+            The requested reference was excluded when compiling this compressed offline bundle.
+          </p>
+<div class="flex items-center gap-3 w-full">
+<button class="flex-1 py-2.5 px-4 min-h-[44px] rounded-xl bg-primary-container text-surface-container-lowest font-label-mono-md text-label-mono-md font-semibold hover:bg-primary transition-colors interactive-focus" type="button">
+              Revise download
+            </button>
+<button class="py-2.5 px-4 min-h-[44px] rounded-xl glass-panel text-on-surface hover:text-white border border-outline-variant/40 font-label-mono-md text-label-mono-md interactive-focus" type="button">
+              Retry
+            </button>
+</div>
+</div>
+</div>
+<!-- Unsaved-Work Dialog Template -->
+<div aria-labelledby="unsaved-title" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-container-lowest/80 backdrop-blur-sm" id="unsaved-dialog" role="alertdialog">
+<div class="glass-card max-w-sm w-full p-6 border border-outline-variant/40 shadow-2xl">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface mb-2" id="unsaved-title">Unsaved notes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">You have pending marginalia notes. Would you like to preserve them before leaving?</p>
+<div class="flex items-center justify-end gap-2">
+<button class="px-4 py-2 min-h-[44px] rounded-lg text-on-surface-variant hover:text-on-surface font-label-mono-md text-label-mono-md interactive-focus" type="button">Stay</button>
+<button class="px-4 py-2 min-h-[44px] rounded-lg text-error hover:bg-error/10 font-label-mono-md text-label-mono-md interactive-focus" type="button">Discard</button>
+<button class="px-4 py-2 min-h-[44px] rounded-lg bg-primary text-surface-container-lowest font-label-mono-md text-label-mono-md font-semibold interactive-focus" type="button">Save</button>
+</div>
+</div>
+</div>
+<!-- Text Settings Sheet / Drawer -->
+<div aria-label="Text Settings" class="hidden fixed bottom-16 md:bottom-12 right-4 md:right-10 z-40 w-80 glass-card p-5 border border-primary/20 shadow-2xl" id="text-settings-drawer" role="region">
+<div class="flex items-center justify-between border-b border-outline-variant/20 pb-3 mb-4">
+<span class="font-label-mono-md text-label-mono-md font-semibold text-on-surface">Text settings</span>
+<button aria-label="Close Settings" class="text-on-surface-variant hover:text-on-surface p-1 min-h-[44px] min-w-[44px] flex items-center justify-center interactive-focus" onclick="document.getElementById('text-settings-drawer').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Font Family Selector -->
+<div class="mb-4">
+<label class="block font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-2">Font Family</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="px-3 py-2 min-h-[44px] rounded-lg bg-primary/15 text-primary border border-primary/30 font-body-editorial text-body-editorial font-medium text-left interactive-focus" type="button">
+              Literata (Serif)
+            </button>
+<button class="px-3 py-2 min-h-[44px] rounded-lg bg-surface-container-lowest/80 text-on-surface-variant border border-outline-variant/20 font-body-md text-body-md text-left interactive-focus" type="button">
+              Inter (Sans)
+            </button>
+</div>
+</div>
+<!-- Font Size Scale -->
+<div class="mb-4">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-mono-sm text-label-mono-sm text-on-surface-variant">Font Size</span>
+<span class="font-label-mono-sm text-label-mono-sm text-primary">16px</span>
+</div>
+<div class="flex items-center gap-3">
+<button aria-label="Decrease Font Size" class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-surface-container-lowest/80 text-on-surface hover:bg-surface-container-high border border-outline-variant/20 interactive-focus" type="button">
+<span class="font-label-mono-sm text-label-mono-sm">A-</span>
+</button>
+<input class="w-full accent-primary bg-surface-container-highest h-1.5 rounded-lg appearance-none cursor-pointer" max="24" min="12" type="range" value="16"/>
+<button aria-label="Increase Font Size" class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-surface-container-lowest/80 text-on-surface hover:bg-surface-container-high border border-outline-variant/20 interactive-focus" type="button">
+<span class="font-body-md text-body-md font-semibold">A+</span>
+</button>
+</div>
+</div>
+<!-- Line Spacing -->
+<div>
+<label class="block font-label-mono-sm text-label-mono-sm text-on-surface-variant mb-2">Line Spacing</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 min-h-[44px] rounded-lg bg-surface-container-lowest/80 text-on-surface-variant border border-outline-variant/20 font-label-mono-sm text-label-mono-sm text-center interactive-focus" type="button">
+              Compact
+            </button>
+<button class="py-2 min-h-[44px] rounded-lg bg-primary/15 text-primary border border-primary/30 font-label-mono-sm text-label-mono-sm text-center interactive-focus" type="button">
+              Normal
+            </button>
+<button class="py-2 min-h-[44px] rounded-lg bg-surface-container-lowest/80 text-on-surface-variant border border-outline-variant/20 font-label-mono-sm text-label-mono-sm text-center interactive-focus" type="button">
+              Relaxed
+            </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer: Single quiet plain version bottom-right -->
+<footer class="w-full py-space-sm px-space-md lg:px-space-lg flex items-center justify-end pb-20 md:pb-space-sm pointer-events-none">
+<span class="font-label-mono-sm text-label-mono-sm text-outline-variant/80 tracking-normal select-text">
+        EnZIME Reader v1.29.08988
+      </span>
+</footer>
+</div>
+<!-- Mobile Bottom Navigation Bar (md:hidden) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs glass-panel border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100 interactive-focus" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Library (Active) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100 interactive-focus" href="#">
+<span class="material-symbols-outlined text-secondary" data-icon="local_library">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold mt-0.5">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100 interactive-focus" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100 interactive-focus" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+</body></html>

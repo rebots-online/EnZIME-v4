@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S03 Library - EnZIME Reader</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#003733",
+            "inverse-on-surface": "#2e3039",
+            "surface-container": "#1d1f28",
+            "on-tertiary-fixed-variant": "#614000",
+            "primary-container": "#7c8cff",
+            "on-primary-container": "#001892",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-tertiary-container": "#402900",
+            "primary-fixed": "#dfe0ff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline-variant": "#454653",
+            "on-secondary-container": "#00534e",
+            "error": "#ffb4ab",
+            "surface-bright": "#373942",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "on-surface-variant": "#c6c5d5",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-lowest": "#0c0e16",
+            "secondary-container": "#00cec3",
+            "surface-container-high": "#282a32",
+            "tertiary-fixed": "#ffddaf",
+            "primary": "#bcc3ff",
+            "inverse-primary": "#4353c3",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "surface-container-highest": "#33343e",
+            "on-surface": "#e2e1ee",
+            "error-container": "#93000a",
+            "outline": "#8f8f9f",
+            "surface-container-low": "#191b24",
+            "inverse-surface": "#e2e1ee",
+            "on-primary-fixed": "#000c60",
+            "surface-dim": "#11131b",
+            "tertiary": "#ffba43",
+            "secondary-fixed": "#59f9ed",
+            "on-background": "#e2e1ee",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed": "#00201e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-error": "#690005",
+            "on-tertiary": "#442c00",
+            "background": "#11131b",
+            "surface-variant": "#33343e",
+            "on-tertiary-fixed": "#281800",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.375rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter", "sans-serif"],
+            "body-editorial": ["Literata", "serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-mono-sm": ["Inter", "monospace"],
+            "body-lg": ["Inter", "sans-serif"],
+            "label-mono-md": ["Inter", "monospace"],
+            "headline-lg-mobile": ["Inter", "sans-serif"],
+            "display-lg": ["Inter", "sans-serif"],
+            "display-lg-mobile": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "label-mono-lg": ["Inter", "monospace"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#090B13] text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Desktop Side Rail Navigation (Compact 104px / docked h-screen) -->
+<aside aria-label="Main Navigation" class="hidden md:flex flex-col justify-between h-screen w-[104px] fixed left-0 top-0 z-50 bg-[#171C2C]/75 backdrop-blur-xl border-r border-[#BDC6FF]/15 px-3 py-6 select-none">
+<div class="flex flex-col items-center gap-8">
+<!-- Minimalist Z Mark Brand Anchor -->
+<a class="flex flex-col items-center gap-1 group focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1.5 transition-all" href="#">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high/80 border border-white/10 flex items-center justify-center text-primary group-hover:border-primary/50 transition-colors shadow-sm">
+<svg class="w-6 h-6 stroke-current fill-none stroke-[2.2]" viewbox="0 0 24 24">
+<path d="M4 6h16L6 18h14" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- Primary Left Rail Tabs -->
+<nav class="flex flex-col gap-2.5 w-full items-center">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Home</span>
+</a>
+<!-- Library (Strict Active Match) -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-[0_0_16px_rgba(124,140,255,0.15)] min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 font-semibold tracking-tight text-center">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="contact_support">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="memory">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Memory</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Anchor: Settings Only (No badges, dots, or telemetry) -->
+<div class="flex flex-col items-center gap-3 w-full">
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px] group-hover:rotate-45 transition-transform" data-icon="settings">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Top Global Header (Docked full-width top-0, clear of left-rail on desktop) -->
+<header class="sticky top-0 z-40 w-full md:pl-[104px] bg-[#171C2C]/70 backdrop-blur-md border-b border-[#BDC6FF]/10 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-4 lg:gap-6 flex-1 max-w-2xl"><!-- Brand Display -->
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center text-primary shadow-sm">
+<svg class="w-5 h-5 stroke-current fill-none stroke-[2.2]" viewbox="0 0 24 24">
+<path d="M4 6h16L6 18h14" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight whitespace-nowrap">
+    EnZIME Reader
+  </span>
+</div>
+<!-- Global Search Field -->
+<div class="relative w-full max-w-md ml-2 md:ml-4">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-10 pr-4 py-2 text-on-surface placeholder:text-outline font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px]" placeholder="Search all knowledge..." type="text"/>
+</div></div>
+<!-- Header Trailing Action -->
+</header>
+<!-- Main Content Stage -->
+<main class="flex-1 md:pl-[104px] pb-24 md:pb-12 pt-6 px-4 sm:px-6 lg:px-10 max-w-7xl w-full mx-auto flex flex-col">
+<!-- Screen Header Area -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Library</h1>
+<p class="text-on-surface-variant font-body-md text-body-md mt-1">Manage and access local offline knowledge archives.</p>
+</div>
+<!-- Quick Action on Page Canvas -->
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2438]/80 hover:bg-[#282F48] text-on-surface border border-[#BDC6FF]/20 rounded-lg min-h-[44px] transition-all focus-visible:ring-2 focus-visible:ring-primary group" type="button">
+<span class="material-symbols-outlined text-primary text-[20px] group-hover:scale-110 transition-transform" data-icon="folder_open">folder_open</span>
+<span class="font-body-md font-medium">Open a ZIM</span>
+</button>
+</div>
+</div>
+<!-- Local Navigation Tabs -->
+<div class="flex items-center gap-2 mt-6 border-b border-white/[0.08] overflow-x-auto custom-scrollbar pb-px">
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-primary border-b-2 border-primary -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-installed" onclick="switchLibraryTab('installed')" type="button">
+<span>Installed</span>
+</button>
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-available" onclick="switchLibraryTab('available')" type="button">
+<span>Available downloads</span>
+</button>
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-downloads" onclick="switchLibraryTab('downloads')" type="button">
+<span>Downloads</span>
+</button>
+</div>
+<!-- TAB 1: INSTALLED (Active Default) -->
+<section class="pt-8 flex-1 flex flex-col" id="panel-installed">
+<!-- Genuine, Honest Empty State Card (22px radius, Glassmorphism) -->
+<div class="w-full max-w-2xl mx-auto my-auto py-16 px-6 sm:px-12 rounded-[22px] bg-[#171C2C]/60 backdrop-blur-xl border border-[#BDC6FF]/15 text-center flex flex-col items-center justify-center shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)]">
+<!-- Clean open book / stack icon in rounded glass container -->
+<div class="w-20 h-20 rounded-2xl bg-surface-container-high/80 border border-white/10 flex items-center justify-center text-primary mb-6 shadow-[0_0_24px_-2px_rgba(124,140,255,0.18)]">
+<span class="material-symbols-outlined text-[38px]" data-icon="menu_book">menu_book</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-2">
+          Your library starts here
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-8 leading-relaxed">
+          Add an offline ZIM package from your device storage or browse available offline references.
+        </p>
+<!-- Two Distinct Actions -->
+<div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+<!-- Primary Action -->
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-primary-container text-on-primary-container font-body-md font-semibold rounded-lg min-h-[44px] hover:bg-[#96A4FF] shadow-[0_0_20px_rgba(124,140,255,0.3)] transition-all active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span>Open a ZIM</span>
+</button>
+<!-- Secondary Action -->
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-[#1E2438]/80 hover:bg-[#282F48] text-on-surface border border-white/10 rounded-lg min-h-[44px] transition-all active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary" onclick="switchLibraryTab('available')" type="button">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="cloud_download">cloud_download</span>
+<span>Find a download</span>
+</button>
+</div>
+</div>
+<!-- Semantic Template Markup for Installed Cards (No Invented Dummy Packs) -->
+<template id="installed-card-template">
+<article class="p-5 rounded-[22px] bg-[#171C2C]/72 backdrop-blur-md border border-[#BDC6FF]/14 flex flex-col justify-between transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary">
+<div class="flex items-start justify-between gap-4">
+<div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface" data-slot="pack-title"></h3>
+<p class="font-body-md text-label-mono-md text-on-surface-variant mt-0.5" data-slot="pack-edition"></p>
+</div>
+<span class="font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant uppercase tracking-wider" data-slot="pack-language"></span>
+</div>
+<div class="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-on-surface-variant">
+<div class="flex items-center gap-4 font-label-mono-sm text-label-mono-sm">
+<span data-slot="pack-file-size"></span>
+<span data-slot="pack-last-read"></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg text-primary hover:bg-primary/10 min-h-[44px]" data-action="open" type="button">Open</button>
+<button aria-label="Manage ZIM pack" class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 min-h-[44px] min-w-[44px]" data-action="manage" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</article>
+</template>
+</section>
+<!-- TAB 2: AVAILABLE DOWNLOADS -->
+<section class="pt-6 flex-1 flex flex-col hidden" id="panel-available">
+<!-- Filter Bar -->
+<div class="p-4 rounded-[22px] bg-[#171C2C]/72 backdrop-blur-md border border-[#BDC6FF]/14 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4"><div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1">
+<!-- Search Downloads Input with visible label -->
+<div class="flex flex-col gap-1.5 flex-1 max-w-lg">
+<label class="text-label-mono-sm font-label-mono-sm text-on-surface-variant font-medium" for="search-downloads-input">Search downloads</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-10 pr-4 py-2.5 text-on-surface placeholder:text-outline font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px]" id="search-downloads-input" placeholder="Search available packages..." type="text"/>
+</div>
+</div>
+<!-- Language Selector with visible label -->
+<div class="flex flex-col gap-1.5 min-w-[180px]">
+<label class="text-label-mono-sm font-label-mono-sm text-on-surface-variant font-medium" for="catalog-language-select">Language</label>
+<div class="relative">
+<select aria-label="Language" class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-3.5 pr-8 py-2.5 text-on-surface font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px] appearance-none cursor-pointer" id="catalog-language-select">
+<option value="all">All Languages</option>
+<option value="en">English</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+<option value="de">German</option>
+<option value="zh">Chinese</option>
+<option value="ar">Arabic</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div></div>
+<!-- Dynamic State Display Area (Toggle between loading & empty/retry) -->
+<div class="mt-8 flex-1 flex flex-col items-center justify-center" id="catalog-state-container"><!-- Loading State -->
+<div class="py-16 px-6 text-center flex flex-col items-center" id="catalog-loading-state">
+<div class="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+<p class="font-headline-md text-headline-md text-on-surface font-medium">Loading available downloads</p>
+</div>
+<!-- Error State: Downloads could not be loaded -->
+<div class="py-16 px-6 max-w-md text-center flex flex-col items-center hidden" id="catalog-error-state">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center text-outline mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="cloud_off">cloud_off</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-medium text-on-surface mb-2">Downloads could not be loaded.</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Unable to fetch catalog resources. Check connection and try again.</p>
+<button class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2438]/80 hover:bg-[#282F48] text-primary border border-primary/30 rounded-lg min-h-[44px] transition-all focus-visible:ring-2 focus-visible:ring-primary" onclick="simulateCatalogFetch()" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+<span>Retry search</span>
+</button>
+</div>
+<!-- Empty State: No downloads match these filters -->
+<div class="py-16 px-6 max-w-md text-center flex flex-col items-center hidden" id="catalog-empty-state">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high border border-white/10 flex items-center justify-center text-outline mb-4">
+<span class="material-symbols-outlined text-[24px]" data-icon="filter_alt_off">filter_alt_off</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-medium text-on-surface mb-2">No downloads match these filters.</h3>
+<button class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-primary-container text-on-primary-container font-medium rounded-lg min-h-[44px] hover:bg-[#96A4FF] transition-all focus-visible:ring-2 focus-visible:ring-primary" onclick="clearCatalogFilters()" type="button">
+<span>Clear filters</span>
+</button>
+</div></div>
+</section>
+<!-- TAB 3: DOWNLOADS QUEUE (Honest State) -->
+<section class="pt-8 flex-1 flex flex-col hidden" id="panel-downloads">
+<div class="w-full max-w-xl mx-auto my-auto py-16 px-6 rounded-[22px] bg-[#171C2C]/50 border border-white/[0.08] text-center flex flex-col items-center justify-center">
+<div class="w-14 h-14 rounded-2xl bg-surface-container-high/60 border border-white/10 flex items-center justify-center text-outline mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="download_done">download_done</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-medium text-on-surface mb-1">No active downloads</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Files currently transferring will be listed here with download progress and verification status.</p>
+</div>
+</section>
+<!-- Quiet Plain Version Anchor at Bottom Right (No badge, no dot, no telemetry) -->
+<footer class="mt-auto pt-10 pb-4 flex justify-end">
+<span class="font-label-mono-sm text-label-mono-sm text-outline select-none tracking-tight">
+        EnZIME Reader v1.29.08988
+      </span>
+</footer>
+</main>
+<!-- Mobile Bottom Navigation (Visible < 768px, 4 Tabs) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#171C2C]/90 backdrop-blur-xl border-t border-[#BDC6FF]/15 flex justify-around items-center px-2 py-1.5 pb-safe">
+<!-- Mobile Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Mobile Library (Active Tab) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-4 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold mt-0.5">Library</span>
+</a>
+<!-- Mobile Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Notes</span>
+</a>
+<!-- Mobile More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Vanilla Interaction Logic -->
+<script>
+    function switchLibraryTab(targetTab) {
+      const tabs = ['installed', 'available', 'downloads'];
+      
+      tabs.forEach(tabKey => {
+        const btn = document.getElementById(`tab-btn-${tabKey}`);
+        const panel = document.getElementById(`panel-${tabKey}`);
+        
+        if (tabKey === targetTab) {
+          // Set Active Tab Styling
+          btn.classList.add('text-primary', 'border-primary');
+          btn.classList.remove('text-on-surface-variant', 'hover:text-on-surface', 'border-transparent');
+          panel.classList.remove('hidden');
+        } else {
+          // Set Inactive Tab Styling
+          btn.classList.remove('text-primary', 'border-primary');
+          btn.classList.add('text-on-surface-variant', 'hover:text-on-surface', 'border-transparent');
+          panel.classList.add('hidden');
+        }
+      });
+
+      if (targetTab === 'available') {
+        simulateCatalogFetch();
+      }
+    }
+
+    function simulateCatalogFetch() {
+      const loading = document.getElementById('catalog-loading-state');
+      const retry = document.getElementById('catalog-retry-state');
+      
+      loading.classList.remove('hidden');
+      retry.classList.add('hidden');
+
+      // Realistic graceful timeout demonstrating retryable failure state without inventing mock data
+      setTimeout(() => {
+        loading.classList.add('hidden');
+        retry.classList.remove('hidden');
+      }, 1600);
+    }
+  </script>
+</body></html>

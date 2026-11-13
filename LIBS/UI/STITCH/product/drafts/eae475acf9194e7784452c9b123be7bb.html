@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S08 Annotation Workspace - EnZIME Reader</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Script & Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-error": "#690005",
+            "primary-fixed": "#dfe0ff",
+            "on-primary-fixed-variant": "#2839aa",
+            "surface-variant": "#33343e",
+            "on-primary-fixed": "#000c60",
+            "inverse-on-surface": "#2e3039",
+            "on-tertiary": "#442c00",
+            "on-surface": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-secondary-container": "#00534e",
+            "surface-container": "#1d1f28",
+            "secondary": "#46ebdf",
+            "surface-container-highest": "#33343e",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "error": "#ffb4ab",
+            "surface-dim": "#11131b",
+            "on-tertiary-container": "#402900",
+            "tertiary-container": "#c88900",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "on-tertiary-fixed": "#281800",
+            "on-background": "#e2e1ee",
+            "secondary-container": "#00cec3",
+            "on-primary": "#041c94",
+            "tertiary": "#ffba43",
+            "on-primary-container": "#001892",
+            "primary-container": "#7c8cff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline": "#8f8f9f",
+            "surface": "#11131b",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-low": "#191b24",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "surface-tint": "#bcc3ff",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-lowest": "#0c0e16",
+            "on-secondary": "#003733",
+            "surface-container-high": "#282a32",
+            "outline-variant": "#454653"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "22": "1.375rem",
+            "14": "0.875rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter", "sans-serif"],
+            "label-mono-lg": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "display-lg": ["Inter", "sans-serif"],
+            "label-mono-md": ["Inter", "sans-serif"],
+            "display-lg-mobile": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-editorial": ["Literata", "serif"],
+            "label-mono-sm": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Restrained Aurora radial glow */
+    .aurora-bg {
+      background-color: #090B13;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(124, 140, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(52, 224, 212, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(30, 36, 56, 0.4) 0%, transparent 70%);
+    }
+    .glass-panel {
+      background-color: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+    .glass-input {
+      background-color: rgba(14, 17, 27, 0.7);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      color: #F4F6FF;
+    }
+    .glass-input:focus {
+      outline: none;
+      border-color: #7C8CFF;
+      box-shadow: 0 0 0 2px rgba(124, 140, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="aurora-bg text-[#F4F6FF] min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-surface-container-lowest">
+<!-- Desktop Rail Navigation (104px compact rail) -->
+<aside class="hidden md:flex flex-col items-center justify-between w-[104px] h-screen fixed left-0 top-0 z-50 py-6 border-r border-[rgba(189,198,255,0.14)] glass-panel">
+<!-- Top section: App Glyph -->
+<div class="flex flex-col items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-container font-headline-lg text-headline-lg font-bold shadow-[0_0_16px_rgba(124,140,255,0.15)]">
+        Z
+      </div>
+<span class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] tracking-wider text-center px-1">EnZIME</span>
+</div>
+<!-- Center Nav Rail items (Shared Components SideNavBar mapping) -->
+<nav aria-label="Main Navigation" class="flex flex-col items-center gap-3 w-full px-2">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Ask</span>
+</a>
+<!-- Notes (Active context: Annotation workspace S08) -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 bg-primary/10 border border-primary/30 text-primary-container font-medium min-h-[44px] shadow-[0_0_12px_rgba(124,140,255,0.2)]" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1 font-semibold">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">memory</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Memory</span>
+</a>
+<!-- Settings -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-14 text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Settings</span>
+</a>
+</nav>
+<!-- Bottom utility rail indicator (minimal tactile button) -->
+<div class="flex flex-col items-center gap-2">
+<button class="w-11 h-11 rounded-14 flex items-center justify-center text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors min-h-[44px] min-w-[44px]" title="Offline Workspace Active" type="button">
+<span class="material-symbols-outlined text-[20px]">cloud_off</span>
+</button>
+</div>
+</aside>
+<!-- Top bar ONLY: 'Z EnZIME Reader' brand and Search. No sync, avatar, badge or technical telemetry -->
+<header class="sticky top-0 z-40 w-full h-14 md:pl-[104px] flex items-center justify-between px-4 lg:px-8 border-b border-[rgba(189,198,255,0.14)] glass-panel backdrop-blur-md">
+<!-- Brand Anchor -->
+<div class="flex items-center gap-3">
+<div class="md:hidden w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-container font-headline-md font-bold">
+        Z
+      </div>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md font-bold tracking-tight text-[#F4F6FF]">EnZIME Reader</span>
+<span class="hidden sm:inline-block text-label-mono-sm font-label-mono-sm text-[#B7BDD4]/70">Notes &amp; Field Annotations</span>
+</div>
+</div>
+<!-- Search Input on Right -->
+<div class="flex items-center">
+<div class="relative w-48 sm:w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#B7BDD4]">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-14 text-body-md font-body-md glass-input placeholder-[#B7BDD4]/50 focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search notes or archive..." type="search"/>
+</div>
+</div>
+</header>
+<!-- Main Content Layout (Offset by 104px on Desktop) -->
+<main class="flex-1 md:ml-[104px] pb-24 md:pb-12 px-4 sm:px-6 lg:px-10 py-6 max-w-5xl mx-auto w-full">
+<!-- Workspace Header & Action Title -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-[#F4F6FF] tracking-tight">Add a note</h1>
+</div>
+<!-- Quick Mode Toggle Chips -->
+<div aria-label="Annotation Mode" class="flex items-center gap-1.5 p-1 rounded-14 bg-surface-container-lowest/80 border border-[rgba(189,198,255,0.14)]" role="tablist"><button aria-selected="true" class="px-3.5 py-1.5 rounded-lg text-label-mono-lg font-label-mono-lg text-primary-container bg-primary/10 border border-primary/25 min-h-[44px] flex items-center gap-1.5 transition-all" id="tab-btn-text" onclick="switchMode('text')" role="tab" type="button"><span class="material-symbols-outlined text-[18px]">edit_note</span><span>Text</span></button><button aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-label-mono-lg font-label-mono-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 min-h-[44px] flex items-center gap-1.5 transition-all" id="tab-btn-ink" onclick="switchMode('ink')" role="tab" type="button"><span class="material-symbols-outlined text-[18px]">draw</span><span>Ink</span></button><button aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-label-mono-lg font-label-mono-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 min-h-[44px] flex items-center gap-1.5 transition-all" id="tab-btn-voice" onclick="switchMode('voice')" role="tab" type="button"><span class="material-symbols-outlined text-[18px]">mic</span><span>Voice</span></button><button aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-label-mono-lg font-label-mono-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 min-h-[44px] flex items-center gap-1.5 transition-all" id="tab-btn-photo" onclick="switchMode('photo')" role="tab" type="button"><span class="material-symbols-outlined text-[18px]">photo_camera</span><span>Photo</span></button><button aria-selected="false" class="px-3.5 py-1.5 rounded-lg text-label-mono-lg font-label-mono-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 min-h-[44px] flex items-center gap-1.5 transition-all" id="tab-btn-video" onclick="switchMode('video')" role="tab" type="button"><span class="material-symbols-outlined text-[18px]">videocam</span><span>Video</span></button></div>
+</div>
+<!-- Main Workspace Bento / Card (22px radius, Glassmorphic) -->
+<div class="rounded-22 p-6 sm:p-8 glass-panel space-y-6 shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
+<!-- 1. Source Anchor Template / Container (Empty State until Selection) -->
+<section aria-labelledby="anchor-heading" class="rounded-14 border border-dashed border-[rgba(189,198,255,0.18)] bg-surface-container-lowest/50 p-4 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-[#B7BDD4]">bookmark_border</span>
+<span class="text-label-mono-lg font-label-mono-lg text-[#F4F6FF]" id="anchor-heading">Source Anchor</span>
+</div>
+<span class="text-label-mono-sm font-label-mono-sm px-2 py-0.5 rounded bg-surface-variant/40 text-[#B7BDD4] border border-[rgba(189,198,255,0.1)]" id="anchor-status-tag">
+            Stand-alone entry
+          </span>
+</div>
+<!-- Interactive Blank Anchor Area -->
+<div class="mt-3 py-3 px-4 rounded-lg bg-surface-container-low/40 flex items-center justify-between text-body-md font-body-md text-[#B7BDD4]" id="anchor-container">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-[#B7BDD4]/60">link_off</span>
+<span class="text-label-mono-md font-label-mono-md italic">No article text selected. This note will save to your general offline notebook.</span>
+</div>
+<button class="text-label-mono-sm font-label-mono-sm text-primary hover:text-primary-fixed underline transition-colors px-2 py-1 min-h-[44px] flex items-center" onclick="attachSampleContext()" type="button">
+            Link current article
+          </button>
+</div>
+</section>
+<!-- 2. Notebook and Tags Inputs (Clean 14px radius fields) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Notebook Selector -->
+<div>
+<label class="block text-label-mono-md font-label-mono-md text-[#B7BDD4] mb-1.5" for="notebook-select">
+            Notebook Destination
+          </label>
+<div class="relative">
+<select class="w-full h-11 px-3.5 pr-10 rounded-14 glass-input font-body-md text-body-md appearance-none cursor-pointer" id="notebook-select" onchange="evaluateDraftState()"><option class="bg-[#11131b] text-[#F4F6FF]" value="all-notes">All notes (General Notebook)</option><option class="bg-[#11131b] text-[#F4F6FF]" value="offline-field">Field Observations</option><option class="bg-[#11131b] text-[#F4F6FF]" value="quick-captures">Quick Captures</option><option class="bg-[#11131b] text-[#F4F6FF]" value="archive-index">Archive Index</option></select>
+<span class="material-symbols-outlined pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[18px] text-[#B7BDD4]">expand_more</span>
+</div>
+</div>
+<!-- Tags Input -->
+<div>
+<label class="block text-label-mono-md font-label-mono-md text-[#B7BDD4] mb-1.5" for="tags-input">
+            Tags (comma separated)
+          </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 rounded-14 glass-input font-body-md text-body-md placeholder-[#B7BDD4]/40" id="tags-input" oninput="evaluateDraftState()" placeholder="e.g. water-purification, protocol-v2, geology" type="text"/>
+</div>
+</div>
+</div>
+<!-- 3. Dynamic Mode Panels -->
+<!-- MODE: TEXT PANEL (Default) -->
+<div class="space-y-3" id="panel-text">
+<div class="flex items-center justify-between">
+<label class="text-label-mono-md font-label-mono-md text-[#B7BDD4]" for="note-editor">
+            Note Content
+          </label>
+<span class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4]/60" id="character-counter">0 words</span>
+</div>
+<textarea class="w-full p-4 rounded-14 glass-input font-body-md text-body-md placeholder-[#B7BDD4]/40 resize-y focus:ring-1 focus:ring-primary leading-relaxed" id="note-editor" oninput="handleTextEntry(this)" placeholder="Write your thoughts or key findings..." rows="9"></textarea>
+</div>
+<!-- MODE: INK PANEL (Blank real drawing canvas, pen, palette, line width, eraser, undo/redo) -->
+<div class="hidden space-y-4" id="panel-ink">
+<!-- Ink Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-14 bg-surface-container-lowest/60 border border-[rgba(189,198,255,0.1)]">
+<div class="flex items-center gap-2">
+<!-- Pen tool -->
+<button class="w-10 h-10 rounded-lg bg-primary/20 text-primary-container flex items-center justify-center min-h-[44px] min-w-[44px]" id="tool-pen" onclick="setDrawingTool('pen')" title="Pen" type="button">
+<span class="material-symbols-outlined text-[20px]">draw</span>
+</button>
+<!-- Eraser tool -->
+<button class="w-10 h-10 rounded-lg text-[#B7BDD4] hover:bg-surface-container-high flex items-center justify-center min-h-[44px] min-w-[44px]" id="tool-eraser" onclick="setDrawingTool('eraser')" title="Eraser" type="button">
+<span class="material-symbols-outlined text-[20px]">ink_eraser</span>
+</button>
+<div class="h-6 w-px bg-outline-variant/40 mx-1"></div>
+<!-- Color Palette -->
+<div aria-label="Ink Color" class="flex items-center gap-1.5" role="radiogroup">
+<button class="w-6 h-6 rounded-full bg-[#F4F6FF] ring-2 ring-primary ring-offset-2 ring-offset-[#090B13] min-w-[28px] min-h-[28px]" onclick="setInkColor('#F4F6FF', this)" title="Pure White" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#7C8CFF] min-w-[28px] min-h-[28px]" onclick="setInkColor('#7C8CFF', this)" title="Periwinkle" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#34E0D4] min-w-[28px] min-h-[28px]" onclick="setInkColor('#34E0D4', this)" title="Teal Accent" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#FFBA43] min-w-[28px] min-h-[28px]" onclick="setInkColor('#FFBA43', this)" title="Amber Warning" type="button"></button>
+</div>
+<div class="h-6 w-px bg-outline-variant/40 mx-1"></div>
+<!-- Line Width -->
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 text-label-mono-sm rounded text-primary-container bg-surface-container-high min-h-[44px]" onclick="setStrokeWidth(2, this)" type="button">Thin</button>
+<button class="px-2 py-1 text-label-mono-sm rounded text-[#B7BDD4] hover:bg-surface-container-high min-h-[44px]" onclick="setStrokeWidth(5, this)" type="button">Medium</button>
+<button class="px-2 py-1 text-label-mono-sm rounded text-[#B7BDD4] hover:bg-surface-container-high min-h-[44px]" onclick="setStrokeWidth(10, this)" type="button">Broad</button>
+</div>
+</div>
+<!-- Undo / Redo / Clear -->
+<div class="flex items-center gap-1">
+<button class="w-10 h-10 rounded-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high flex items-center justify-center min-h-[44px] min-w-[44px]" onclick="undoCanvas()" title="Undo" type="button">
+<span class="material-symbols-outlined text-[20px]">undo</span>
+</button>
+<button class="w-10 h-10 rounded-lg text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high flex items-center justify-center min-h-[44px] min-w-[44px]" onclick="redoCanvas()" title="Redo" type="button">
+<span class="material-symbols-outlined text-[20px]">redo</span>
+</button>
+<button class="text-label-mono-sm font-label-mono-sm text-error/80 hover:text-error px-2.5 py-1 rounded min-h-[44px] flex items-center" onclick="clearCanvas()" type="button">
+              Clear
+            </button>
+</div>
+</div>
+<!-- Blank real drawing canvas area -->
+<div class="relative w-full h-80 rounded-14 bg-surface-container-lowest/90 border border-[rgba(189,198,255,0.14)] overflow-hidden">
+<canvas class="w-full h-full cursor-crosshair touch-none" id="sketch-canvas"></canvas>
+<div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-[#B7BDD4]/30 gap-2" id="canvas-blank-hint">
+<span class="material-symbols-outlined text-4xl">gesture</span>
+<span class="text-label-mono-md">Draw or sketch freely here</span>
+</div>
+</div>
+</div>
+<!-- MODE: VOICE PANEL (Record button then actual Stop/Playback, NO fake waveforms) -->
+<div class="hidden space-y-4" id="panel-voice">
+<div class="p-6 rounded-14 bg-surface-container-lowest/60 border border-[rgba(189,198,255,0.14)] flex flex-col items-center justify-center text-center space-y-4">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-3xl">mic</span>
+</div>
+<div>
+<h3 class="text-headline-md font-headline-md text-[#F4F6FF]">Voice Dictation</h3>
+<p class="text-body-md font-body-md text-[#B7BDD4] mt-1 max-w-sm">
+              Record voice memos and field audio logs directly into this note container.
+            </p>
+</div>
+<!-- Permission Recovery Notice (Conditional when needed) -->
+<div class="hidden w-full max-w-md p-3 rounded-lg bg-tertiary-container/20 border border-tertiary/30 text-left text-body-md flex items-start gap-2.5" id="voice-permission-banner">
+<span class="material-symbols-outlined text-tertiary text-[20px] shrink-0">warning</span>
+<div>
+<p class="text-label-mono-sm text-[#F4F6FF] font-medium">Microphone access requested</p>
+<p class="text-label-mono-sm text-[#B7BDD4]">Allow microphone access in your system/browser settings to capture local voice memos.</p>
+</div>
+</div>
+<!-- Real Control Center -->
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 rounded-full bg-primary-container text-surface-container-lowest font-medium hover:bg-primary transition-all flex items-center gap-2 min-h-[44px] shadow-[0_0_16px_rgba(124,140,255,0.25)]" id="voice-record-btn" onclick="toggleVoiceRecording()" type="button">
+<span class="material-symbols-outlined text-[20px]" id="voice-btn-icon">fiber_manual_record</span>
+<span id="voice-btn-label">Record</span>
+</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container text-[#B7BDD4] opacity-50 cursor-not-allowed font-medium hover:bg-surface-container-high transition-all flex items-center gap-2 min-h-[44px]" disabled="" id="voice-stop-btn" onclick="stopVoiceRecording()" type="button">
+<span class="material-symbols-outlined text-[20px]">stop</span>
+<span>Stop</span>
+</button>
+</div>
+<!-- Real local audio element only present when captured -->
+<div class="hidden w-full max-w-md pt-2" id="voice-playback-container">
+<p class="text-label-mono-sm font-label-mono-sm text-secondary text-left mb-1.5 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Recorded Audio Clip ready
+            </p>
+<audio class="w-full h-10 rounded-lg bg-surface-container" controls="" id="audio-playback"></audio>
+</div>
+</div>
+</div>
+<!-- MODE: MEDIA PANEL (Photo / Video: 'Capture' or 'Choose file', real local preview node only when media is present) -->
+<div class="hidden space-y-4" id="panel-media">
+<div class="p-6 rounded-14 bg-surface-container-lowest/60 border border-[rgba(189,198,255,0.14)] space-y-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h3 class="text-headline-md font-headline-md text-[#F4F6FF]">Media Attachments</h3>
+<p class="text-body-md font-body-md text-[#B7BDD4] mt-0.5">Attach local images or video documentation.</p>
+</div>
+<!-- Action buttons -->
+<div class="flex items-center gap-2.5">
+<label class="px-4 py-2 rounded-14 glass-panel text-[#F4F6FF] hover:border-primary cursor-pointer flex items-center gap-2 text-label-mono-lg font-label-mono-lg min-h-[44px] transition-colors">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+<span>Capture</span>
+<input accept="image/*,video/*" capture="environment" class="hidden" id="media-capture-input" onchange="handleMediaSelected(this)" type="file"/>
+</label>
+<label class="px-4 py-2 rounded-14 glass-panel text-[#F4F6FF] hover:border-primary cursor-pointer flex items-center gap-2 text-label-mono-lg font-label-mono-lg min-h-[44px] transition-colors">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span>Choose file</span>
+<input accept="image/*,video/*" class="hidden" id="media-file-input" onchange="handleMediaSelected(this)" type="file"/>
+</label>
+</div>
+</div>
+<!-- Inline Permission Recovery Notice (Affected camera control) -->
+<div class="hidden p-3 rounded-lg bg-tertiary-container/20 border border-tertiary/30 text-body-md flex items-start gap-2.5" id="media-permission-banner">
+<span class="material-symbols-outlined text-tertiary text-[20px] shrink-0">photo_camera_front</span>
+<div>
+<p class="text-label-mono-sm text-[#F4F6FF] font-medium">Camera access required for direct capture</p>
+<p class="text-label-mono-sm text-[#B7BDD4]">Allow hardware access in system privileges or use 'Choose file' from storage.</p>
+</div>
+</div>
+<!-- Empty placeholder state before file is selected -->
+<div class="w-full py-12 rounded-14 border border-dashed border-[rgba(189,198,255,0.18)] flex flex-col items-center justify-center text-center text-[#B7BDD4]/50" id="media-empty-slot">
+<span class="material-symbols-outlined text-4xl mb-2">add_photo_alternate</span>
+<span class="text-label-mono-md">No local photo or video attached yet</span>
+</div>
+<!-- Real local preview node ONLY when media is present -->
+<div class="hidden rounded-14 overflow-hidden border border-[rgba(189,198,255,0.2)] bg-surface-container-low/70 p-3" id="media-preview-container">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-outline-variant/30 text-label-mono-sm text-[#B7BDD4]">
+<span id="media-preview-filename">local_capture.jpg</span>
+<button class="text-error/90 hover:text-error flex items-center gap-1 min-h-[44px]" onclick="removeMediaAttachment()" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Remove</span>
+</button>
+</div>
+<div class="flex justify-center max-h-72 overflow-hidden rounded-lg" id="media-node-render">
+<!-- Dynamically populated <img> or <video> -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Workspace Footer Actions: 'Save' and 'Cancel' -->
+<!-- Save is strictly disabled without a valid actual draft/anchor -->
+<div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[rgba(189,198,255,0.1)]">
+<div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B7BDD4]/60"></span>
+<span id="draft-state-indicator">Empty draft • Add text, ink, audio or media to enable saving</span>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<!-- Cancel button triggers unsaved-work check -->
+<button class="flex-1 sm:flex-initial px-5 py-2.5 rounded-14 text-body-md font-body-md text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container-high/40 transition-colors min-h-[44px]" onclick="handleCancelAction()" type="button">
+          Cancel
+        </button>
+<!-- Save Button (Disabled without valid actual draft/content) -->
+<button class="flex-1 sm:flex-initial px-6 py-2.5 rounded-14 text-body-md font-body-md bg-primary-container text-surface-container-lowest font-semibold opacity-40 cursor-not-allowed transition-all duration-150 flex items-center justify-center gap-2 min-h-[44px]" disabled="" id="btn-save-note" onclick="executeSaveNote()" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span>Save</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Quiet Plain Version in Bottom-Right Footer -->
+<footer class="w-full py-4 px-6 md:pl-[120px] flex justify-end items-center text-label-mono-sm font-label-mono-sm text-[#B7BDD4]/50 pointer-events-none">
+<span>EnZIME Reader v1.29.08988</span>
+</footer>
+<!-- Mobile Bottom Navigation Bar (Shared Components BottomNavBar: Home, Library, Notes, More) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1.5 glass-panel border-t border-[rgba(189,198,255,0.14)]">
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="text-label-mono-sm mt-0.5">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]">local_library</span>
+<span class="text-label-mono-sm mt-0.5">Library</span>
+</a>
+<!-- Notes is Active -->
+<a class="flex flex-col items-center justify-center text-primary-container bg-primary/10 rounded-xl px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="text-label-mono-sm mt-0.5 font-semibold">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+<span class="text-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Unsaved Work Modal Dialog ('Save' / 'Discard' / 'Stay') -->
+<div aria-labelledby="unsaved-dialog-title" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#090B13]/70 backdrop-blur-sm" id="unsaved-modal" role="dialog">
+<div class="w-full max-w-md rounded-22 glass-panel p-6 border border-[rgba(189,198,255,0.2)] shadow-[0_20px_48px_rgba(0,0,0,0.7)] space-y-4">
+<div class="flex items-center gap-3 text-tertiary">
+<span class="material-symbols-outlined text-2xl">warning</span>
+<h3 class="text-headline-md font-headline-md text-[#F4F6FF]" id="unsaved-dialog-title">Unsaved note draft</h3>
+</div>
+<p class="text-body-md font-body-md text-[#B7BDD4]">
+        You have uncommitted observations in this workspace. Exiting now will lose your current additions.
+      </p>
+<div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
+<button class="w-full sm:w-auto px-4 py-2 rounded-14 glass-panel text-[#F4F6FF] hover:bg-surface-container-high transition-colors min-h-[44px]" onclick="closeUnsavedModal()" type="button">
+          Stay
+        </button>
+<button class="w-full sm:w-auto px-4 py-2 rounded-14 bg-error-container/40 text-error border border-error/20 hover:bg-error-container/70 transition-colors min-h-[44px]" onclick="discardDraftAndExit()" type="button">
+          Discard
+        </button>
+<button class="w-full sm:w-auto px-4 py-2 rounded-14 bg-primary-container text-surface-container-lowest font-medium hover:bg-primary transition-colors min-h-[44px]" onclick="saveAndExit()" type="button">
+          Save
+        </button>
+</div>
+</div>
+</div>
+<!-- Interactive Workspace Controller (Vanilla JS) -->
+<script>
+    // State tracking for valid draft content
+    let draftState = {
+      textLength: 0,
+      hasInkStrokes: false,
+      hasAudioClip: false,
+      hasMediaFile: false,
+      hasArticleAnchor: false
+    };
+
+    let currentMode = 'text';
+
+    // Mode Switcher
+    function switchMode(mode) {
+      currentMode = mode;
+      const modes = ['text', 'ink', 'voice', 'media'];
+      
+      modes.forEach(m => {
+        const panel = document.getElementById(`panel-${m}`);
+        const btn = document.getElementById(`tab-btn-${m}`);
+        
+        if (m === mode) {
+          panel.classList.remove('hidden');
+          btn.classList.add('text-primary-container', 'bg-primary/10', 'border-primary/25');
+          btn.classList.remove('text-[#B7BDD4]', 'border-transparent');
+          btn.setAttribute('aria-selected', 'true');
+        } else {
+          panel.classList.add('hidden');
+          btn.classList.remove('text-primary-container', 'bg-primary/10', 'border-primary/25');
+          btn.classList.add('text-[#B7BDD4]');
+          btn.setAttribute('aria-selected', 'false');
+        }
+      });
+
+      if (mode === 'ink') {
+        resizeAndInitCanvas();
+      }
+    }
+
+    // Article Anchor Simulator
+    function attachSampleContext() {
+      const container = document.getElementById('anchor-container');
+      const tag = document.getElementById('anchor-status-tag');
+      
+      draftState.hasArticleAnchor = true;
+      tag.textContent = 'Linked Article Anchor';
+      tag.classList.replace('text-[#B7BDD4]', 'text-secondary');
+      tag.classList.add('bg-secondary/10', 'border-secondary/30');
+
+      container.innerHTML = `
+        <div class="flex items-start gap-3 py-1">
+          <span class="material-symbols-outlined text-[20px] text-secondary shrink-0 mt-0.5">article</span>
+          <div>
+            <div class="text-body-md text-[#F4F6FF] font-medium">Emergency Water Filtration &bull; Section 4.2 Portable Ceramic Filters</div>
+            <div class="text-label-mono-sm text-[#B7BDD4] mt-0.5 font-normal">ZIM Archive: /en-offline-relief-v4.zim &bull; Article ID #8291</div>
+          </div>
+        </div>
+        <button type="button" onclick="detachAnchor()" class="text-label-mono-sm text-error/80 hover:text-error px-2 py-1 min-h-[44px]">Remove anchor</button>
+      `;
+      evaluateDraftState();
+    }
+
+    function detachAnchor() {
+      const container = document.getElementById('anchor-container');
+      const tag = document.getElementById('anchor-status-tag');
+      draftState.hasArticleAnchor = false;
+      tag.textContent = 'Stand-alone entry';
+      tag.className = 'text-label-mono-sm font-label-mono-sm px-2 py-0.5 rounded bg-surface-variant/40 text-[#B7BDD4] border border-[rgba(189,198,255,0.1)]';
+
+      container.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-[18px] text-[#B7BDD4]/60">link_off</span>
+          <span class="text-label-mono-md font-label-mono-md italic">No article text selected. This note will save to your general offline notebook.</span>
+        </div>
+        <button type="button" onclick="attachSampleContext()" class="text-label-mono-sm font-label-mono-sm text-primary hover:text-primary-fixed underline transition-colors px-2 py-1 min-h-[44px] flex items-center">
+          Link current article
+        </button>
+      `;
+      evaluateDraftState();
+    }
+
+    // Text Handler
+    function handleTextEntry(textarea) {
+      const text = textarea.value.trim();
+      draftState.textLength = text.length;
+      const wordCount = text.length === 0 ? 0 : text.split(/\s+/).length;
+      document.getElementById('character-counter').textContent = `${wordCount} ${wordCount === 1 ? 'word' : 'words'}`;
+      evaluateDraftState();
+    }
+
+    // Canvas / Ink Engine
+    const canvas = document.getElementById('sketch-canvas');
+    let ctx = null;
+    let isDrawing = false;
+    let currentStrokeColor = '#F4F6FF';
+    let currentStrokeWidth = 2;
+    let canvasHistory = [];
+    let historyStep = -1;
+
+    function resizeAndInitCanvas() {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        ctx = canvas.getContext('2d');
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        saveCanvasState();
+      }
+    }
+
+    function saveCanvasState() {
+      if (!ctx) return;
+      historyStep++;
+      if (historyStep < canvasHistory.length) {
+        canvasHistory.length = historyStep;
+      }
+      canvasHistory.push(canvas.toDataURL());
+    }
+
+    function setDrawingTool(tool) {
+      const penBtn = document.getElementById('tool-pen');
+      const eraserBtn = document.getElementById('tool-eraser');
+      if (tool === 'pen') {
+        currentStrokeColor = '#F4F6FF';
+        penBtn.classList.add('bg-primary/20', 'text-primary-container');
+        eraserBtn.classList.remove('bg-primary/20', 'text-primary-container');
+      } else {
+        currentStrokeColor = '#0c0e16'; // background erase color
+        eraserBtn.classList.add('bg-primary/20', 'text-primary-container');
+        penBtn.classList.remove('bg-primary/20', 'text-primary-container');
+      }
+    }
+
+    function setInkColor(color, btn) {
+      currentStrokeColor = color;
+      document.querySelectorAll('[role="radiogroup"] button').forEach(b => {
+        b.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-[#090B13]');
+      });
+      btn.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-[#090B13]');
+      document.getElementById('tool-pen').classList.add('bg-primary/20', 'text-primary-container');
+      document.getElementById('tool-eraser').classList.remove('bg-primary/20', 'text-primary-container');
+    }
+
+    function setStrokeWidth(w, btn) {
+      currentStrokeWidth = w;
+      btn.parentElement.querySelectorAll('button').forEach(b => {
+        b.classList.replace('text-primary-container', 'text-[#B7BDD4]');
+        b.classList.remove('bg-surface-container-high');
+      });
+      btn.classList.replace('text-[#B7BDD4]', 'text-primary-container');
+      btn.classList.add('bg-surface-container-high');
+    }
+
+    function clearCanvas() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      saveCanvasState();
+      draftState.hasInkStrokes = false;
+      document.getElementById('canvas-blank-hint').classList.remove('hidden');
+      evaluateDraftState();
+    }
+
+    function undoCanvas() {
+      if (historyStep > 0) {
+        historyStep--;
+        const img = new Image();
+        img.src = canvasHistory[historyStep];
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          draftState.hasInkStrokes = historyStep > 0;
+          evaluateDraftState();
+        };
+      }
+    }
+
+    function redoCanvas() {
+      if (historyStep < canvasHistory.length - 1) {
+        historyStep++;
+        const img = new Image();
+        img.src = canvasHistory[historyStep];
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          draftState.hasInkStrokes = true;
+          evaluateDraftState();
+        };
+      }
+    }
+
+    if (canvas) {
+      function startDrawing(e) {
+        if (!ctx) ctx = canvas.getContext('2d');
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        ctx.beginPath();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        ctx.moveTo(clientX - rect.left, clientY - rect.top);
+        document.getElementById('canvas-blank-hint').classList.add('hidden');
+      }
+
+      function draw(e) {
+        if (!isDrawing || !ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        ctx.strokeStyle = currentStrokeColor;
+        ctx.lineWidth = currentStrokeWidth;
+        ctx.lineTo(clientX - rect.left, clientY - rect.top);
+        ctx.stroke();
+        draftState.hasInkStrokes = true;
+      }
+
+      function stopDrawing() {
+        if (isDrawing) {
+          isDrawing = false;
+          saveCanvasState();
+          evaluateDraftState();
+        }
+      }
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
+      canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    // Voice Recorder Handling (Real audio controls, no fake waveforms)
+    let isRecordingVoice = false;
+    function toggleVoiceRecording() {
+      const banner = document.getElementById('voice-permission-banner');
+      const recBtn = document.getElementById('voice-record-btn');
+      const stopBtn = document.getElementById('voice-stop-btn');
+      const icon = document.getElementById('voice-btn-icon');
+      const label = document.getElementById('voice-btn-label');
+
+      if (!isRecordingVoice) {
+        // Start recording
+        isRecordingVoice = true;
+        banner.classList.add('hidden');
+        recBtn.classList.replace('bg-primary-container', 'bg-error');
+        recBtn.classList.replace('text-surface-container-lowest', 'text-[#090B13]');
+        icon.textContent = 'radio_button_checked';
+        label.textContent = 'Recording...';
+        stopBtn.disabled = false;
+        stopBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function stopVoiceRecording() {
+      if (!isRecordingVoice) return;
+      isRecordingVoice = false;
+      const recBtn = document.getElementById('voice-record-btn');
+      const stopBtn = document.getElementById('voice-stop-btn');
+      const icon = document.getElementById('voice-btn-icon');
+      const label = document.getElementById('voice-btn-label');
+      const playbackContainer = document.getElementById('voice-playback-container');
+
+      recBtn.classList.replace('bg-error', 'bg-primary-container');
+      recBtn.classList.replace('text-[#090B13]', 'text-surface-container-lowest');
+      icon.textContent = 'fiber_manual_record';
+      label.textContent = 'Record Again';
+      stopBtn.disabled = true;
+      stopBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      playbackContainer.classList.remove('hidden');
+      draftState.hasAudioClip = true;
+      evaluateDraftState();
+    }
+
+    // Media file & capture handling
+    function handleMediaSelected(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const previewContainer = document.getElementById('media-preview-container');
+        const emptySlot = document.getElementById('media-empty-slot');
+        const filename = document.getElementById('media-preview-filename');
+        const renderNode = document.getElementById('media-node-render');
+
+        filename.textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+        const objectUrl = URL.createObjectURL(file);
+
+        if (file.type.startsWith('video/')) {
+          renderNode.innerHTML = `<video controls src="${objectUrl}" class="max-h-64 rounded"></video>`;
+        } else {
+          renderNode.innerHTML = `<img src="${objectUrl}" alt="Local capture preview" class="max-h-64 object-contain rounded">`;
+        }
+
+        emptySlot.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+        draftState.hasMediaFile = true;
+        evaluateDraftState();
+      }
+    }
+
+    function removeMediaAttachment() {
+      document.getElementById('media-file-input').value = '';
+      document.getElementById('media-capture-input').value = '';
+      document.getElementById('media-preview-container').classList.add('hidden');
+      document.getElementById('media-empty-slot').classList.remove('hidden');
+      document.getElementById('media-node-render').innerHTML = '';
+      draftState.hasMediaFile = false;
+      evaluateDraftState();
+    }
+
+    // Master Draft Evaluator (Strictly enables Save only when legitimate input exists)
+    function evaluateDraftState() {
+      const saveBtn = document.getElementById('btn-save-note');
+      const statusInd = document.getElementById('draft-state-indicator');
+
+      const hasContent = 
+        draftState.textLength > 0 || 
+        draftState.hasInkStrokes || 
+        draftState.hasAudioClip || 
+        draftState.hasMediaFile;
+
+      if (hasContent || draftState.hasArticleAnchor) {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        saveBtn.classList.add('hover:bg-primary-fixed', 'shadow-[0_0_16px_rgba(124,140,255,0.35)]');
+        statusInd.innerHTML = `<span class="text-secondary font-medium">Ready to store offline</span> &bull; Unsaved changes in buffer`;
+      } else {
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-40', 'cursor-not-allowed');
+        saveBtn.classList.remove('hover:bg-primary-fixed', 'shadow-[0_0_16px_rgba(124,140,255,0.35)]');
+        statusInd.textContent = 'Empty draft • Add text, ink, audio or media to enable saving';
+      }
+    }
+
+    // Modal and Exit Handlers
+    function handleCancelAction() {
+      const hasContent = 
+        draftState.textLength > 0 || 
+        draftState.hasInkStrokes || 
+        draftState.hasAudioClip || 
+        draftState.hasMediaFile;
+
+      if (hasContent) {
+        document.getElementById('unsaved-modal').classList.remove('hidden');
+      } else {
+        window.history.back();
+      }
+    }
+
+    function closeUnsavedModal() {
+      document.getElementById('unsaved-modal').classList.add('hidden');
+    }
+
+    function discardDraftAndExit() {
+      closeUnsavedModal();
+      window.location.reload();
+    }
+
+    function saveAndExit() {
+      closeUnsavedModal();
+      executeSaveNote();
+    }
+
+    function executeSaveNote() {
+      const saveBtn = document.getElementById('btn-save-note');
+      saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Saving...</span>`;
+      setTimeout(() => {
+        saveBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">done_all</span><span>Saved locally</span>`;
+        document.getElementById('draft-state-indicator').innerHTML = `<span class="text-secondary font-medium">Committed to local storage</span> &bull; All entries preserved`;
+      }, 500);
+    }
+
+    window.addEventListener('resize', () => {
+      if (currentMode === 'ink') {
+        resizeAndInitCanvas();
+      }
+    });
+  </script>
+</body></html>

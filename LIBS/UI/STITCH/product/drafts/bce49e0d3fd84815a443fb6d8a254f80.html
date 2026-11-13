@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Navigator</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-error": "#690005",
+            "primary-fixed": "#dfe0ff",
+            "on-primary-fixed-variant": "#2839aa",
+            "surface-variant": "#33343e",
+            "on-primary-fixed": "#000c60",
+            "inverse-on-surface": "#2e3039",
+            "on-tertiary": "#442c00",
+            "on-surface": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-secondary-container": "#00534e",
+            "surface-container": "#1d1f28",
+            "secondary": "#46ebdf",
+            "surface-container-highest": "#33343e",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "error": "#ffb4ab",
+            "surface-dim": "#11131b",
+            "on-tertiary-container": "#402900",
+            "tertiary-container": "#c88900",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "on-tertiary-fixed": "#281800",
+            "on-background": "#e2e1ee",
+            "secondary-container": "#00cec3",
+            "on-primary": "#041c94",
+            "tertiary": "#ffba43",
+            "on-primary-container": "#001892",
+            "primary-container": "#7c8cff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline": "#8f8f9f",
+            "surface": "#11131b",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-low": "#191b24",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "surface-tint": "#bcc3ff",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-lowest": "#0c0e16",
+            "on-secondary": "#003733",
+            "surface-container-high": "#282a32",
+            "outline-variant": "#454653"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-mono-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "body-editorial": ["Literata"],
+            "label-mono-sm": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Restrained atmospheric background gradient */
+    body {
+      background-color: #090B13;
+      background-image: 
+        radial-gradient(circle at 18% 25%, rgba(124, 140, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 82% 70%, rgba(52, 224, 212, 0.05) 0%, transparent 40%);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.18);
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .reticle-segment {
+      stroke-dasharray: 26 8;
+      transform-origin: center;
+      transition: stroke-dashoffset 0.2s ease;
+    }
+  </style>
+</head>
+<body class="text-on-surface bg-[#090B13] min-h-screen flex flex-col font-body-md text-body-md antialiased select-none overflow-x-hidden">
+<!-- Desktop Compact 104px Left Navigation Rail -->
+<aside class="hidden md:flex flex-col items-center justify-between fixed top-0 left-0 h-screen w-[104px] z-50 py-space-lg px-2 bg-[#171C2C]/75 backdrop-blur-xl border-r border-[#BDC6FF]/15">
+<!-- Brand Mark (Z Logo) -->
+<div class="flex flex-col items-center gap-space-xs">
+<div class="w-11 h-11 rounded-[14px] bg-primary-container/20 border border-[#BDC6FF]/25 flex items-center justify-center text-primary shadow-[0_0_16px_rgba(124,140,255,0.2)]">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-primary">Z</span>
+</div>
+</div>
+<!-- Main Nav Items (Stacked Icon + Inter Text Label) -->
+<nav aria-label="Main Navigation" class="flex flex-col items-center gap-space-md w-full">
+<!-- Home -->
+<a class="w-[88px] min-h-[56px] py-1.5 flex flex-col items-center justify-center rounded-[14px] text-on-surface-variant hover:text-on-surface hover:bg-[#1D1F28]/60 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Home</span>
+</a>
+<!-- Library (Contextually Active Pack Location) -->
+<a aria-current="page" class="w-[88px] min-h-[56px] py-1.5 flex flex-col items-center justify-center rounded-[14px] bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(124,140,255,0.15)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 font-semibold tracking-tight">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-[88px] min-h-[56px] py-1.5 flex flex-col items-center justify-center rounded-[14px] text-on-surface-variant hover:text-on-surface hover:bg-[#1D1F28]/60 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-[88px] min-h-[56px] py-1.5 flex flex-col items-center justify-center rounded-[14px] text-on-surface-variant hover:text-on-surface hover:bg-[#1D1F28]/60 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-[88px] min-h-[56px] py-1.5 flex flex-col items-center justify-center rounded-[14px] text-on-surface-variant hover:text-on-surface hover:bg-[#1D1F28]/60 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Memory</span>
+</a>
+</nav>
+<!-- Bottom Settings Tab -->
+<div class="w-full flex justify-center pt-2">
+<a class="w-[88px] min-h-[52px] py-1 flex flex-col items-center justify-center rounded-[14px] text-on-surface-variant hover:text-on-surface hover:bg-[#1D1F28]/60 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5 tracking-tight">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Container with Desktop ml-[104px] Offset -->
+<div class="flex-1 flex flex-col md:ml-[104px] min-h-screen relative pb-16 md:pb-8" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Top Bar (Z EnZIME Reader brand and Search ONLY) -->
+<header class="h-14 px-space-md lg:px-space-lg flex items-center justify-between bg-[#171C2C]/70 backdrop-blur-md border-b border-[#BDC6FF]/15 sticky top-0 z-40">
+<!-- Clean Brand Anchor -->
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight flex items-center gap-1.5">
+<span class="text-primary font-extrabold">Z</span> EnZIME Reader
+        </span>
+</div>
+<!-- Focused Universal Search Input (14px radius) -->
+<div class="flex items-center w-64 sm:w-80 lg:w-96 relative">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px] pointer-events-none">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-[#0E111B]/80 border border-[#BDC6FF]/15 rounded-[14px] text-on-surface placeholder:text-on-surface-variant/70 font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all" placeholder="Search library, notes, topics…" type="text"/>
+</div>
+</header>
+<!-- Navigator Context Bar -->
+<section class="h-14 px-space-md lg:px-space-lg bg-[#171C2C]/60 backdrop-blur-md border-b border-[#BDC6FF]/10 flex items-center justify-between gap-space-sm z-30">
+<!-- Left Controls: Back / Forward & Reader/Navigator Mode Toggle -->
+<div class="flex items-center gap-2 lg:gap-3">
+<!-- Navigation history controls -->
+<div class="flex items-center bg-[#0E111B]/60 border border-[#BDC6FF]/15 rounded-[14px] p-0.5">
+<button aria-label="Back" class="w-10 h-10 min-h-[40px] flex items-center justify-center rounded-[10px] text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="w-px h-5 bg-[#BDC6FF]/15"></div>
+<button aria-label="Forward" class="w-10 h-10 min-h-[40px] flex items-center justify-center rounded-[10px] text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- Mode Toggle: Reader / Navigator (Navigator active) -->
+<div aria-label="View Mode" class="flex items-center bg-[#0E111B]/80 border border-[#BDC6FF]/15 rounded-[14px] p-1" role="tablist">
+<button aria-selected="false" class="min-h-[36px] px-3.5 flex items-center gap-1.5 rounded-[10px] font-label-mono-sm text-label-mono-sm text-on-surface-variant hover:text-on-surface transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" role="tab" type="button">
+<span class="material-symbols-outlined text-[18px]">auto_stories</span>
+<span>Reader</span>
+</button>
+<button aria-selected="true" class="min-h-[36px] px-3.5 flex items-center gap-1.5 rounded-[10px] bg-primary-container text-on-primary font-semibold font-label-mono-sm text-label-mono-sm shadow-[0_0_12px_rgba(124,140,255,0.35)] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" role="tab" type="button">
+<span class="material-symbols-outlined text-[18px]">explore</span>
+<span>Navigator</span>
+</button>
+</div>
+</div>
+<!-- Right Controls: Contents, Search this pack, Settings & Help -->
+<div class="flex items-center gap-2">
+<button class="hidden sm:flex min-h-[40px] px-3 items-center gap-1.5 bg-[#171C2C]/80 hover:bg-surface-container-high border border-[#BDC6FF]/15 rounded-[14px] text-on-surface font-body-md text-body-md transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">toc</span>
+<span>Contents</span>
+</button>
+<!-- Search this pack -->
+<button class="min-h-[40px] px-3 flex items-center gap-1.5 bg-[#171C2C]/80 hover:bg-surface-container-high border border-[#BDC6FF]/15 rounded-[14px] text-on-surface font-body-md text-body-md transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">manage_search</span>
+<span class="hidden md:inline">Search pack</span>
+</button>
+<!-- Movement Help trigger -->
+<button class="min-h-[40px] px-3 flex items-center gap-1.5 bg-[#171C2C]/80 hover:bg-surface-container-high border border-[#BDC6FF]/15 rounded-[14px] text-on-surface-variant hover:text-on-surface font-label-mono-sm text-label-mono-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" id="movement-help-toggle" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">sports_esports</span>
+<span class="hidden lg:inline">Movement help</span>
+</button>
+<button aria-label="Reset View" class="w-10 h-10 min-h-[40px] flex items-center justify-center bg-[#171C2C]/80 hover:bg-surface-container-high border border-[#BDC6FF]/15 rounded-[14px] text-on-surface-variant hover:text-on-surface transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" title="Reset view orientation" type="button"><span class="material-symbols-outlined text-[20px]">restart_alt</span></button><button aria-label="Pack Settings" class="w-10 h-10 min-h-[40px] flex items-center justify-center bg-[#171C2C]/80 hover:bg-surface-container-high border border-[#BDC6FF]/15 rounded-[14px] text-on-surface-variant hover:text-on-surface transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</section>
+<!-- Canvas Workspace -->
+<main class="flex-1 relative flex items-center justify-center p-space-md overflow-hidden min-h-[580px] cursor-grab active:cursor-grabbing" id="spatial-canvas">
+<!-- Actual Knowledge Pack Graph Binding Layer (Prepared with zero fake nodes) -->
+<div aria-label="Spatial knowledge graph canvas" class="absolute inset-0 pointer-events-auto" id="graph-data-viewport">
+<!-- SVG Grid Reference Grid (Quiet optical orientation) -->
+<svg class="w-full h-full opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="60" id="grid-pattern" patternunits="userSpaceOnUse" width="60">
+<path d="M 60 0 L 0 0 0 60" fill="none" stroke="#BDC6FF" stroke-opacity="0.2" stroke-width="0.75"></path>
+<circle cx="0" cy="0" fill="#7C8CFF" opacity="0.4" r="1.5"></circle>
+</pattern>
+</defs>
+<rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+</svg>
+<!-- Easter Egg 6DoF Lineage Aiming Reticle (Visible on deliberate hold/drag) -->
+</div>
+<!-- Intentional Empty State Card (Audience focused: students, field workers, offline readers) -->
+<div class="relative z-10 max-w-md w-full p-8 rounded-[22px] bg-[#171C2C]/75 backdrop-blur-2xl border border-[#BDC6FF]/15 text-center shadow-[0_12px_40px_rgba(0,0,0,0.6)] flex flex-col items-center" id="canvas-empty-state">
+<!-- Spatial graph / connections compass icon -->
+<div class="w-16 h-16 rounded-[22px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-5 shadow-[0_0_24px_rgba(124,140,255,0.2)]">
+<span class="material-symbols-outlined text-[36px]">hub</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface mb-2 tracking-tight">
+          Choose a pack to explore its connections.
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed max-w-sm">
+          Navigate concepts, topics, and offline articles through an interactive multi-dimensional map.
+        </p>
+<!-- Primary Action -->
+<button class="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-[14px] bg-primary-container text-on-primary font-semibold font-body-md text-body-md hover:bg-[#96A4FF] shadow-[0_0_20px_rgba(124,140,255,0.35)] transition-all flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span>Browse library</span>
+</button>
+<!-- Named preparation progress slot (Clean semantic status without fake coordinates/percentages) -->
+</div>
+<!-- Selected-Node Inert Template Structure (Floating card, docked bottom-left or bottom-center) -->
+<section aria-label="Reader Inset Preview" class="absolute bottom-5 left-5 z-20 w-80 md:w-96 rounded-[22px] bg-[#171C2C]/75 backdrop-blur-2xl border border-[#BDC6FF]/15 p-5 shadow-[0_16px_36px_rgba(0,0,0,0.55)] hidden" id="reader-inset-panel"><div class="flex items-center justify-between pb-2 mb-3 border-b border-[#BDC6FF]/10"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-secondary">splitscreen</span><span class="font-label-mono-sm text-label-mono-sm font-semibold text-on-surface">Reader Inset</span></div><button aria-label="Close inset" class="w-8 h-8 min-h-[32px] rounded-[10px] text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex items-center justify-center transition-colors" id="close-reader-inset" type="button"><span class="material-symbols-outlined text-[18px]">close</span></button></div><div class="p-4 rounded-[14px] bg-[#0E111B]/60 border border-[#BDC6FF]/10 text-center"><p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant">No node selected. Select any article or concept node in the spatial canvas to view preview.</p></div></section>
+<!-- Overlay Floating Controls (Reader inset toggle, Swap View & Legend) -->
+<div class="absolute top-5 right-5 z-20 flex flex-col items-end gap-3 pointer-events-auto">
+<!-- Floating View Action Row -->
+<div class="flex items-center gap-2 bg-[#171C2C]/80 backdrop-blur-xl border border-[#BDC6FF]/15 rounded-[18px] p-1.5 shadow-lg">
+<button class="min-h-[38px] px-3 rounded-[12px] bg-[#0E111B]/60 hover:bg-surface-container-high border border-[#BDC6FF]/10 text-on-surface font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 transition-colors" id="toggle-reader-inset" title="Toggle Reader Inset preview" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">splitscreen</span>
+<span class="hidden sm:inline">Reader Inset</span>
+</button>
+<button class="w-9 h-9 min-h-[36px] rounded-[10px] hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" id="swap-view-btn" title="Swap view perspective" type="button">
+<span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+</button>
+</div>
+<!-- Node-kind Legend (Collapsible) -->
+<div class="w-56 rounded-[18px] bg-[#171C2C]/80 backdrop-blur-xl border border-[#BDC6FF]/15 p-3.5 shadow-xl">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-[#BDC6FF]/10">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-on-surface uppercase tracking-wider text-[11px]">Legend</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">filter_alt</span>
+</div>
+<ul class="space-y-2 font-label-mono-sm text-label-mono-sm text-on-surface-variant"><li class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(124,140,255,0.6)]"></span><span class="text-on-surface">Core Concept</span></li><li class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_8px_rgba(52,224,212,0.6)]"></span><span>Article Node</span></li><li class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-tertiary shadow-[0_0_8px_rgba(255,186,67,0.6)]"></span><span>Note</span></li><li class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-outline"></span><span>External Reference</span></li></ul>
+</div>
+<!-- Collapsible Journey Trail Panel -->
+<div class="w-64 rounded-[20px] bg-[#171C2C]/85 backdrop-blur-xl border border-[#BDC6FF]/15 p-3.5 shadow-xl transition-all" id="journey-panel">
+<div class="flex items-center justify-between mb-2"><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-primary">route</span><span class="font-label-mono-sm text-label-mono-sm font-semibold text-on-surface">Journey Trail (0 pinned)</span></div></div>
+<div class="p-3 rounded-[12px] bg-[#0E111B]/60 border border-[#BDC6FF]/10 text-center">
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant">
+              No points added yet. Use <span class="text-primary font-medium">+ Journey</span> on any node to bookmark an exploration path.
+            </p>
+</div>
+</div>
+</div>
+<!-- Touch Controls Emulation / Two-movement pads for Mobile & Touch Screen tablets -->
+<div class="md:hidden absolute bottom-4 left-4 right-4 z-20 flex justify-between pointer-events-none">
+<!-- Pad 1: Lateral & Forward Movement -->
+<div class="w-28 h-28 rounded-full bg-[#171C2C]/80 backdrop-blur-md border border-[#BDC6FF]/20 flex flex-col items-center justify-between p-2 pointer-events-auto shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_up</span>
+<div class="flex items-center justify-between w-full">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_left</span>
+<span class="font-label-mono-sm text-[10px] text-primary">THRUST</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_right</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
+</div>
+<!-- Pad 2: Rotation & Roll -->
+<div class="w-28 h-28 rounded-full bg-[#171C2C]/80 backdrop-blur-md border border-[#BDC6FF]/20 flex flex-col items-center justify-between p-2 pointer-events-auto shadow-lg">
+<span class="font-label-mono-sm text-[10px] text-secondary">ROLL</span>
+<div class="flex items-center justify-between w-full">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">rotate_left</span>
+<span class="font-label-mono-sm text-[10px] text-primary">LOOK</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">rotate_right</span>
+</div>
+<span class="font-label-mono-sm text-[9px] text-on-surface-variant/80">HOLD LAUNCH</span>
+</div>
+</div>
+</main>
+<!-- Movement Help Modal / Dialog (6DoF Motion Guide) -->
+<div class="fixed inset-0 z-50 bg-[#090B13]/80 backdrop-blur-md flex items-center justify-center p-4 hidden" id="movement-help-modal">
+<div class="w-full max-w-xl rounded-[22px] bg-[#1E2438]/95 border border-[#BDC6FF]/20 p-6 shadow-[0_24px_50px_rgba(0,0,0,0.7)]">
+<div class="flex items-start justify-between pb-3 border-b border-[#BDC6FF]/10 mb-4">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-[10px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">sports_esports</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Spatial Navigation Controls</h3>
+<p class="font-label-mono-sm text-label-mono-sm text-on-surface-variant">6 Degrees of Freedom (6DoF) locomotion guide</p>
+</div>
+</div>
+<button class="w-8 h-8 min-h-[32px] rounded-[10px] text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex items-center justify-center transition-colors" id="close-movement-help" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-on-surface font-body-md text-body-md mb-6">
+<!-- Desktop & Mouse Controls -->
+<div class="p-4 rounded-[14px] bg-[#0E111B]/70 border border-[#BDC6FF]/10 space-y-2.5">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-primary block uppercase tracking-wider text-[11px]">Desktop / Mouse</span>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Forward Thrust</span>
+<kbd class="px-2 py-0.5 rounded bg-surface-container-highest border border-[#BDC6FF]/20 text-[11px]">Mouse Wheel</kbd>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Steer / Orbit</span>
+<kbd class="px-2 py-0.5 rounded bg-surface-container-highest border border-[#BDC6FF]/20 text-[11px]">Left Click + Drag</kbd>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Lateral / Vertical</span>
+<kbd class="px-2 py-0.5 rounded bg-surface-container-highest border border-[#BDC6FF]/20 text-[11px]">Right Drag / WASD</kbd>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Roll Rotation</span>
+<kbd class="px-2 py-0.5 rounded bg-surface-container-highest border border-[#BDC6FF]/20 text-[11px]">Q / E Keys</kbd>
+</div>
+</div>
+<!-- Touch / Field Controls -->
+<div class="p-4 rounded-[14px] bg-[#0E111B]/70 border border-[#BDC6FF]/10 space-y-2.5">
+<span class="font-label-mono-sm text-label-mono-sm font-semibold text-secondary block uppercase tracking-wider text-[11px]">Field / Touch Screen</span>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Left On-Screen Pad</span>
+<span class="text-right text-on-surface">Forward &amp; Lateral strafe</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Right On-Screen Pad</span>
+<span class="text-right text-on-surface">Look steering &amp; Roll</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Hold-Launch Reticle</span>
+<span class="text-right text-on-surface">Long press central field</span>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Direct Select</span>
+<span class="text-right text-on-surface">Single tap any node</span>
+</div>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="min-h-[44px] px-5 py-2 rounded-[12px] bg-primary text-on-primary font-semibold font-body-md text-body-md hover:bg-primary-fixed-dim transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" id="dismiss-help-btn" type="button">
+            Got it
+          </button>
+</div>
+</div>
+</div>
+<!-- Quiet Plain Version Footer (Bottom-Right, No Badge or Dot) -->
+<footer class="mt-auto px-space-md lg:px-space-lg py-2 flex items-center justify-end text-on-surface-variant/70 border-t border-[#BDC6FF]/10">
+<span class="font-label-mono-sm text-label-mono-sm text-xs tracking-tight">
+        EnZIME Reader v1.29.08988
+      </span>
+</footer>
+</div>
+<!-- Mobile Bottom Navigation Bar (Home, Library, Notes, More) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-1 bg-[#171C2C]/90 backdrop-blur-xl border-t border-[#BDC6FF]/15">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="font-label-mono-sm text-label-mono-sm text-[10px] mt-0.5">Home</span>
+</a>
+<!-- Library (Active state) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm text-[10px] mt-0.5 font-semibold">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="font-label-mono-sm text-label-mono-sm text-[10px] mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px]" href="#">
+<span class="material-symbols-outlined text-[22px]">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm text-[10px] mt-0.5">More</span>
+</a>
+</nav>
+<!-- Interactive JavaScript Micro-actions -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Reticle hold micro-interaction
+      const canvas = document.getElementById('spatial-canvas');
+      const reticle = document.getElementById('reticle-overlay');
+      let holdTimer = null;
+
+      canvas.addEventListener('mousedown', (e) => {
+        // Prevent reticle trigger if clicking interactive cards
+        if (e.target.closest('#canvas-empty-state, #selected-node-panel, #movement-help-modal')) return;
+        holdTimer = setTimeout(() => {
+          reticle.classList.remove('opacity-0');
+          reticle.classList.add('opacity-100');
+        }, 220);
+      });
+
+      const clearReticle = () => {
+        clearTimeout(holdTimer);
+        reticle.classList.remove('opacity-100');
+        reticle.classList.add('opacity-0');
+      };
+
+      canvas.addEventListener('mouseup', clearReticle);
+      canvas.addEventListener('mouseleave', clearReticle);
+      canvas.addEventListener('touchend', clearReticle);
+
+      // Movement Help Modal interactions
+      const helpBtn = document.getElementById('movement-help-toggle');
+      const helpModal = document.getElementById('movement-help-modal');
+      const closeHelp = document.getElementById('close-movement-help');
+      const dismissHelp = document.getElementById('dismiss-help-btn');
+
+      const openModal = () => helpModal.classList.remove('hidden');
+      const closeModal = () => helpModal.classList.add('hidden');
+
+      if (helpBtn) helpBtn.addEventListener('click', openModal);
+      if (closeHelp) closeHelp.addEventListener('click', closeModal);
+      if (dismissHelp) dismissHelp.addEventListener('click', closeModal);
+
+      // Dismiss on backdrop click
+      helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) closeModal();
+      });
+
+      // Sample view swap feedback
+      const swapBtn = document.getElementById('swap-view-btn');
+      if (swapBtn) {
+        swapBtn.addEventListener('click', () => {
+          const statusText = document.getElementById('pack-prep-status');
+          if (statusText) {
+            statusText.textContent = 'Perspective swapped • Orthographic grid re-aligned';
+            setTimeout(() => {
+              statusText.textContent = 'Engine standby • Ready for pack mounting';
+            }, 3000);
+          }
+        });
+      }
+
+      // Close selected node panel
+      const closeNodePanel = document.getElementById('close-node-panel');
+      const nodePanel = document.getElementById('selected-node-panel');
+      if (closeNodePanel && nodePanel) {
+        closeNodePanel.addEventListener('click', () => {
+          nodePanel.classList.add('hidden');
+        });
+      }
+    });
+  </script>
+</body></html>
