@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "EnZIME Reader",
-  "version": "1.24.6085",
+  "version": "1.27.8870",
   "identifier": "mba.robin.enzime",
   "build": {
     "frontendDist": "../dist",
