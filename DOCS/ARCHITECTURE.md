@@ -6940,6 +6940,11 @@ the same fields. The bridge exposes `shared_storage_request_access`; returning
 from system settings refreshes the actual medium list. Plan/start is disabled
 while access is unavailable or the selected root is not a writable common root.
 The existing size formulas, slider and selection modes remain normative.
+Planning/start also require the root-list slice to be ready, so data retained from
+a failed permission refresh cannot enable an action. Sharing copy refers to the
+whole ecosystem (`your apps`), with a choice prompt only when multiple real media
+are present. The Android bridge retains its registered PluginHandle in a
+compile-time Android OnceLock; root-list IPC keeps its existing state-only input.
 
 ### Exact implementation vocabulary
 

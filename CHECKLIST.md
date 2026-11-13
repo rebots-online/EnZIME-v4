@@ -1997,7 +1997,8 @@ mode. Worktree `/home/robin/CascadeProjects/EnZIME-v4-catalog-budget`, branch
   Always resolve/reject the Invoke; no background runner/service. Manifest declares
   MANAGE_EXTERNAL_STORAGE and legacy READ/WRITE_EXTERNAL_STORAGE maxSdkVersion29.
   `request_access` delegates to mobile plugin; desktop needs no access prompt.
-  `storage_roots_list` receives AppHandle, enumerates only real shared roots,
+  `storage_roots_list` uses AppState.shared_storage and the mobile module's
+  registered handle (Android OnceLock), enumerates only real shared roots,
   creates primary common directory, requires card mount parent already exists,
   never creates a card mount. If Android access missing, return actionable
   `shared_storage_access_required`; do not prevent opening the catalog. Upsert IDs
@@ -2116,3 +2117,18 @@ enumeration, so desktop builds do not need an unreachable Android helper that
 returns a stub error solely for type checking. Compile the Android response type,
 OnceLock import and Android helper only for Android. The real desktop common-root
 implementation remains intact. No new public API or runtime checking.
+
+Final SHARE-2 consistency details: `DownloadPlanDialog` requires the storage-roots
+slice status to be `ready` in `selectedRootUsable`, as well as shared+writable.
+Preserved data from a failed refresh must not enable planning or install start.
+`StoragePlanner` describes sharing across `your apps` (the whole ecosystem), and
+asks for a medium choice only when more than one real medium exists. Use the
+loading status `Reading shared storage…`; it represents production data loading.
+
+KStore retrieval reference for this task: pass the returned record **path**
+`agent-notes/decision/2d8f47bb1d21c0983324b4554017316501332fd0b0d8cb97acdcb77ff6764d00`
+to `kstore_read.document_id`. UUID `01a1d206-d593-8001-b282-995d5575cdbe` identifies
+that record but UUID lookup returns 404 in the current reader; path lookup returns
+the exact revision 1 and matching digest. Root has actually retrieved that content.
+An unrun Rust test-only fixture is not a production build prerequisite. Do not
+expand native test work under the operator stop; continue the source delivery.
