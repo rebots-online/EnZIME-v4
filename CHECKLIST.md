@@ -2158,7 +2158,7 @@ dependencies or test/check commands. Only scripts/build_set.py is writable.
 
 ## BUMP-1 — Additional BuildAll success increment
 
-- [ ] **BUMP-1**
+- [X] **BUMP-1**
   **Do:** Edit only `build_all.sh`. Keep its current shebang, flags and cwd. Replace the existing exec with the same child command called normally. After that child returns success, read `version.txt`, increment MINOR by one, preserve MAJOR, compute BUILD automatically as epoch-minutes modulo100000 and pad display BUILD to five digits. Use inline Python (already available to the current child) to update only version.txt and version.json. Preserve product fields; update version, semver, versionBase, buildNumber, versionCode=MAJOR*100000+MINOR, buildDate and builtAt=null. Leave all other version mechanisms and release.lock intact. Commit only those two files using git commit --only, a message containing [skip ci], then git push. Print the completed artifact version and next source version distinctly. Do not add helpers, options, platform commands, tests, installation or other changes. You are not alone; preserve all other edits.
   **Verify:** Read the authored shell and compare it with this task. Do not execute any commands, syntax checks, test suites, linters or standalone builds. Root uses only the full build_all.sh entry after merge with the existing app-check stop.
   **Accept:** The committed root entry calls the existing full builder, and its additional source-version update, scoped commit and push occur only after successful return. Existing increments and builders are intact. Root records the actual full-build result and the resulting source bump.
