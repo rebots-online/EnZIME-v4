@@ -39,7 +39,7 @@ with open("version.json", "w", encoding="utf-8") as f:
 print(version)
 PY
 )"
-git commit --only version.txt version.json -m "Advance source version to ${next_version} after successful build [skip ci]"
+git commit --only version.txt version.json -m "v${next_version}: advance source version after successful build [skip ci]"
 git push
 printf 'Completed artifact version: %s\n' "$completed"
 printf 'Next source version: %s\n' "$next_version"
