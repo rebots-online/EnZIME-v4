@@ -2168,7 +2168,7 @@ BUMP-1 observed full BuildAll result: v1.28.08977 completed 11/11 required artif
 
 ## Isolated catalogue correction — 2026-11-13
 
-### [ ] ZIM-TLS-1 — Repair public HTTPS verifier used by Android downloads
+### [X] ZIM-TLS-1 — Repair public HTTPS verifier used by Android downloads
 
 **Own only:** `crates/transfer-http/src/lib.rs`, `crates/transfer-http/Cargo.toml`,
 `Cargo.lock`, and this task's progress marker. Worktree:
@@ -2196,3 +2196,18 @@ must trace new → tls_certs_only → explicit root verifier, and confirm no dan
 accept flags were introduced. Host compilation does not certify Android runtime.
 Mark `[X]` for written and add observed verification separately. Do not run a
 release build, change versions, commit or push; parent owns scoped delivery.
+
+ZIM-TLS-1 verification observed 2026-11-13: ✅ `cargo check -p transfer-http --locked`
+exited 0; `Finished dev profile [unoptimized + debuginfo] target(s) in 22.27s`.
+Changed factory re-read: every bundled DER certificate is converted with error
+propagation, then the complete root set is passed to `tls_certs_only` before the
+existing redirect policy and client build. No certificate/hostname bypass flags,
+timeout changes, or range/stream changes were introduced. Android runtime remains
+unverified by this host compilation.
+
+ZIM-TLS-1 additional host observation: `cargo run --locked -p catalog-openzim
+--example kiwix_catalog -- ''` exited 0, retrieved two real entries (reported
+total 1309), then resolved the first entry's Metalink into four HTTPS mirrors
+and its SHA-256. The existing example retains its English language selection;
+this observation is not proof of fully unfiltered UI behavior or Android runtime.
+No ZIM payload was downloaded.

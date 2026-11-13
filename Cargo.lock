@@ -5435,6 +5435,7 @@ dependencies = [
  "ports",
  "reqwest",
  "tokio",
+ "webpki-root-certs",
 ]
 
 [[package]]

@@ -45,7 +45,15 @@ impl HttpTransferSource {
     pub fn new() -> Result<Self, TransferError> {
         let max_redirects = usize::try_from(TRANSFER_MAX_REDIRECTS)
             .map_err(|_| TransferError::Transport("redirect count overflow".into()))?;
+        // reqwest 0.13's Android platform verifier needs JVM/Kotlin initialization.
+        // Explicit public roots retain certificate and hostname verification without it.
+        let roots: Vec<reqwest::Certificate> = webpki_root_certs::TLS_SERVER_ROOT_CERTS
+            .iter()
+            .map(|cert| reqwest::Certificate::from_der(cert.as_ref()))
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| TransferError::Transport(format!("public TLS roots: {e}")))?;
         let client = reqwest::Client::builder()
+            .tls_certs_only(roots)
             .redirect(reqwest::redirect::Policy::custom(move |attempt| {
                 if attempt.previous().len() >= max_redirects {
                     attempt.error("redirect limit")
