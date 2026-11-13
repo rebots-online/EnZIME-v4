@@ -2108,3 +2108,11 @@ common `.acquisition.lock` file for write/create (without truncation or acquirin
 the operation lock) before returning writable=true. This prepares the real
 coordination metadata, with no synthetic probe files. Omit unwritable cards;
 report actionable primary failures. Do not run a filesystem experiment or check.
+
+SHARE-1 mobile boundary detail, same `shared_storage.rs`: zero-argument mobile
+commands `volumes` and `requestAccess` pass an empty JSON object, not JSON null.
+Use compile-time `#[cfg(target_os = "android")]` / desktop branches in roots
+enumeration, so desktop builds do not need an unreachable Android helper that
+returns a stub error solely for type checking. Compile the Android response type,
+OnceLock import and Android helper only for Android. The real desktop common-root
+implementation remains intact. No new public API or runtime checking.

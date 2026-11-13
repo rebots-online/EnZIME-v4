@@ -6917,6 +6917,9 @@ Until granted, return `shared_storage_access_required` with the real recovery
 action; catalog browsing remains available. Never claim a private directory is
 shared. A packaged permission declaration does not itself grant access or imply
 Google Play policy approval.
+The zero-argument mobile commands carry an empty JSON object. Android-only helper
+types/functions use compile-time platform branches; desktop enumeration uses its
+real filesystem implementation without unreachable stub helpers.
 
 ### Presentation and wiring
 
