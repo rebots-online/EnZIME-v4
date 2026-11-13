@@ -52,6 +52,7 @@ export function DownloadPlanDialog(): ReactNode {
   const planSlice = useLibraryStore((s) => s.installPlan);
   const selectedRootId = useLibraryStore((s) => s.selectedStorageRootId);
   const storageRoots = useLibraryStore(s => s.storageRoots.data);
+  const storageRootsReady = useLibraryStore(s => s.storageRoots.status === "ready");
   const computePlan = useLibraryStore((s) => s.computePlan);
   const startInstall = useLibraryStore((s) => s.startInstall);
   const clearInstallPlan = useLibraryStore((s) => s.clearInstallPlan);
@@ -120,8 +121,14 @@ export function DownloadPlanDialog(): ReactNode {
     return () => clearInterval(timer);
   }, [planning]);
 
-  const canCompute = !!entry && !!selectedRootId && budgetValid && selectionValid && !planning && !starting && !planResolved;
-  const canStart = planResolved && selectionValid && !planning && !starting && !!plan &&
+  // The destination must be a shared, writable common root from a ready
+  // (freshly succeeded) enumeration — a failed access refresh leaves stale
+  // `data` on the error slice, which must not keep Compute/Start enabled —
+  // on top of every existing byte/strategy/stale guard.
+  const selectedRootUsable =
+    storageRootsReady && !!selectedRoot && selectedRoot.shared && selectedRoot.writable;
+  const canCompute = !!entry && !!selectedRootId && selectedRootUsable && budgetValid && selectionValid && !planning && !starting && !planResolved;
+  const canStart = planResolved && selectedRootUsable && selectionValid && !planning && !starting && !!plan &&
     plan.cutStrategy === cutStrategy && plan.finalBytes + plan.temporaryBytes <= (budgetBytes ?? 0);
   const compute = () => { if (entry && selectedRootId && budgetBytes && budgetValid && selectionValid) { setComputedBudget(budgetBytes); setComputedSelection(selectionKey); return computePlan(entry.catalogEntryId, selectedRootId, budgetBytes, cutStrategy, domain); } return Promise.resolve(); };
 

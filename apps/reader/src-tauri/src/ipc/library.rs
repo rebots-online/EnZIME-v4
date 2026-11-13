@@ -1,67 +1,139 @@
 use super::*;
+use crate::shared_storage::StorageMedium;
+
+/// §14.4 `shared_storage_request_access`. Android opens the system's shared
+/// storage permission screen through the mobile plugin; desktop needs no
+/// access prompt and succeeds immediately.
+#[tauri::command]
+pub async fn shared_storage_request_access() -> Result<(), String> {
+    crate::shared_storage::request_access().await
+}
+
+/// §14.4 `storage_roots_list`. Enumerates only the real shared roots under
+/// this build's compiled shared-storage policy (internal common root and
+/// actually mounted SD cards). Namespace directories are created first, then
+/// canonical paths are deduplicated — so a card discovered through both the
+/// compiled configuration and volume enumeration yields exactly one row.
+/// Writability is proven on the real cross-process `.acquisition.lock` file
+/// (create/write, no truncation, no operation lock) before `writable=true` is
+/// returned; an unwritable card root is omitted and an inaccessible primary
+/// root surfaces an actionable error. A card's mount point is never created,
+/// and historical `storage_roots` rows are never returned or re-seeded. On
+/// Android a missing shared-file access grant surfaces the actionable
+/// `shared_storage_access_required` error — catalog browsing is unaffected.
 #[tauri::command]
 pub async fn storage_roots_list(
     state: tauri::State<'_, AppState>,
 ) -> Result<Vec<StorageDestinationDto>, String> {
+    let roots = state.shared_storage.roots().await?;
     let conn = state.conn.clone();
-    let app_data_dir = state.app_data_dir.clone();
-    let rows = tokio::task::spawn_blocking(move || -> Result<Vec<StorageRootRow>, String> {
-        let g = conn.lock().map_err(err_str)?;
-        let existing = all_storage_roots(&g).map_err(err_str)?;
-        if !existing.is_empty() {
-            return Ok(existing);
-        }
-        // Seed the M1 default root. Stable id derived from the path so a
-        // re-seed after a wipe is idempotent.
-        let locator = app_data_dir
-            .to_str()
-            .ok_or_else(|| "internal: app_data_dir is not valid UTF-8".to_string())?
-            .to_string();
-        let storage_root_id = format!("sr-{}", storage_sqlite::sha256_hex(locator.as_bytes()));
-        let free_bytes = probe_free_bytes(&app_data_dir);
-        let now = now_ms();
-        // `kind = 'app_private'` is the §6.2 CHECK value matching a
-        // platform-managed private dir; the synthesized root is the closest
-        // M1 analog of an app-private storage root.
-        g.execute(
-            "INSERT OR IGNORE INTO storage_roots (\n\
-             \x20\x20        storage_root_id, kind, platform_locator, display_name,\n\
-             \x20\x20        writable, capacity_bytes, free_bytes,\n\
-             \x20\x20        last_probed_at_ms, created_at_ms, updated_at_ms\n\
-             \x20\x20      ) VALUES (?1, 'app_private', ?2, ?3, 1, NULL, ?4, ?5, ?6, ?6)",
-            params![
-                storage_root_id,
-                locator,
-                app_data_dir
-                    .file_name()
-                    .and_then(|n| n.to_str())
-                    .unwrap_or("EnZIME Data")
-                    .to_string(),
-                free_bytes,
-                now,
-                now,
-            ],
-        )
-        .map_err(err_str)?;
-        all_storage_roots(&g).map_err(err_str)
-    })
+    let rows = tokio::task::spawn_blocking(
+        move || -> Result<Vec<StorageDestinationDto>, String> {
+            let g = conn.lock().map_err(err_str)?;
+            let mut out = Vec::with_capacity(roots.len());
+            // Deduplicate canonical paths AFTER creating the namespace
+            // directories: a fresh card canonicalizes to nothing until its
+            // namespace folder exists, so pre-creation deduplication would
+            // return duplicate rows for one physical medium.
+            let mut seen: Vec<std::path::PathBuf> = Vec::new();
+            for root in roots {
+                // The primary common directory is created when missing. A
+                // card root appears only when its mount parent already
+                // exists (guaranteed by `roots()`); a card that cannot hold
+                // its namespace directory is simply absent, never faked.
+                if let Err(e) = std::fs::create_dir_all(&root.path) {
+                    if root.medium == StorageMedium::Sdcard {
+                        continue;
+                    }
+                    return Err(format!(
+                        "shared_storage_unavailable: cannot create the shared storage location \
+                         '{}' ({e}). Check the storage medium and try again.",
+                        root.path.display()
+                    ));
+                }
+                let canonical = std::fs::canonicalize(&root.path).map_err(err_str)?;
+                if seen.contains(&canonical) {
+                    // Same medium via configuration and enumeration.
+                    continue;
+                }
+                seen.push(canonical.clone());
+                // Creating the directory and having free space does not
+                // establish write access on an existing read-only directory.
+                // Prove it on the real `.acquisition.lock`: open for
+                // create+write without truncating it and without taking the
+                // operation lock, then close immediately.
+                let lock_probe = std::fs::OpenOptions::new()
+                    .create(true)
+                    .truncate(false)
+                    .write(true)
+                    .read(true)
+                    .open(canonical.join(".acquisition.lock"));
+                if let Err(e) = lock_probe {
+                    if root.medium == StorageMedium::Sdcard {
+                        // An unwritable card is omitted, never advertised.
+                        continue;
+                    }
+                    return Err(format!(
+                        "shared_storage_unavailable: the shared storage location '{}' is not \
+                         writable ({e}). Allow shared storage access for EnZIME, verify the \
+                         medium is mounted read-write, then try again.",
+                        canonical.display()
+                    ));
+                }
+                let locator = canonical
+                    .to_str()
+                    .ok_or_else(|| {
+                        "shared_storage_unavailable: shared storage path is not valid UTF-8"
+                            .to_string()
+                    })?
+                    .to_string();
+                let storage_root_id =
+                    format!("sr-{}", storage_sqlite::sha256_hex(locator.as_bytes()));
+                let free_bytes = fs2::available_space(&canonical).map_err(err_str)?;
+                let available_bytes =
+                    zim_cluster_cache::disk::DiskPackPolicy::available_bytes(free_bytes);
+                let now = now_ms();
+                let display_name = root.medium.label().to_string();
+                g.execute(
+                    "INSERT INTO storage_roots (\n\
+                     \x20\x20        storage_root_id, kind, platform_locator, display_name,\n\
+                     \x20\x20        writable, capacity_bytes, free_bytes,\n\
+                     \x20\x20        last_probed_at_ms, created_at_ms, updated_at_ms\n\
+                     \x20\x20      ) VALUES (?1, ?2, ?3, ?4, 1, NULL, ?5, ?6, ?6, ?6)\n\
+                     \x20\x20      ON CONFLICT(storage_root_id) DO UPDATE SET\n\
+                     \x20\x20        kind=excluded.kind, platform_locator=excluded.platform_locator,\n\
+                     \x20\x20        display_name=excluded.display_name, writable=1,\n\
+                     \x20\x20        free_bytes=excluded.free_bytes,\n\
+                     \x20\x20        last_probed_at_ms=excluded.last_probed_at_ms,\n\
+                     \x20\x20        updated_at_ms=excluded.updated_at_ms",
+                    params![
+                        storage_root_id,
+                        root.medium.root_kind(),
+                        locator,
+                        display_name,
+                        free_bytes as i64,
+                        now,
+                    ],
+                )
+                .map_err(err_str)?;
+                out.push(StorageDestinationDto {
+                    storage_root_id,
+                    display_name,
+                    writable: true,
+                    free_bytes,
+                    available_bytes,
+                    // Every destination this build returns is a shared
+                    // common root; sharing is never optional.
+                    shared: true,
+                    medium: root.medium,
+                });
+            }
+            Ok(out)
+        },
+    )
     .await
     .map_err(err_str)??;
-
-    Ok(rows
-        .into_iter()
-        .filter(|r| r.writable)
-        .map(|r| {
-            let free = fs2::available_space(&r.platform_locator).map_err(err_str)?;
-            Ok(StorageDestinationDto {
-                storage_root_id: r.storage_root_id,
-                display_name: r.display_name,
-                writable: r.writable,
-                free_bytes: free,
-                available_bytes: zim_cluster_cache::disk::DiskPackPolicy::available_bytes(free),
-            })
-        })
-        .collect::<Result<Vec<_>, String>>()?)
+    Ok(rows)
 }
 
 /// §14.4 `pack_list({ offset?, limit? })`. Pages installed packs. Article

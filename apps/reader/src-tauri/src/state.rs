@@ -17,6 +17,7 @@ use annotations::AnnotationsService;
 
 use crate::analytics::{Analytics, AnalyticsConfig};
 use crate::billing::{Billing, BillingConfig};
+use crate::shared_storage::SharedStoragePolicy;
 use application::annotation_assets::{AnnotationAssetService, AssetUploadSession};
 use object_store::ObjectStore;
 use ports::zim::ZimArchive;
@@ -45,8 +46,13 @@ pub struct AppState {
     /// any directly-opened archive it is the underlying `ZimArchive` impl.
     pub archives: Arc<Mutex<HashMap<String, Arc<dyn ZimArchive>>>>,
     /// Resolved platform app-data directory (`app.path().app_data_dir()`).
-    /// Used as the M1 default storage root when the DB has none.
+    /// Holds the private profile/SQLite/annotation state only; the
+    /// large-resource roots are owned by `shared_storage` below.
     pub app_data_dir: PathBuf,
+    /// Mandatory common large-resource storage policy, compiled in at build
+    /// time (see `shared_storage`). Private SQLite, annotations and
+    /// credentials below stay app-private and are never routed through it.
+    pub shared_storage: SharedStoragePolicy,
     /// Native transport and process-local handles over durable pack stores.
     pub transfer_source: Arc<dyn TransferSource>,
     pub dyndon_stores: Arc<Mutex<HashMap<PathBuf, Arc<DiskPackStore>>>>,
@@ -83,10 +89,14 @@ impl AppState {
         let conn = Arc::new(Mutex::new(conn));
         let annotations = Arc::new(AnnotationsService::new(conn.clone(), objects));
         let asset_service = Arc::new(AnnotationAssetService::new(annotations.asset_sink()));
+        // Invalid shared-storage configuration fails startup explicitly;
+        // there is no app-private fallback for large resources.
+        let shared_storage = SharedStoragePolicy::new(&app_data_dir)?;
         Ok(Self {
             conn,
             archives: Arc::new(Mutex::new(HashMap::new())),
             app_data_dir,
+            shared_storage,
             transfer_source,
             dyndon_stores: Arc::new(Mutex::new(HashMap::new())),
             acquisition_gate: tokio::sync::Mutex::new(()),

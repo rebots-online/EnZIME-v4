@@ -18,7 +18,12 @@ export function InstallPlanSummary({
   const catalog = plan.offlineCatalog;
   return (
     <div className="lib-summary" aria-label="Install plan summary">
-      <Row k="Destination" v={plan.destination.displayName} />
+      <Row
+        k="Storage"
+        v={`${mediumLabel(plan.destination)} · ${
+          plan.destination.shared ? "shared across your apps" : "not shared"
+        }`}
+      />
       <Row k="Content selection" v={plan.cutStrategy === "prefer_domain" ? `Prioritize: ${plan.preferredDomain}` : "Spread cuts evenly"} />
       <Row
         k="Transfer mode"
@@ -85,6 +90,10 @@ function shortHash(sha: string | null): string {
   if (!sha) return "Not provided by source";
   if (sha.length <= 14) return sha;
   return `${sha.slice(0, 8)}…${sha.slice(-4)}`;
+}
+
+function mediumLabel(destination: InstallPlan["destination"]): string {
+  return destination.medium === "sdcard" ? "SD card" : "Internal storage";
 }
 
 function transferLabel(mode: InstallPlan["transferMode"]): string {
