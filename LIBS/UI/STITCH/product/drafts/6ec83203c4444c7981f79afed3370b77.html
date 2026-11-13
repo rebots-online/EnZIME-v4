@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - S12 Search Overlay</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#ffba43",
+            "secondary": "#46ebdf",
+            "inverse-surface": "#e2e1ee",
+            "inverse-on-surface": "#2e3039",
+            "primary-container": "#7c8cff",
+            "surface-bright": "#373942",
+            "on-tertiary-fixed": "#281800",
+            "on-primary-container": "#001892",
+            "surface": "#11131b",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed": "#ffddaf",
+            "secondary-fixed": "#59f9ed",
+            "on-primary": "#041c94",
+            "inverse-primary": "#4353c3",
+            "surface-container-lowest": "#0c0e16",
+            "primary-fixed": "#dfe0ff",
+            "surface-dim": "#11131b",
+            "on-secondary": "#003733",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-container": "#1d1f28",
+            "surface-container-highest": "#33343e",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "surface-tint": "#bcc3ff",
+            "primary-fixed-dim": "#bcc3ff",
+            "error": "#ffb4ab",
+            "on-tertiary-container": "#402900",
+            "on-secondary-fixed-variant": "#00504b",
+            "secondary-container": "#00cec3",
+            "tertiary-container": "#c88900",
+            "tertiary": "#ffba43",
+            "primary": "#bcc3ff",
+            "on-secondary-container": "#00534e",
+            "error-container": "#93000a",
+            "on-background": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-error": "#690005",
+            "on-primary-fixed": "#000c60",
+            "on-surface": "#e2e1ee",
+            "on-tertiary": "#442c00",
+            "surface-container-high": "#282a32",
+            "outline": "#8f8f9f",
+            "on-primary-fixed-variant": "#2839aa",
+            "outline-variant": "#454653",
+            "surface-variant": "#33343e",
+            "secondary-fixed-dim": "#2eddd1",
+            "surface-container-low": "#191b24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.375rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "gutter": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "margin": "1rem"
+          },
+          "fontFamily": {
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Subtle Aurora Atmospheric Radiance */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 18% 12%, rgba(124, 140, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 82% 80%, rgba(52, 224, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 40%, rgba(29, 31, 40, 0.7) 0%, transparent 80%);
+    }
+
+    .aurora-card-glow {
+      box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.75), 0 0 32px -4px rgba(124, 140, 255, 0.12);
+    }
+
+    .glass-panel {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+
+    .search-sheet-card {
+      border-radius: 22px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.15);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(189, 198, 255, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090B13] antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Aurora Atmospheric Background -->
+<div class="aurora-bg"></div>
+<!-- Real Result Template (Inert) -->
+<template id="search-result-template"><div class="p-space-md glass-panel rounded-xl hover:border-primary/40 transition-all duration-150 flex flex-col gap-space-xs group" data-result-item=""><div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-secondary text-[18px]" data-bind="icon">article</span><span class="text-label-mono-sm font-label-mono-sm text-secondary uppercase tracking-wider pack-title" data-bind="pack-title"></span><span class="text-outline text-label-mono-sm font-label-mono-sm">•</span><span class="text-label-mono-sm font-label-mono-sm text-on-surface-variant path-anchor" data-bind="section-path"></span></div><button class="min-h-[44px] px-space-md py-1 bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-primary rounded-lg text-label-mono-md font-label-mono-md transition-colors flex items-center gap-1" data-action="open"><span>Open</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button></div><p class="text-body-md font-body-md text-on-surface leading-relaxed excerpt-text" data-bind="excerpt"></p></div></template>
+<!-- Left SideNav (Compact Rail 104px desktop width representation) -->
+<aside aria-label="Desktop Side Navigation" class="hidden md:flex flex-col justify-between h-full p-space-md fixed left-0 top-0 z-20 w-[104px] glass-panel border-r border-outline-variant/30">
+<div class="flex flex-col items-center gap-space-lg">
+<!-- App Brand Logo Mark -->
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center border border-primary/20 shadow-sm" title="EnZIME Reader">
+<span class="material-symbols-outlined text-primary text-[28px]">terminal</span>
+</div>
+<!-- Navigation Tabs -->
+<nav aria-label="Main Navigation" class="flex flex-col items-center gap-space-sm w-full">
+<!-- Home -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2 px-1 bg-surface-container-high/60 text-primary border-l-2 border-primary rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#home" title="Home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#library" title="Library">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Library</span>
+</a>
+<!-- Ask (Active Search/Query Context) -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#ask" title="Ask">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#notes" title="Notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#memory" title="Memory">
+<span class="material-symbols-outlined text-[22px]">memory</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Memory</span>
+</a>
+<!-- Settings -->
+<a class="w-full flex flex-col items-center justify-center py-2 px-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 rounded-lg min-h-[44px] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#settings" title="Settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Foot Utility -->
+<div class="flex flex-col items-center gap-space-xs pt-space-md border-t border-outline-variant/30 w-full">
+<button class="w-full flex flex-col items-center justify-center py-2 text-on-surface-variant hover:text-on-surface min-h-[44px] rounded-lg transition-colors" title="Offline Status">
+<span class="material-symbols-outlined text-[20px]">cloud_off</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Offline</span>
+</button>
+<button class="w-full flex flex-col items-center justify-center py-2 text-on-surface-variant hover:text-on-surface min-h-[44px] rounded-lg transition-colors" title="Storage Info">
+<span class="material-symbols-outlined text-[20px]">hard_drive</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Storage</span>
+</button>
+</div>
+</aside>
+<!-- Desktop Main Content Canvas (underlay behind modal) -->
+<div class="hidden md:block" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Top Bar Component -->
+<header class="sticky top-0 z-10 w-full flex items-center justify-between px-space-lg h-14 bg-surface-container/70 backdrop-blur-md border-b border-outline-variant/30"><div class="flex items-center gap-space-md"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[20px]">auto_stories</span><span class="text-headline-md font-headline-md font-semibold text-on-surface tracking-tight">EnZIME Reader</span></div></div><div class="flex items-center gap-space-md"><span class="text-label-mono-sm font-label-mono-sm text-secondary bg-secondary/10 px-space-sm py-1 rounded border border-secondary/20 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Offline</span></div></header>
+<!-- Underlying Reading Mock Content (Dimmed Workstation) -->
+<main aria-hidden="true" class="p-space-xl opacity-30 select-none pointer-events-none filter blur-[2px]"><div class="max-w-4xl mx-auto space-y-6 pt-space-lg"><div class="h-9 w-48 bg-surface-container-high/60 rounded-lg"></div><div class="grid grid-cols-3 gap-4 pt-4"><div class="h-40 bg-surface-container-low/60 rounded-xl border border-outline-variant/20"></div><div class="h-40 bg-surface-container-low/60 rounded-xl border border-outline-variant/20"></div><div class="h-40 bg-surface-container-low/60 rounded-xl border border-outline-variant/20"></div></div></div></main>
+</div>
+<!-- S12 SEARCH OVERLAY / SHEET -->
+<!-- Container is full-screen on mobile, centered modal overlay positioned relative to desktop rail -->
+<div aria-labelledby="search-dialog-title" aria-modal="true" class="fixed inset-0 z-50 flex items-start justify-center p-0 md:p-space-lg overflow-y-auto bg-black/60 backdrop-blur-sm transition-all duration-200" id="search-overlay" role="dialog">
+<!-- Modal Card on Desktop / Full Screen Sheet on Mobile -->
+<div class="w-full h-full md:h-auto md:max-w-3xl md:my-auto md:max-h-[901px] glass-panel search-sheet-card aurora-card-glow flex flex-col overflow-hidden transition-all duration-300">
+<!-- Top Search Input Bar -->
+<div class="p-space-md md:p-space-lg border-b border-outline-variant/30 flex flex-col gap-space-sm bg-surface-container-low/40">
+<div class="flex items-center gap-space-sm">
+<!-- Leading Icon -->
+<div aria-hidden="true" class="w-11 h-11 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<!-- Main Input Field (14px rounded) -->
+<div class="relative flex-1">
+<input autocomplete="off" class="w-full min-h-[44px] px-space-md py-2.5 rounded-[14px] bg-[#0E111B]/80 text-[#F4F6FF] placeholder-[#8E96B0] border border-outline-variant/40 focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none text-body-lg font-body-lg transition-all" id="search-input" placeholder="Search your library, notes, and local archives..." spellcheck="false" type="text" value=""/>
+</div>
+<!-- Clear Button -->
+<button aria-label="Clear query text" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container-high transition-colors" id="btn-clear-input" title="Clear input">
+<span class="material-symbols-outlined text-[20px]">backspace</span>
+</button>
+<!-- Close (Esc) Button -->
+<button aria-label="Close search overlay" class="min-h-[44px] px-space-md flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface bg-surface-container-high/40 hover:bg-surface-container-high rounded-lg text-body-md font-body-md transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" id="btn-close-dialog">
+<span class="hidden md:inline text-label-mono-sm font-label-mono-sm text-outline">Esc</span>
+<span class="material-symbols-outlined text-[18px]">close</span>
+<span class="text-body-md font-body-md">Close</span>
+</button>
+</div>
+<!-- Scope Filter Pills -->
+<div aria-label="Search scope" class="flex items-center gap-space-xs pt-space-xs overflow-x-auto" role="tablist">
+<!-- All local (Selected) -->
+<button aria-selected="true" class="min-h-[44px] px- space-md px-3.5 py-1.5 rounded-[14px] border border-primary/40 bg-primary/10 text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary" id="scope-all" role="tab">
+<span class="material-symbols-outlined text-secondary text-[16px]">inventory_2</span>
+<span>All local</span>
+</button>
+<!-- Articles -->
+<button aria-selected="false" class="min-h-[44px] px-3.5 py-1.5 rounded-[14px] border border-outline-variant/30 hover:border-outline-variant/70 text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary" id="scope-articles" role="tab">
+<span class="material-symbols-outlined text-[16px]">article</span>
+<span>Articles</span>
+</button>
+<!-- Notes -->
+<button aria-selected="false" class="min-h-[44px] px-3.5 py-1.5 rounded-[14px] border border-outline-variant/30 hover:border-outline-variant/70 text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary" id="scope-notes" role="tab">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Notes</span>
+</button>
+<!-- Catalog -->
+<button aria-selected="false" class="min-h-[44px] px-3.5 py-1.5 rounded-[14px] border border-outline-variant/30 hover:border-outline-variant/70 text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary" id="scope-catalog" role="tab">
+<span class="material-symbols-outlined text-[16px]">folder_copy</span>
+<span>Catalog</span>
+</button>
+</div>
+</div>
+<!-- State Presentation Canvas (Dynamic Viewport) -->
+<div class="flex-1 overflow-y-auto p-space-md md:p-space-lg custom-scrollbar min-h-[320px]" id="search-content-viewport">
+<!-- 1. INITIAL STATE (Visible by default) -->
+<div class="flex flex-col items-center justify-center text-center py-12 px-space-md h-full my-auto" id="state-initial">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-high/50 border border-primary/20 flex items-center justify-center text-primary mb-space-md shadow-inner">
+<span class="material-symbols-outlined text-[32px]">manage_search</span>
+</div>
+<h2 class="text-headline-md font-headline-md font-semibold text-[#F4F6FF] mb-2 tracking-tight" id="search-dialog-title">
+            Search your library and notes.
+          </h2>
+<p class="text-body-md font-body-md text-[#B7BDD4] max-w-md leading-relaxed">
+            Type a keyword, topic, or question to find matching excerpts across all installed packs.
+          </p>
+<!-- Quick Discovery Suggestions -->
+</div>
+<!-- 2. LOADING STATE (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center text-center py-16 px-space-md" id="state-loading">
+<div class="relative w-12 h-12 flex items-center justify-center mb-space-md">
+<div class="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
+<span class="material-symbols-outlined text-primary text-[20px]">sync</span>
+</div>
+<p class="text-headline-md font-headline-md font-medium text-[#F4F6FF] animate-pulse">Searching...</p>
+</div>
+<!-- 3. EMPTY RESULTS STATE (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center text-center py-12 px-space-md" id="state-empty">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-high/40 border border-outline-variant/30 flex items-center justify-center text-outline mb-space-md">
+<span class="material-symbols-outlined text-[32px]">search_off</span>
+</div>
+<h3 class="text-headline-md font-headline-md font-semibold text-[#F4F6FF] mb-2">No results</h3>
+<p class="text-body-md font-body-md text-[#B7BDD4] max-w-sm mb-space-lg leading-relaxed">
+            No matching content found for your query.
+          </p>
+<button class="min-h-[44px] px-space-lg py-2 bg-surface-container-high hover:bg-surface-container-highest text-primary border border-primary/20 rounded-lg text-label-mono-md font-label-mono-md transition-colors" id="btn-empty-clear">
+            Clear search
+          </button>
+</div>
+<!-- 4. FAILURE STATE (Hidden by default) -->
+<div class="hidden flex-col items-center justify-center text-center py-12 px-space-md" id="state-failure"><div class="w-16 h-16 rounded-2xl bg-error-container/20 border border-error/30 flex items-center justify-center text-error mb-space-md"><span class="material-symbols-outlined text-[32px]">warning</span></div><h3 class="text-headline-md font-headline-md font-semibold text-[#F4F6FF] mb-2">Search could not be completed. Try again.</h3><p class="text-body-md font-body-md text-[#B7BDD4] max-w-sm mb-space-lg leading-relaxed">Unable to read index or query search database offline.</p><button class="min-h-[44px] px-space-lg py-2 bg-primary hover:bg-primary-container text-on-primary-fixed rounded-lg text-label-mono-md font-label-mono-md font-medium transition-colors" id="btn-retry">Retry</button></div>
+<!-- 5. ACTIVE RESULTS CONTAINER (Filled dynamically or demo switchable) -->
+<div class="hidden space-y-space-md" id="state-results"></div>
+</div>
+<!-- Sheet Footer / Controls & Keyboard Hint -->
+<div class="p-space-md border-t border-outline-variant/30 bg-surface-container-low/70 flex items-center justify-between">
+<!-- Keyboard Hint -->
+<div class="flex items-center gap-space-sm text-label-mono-sm font-label-mono-sm text-outline">
+<span class="material-symbols-outlined text-[16px]">keyboard</span>
+<span>Esc to close • ↑↓ to navigate</span>
+</div>
+<!-- Debug / View Switcher micro pills for previewing states -->
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar (Mobile Android / Responsive <= 768px) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#library">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#more">
+<span class="material-symbols-outlined text-[22px]">more_horiz</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Bottom-right quiet plain text: NO badge, NO glowing dot, NO border -->
+<div class="fixed bottom-3 right-4 z-50 pointer-events-none select-none text-label-mono-sm font-label-mono-sm text-outline/60 hidden md:block">
+    EnZIME Reader v1.29.08988
+  </div>
+<!-- Interactive Logic for State Transitions and Preservation -->
+<script>
+    const searchInput = document.getElementById('search-input');
+    const btnClear = document.getElementById('btn-clear-input');
+    const btnEmptyClear = document.getElementById('btn-empty-clear');
+    const btnRetry = document.getElementById('btn-retry');
+    const btnClose = document.getElementById('btn-close-dialog');
+    const overlay = document.getElementById('search-overlay');
+
+    const stateInitial = document.getElementById('state-initial');
+    const stateLoading = document.getElementById('state-loading');
+    const stateEmpty = document.getElementById('state-empty');
+    const stateFailure = document.getElementById('state-failure');
+    const stateResults = document.getElementById('state-results');
+
+    function hideAllStates() {
+      stateInitial.classList.add('hidden');
+      stateLoading.classList.add('hidden');
+      stateLoading.classList.remove('flex');
+      stateEmpty.classList.add('hidden');
+      stateEmpty.classList.remove('flex');
+      stateFailure.classList.add('hidden');
+      stateFailure.classList.remove('flex');
+      stateResults.classList.add('hidden');
+    }
+
+    function showState(state) {
+      hideAllStates();
+      if (state === 'initial') {
+        stateInitial.classList.remove('hidden');
+      } else if (state === 'loading') {
+        stateLoading.classList.remove('hidden');
+        stateLoading.classList.add('flex');
+      } else if (state === 'empty') {
+        stateEmpty.classList.remove('hidden');
+        stateEmpty.classList.add('flex');
+      } else if (state === 'failure') {
+        stateFailure.classList.remove('hidden');
+        stateFailure.classList.add('flex');
+      } else if (state === 'results') {
+        stateResults.classList.remove('hidden');
+      }
+    }
+
+    // Input interaction with realistic debounce
+    let debounceTimer;
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      clearTimeout(debounceTimer);
+      if (!query) {
+        showState('initial');
+        return;
+      }
+
+      showState('loading');
+      debounceTimer = setTimeout(() => {
+        if (query.toLowerCase().includes('fail')) {
+          showState('failure');
+        } else if (query.toLowerCase().includes('empty') || query.length > 30) {
+          showState('empty');
+        } else {
+          showState('results');
+        }
+      }, 350);
+    });
+
+    // Clear buttons
+    function clearInput() {
+      searchInput.value = '';
+      searchInput.focus();
+      showState('initial');
+    }
+    btnClear.addEventListener('click', clearInput);
+    btnEmptyClear.addEventListener('click', clearInput);
+
+    // Suggestion chips
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        searchInput.value = chip.innerText.trim();
+        showState('loading');
+        setTimeout(() => showState('results'), 280);
+      });
+    });
+
+    // Retry button
+    btnRetry.addEventListener('click', () => {
+      showState('loading');
+      setTimeout(() => showState('results'), 300);
+    });
+
+    // Close logic
+    btnClose.addEventListener('click', () => {
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+    });
+
+    // Keyboard navigation: Escape key closes
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+      }
+    });
+
+    // Scope selection toggle
+    const scopes = ['scope-all', 'scope-articles', 'scope-notes', 'scope-catalog'];
+    scopes.forEach(id => {
+      const btn = document.getElementById(id);
+      btn.addEventListener('click', () => {
+        scopes.forEach(otherId => {
+          const otherBtn = document.getElementById(otherId);
+          otherBtn.setAttribute('aria-selected', 'false');
+          otherBtn.className = "min-h-[44px] px-3.5 py-1.5 rounded-[14px] border border-outline-variant/30 hover:border-outline-variant/70 text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary";
+        });
+        btn.setAttribute('aria-selected', 'true');
+        btn.className = "min-h-[44px] px-3.5 py-1.5 rounded-[14px] border border-primary/40 bg-primary/10 text-[#F4F6FF] font-label-mono-md text-label-mono-md flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary";
+      });
+    });
+  </script>
+</body></html>

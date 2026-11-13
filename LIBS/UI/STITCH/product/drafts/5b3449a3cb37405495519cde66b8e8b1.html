@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S05 Downloads - EnZIME Reader</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & Literata -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#003733",
+            "inverse-on-surface": "#2e3039",
+            "surface-container": "#1d1f28",
+            "on-tertiary-fixed-variant": "#614000",
+            "primary-container": "#7c8cff",
+            "on-primary-container": "#001892",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-tertiary-container": "#402900",
+            "primary-fixed": "#dfe0ff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline-variant": "#454653",
+            "on-secondary-container": "#00534e",
+            "error": "#ffb4ab",
+            "surface-bright": "#373942",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "on-surface-variant": "#c6c5d5",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-lowest": "#0c0e16",
+            "secondary-container": "#00cec3",
+            "surface-container-high": "#282a32",
+            "tertiary-fixed": "#ffddaf",
+            "primary": "#bcc3ff",
+            "inverse-primary": "#4353c3",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "surface-container-highest": "#33343e",
+            "on-surface": "#e2e1ee",
+            "error-container": "#93000a",
+            "outline": "#8f8f9f",
+            "surface-container-low": "#191b24",
+            "inverse-surface": "#e2e1ee",
+            "on-primary-fixed": "#000c60",
+            "surface-dim": "#11131b",
+            "tertiary": "#ffba43",
+            "secondary-fixed": "#59f9ed",
+            "on-background": "#e2e1ee",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed": "#00201e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-error": "#690005",
+            "on-tertiary": "#442c00",
+            "background": "#11131b",
+            "surface-variant": "#33343e",
+            "on-tertiary-fixed": "#281800",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.375rem", /* 22px */
+            "card": "1.375rem",
+            "field": "0.875rem", /* 14px */
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-md": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Atmospheric Glassmorphism Canvas */
+    body {
+      background-color: #090B13;
+      color: #e2e1ee;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    }
+    
+    .font-num-tabular {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum' 1;
+    }
+
+    /* Ambient chromatic backdrops */
+    .aurora-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 18% 22%, rgba(124, 140, 255, 0.045) 0%, transparent 42%),
+        radial-gradient(circle at 85% 75%, rgba(52, 224, 212, 0.035) 0%, transparent 48%),
+        radial-gradient(circle at 50% 10%, rgba(30, 36, 56, 0.5) 0%, transparent 70%);
+    }
+
+    .glass-tier-1 {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+
+    .glass-tier-2 {
+      background: rgba(30, 36, 56, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(124, 140, 255, 0.15);
+      box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+  </style>
+</head>
+<body class="selection:bg-primary/20 selection:text-primary relative antialiased flex">
+<div class="aurora-canvas"></div>
+<!-- SHARED COMPONENT: SideNavBar (Desktop rail 104px compact / 256px wide on xl) -->
+<aside class="hidden md:flex flex-col justify-between h-screen p-3 fixed left-0 top-0 z-50 bg-surface-container-low/80 backdrop-blur-lg border-r border-outline-variant/30 w-[104px] select-none shrink-0"><div class="flex flex-col items-center gap-6"><div class="flex flex-col items-center gap-1 py-1"><div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center border border-primary/20 text-primary shadow-[0_0_16px_rgba(124,140,255,0.2)] shrink-0"><span class="font-headline-md text-headline-md font-bold tracking-tight">Z</span></div><span class="text-[11px] font-medium text-primary text-center leading-tight mt-1">EnZIME</span></div><nav aria-label="Main Navigation" class="flex flex-col gap-2 w-full"><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px]" href="#home"><span class="material-symbols-outlined text-[22px]">home</span><span class="text-[12px] font-medium mt-1">Home</span></a><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-surface-container-high/60 text-primary border-l-2 border-primary min-h-[44px]" href="#library"><span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">local_library</span><span class="text-[12px] font-semibold mt-1">Library</span></a><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px]" href="#ask"><span class="material-symbols-outlined text-[22px]">contact_support</span><span class="text-[12px] font-medium mt-1">Ask</span></a><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px]" href="#notes"><span class="material-symbols-outlined text-[22px]">description</span><span class="text-[12px] font-medium mt-1">Notes</span></a><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px]" href="#memory"><span class="material-symbols-outlined text-[22px]">memory</span><span class="text-[12px] font-medium mt-1">Memory</span></a><a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors min-h-[44px]" href="#settings"><span class="material-symbols-outlined text-[22px]">settings</span><span class="text-[12px] font-medium mt-1">Settings</span></a></nav></div></aside>
+<!-- Main Viewport Canvas (Docked beside desktop rail) -->
+<div class="flex-1 flex flex-col min-h-screen md:pl-[104px] w-full pb-20 md:pb-10 relative z-10"><header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md lg:px-space-lg h-14 bg-surface-container/70 backdrop-blur-md border-b border-outline-variant/30"><div class="flex items-center gap-space-md flex-1 max-w-xl"><div class="flex items-center gap-2 shrink-0"><div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-primary/20 text-primary font-bold text-[16px]">Z</div><span class="text-body-lg font-semibold text-on-surface tracking-tight">EnZIME Reader</span></div><div class="relative w-full max-w-md"><span class="material-symbols-outlined text-outline absolute left-3 top-1/2 -translate-y-1/2 text-[18px]">search</span><input class="w-full h-9 pl-9 pr-3 rounded-[14px] bg-[#0E111B]/80 border border-white/10 text-on-surface placeholder:text-outline text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all duration-150" placeholder="Search downloads or archives..." type="search"/></div></div></header><main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col gap-6"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5"><div><h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Downloads</h1><p class="text-body-md font-body-md text-on-surface-variant mt-0.5">Manage local offline knowledge packs and active retrieval pipelines.</p></div><div class="inline-flex p-1 rounded-[14px] bg-[#0E111B]/90 border border-white/[0.08] backdrop-blur-md self-start sm:self-auto" role="tablist"><button class="min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium transition-all duration-150 bg-primary/15 text-primary border border-primary/25 shadow-sm" id="tab-queue-btn" role="tab" type="button">Queue</button><button class="min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-white/[0.03] transition-all duration-150" id="tab-finished-btn" role="tab" type="button">Finished</button></div></div><div class="space-y-4" id="queue-container"><div class="glass-tier-1 rounded-[22px] p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto my-8 space-y-5" id="empty-state-view"><div class="w-16 h-16 rounded-[22px] bg-surface-container-high/80 border border-white/10 flex items-center justify-center text-outline shadow-inner"><span class="material-symbols-outlined text-[32px]">download_done</span></div><div class="space-y-1.5"><h2 class="text-headline-md font-headline-md text-on-surface">No downloads</h2><p class="text-body-md font-body-md text-on-surface-variant max-w-sm mx-auto">Manage and monitor packages as they download to your device for offline reading.</p></div><button class="min-h-[44px] px-6 py-2.5 rounded-[14px] bg-primary-container text-on-primary-container hover:bg-primary font-body-md font-semibold inline-flex items-center gap-2 transition-all shadow-[0_0_16px_rgba(124,140,255,0.35)] focus-visible:ring-2 focus-visible:ring-primary" type="button"><span class="material-symbols-outlined text-[20px]">add_circle</span><span>Find a download</span></button></div></div><footer class="pt-6 pb-2 text-right hidden md:block"><span class="text-outline text-label-mono-sm font-label-mono-sm font-num-tabular">EnZIME Reader v1.29.08988</span></footer></main></div>
+<!-- SLIDE-OVER SHEET: Pack Details Sheet (Modal Glass Sheet) -->
+<template id="download-row-template"><article class="glass-tier-1 rounded-[22px] p-5 lg:p-6 transition-all duration-200 border border-outline-variant/30 relative overflow-hidden"><div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div class="flex items-start gap-3.5 flex-1 min-w-0"><div class="w-12 h-12 rounded-[14px] bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined text-[26px]" data-field="icon">menu_book</span></div><div class="space-y-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><h3 class="text-body-lg font-semibold text-on-surface truncate" data-field="filename"></h3><span class="px-2 py-0.5 rounded text-label-mono-sm" data-field="badge"></span></div><div class="flex items-center gap-4 text-label-mono-md text-on-surface-variant"><span data-field="source"></span><span>•</span><span class="font-num-tabular" data-field="total-size"></span></div></div></div><div class="flex items-center gap-2 self-end lg:self-center shrink-0"><button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-surface-container-high/80 hover:bg-surface-variant text-on-surface border border-white/10 flex items-center gap-1.5 text-body-md font-medium" data-action="pause" type="button"><span class="material-symbols-outlined text-[18px]">pause</span><span>Pause</span></button><button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-surface-container-high/80 hover:bg-surface-variant text-on-surface-variant hover:text-error border border-white/10 flex items-center gap-1.5 text-body-md font-medium" data-action="cancel" type="button"><span class="material-symbols-outlined text-[18px]">close</span><span>Cancel</span></button><button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 flex items-center gap-1 text-body-md font-medium" data-action="details" type="button"><span class="material-symbols-outlined text-[18px]">info</span><span>Details</span></button></div></div><div class="mt-5 space-y-2"><div class="h-2 w-full rounded-full bg-surface-container-lowest overflow-hidden border border-white/5"><div class="h-full bg-primary rounded-full transition-all duration-300" data-field="progress-bar" style="width: 0%;"></div></div><div class="flex items-center justify-between text-label-mono-sm text-on-surface-variant font-num-tabular"><span data-field="progress-text"></span><div class="flex items-center gap-3"><span data-field="speed"></span><span>•</span><span data-field="eta"></span></div></div></div></article></template><template id="pack-details-template"><div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" data-slot="backdrop"></div><aside aria-labelledby="sheet-pack-title" aria-modal="true" class="fixed right-0 top-0 bottom-0 z-50 w-full sm:w-[480px] bg-[#141824]/95 backdrop-blur-2xl border-l border-white/[0.12] shadow-2xl flex flex-col justify-between overflow-y-auto" role="dialog"><div class="p-6 border-b border-white/[0.08] flex items-start justify-between gap-4 sticky top-0 bg-[#141824]/90 backdrop-blur-md z-10"><div class="space-y-1"><h2 class="text-headline-md font-headline-md text-on-surface leading-snug" id="sheet-pack-title">Pack details</h2><div class="text-body-md text-on-surface-variant truncate" data-field="pack-filename"></div></div><button aria-label="Close sheet" class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-[14px] bg-surface-container-high/60 hover:bg-surface-variant flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors" data-action="close-sheet" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="p-6 space-y-6 flex-1"><section class="space-y-3"><h3 class="text-label-mono-md font-label-mono-md text-outline uppercase tracking-wider">Package Metadata</h3><dl class="grid grid-cols-2 gap-3 text-body-md"><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Source</dt><dd class="font-medium text-on-surface mt-0.5" data-field="source"></dd></div><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Edition</dt><dd class="font-medium text-on-surface mt-0.5 font-num-tabular" data-field="edition"></dd></div><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Language</dt><dd class="font-medium text-on-surface mt-0.5" data-field="language"></dd></div><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Coverage</dt><dd class="font-medium text-on-surface mt-0.5" data-field="coverage"></dd></div><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Retained size</dt><dd class="font-medium text-on-surface mt-0.5 font-num-tabular" data-field="retained-size"></dd></div><div class="p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Readable articles</dt><dd class="font-medium text-on-surface mt-0.5 font-num-tabular" data-field="readable-articles"></dd></div><div class="col-span-2 p-3.5 rounded-[14px] bg-surface-container-low/80 border border-white/[0.05]"><dt class="text-label-mono-sm text-outline">Integrity result</dt><dd class="font-medium text-on-surface mt-0.5" data-field="integrity-result"></dd></div></dl></section></div><div class="p-6 border-t border-white/[0.08] bg-[#141824] space-y-3 sticky bottom-0"><button class="w-full h-11 min-h-[44px] rounded-[14px] bg-primary-container text-on-primary-container hover:bg-primary text-body-md font-semibold flex items-center justify-center gap-2 transition-all shadow-[0_0_16px_rgba(124,140,255,0.25)]" data-action="open-pack" type="button"><span class="material-symbols-outlined text-[20px]">folder_open</span><span>Open</span></button><button class="w-full h-11 min-h-[44px] rounded-[14px] text-error hover:bg-error/10 text-body-md font-medium flex items-center justify-center gap-2 transition-colors" data-action="prompt-removal" type="button"><span class="material-symbols-outlined text-[20px]">delete_forever</span><span>Remove pack</span></button></div></aside></template><template id="pack-removal-template"><div aria-describedby="removal-desc" aria-labelledby="removal-title" aria-modal="true" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4" role="alertdialog"><div class="glass-tier-2 rounded-[22px] p-6 max-w-md w-full border border-white/15 space-y-5 shadow-2xl"><div class="flex items-start gap-4"><div class="w-12 h-12 rounded-[14px] bg-error/15 border border-error/30 text-error flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[24px]">folder_delete</span></div><div class="space-y-1"><h3 class="text-headline-md font-headline-md text-on-surface font-semibold" id="removal-title">Remove this pack?</h3><p class="text-body-md font-body-md text-on-surface-variant leading-relaxed" id="removal-desc">Your notes and highlights will be kept.</p></div></div><div class="flex items-center justify-end gap-3 pt-2"><button class="min-h-[44px] px-4 py-2 rounded-[14px] bg-surface-container-high hover:bg-surface-variant text-on-surface text-body-md font-medium border border-white/10 transition-colors" data-action="cancel-removal" type="button">Keep pack</button><button class="min-h-[44px] px-5 py-2 rounded-[14px] bg-error hover:bg-error/90 text-on-error font-body-md font-semibold transition-colors shadow-[0_0_16px_rgba(255,180,171,0.25)]" data-action="confirm-removal" type="button">Remove</button></div></div></div></template>
+<!-- CONFIRMATION DIALOG: Removal Confirmation Dialog -->
+<!-- SHARED COMPONENT: BottomNavBar (Responsive Mobile <= 640px) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]"><a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs hover:text-on-surface active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#home"><span class="material-symbols-outlined text-[22px]">home</span><span class="text-label-mono-sm font-label-mono-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#library"><span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">local_library</span><span class="text-label-mono-sm font-label-mono-sm mt-0.5 font-semibold">Library</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs hover:text-on-surface active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#notes"><span class="material-symbols-outlined text-[22px]">description</span><span class="text-label-mono-sm font-label-mono-sm mt-0.5">Notes</span></a><a class="flex flex-col items-center justify-center text-on-surface-variant px-space-md py-space-xs hover:text-on-surface active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#settings"><span class="material-symbols-outlined text-[22px]">settings</span><span class="text-label-mono-sm font-label-mono-sm mt-0.5">Settings</span></a></nav>
+<!-- Interactive Logic -->
+<script>
+    // Tab switching interaction
+    function switchTab(tab) {
+      const qBtn = document.getElementById('tab-queue-btn');
+      const fBtn = document.getElementById('tab-finished-btn');
+
+      if (tab === 'queue') {
+        qBtn.className = "min-h-[38px] px-4 py-1.5 rounded-lg text-body-md font-body-md font-medium transition-all duration-150 bg-primary/15 text-primary border border-primary/25 shadow-sm";
+        fBtn.className = "min-h-[38px] px-4 py-1.5 rounded-lg text-body-md font-body-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-white/[0.03] transition-all duration-150";
+        document.getElementById('queue-container').style.display = 'block';
+      } else {
+        fBtn.className = "min-h-[38px] px-4 py-1.5 rounded-lg text-body-md font-body-md font-medium transition-all duration-150 bg-primary/15 text-primary border border-primary/25 shadow-sm";
+        qBtn.className = "min-h-[38px] px-4 py-1.5 rounded-lg text-body-md font-body-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-white/[0.03] transition-all duration-150";
+      }
+    }
+
+    // Toggle Empty vs Active Queue demo states cleanly
+    function toggleStateDemo(mode) {
+      const activeList = document.getElementById('active-jobs-list');
+      const emptyView = document.getElementById('empty-state-view');
+      const btnActive = document.getElementById('state-toggle-active');
+      const btnEmpty = document.getElementById('state-toggle-empty');
+
+      if (mode === 'active') {
+        activeList.classList.remove('hidden');
+        emptyView.classList.add('hidden');
+        btnActive.className = "px-3 py-1 rounded bg-primary-container text-on-primary-container font-label-mono-sm font-semibold transition-colors";
+        btnEmpty.className = "px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-on-surface-variant font-label-mono-sm transition-colors";
+      } else {
+        activeList.classList.add('hidden');
+        emptyView.classList.remove('hidden');
+        btnEmpty.className = "px-3 py-1 rounded bg-primary-container text-on-primary-container font-label-mono-sm font-semibold transition-colors";
+        btnActive.className = "px-3 py-1 rounded bg-white/5 hover:bg-white/10 text-on-surface-variant font-label-mono-sm transition-colors";
+      }
+    }
+
+    // Pack Details Slide-over sheet management
+    const packDatabase = {
+      'wikipedia': {
+        title: "wikipedia_en_all_maxi_2024-11.zim",
+        source: "Wikimedia Offline",
+        edition: "2024-11",
+        lang: "English (en)",
+        coverage: "Full (Articles + Images)",
+        size: "48.20 GB",
+        counts: "6,842,109 articles"
+      },
+      'gutenberg': {
+        title: "gutenberg_en_all_2024-09.zim",
+        source: "Project Gutenberg Mirror",
+        edition: "2024-09",
+        lang: "English (en)",
+        coverage: "Complete texts",
+        size: "12.40 GB",
+        counts: "70,412 books"
+      },
+      'mdn': {
+        title: "mdn_web_docs_en_2024-10.zim",
+        source: "MDN Web Docs Open Archive",
+        edition: "2024-10",
+        lang: "English (en)",
+        coverage: "Full references",
+        size: "4.10 GB",
+        counts: "18,920 articles"
+      }
+    };
+
+    function openPackSheet(packKey = 'wikipedia') {
+      const data = packDatabase[packKey] || packDatabase['wikipedia'];
+      
+      document.getElementById('sheet-pack-title').textContent = data.title;
+      document.getElementById('meta-source').textContent = data.source;
+      document.getElementById('meta-edition').textContent = data.edition;
+      document.getElementById('meta-lang').textContent = data.lang;
+      document.getElementById('meta-coverage').textContent = data.coverage;
+      document.getElementById('meta-size').textContent = data.size;
+      document.getElementById('meta-counts').textContent = data.counts;
+
+      const sheet = document.getElementById('pack-details-sheet');
+      const backdrop = document.getElementById('pack-sheet-backdrop');
+      
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      sheet.classList.remove('translate-x-full');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePackSheet() {
+      const sheet = document.getElementById('pack-details-sheet');
+      const backdrop = document.getElementById('pack-sheet-backdrop');
+      
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      sheet.classList.add('translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    // Removal Confirmation Dialog Management
+    function promptRemoval() {
+      const dialog = document.getElementById('removal-dialog-backdrop');
+      const card = document.getElementById('removal-dialog-card');
+      dialog.classList.remove('opacity-0', 'pointer-events-none');
+      card.classList.remove('scale-95');
+      card.classList.add('scale-100');
+    }
+
+    function closeRemovalPrompt() {
+      const dialog = document.getElementById('removal-dialog-backdrop');
+      const card = document.getElementById('removal-dialog-card');
+      dialog.classList.add('opacity-0', 'pointer-events-none');
+      card.classList.remove('scale-100');
+      card.classList.add('scale-95');
+    }
+
+    function confirmRemoval() {
+      closeRemovalPrompt();
+      closePackSheet();
+      // Provide clean feedback
+      const notice = document.createElement('div');
+      notice.className = "fixed bottom-24 md:bottom-8 right-8 z-50 glass-tier-2 px-5 py-3 rounded-xl border border-secondary/30 text-on-surface flex items-center gap-3 shadow-2xl animate-fade-in";
+      notice.innerHTML = `
+        <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
+        <span class="text-body-md font-medium">Package removed from disk. Notes and highlights kept.</span>
+      `;
+      document.body.appendChild(notice);
+      setTimeout(() => notice.remove(), 4000);
+    }
+
+    // Backdrop click listeners
+    document.getElementById('pack-sheet-backdrop').addEventListener('click', closePackSheet);
+  </script>
+</body></html>

@@ -1,0 +1,366 @@
+{
+  "reviewDate": "2026-11-13",
+  "source": "Stitch list_projects/list_screens and repository-recorded v5 get_screen recovery",
+  "limitation": "v5 list_screens returned no screens despite four addressable activation screens and a navigator thumbnail; enumeration is not asserted complete for that project.",
+  "screens": [
+    {
+      "name": "projects/9898008898121608042/screens/16699eb7627f48ec82c251dd78865494",
+      "title": "EnZIME Download Plan",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/ee5022961deb4968a8a9061b2088fe85",
+      "screenshot": "projects/9898008898121608042/files/7c4f9d6c15e54ba89a51ba2a844d2d44"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/0322aff95fb341c7b2e6cdbd35b3c598",
+      "title": "EnZIME AI Conversation",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/a4a75403b6214c928e8a82f6f6de12a1",
+      "screenshot": "projects/9898008898121608042/files/794c8da0f8d14be894f3dc7216fd295c"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/5160a8e4316b42568e6657c5b38c0568",
+      "title": "Three.js",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/39cc615972f5433b94d6a0e9e3292fd3"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/bdb6a9b98d75408f9017e6fac01e857e",
+      "title": "EnZIME Library & Pack Manager",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/04a54c8629794b17858fae79fd0c07ba",
+      "screenshot": "projects/9898008898121608042/files/6889937eeba14a2f85cc31b69ac2f736"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/fa1c8d2a538a443db832dca8ae2ce96c",
+      "title": "EnZIME Notes Browser",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/203ea48475ea44ee9b53c67c081e360d",
+      "screenshot": "projects/9898008898121608042/files/18e082cce00146fa963f889533b62f09"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/71c9e955e88140fba3c97008280f051e",
+      "title": "EnZIME Memory/Lore Browser",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/8bf2979699dc46dfbb43168ac762daa5",
+      "screenshot": "projects/9898008898121608042/files/da5f50c508ff439a86735cb1f4994c73"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/590f5f8f42454d77b846e2a8a481dd85",
+      "title": "EnZIME Home Dashboard",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/02111055582c4ec68e3618b09c053149",
+      "screenshot": "projects/9898008898121608042/files/be85764fe0754e4ab1e70cf8b7c35cc8"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/2e4d835c812a49a58eda2d64c319d025",
+      "title": "EnZIME Setup Wizard",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/416ce5c130164311a3528d18cd4720b4",
+      "screenshot": "projects/9898008898121608042/files/6b657f4882aa448594bcea5980c315fd"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/9878f56e17414a20867d45f114ca7a33",
+      "title": "ThinkSpace Navigator",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/e484c152a92040ffb7039fa237d961ff",
+      "screenshot": "projects/9898008898121608042/files/70d54441f2c342eda0bede8dcfd9f587"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/3a2348d4467349558b43f66957259a9e",
+      "title": "EnZIME Classic Reader",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/58d3d972d5b64120a6c132ab2b6cbb49",
+      "screenshot": "projects/9898008898121608042/files/4f976e4051a44e78898efe1eeff1ade0"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/53d7c7260db44c709482a51d32b30b48",
+      "title": "Shader",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/46b4ae157b7b47f183b7bf52c18b0657"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/dbec8d1f0cb04eeca57da011665e9f5e",
+      "title": "EnZIME System Settings",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/0ba9cf1bdd2a49fab4e183966ce207c1",
+      "screenshot": "projects/9898008898121608042/files/533599940f3849d78e98754359818197"
+    },
+    {
+      "name": "projects/9898008898121608042/screens/e6942860431b4ba4be59b7a046b13344",
+      "title": "EnZIME Annotation Workspace",
+      "type": "DESIGN",
+      "html": "projects/9898008898121608042/files/643e2a97e4ee460f92fedb742e6d5b5f",
+      "screenshot": "projects/9898008898121608042/files/242f1e7f43c84580b8a3001d38696fb0"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/3c7cc8b3efac40869ba707792b6d6172",
+      "title": "EnZIME - Global Search Results",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/b7c7f2068b404a6aba13cef7ec996baf",
+      "screenshot": "projects/7808089884213645532/files/d0d2aaded3a745369610f9f6fb7d230c"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/e40062bb2bd14aec8b825728e97eef56",
+      "title": "EnZIME Reader - Deep Reading & AI Notebook",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/11e0ed73c23c42a79f5595471e97579b",
+      "screenshot": "projects/7808089884213645532/files/06e756e5b7fd4eaab16631615af7c69d"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/163ad666b67948d885a9b827b9d3383b",
+      "title": "EnZIME - Library Home",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/8347445023060851268",
+      "screenshot": "projects/7808089884213645532/files/6879020357131044506"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/1ff91f6aaa8a4f3b8338ce164db0588d",
+      "title": "EnZIME Settings",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/b47b2990730349eeb5fb80773c7f60c5",
+      "screenshot": "projects/7808089884213645532/files/f02d625a154840f69f69b805c45b1c3f"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/3d5f962f927f4023bd7714fb05864c76",
+      "title": "EnZIME - Dynamic Download Catalog",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/e7171168ecc04b358a195a86968db721",
+      "screenshot": "projects/7808089884213645532/files/0c564255a4f749c1bbf4312024ffaacc"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/66c84849c53145b7a657d6aa68178af5",
+      "title": "EnZIME Library - Mobile Home",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/6df70b73011644cc911288c34c7aa9f2",
+      "screenshot": "projects/7808089884213645532/files/9826fc28629c4c19be3eb6590e29ee8d"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/5f2da0aea55d49fd82822268b385f9e5",
+      "title": "EnZIME Reader - Mobile View",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/1138a4e6e0104a8196988f216ea4b7dc",
+      "screenshot": "projects/7808089884213645532/files/40cbf620e1854b449750e638b8016f70"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/8cf2146ad9e54860bae02ebc6541dd7f",
+      "title": "EnZIME Pro Paywall Overlay",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/e0fc1ca73d114fffa5218cd3fe7b4026",
+      "screenshot": "projects/7808089884213645532/files/e5c15b9cb2b54b80aabe6e5d74761d60"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/717d021f1dcd4fa0a02d6b99a78b7f38",
+      "title": "EnZIME - AI Setup Onboarding",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/fc3e34091df24f7fa8b10033a81eacee",
+      "screenshot": "projects/7808089884213645532/files/b1d43c7fb1f344f3bccfcdc54a60a9c9"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/eb681073a42946e7ace38df028c95a60",
+      "title": "EnZIME Notebook - Annotations Management",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/0311645eb9a74795aa7ec4e0829e758c",
+      "screenshot": "projects/7808089884213645532/files/e33968361b214ec7913b8c3f5c8288a8"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/90781ed7d7db48a1968b3b2f924a3025",
+      "title": "EnZIME - Dynamic Download Catalog",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/f9aec3dc1db54943b2991af37343eb18",
+      "screenshot": "projects/7808089884213645532/files/2a88fb082797438a92a5df0020515990"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/ec77f946888943619b8f7970fc23f1d8",
+      "title": "Share & Sync Annotations",
+      "type": "DESIGN",
+      "html": "projects/7808089884213645532/files/2d96b3628c9b449aa3d5f3f86d96fe83",
+      "screenshot": "projects/7808089884213645532/files/7f8ae68c5fce40a5acfc6679260d8bfe"
+    },
+    {
+      "name": "projects/7808089884213645532/screens/51d69a5297214cd585af92f508317809",
+      "title": "EnZIME - Project PRD & Brief",
+      "type": "DOCUMENT",
+      "html": "projects/7808089884213645532/files/12d54011a27545578e627073ad08903a"
+    },
+    {
+      "name": "projects/10341950726478924497/screens/077aa12fec554b93a8096611839700cd",
+      "title": "Reading & Annotation Mode",
+      "type": "DESIGN",
+      "html": "projects/10341950726478924497/files/3df5f123ff8f44da933b3b9c291fc790",
+      "screenshot": "projects/10341950726478924497/files/22848ba2530c4bb0bf865908f1d53242"
+    },
+    {
+      "name": "projects/10341950726478924497/screens/09142a27c3dd4ea390899cb1f25acb40",
+      "title": "EnZIME Landing Page",
+      "type": "DESIGN",
+      "html": "projects/10341950726478924497/files/018a75d9f8f4498e81d51da62efe73f1",
+      "screenshot": "projects/10341950726478924497/files/2da0c3fc56154823b7360625803b0ca4"
+    },
+    {
+      "name": "projects/10341950726478924497/screens/50384b5b81d8475bbcad93bd7af510c1",
+      "title": "Archive Library Manager",
+      "type": "DESIGN",
+      "html": "projects/10341950726478924497/files/f9cec78933894456b931773967e9ce13",
+      "screenshot": "projects/10341950726478924497/files/5d83aee5328c4ef2a5b7bcbeb9230459"
+    },
+    {
+      "name": "projects/10341950726478924497/screens/9ef20c8d1ef6420ea12addd0a8ec2a0c",
+      "title": "The Navigator (Flagship View)",
+      "type": "DESIGN",
+      "html": "projects/10341950726478924497/files/a2d99df4b5a34ac99b5e9ac3a3e2156e",
+      "screenshot": "projects/10341950726478924497/files/c826459f7a6a4e2488dc349a1f775610"
+    },
+    {
+      "name": "projects/10341950726478924497/screens/16b16fc99af74939b1c40519d11a29bf",
+      "title": "Product Requirements Document",
+      "type": "DOCUMENT",
+      "html": "projects/10341950726478924497/files/e3855a73cee04b9eb04430a41e7de843"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/d97c9d23544341ccb723f417489b55b7",
+      "title": "EnZIME-Lite Reader with Annotation Overlay",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/4f1aeea4339c44f2af63eb0f00f94bc5",
+      "screenshot": "projects/9609690129861232556/files/0aac49e4c58a419a897d5e3ac83cba48"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/647737521cda4728aeaa6cf16cdec4c5",
+      "title": "Reader with Annotation Overlay",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/a6832badbae94265b3af2a5e697d7640",
+      "screenshot": "projects/9609690129861232556/files/b02c010fddb34f9595624e958338b3df"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/9cd72418a074411fa5ff50561f986f31",
+      "title": "Settings & Storage Management",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/d461f196291b4f6c802b540af2e281c0",
+      "screenshot": "projects/9609690129861232556/files/7ba40aa850594c1bb3f51efd8ff39330"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/5916725e425549b8b34828da515d822f",
+      "title": "My Marks Index",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/7131bbcc3d444e25b3700d007faf7520",
+      "screenshot": "projects/9609690129861232556/files/2e414f57d211487bb560cc019224c54c"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/825feec02ced4e6ba1bbae006a7cc6e5",
+      "title": "Field Library Home",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/16691342716561129724",
+      "screenshot": "projects/9609690129861232556/files/3560875707279119839"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/207f56cf0e3c499e93d0b950aa64f526",
+      "title": "Reader with Annotation Overlay",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/b32a7adce8074041978698655283b07b",
+      "screenshot": "projects/9609690129861232556/files/baaaf48c54324d1ab1150fffe6edb3d8"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/c67d5bc620d149e3946d815e8df6878b",
+      "title": "Kiwix Catalog Browser",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/68e0d73331bf405fa6a6aad3c2ba47d9",
+      "screenshot": "projects/9609690129861232556/files/b27cfdc56d004c7e82e8145e13269b61"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/d90fe1fd17e64d059b9a5eaeeeb438d4",
+      "title": "EnZIME Synthesis Insight Graph",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/c3f20677a97d4ddbbe909a2a2b5869ef",
+      "screenshot": "projects/9609690129861232556/files/e506803a10d7468dad5b01e4e7acac72"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/964879414b4649bca4d619a01e9fc553",
+      "title": "Main Splash Login Screen with Hybrid Auth & Upsell Offers",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/screens/964879414b4649bca4d619a01e9fc553/fileEntries/html",
+      "screenshot": "projects/9609690129861232556/screens/964879414b4649bca4d619a01e9fc553/fileEntries/screenshot"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/20df9b695d0649e99e1503a9ff68b0ca",
+      "title": "Dynamic Download Depth Configurator",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/2a5a47135571447ebd431ae3b167d660",
+      "screenshot": "projects/9609690129861232556/files/26d9fea9e7bc4b1787d838cd563dca55"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/d41c705993ed41ed91af00cca84aa7b7",
+      "title": "Reader with Annotation Overlay",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/847fb8911a4b4990871d6aa9aa777db4",
+      "screenshot": "projects/9609690129861232556/files/3bbcf7d5ddec42768386c0058b4e0255"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/53ef2b1ac68c4c0ea872476124fdaab3",
+      "title": "Field Library Home",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/823b0f955efd43f9bea321bed3ec1c22",
+      "screenshot": "projects/9609690129861232556/files/53b08543a7144ce193182135d0fc7ced"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/78654c6e25bf4c22a480464825060dad",
+      "title": "Synthesis Project Modal Configurator",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/screens/78654c6e25bf4c22a480464825060dad/fileEntries/html",
+      "screenshot": "projects/9609690129861232556/screens/78654c6e25bf4c22a480464825060dad/fileEntries/screenshot"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/2abcb14924194c3cba59db10b4dca2fb",
+      "title": "Field Library Home",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/f2e17a3d7ac5439e8bfe8e2c3c4bba50",
+      "screenshot": "projects/9609690129861232556/files/f20c439d72124494b903710ed1384eda"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/4f3ce75d621c4f669e79284ae29c3636",
+      "title": "Field Library Home",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/files/b3365f62e8694082b2c10f126f503712",
+      "screenshot": "projects/9609690129861232556/files/0426122e92ad4e02a5296c473698c0c8"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/bc2ab3baad054f9a8c36296c1553023b",
+      "title": "EnZIME Offline Knowledge & Field Reference Flow",
+      "type": "PROTOTYPE_V2",
+      "html": "projects/9609690129861232556/screens/bc2ab3baad054f9a8c36296c1553023b/fileEntries/html"
+    },
+    {
+      "name": "projects/9609690129861232556/screens/31b0a2aad6aa4cb8bedd88638994b30c",
+      "title": "Main Splash Login Screen",
+      "type": "DESIGN",
+      "html": "projects/9609690129861232556/screens/31b0a2aad6aa4cb8bedd88638994b30c/fileEntries/html",
+      "screenshot": "projects/9609690129861232556/screens/31b0a2aad6aa4cb8bedd88638994b30c/fileEntries/screenshot"
+    },
+    {
+      "name": "projects/13978455034360167310/screens/fd59bed9728c4250a703a9765d0a082d",
+      "title": "Activation — Step 1 of 4",
+      "type": "DESIGN",
+      "html": "projects/13978455034360167310/files/f354b24d92c74fffbfe0bc6d0541a105",
+      "screenshot": "projects/13978455034360167310/files/8454de4f6c6f4294b29dba6bdc0cbfb1"
+    },
+    {
+      "name": "projects/13978455034360167310/screens/1b3fa2633c5547f1964441c8652fa9c1",
+      "title": "Activation — Step 2 of 4",
+      "type": "DESIGN",
+      "html": "projects/13978455034360167310/files/7f633ac123fa4164b1e5c598775862c0",
+      "screenshot": "projects/13978455034360167310/files/91a0fa31363e418784b672ed95ee8fd3"
+    },
+    {
+      "name": "projects/13978455034360167310/screens/b69b47e09aab439997b3ca7c13e01985",
+      "title": "Activation — Step 3 of 4",
+      "type": "DESIGN",
+      "html": "projects/13978455034360167310/files/75fe1b01378b47f29ff4237023ad931d",
+      "screenshot": "projects/13978455034360167310/files/5359485d3c72451a8cf57d1bc4aa002b"
+    },
+    {
+      "name": "projects/13978455034360167310/screens/639fd99212364c45baa3ca82aa46a794",
+      "title": "Activation — Step 4 of 4",
+      "type": "DESIGN",
+      "html": "projects/13978455034360167310/files/7e6bd43b8887444ea6da085f8eb98fbe",
+      "screenshot": "projects/13978455034360167310/files/2796aa7fcafb40fa9e13fd18de3d1059"
+    }
+  ]
+}

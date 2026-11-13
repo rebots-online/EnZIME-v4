@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Home</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Literata:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#dfe0ff",
+            "surface-container-high": "#282a32",
+            "on-error": "#690005",
+            "secondary-container": "#00cec3",
+            "on-tertiary-fixed-variant": "#614000",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed-variant": "#00504b",
+            "on-primary-container": "#001892",
+            "inverse-on-surface": "#2e3039",
+            "on-primary": "#041c94",
+            "surface-container": "#1d1f28",
+            "outline": "#8f8f9f",
+            "tertiary-container": "#c88900",
+            "on-tertiary-fixed": "#281800",
+            "on-surface": "#e2e1ee",
+            "surface-container-lowest": "#0c0e16",
+            "primary-fixed-dim": "#bcc3ff",
+            "surface-dim": "#11131b",
+            "outline-variant": "#454653",
+            "surface-container-low": "#191b24",
+            "on-primary-fixed": "#000c60",
+            "surface-variant": "#33343e",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "primary-container": "#7c8cff",
+            "surface-container-highest": "#33343e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-surface-variant": "#c6c5d5",
+            "error-container": "#93000a",
+            "error": "#ffb4ab",
+            "on-secondary-container": "#00534e",
+            "on-background": "#e2e1ee",
+            "inverse-surface": "#e2e1ee",
+            "surface": "#11131b",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-container": "#402900",
+            "on-secondary": "#003733",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "tertiary": "#ffba43",
+            "tertiary-fixed": "#ffddaf",
+            "background": "#11131b",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#ffba43",
+            "on-tertiary": "#442c00",
+            "on-secondary-fixed": "#00201e",
+            "secondary-fixed": "#59f9ed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.5rem",
+            "margin-md": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "label-mono-sm": ["JetBrains Mono"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-lg": ["Inter"],
+            "label-mono-md": ["JetBrains Mono"],
+            "display-lg-mobile": ["Inter"],
+            "label-mono-lg": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .aurora-canvas {
+      background-color: #090B13;
+      background-image: 
+        radial-gradient(circle at 18% 25%, rgba(30, 27, 75, 0.45) 0%, transparent 48%),
+        radial-gradient(circle at 82% 78%, rgba(52, 224, 212, 0.04) 0%, transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(124, 140, 255, 0.03) 0%, transparent 60%);
+    }
+  </style>
+</head>
+<body class="aurora-canvas text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex overflow-x-hidden">
+<!-- ==================== LEFT NAVIGATION RAIL ==================== -->
+<aside aria-label="Sidebar Navigation" class="hidden md:flex flex-col items-center justify-between h-screen w-[104px] fixed left-0 top-0 z-50 py-5 px-2 bg-surface-container-low/80 backdrop-blur-lg border-r border-outline-variant/30 select-none"><div class="flex flex-col items-center gap-6 w-full"><div class="flex flex-col items-center justify-center"><div class="w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant/40 flex items-center justify-center shrink-0 shadow-inner group"><svg class="w-5 h-5 text-primary-container transition-transform duration-200 group-hover:scale-105" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 6H19L9.5 17.5H19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path><path d="M5 6L8 3" stroke="#34E0D4" stroke-linecap="round" stroke-width="1.8"></path><path d="M16 20.5L19 17.5" stroke="#34E0D4" stroke-linecap="round" stroke-width="1.8"></path></svg></div><span class="text-[11px] font-semibold text-primary mt-1.5 tracking-tight font-body-md">EnZIME</span></div><nav aria-label="Main Navigation" class="flex flex-col items-center gap-2 w-full"><a aria-current="page" class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl bg-surface-container-high/60 text-primary border border-primary/20 transition-all duration-150" href="#home"><span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">home</span><span class="text-[11px] font-medium leading-none font-body-md">Home</span></a><a class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150" href="#library"><span class="material-symbols-outlined text-[22px]">local_library</span><span class="text-[11px] font-medium leading-none font-body-md">Library</span></a><a class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150" href="#ask"><span class="material-symbols-outlined text-[22px]">contact_support</span><span class="text-[11px] font-medium leading-none font-body-md">Ask</span></a><a class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150" href="#notes"><span class="material-symbols-outlined text-[22px]">description</span><span class="text-[11px] font-medium leading-none font-body-md">Notes</span></a><a class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150" href="#memory"><span class="material-symbols-outlined text-[22px]">memory</span><span class="text-[11px] font-medium leading-none font-body-md">Memory</span></a><a class="w-full flex flex-col items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container/60 transition-colors duration-150" href="#settings"><span class="material-symbols-outlined text-[22px]">settings</span><span class="text-[11px] font-medium leading-none font-body-md">Settings</span></a></nav></div></aside>
+<!-- ==================== DESKTOP CONTENT WORKSPACE ==================== -->
+<div class="flex-1 flex flex-col min-w-0 md:pl-[104px] min-h-screen">
+<!-- Top Bar Component -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md lg:px-space-lg h-14 bg-surface-container/70 backdrop-blur-md border-b border-outline-variant/30 shadow-sm transition-colors">
+<!-- Identity & Context Breadcrumb -->
+<div class="flex items-center gap-3">
+<div class="md:hidden flex items-center justify-center w-8 h-8 rounded bg-surface-container-high border border-outline-variant/40">
+<span class="text-primary font-bold text-sm">Z</span>
+</div>
+<div class="flex items-center gap-2"><span class="text-headline-md font-headline-md font-semibold text-on-surface tracking-tight">Home</span></div>
+</div>
+<!-- Center Search Bar (Keyboard Accessible) -->
+<div class="flex-1 max-w-xl mx-4 hidden sm:block">
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[18px] group-focus-within:text-primary transition-colors pointer-events-none">search</span>
+<input aria-label="Search ZIM archives, topics, or index" class="w-full h-10 pl-10 pr-16 bg-surface-container-lowest/80 text-on-surface placeholder:text-outline border border-outline-variant/40 rounded-lg text-body-md font-body-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-inner" placeholder="Search ZIM archives, topics, or index... [Ctrl+K]" type="search"/>
+<kbd class="absolute right-3 hidden lg:inline-flex items-center px-1.5 py-0.5 text-label-mono-sm font-label-mono-sm text-outline bg-surface-container-high/90 border border-outline-variant/40 rounded shadow-xs select-none">
+            Ctrl+K
+          </kbd>
+</div>
+</div>
+<!-- Trailing Action Buttons -->
+<div class="flex items-center gap-2"><button aria-label="Search archives" class="sm:hidden flex items-center justify-center min-h-[44px] min-w-[44px] text-on-surface-variant hover:text-on-surface rounded-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button></div>
+</header>
+<!-- Main Viewport Canvas (Serene First Launch Empty State) -->
+<main class="flex-1 flex flex-col justify-between px-space-md lg:px-space-xl py-space-lg relative overflow-hidden" role="main">
+<!-- Subtle Atmospheric Ambient Flare within viewport -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-40">
+<div class="w-[580px] h-[340px] bg-primary-container/10 rounded-full blur-[120px]"></div>
+</div>
+<!-- Primary Centered Workspace Anchor -->
+<div class="my-auto w-full max-w-2xl mx-auto z-10 flex flex-col items-center text-center">
+<!-- Archive Vault Glass Container -->
+<div class="w-full bg-[#171C2C]/75 backdrop-blur-2xl border border-white/10 rounded-[22px] p-8 sm:p-12 md:p-14 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] transition-all relative"><div class="mx-auto w-20 h-20 rounded-2xl bg-[#1E2438]/80 border border-primary/20 flex items-center justify-center mb-8 relative shadow-inner group"><div class="absolute inset-0 rounded-2xl bg-primary/5 blur-sm"></div><svg aria-hidden="true" class="w-10 h-10 text-primary-fixed relative transition-transform duration-300 group-hover:scale-105" fill="none" viewbox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect height="24" rx="2.5" stroke="currentColor" stroke-opacity="0.85" stroke-width="1.75" width="26" x="7" y="8"></rect><line stroke="currentColor" stroke-opacity="0.5" stroke-width="1.5" x1="14" x2="14" y1="8" y2="32"></line><line stroke="#34E0D4" stroke-linecap="round" stroke-width="1.75" x1="19" x2="27" y1="14" y2="14"></line><line stroke="currentColor" stroke-linecap="round" stroke-opacity="0.7" stroke-width="1.5" x1="19" x2="25" y1="19" y2="19"></line><line stroke="currentColor" stroke-linecap="round" stroke-opacity="0.7" stroke-width="1.5" x1="19" x2="28" y1="24" y2="24"></line><circle cx="10.5" cy="11.5" fill="#7C8CFF" r="1"></circle></svg></div><h1 class="text-3xl sm:text-4xl font-medium tracking-tight text-[#F0F2FA] leading-tight mb-3 font-body-md">Your knowledge, kept close.</h1><p class="text-[#8E96B0] text-body-lg font-body-md max-w-lg mx-auto leading-relaxed">Open a ZIM file or find knowledge to keep offline.</p><div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full"><button class="w-full sm:w-auto h-[44px] px-6 bg-[#7C8CFF] text-[#090B13] font-medium text-body-md font-body-md rounded-[14px] shadow-lg shadow-indigo-950/40 hover:opacity-95 hover:shadow-indigo-900/50 active:scale-[0.99] transition-all flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-[#090B13] focus-visible:ring-offset-2 focus-visible:ring-offset-[#7C8CFF] focus-visible:outline-none" type="button"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">folder_open</span><span>Open a ZIM</span></button><button class="w-full sm:w-auto h-[44px] px-6 bg-[#171C2C]/72 text-[#F0F2FA] font-medium text-body-md font-body-md rounded-[14px] border border-white/10 hover:bg-white/[0.05] hover:border-white/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none shadow-sm" type="button"><span class="material-symbols-outlined text-[20px] text-on-surface-variant">downloading</span><span>Find a download</span></button></div><div class="mt-8 pt-6 border-t border-white/[0.04] flex items-center justify-center gap-2 text-[#8E96B0]/80"><p class="text-xs font-body-md text-center text-[#8E96B0]/70">Large downloads are shared across your apps to save space.</p></div></div>
+<!-- ==================== SEMANTIC CONDITIONAL TEMPLATE HOOKS ==================== -->
+<!-- 
+          The following section anchors state data-bindings without polluting the pristine first launch state:
+          - data-hook="continue-reading": Hydrates when an article pointer is available in indexed DB.
+          - data-hook="recent-packs": Hydrates when .zim manifest records exist in local storage paths.
+          - data-hook="active-downloads": Hydrates when background fetch handles or sync worker events run.
+          - data-hook="actionable-error": Hydrates upon I/O read failure or corrupted archive magic headers.
+        -->
+<div aria-hidden="true" class="hidden" data-template-hooks="active">
+<!-- Hook 1: Continue reading data-binding container -->
+<div class="hidden" data-bound="false" data-hook="continue-reading"></div>
+<!-- Hook 2: Recent packs collection hook -->
+<div class="hidden" data-hook="recent-packs" data-pack-count="0"></div>
+<!-- Hook 3: Active downloads telemetry hook -->
+<div class="hidden" data-active-tasks="0" data-hook="active-downloads"></div>
+<!-- Hook 4: Actionable error state trigger -->
+<div class="hidden" data-error-code="null" data-hook="actionable-error"></div>
+</div>
+</div>
+<!-- Footing Hardware & Build Diagnostic Footer -->
+<footer class="w-full pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[#8E96B0]/70 select-none z-10"><div class="w-full flex justify-end text-xs text-on-surface-variant/60 font-body-md select-none">EnZIME Reader v1.29.08988</div></footer>
+</main>
+</div>
+<!-- ==================== MOBILE NAVIGATION DOCK (RESPONSIVE FALLBACK) ==================== -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home (Active) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#home">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-label-mono-sm font-label-mono-sm">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#library">
+<span class="material-symbols-outlined text-[20px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#notes">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform" href="#settings">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+<span class="text-label-mono-sm font-label-mono-sm">More</span>
+</a>
+</nav>
+<!-- Keyboard Shortcuts Micro-Interaction Helper -->
+<script>
+    document.addEventListener('keydown', (e) => {
+      // Trigger search focus on Ctrl+K or Cmd+K
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[type="search"]');
+        if (searchInput) searchInput.focus();
+      }
+    });
+  </script>
+</body></html>

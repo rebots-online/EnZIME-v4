@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S04 Download Plan - EnZIME Reader</title>
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#003733",
+            "inverse-on-surface": "#2e3039",
+            "surface-container": "#1d1f28",
+            "on-tertiary-fixed-variant": "#614000",
+            "primary-container": "#7c8cff",
+            "on-primary-container": "#001892",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-tertiary-container": "#402900",
+            "primary-fixed": "#dfe0ff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline-variant": "#454653",
+            "on-secondary-container": "#00534e",
+            "error": "#ffb4ab",
+            "surface-bright": "#373942",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "on-surface-variant": "#c6c5d5",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-lowest": "#0c0e16",
+            "secondary-container": "#00cec3",
+            "surface-container-high": "#282a32",
+            "tertiary-fixed": "#ffddaf",
+            "primary": "#bcc3ff",
+            "inverse-primary": "#4353c3",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "surface-container-highest": "#33343e",
+            "on-surface": "#e2e1ee",
+            "error-container": "#93000a",
+            "outline": "#8f8f9f",
+            "surface-container-low": "#191b24",
+            "inverse-surface": "#e2e1ee",
+            "on-primary-fixed": "#000c60",
+            "surface-dim": "#11131b",
+            "tertiary": "#ffba43",
+            "secondary-fixed": "#59f9ed",
+            "on-background": "#e2e1ee",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed": "#00201e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-error": "#690005",
+            "on-tertiary": "#442c00",
+            "background": "#11131b",
+            "surface-variant": "#33343e",
+            "on-tertiary-fixed": "#281800",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "card": "22px",
+            "field": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-md": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Strict Aurora Glass Custom Styling */
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .aurora-canvas-radial {
+      background: radial-gradient(circle at 50% 20%, rgba(124, 140, 255, 0.08) 0%, rgba(52, 224, 212, 0.03) 40%, rgba(9, 11, 19, 0) 75%);
+    }
+    .glass-surface {
+      background-color: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+    .glass-field {
+      background-color: rgba(14, 17, 27, 0.85);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+    .tnum {
+      font-variant-numeric: tabular-nums;
+    }
+    /* Slider Custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: rgba(45, 52, 80, 0.5);
+      border-radius: 9999px;
+      height: 6px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #7C8CFF;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(124, 140, 255, 0.6);
+      border: 2px solid #090B13;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090B13] text-[#F4F6FF] selection:bg-primary-container selection:text-on-primary-container relative">
+<!-- Aurora Atmospheric Radial Background -->
+<div class="fixed inset-0 aurora-canvas-radial pointer-events-none z-0"></div>
+<!-- SHARED COMPONENT: TopNavBar (Desktop & Mobile Header) -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md lg:px-space-lg h-14 bg-surface-container/70 dark:bg-surface-container/70 backdrop-blur-md border-b border-outline-variant/30 shadow-sm dark:shadow-none">
+<div class="flex items-center gap-space-md">
+<!-- SideNav mobile toggle or Brand Logo -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-headline-md font-bold">
+          Z
+        </div>
+<span class="text-headline-md font-headline-md font-semibold text-on-surface dark:text-on-surface tracking-tight">
+          EnZIME Reader
+        </span>
+</div>
+<!-- Search on left according to JSON -->
+<div class="hidden sm:flex items-center ml-4 relative">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span>
+<input class="pl-9 pr-3 py-1.5 text-body-md font-body-md rounded-field glass-field text-on-surface placeholder:text-outline text-xs focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none w-48 md:w-64" placeholder="Search archive..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions & Icons -->
+</header>
+<!-- MAIN VIEWPORT CONTAINER WITH DESKTOP RAIL -->
+<div class="flex w-full min-h-[calc(100vh-3.5rem)] relative">
+<!-- SHARED COMPONENT: SideNavBar (Compact 104px left rail on Desktop, docked left-0) -->
+<aside class="hidden md:flex flex-col justify-between h-[calc(100vh-3.5rem)] sticky top-14 left-0 z-30 w-[104px] p-2 bg-surface-container-low/80 backdrop-blur-lg border-r border-outline-variant/30 flex-shrink-0 select-none"><nav class="flex flex-col gap-2 items-center w-full pt-2"><a class="text-on-surface-variant hover:text-on-surface flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#home"><span class="material-symbols-outlined text-[22px]">home</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Home</span></a><a class="bg-surface-container-high/60 text-primary border-l-2 border-primary flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px]" href="#library"><span class="material-symbols-outlined text-[22px]">local_library</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Library</span></a><a class="text-on-surface-variant hover:text-on-surface flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#ask"><span class="material-symbols-outlined text-[22px]">contact_support</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Ask</span></a><a class="text-on-surface-variant hover:text-on-surface flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#notes"><span class="material-symbols-outlined text-[22px]">description</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Notes</span></a><a class="text-on-surface-variant hover:text-on-surface flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#memory"><span class="material-symbols-outlined text-[22px]">memory</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Memory</span></a><a class="text-on-surface-variant hover:text-on-surface flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#settings"><span class="material-symbols-outlined text-[22px]">settings</span><span class="text-label-mono-sm font-label-mono-sm mt-1">Settings</span></a></nav></aside>
+<!-- CONTENT CANVAS: S04 Download Plan Modal / Dedicated Overlay -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-24 md:pb-12 z-10 flex flex-col justify-start items-center">
+<!-- Modal Canvas Window with 22px Card Radius -->
+<section class="w-full max-w-3xl glass-surface rounded-[22px] p-6 sm:p-8 md:p-10 shadow-[0_16px_40px_rgba(0,0,0,0.6)] relative overflow-hidden"><div class="border-b border-[rgba(255,255,255,0.06)] pb-6 mb-6"><h1 class="text-headline-md sm:text-headline-lg font-headline-lg text-[#F4F6FF] tracking-tight">Plan your download</h1><p class="mt-2 text-body-md font-body-md text-[#B7BDD4]">Choose a download and storage to calculate your range.</p></div><form class="space-y-7" id="downloadPlanForm" onsubmit="event.preventDefault();"><div class="space-y-3"><div class="flex items-center justify-between"><label class="text-body-md font-body-md font-medium text-[#F4F6FF]" for="storageSlider">Preferred storage size</label><span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0] tnum" id="currentLimitDisplay">--</span></div><div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center"><div class="sm:col-span-8 flex items-center px-1"><input class="w-full cursor-not-allowed accent-[#7C8CFF] disabled:opacity-40" disabled="" id="storageSlider" max="128" min="0" step="1" type="range" value="0"/></div><div class="sm:col-span-4 flex items-center gap-2"><input class="w-full min-h-[44px] px-3.5 py-2 glass-field rounded-[14px] text-body-md font-body-md text-[#F4F6FF] text-right tnum placeholder:text-[#8E96B0] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed" disabled="" id="storageExactInput" placeholder="--" type="number"/><div class="relative min-w-[76px]"><select class="w-full min-h-[44px] px-2.5 py-2 glass-field rounded-[14px] text-body-md font-body-md text-[#F4F6FF] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none cursor-pointer" id="unitSelector"><option value="GiB">GiB</option><option value="MiB">MiB</option></select></div></div></div><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-label-mono-sm font-label-mono-sm text-[#B7BDD4]"><p class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-outline">info</span><span>Shared across your apps to save space.</span></p><div class="flex items-center gap-2 text-label-mono-sm text-[#8E96B0]" id="storageMediumContainer"><span class="material-symbols-outlined text-[16px]">storage</span><span>Internal storage</span></div></div></div><div class="space-y-3 pt-2"><label class="block text-body-md font-body-md font-medium text-[#F4F6FF]">Allocation strategy</label><div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup"><label class="relative flex items-center justify-between p-3.5 rounded-[14px] glass-field cursor-pointer border hover:border-[rgba(124,140,255,0.3)] transition-all min-h-[48px]" id="labelSpread"><div class="flex items-center gap-3"><input checked="" class="w-4 h-4 text-[#7C8CFF] border-outline-variant focus:ring-0" name="allocationChoice" type="radio" value="spread"/><span class="text-body-md font-body-md text-[#F4F6FF]">Spread cuts evenly</span></div><span class="material-symbols-outlined text-[18px] text-[#B7BDD4]">splitscreen</span></label><label class="relative flex items-center justify-between p-3.5 rounded-[14px] glass-field cursor-pointer border hover:border-[rgba(124,140,255,0.3)] transition-all min-h-[48px]" id="labelDomain"><div class="flex items-center gap-3"><input class="w-4 h-4 text-[#7C8CFF] border-outline-variant focus:ring-0" name="allocationChoice" type="radio" value="prioritize"/><span class="text-body-md font-body-md text-[#F4F6FF]">Prioritize a domain</span></div><span class="material-symbols-outlined text-[18px] text-[#B7BDD4]">filter_alt</span></label></div><div class="hidden pt-1 transition-all" id="domainConditionalBlock"><label class="block text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-1.5" for="preferredDomainInput">Preferred domain or topic</label><div class="relative"><span class="material-symbols-outlined absolute left-3.5 top-3 text-[18px] text-[#8E96B0]">category</span><input class="w-full min-h-[44px] pl-10 pr-3.5 py-2 glass-field rounded-[14px] text-body-md font-body-md text-[#F4F6FF] placeholder:text-[#8E96B0] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none" id="preferredDomainInput" placeholder="e.g. Molecular Biology, Wikipedia Physics, or Medicine" type="text"/></div></div></div><div class="pt-2 flex flex-col sm:flex-row items-center gap-3"><button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#7C8CFF] text-[#090B13] font-body-md text-body-md font-semibold hover:bg-[#96A4FF] shadow-[0_0_16px_rgba(124,140,255,0.35)] transition-all min-h-[44px] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" disabled="" id="computePlanBtn" type="button"><span class="material-symbols-outlined text-[18px]">calculate</span><span>Compute plan</span></button><span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0] text-center sm:text-left">Calculates index buffer and extraction footprint.</span></div><div class="border-t border-[rgba(255,255,255,0.06)] pt-6 space-y-4"><div class="p-4 rounded-[14px] bg-[#171C2C]/50 border border-dashed border-outline-variant/40 flex items-center gap-3 text-[#B7BDD4]" id="initialStateMessage"><span class="material-symbols-outlined text-[22px] text-[#7C8CFF] flex-shrink-0">pending_actions</span><p class="text-body-md font-body-md">Choose a download and storage to calculate your range.</p></div><template id="plan-result-template"><div class="space-y-4"><h3 class="text-headline-md font-headline-md text-[#F4F6FF]">Storage distribution breakdown</h3><div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"><div class="p-3.5 rounded-[14px] glass-field border border-outline-variant/30"><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-1">Source size</div><div class="text-body-lg font-body-lg font-semibold text-[#F4F6FF] tnum" data-plan="source-size"></div></div><div class="p-3.5 rounded-[14px] glass-field border border-outline-variant/30"><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-1">Content to download</div><div class="text-body-lg font-body-lg font-semibold text-[#F4F6FF] tnum" data-plan="content-bytes"></div></div><div class="p-3.5 rounded-[14px] glass-field border border-outline-variant/30"><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-1">Index reserve</div><div class="text-body-lg font-body-lg font-semibold text-[#34E0D4] tnum" data-plan="index-reserve"></div></div><div class="p-3.5 rounded-[14px] glass-field border border-outline-variant/30"><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4] mb-1">Temporary workspace</div><div class="text-body-lg font-body-lg font-semibold text-[#B7BDD4] tnum" data-plan="temp-workspace"></div></div></div><div class="p-4 rounded-[14px] bg-[#191B24] border border-[#7C8CFF]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4]">Maximum retained storage</div><div class="text-headline-md font-headline-md font-semibold text-[#F4F6FF] tnum" data-plan="max-retained"></div></div><div><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4]">Peak storage</div><div class="text-headline-md font-headline-md font-semibold text-[#7C8CFF] tnum" data-plan="peak-storage"></div></div><div><div class="text-label-mono-sm font-label-mono-sm text-[#B7BDD4]">Free space after</div><div class="text-headline-md font-headline-md font-semibold text-[#34E0D4] tnum" data-plan="free-space-after"></div></div></div></div></template></div><div class="border-t border-[rgba(255,255,255,0.06)] pt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-3"><button class="w-full sm:w-auto px-5 py-2.5 rounded-lg glass-surface text-[#F0F2FA] font-body-md text-body-md hover:border-[#7C8CFF]/40 hover:text-white transition-all min-h-[44px] flex items-center justify-center" id="cancelBtn" type="button">Cancel</button><button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#7C8CFF] text-[#090B13] font-body-md text-body-md font-semibold hover:bg-[#96A4FF] shadow-[0_0_16px_rgba(124,140,255,0.35)] transition-all min-h-[44px] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" disabled="" id="startDownloadBtn" type="button"><span class="material-symbols-outlined text-[18px]">file_download</span><span>Start download</span></button></div></form></section>
+<!-- Quiet version bottom-right: strictly per spec (no dots or badges) -->
+<div class="w-full max-w-3xl mt-6 text-right pr-2">
+<span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0] tracking-normal select-none">
+          EnZIME Reader v1.29.08988
+        </span>
+</div>
+</main>
+</div>
+<!-- SHARED COMPONENT: BottomNavBar (Mobile Layout Only, docked full-width bottom-0) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-surface-container/90 dark:bg-surface-container/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs active:scale-95 transition-transform duration-100 min-h-[44px] min-w-[44px]" href="#home">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Library (Active destination) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary bg-primary/10 dark:bg-primary/10 rounded-xl px-space-md py-space-xs active:scale-95 transition-transform duration-100 min-h-[44px] min-w-[44px]" href="#library">
+<span class="material-symbols-outlined text-[20px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Library</span>
+</a>
+<!-- Notes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs active:scale-95 transition-transform duration-100 min-h-[44px] min-w-[44px]" href="#notes">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-space-md py-space-xs active:scale-95 transition-transform duration-100 min-h-[44px] min-w-[44px]" href="#more">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Interactive Client-side Script for State Management -->
+<script>
+    (function initDownloadPlanner() {
+      // Elements
+      const stateToggleBtn = document.getElementById('stateToggleBtn');
+      const stateModeLabel = document.getElementById('stateModeLabel');
+      const packBindingTitle = document.getElementById('packBindingTitle');
+      
+      const storageSlider = document.getElementById('storageSlider');
+      const storageExactInput = document.getElementById('storageExactInput');
+      const unitSelector = document.getElementById('unitSelector');
+      const currentLimitDisplay = document.getElementById('currentLimitDisplay');
+      
+      const domainRadios = document.querySelectorAll('input[name="allocationChoice"]');
+      const domainConditionalBlock = document.getElementById('domainConditionalBlock');
+      const computePlanBtn = document.getElementById('computePlanBtn');
+      
+      const initialStateMessage = document.getElementById('initialStateMessage');
+      const computedPlanBlock = document.getElementById('computedPlanBlock');
+      const planErrorBanner = document.getElementById('planErrorBanner');
+      const startDownloadBtn = document.getElementById('startDownloadBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const recalcBtn = document.getElementById('recalcBtn');
+
+      // State
+      let isConfiguredState = false;
+
+      // Handle Domain Radio Change
+      domainRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.value === 'prioritize') {
+            domainConditionalBlock.classList.remove('hidden');
+          } else {
+            domainConditionalBlock.classList.add('hidden');
+          }
+        });
+      });
+
+      // Synchronize Slider and Exact Input
+      storageSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        storageExactInput.value = val;
+        currentLimitDisplay.textContent = `${parseFloat(val).toFixed(2)} ${unitSelector.value} allocation`;
+      });
+
+      storageExactInput.addEventListener('input', (e) => {
+        const val = e.target.value || 0;
+        storageSlider.value = val;
+        currentLimitDisplay.textContent = `${parseFloat(val).toFixed(2)} ${unitSelector.value} allocation`;
+      });
+
+      unitSelector.addEventListener('change', () => {
+        const val = storageExactInput.value || 0;
+        currentLimitDisplay.textContent = `${parseFloat(val).toFixed(2)} ${unitSelector.value} allocation`;
+      });
+
+      // Compute Plan Action
+      computePlanBtn.addEventListener('click', () => {
+        applyComputedState();
+      });
+
+      // Toggle Demo State
+      stateToggleBtn.addEventListener('click', () => {
+        isConfiguredState = !isConfiguredState;
+        if (isConfiguredState) {
+          applyComputedState();
+        } else {
+          resetToInitialState();
+        }
+      });
+
+      function applyComputedState() {
+        isConfiguredState = true;
+        stateModeLabel.textContent = "Plan Computed (Valid)";
+        
+        // Populate package header
+        packBindingTitle.textContent = "Selected package: Ready to configure";
+        
+        // Enable inputs
+        storageSlider.disabled = false;
+        storageExactInput.disabled = false;
+        unitSelector.disabled = false;
+
+        if (storageSlider.value == "0") {
+          storageSlider.value = "45";
+          storageExactInput.value = "45";
+        }
+        currentLimitDisplay.textContent = `${parseFloat(storageExactInput.value).toFixed(2)} GiB allocation`;
+
+        // Switch breakdown views
+        initialStateMessage.classList.add('hidden');
+        planErrorBanner.classList.add('hidden');
+        computedPlanBlock.classList.remove('hidden');
+
+        // Enable primary action
+        startDownloadBtn.disabled = false;
+      }
+
+      function resetToInitialState() {
+        isConfiguredState = false;
+        stateModeLabel.textContent = "Initial / Blank";
+        
+        packBindingTitle.textContent = "Selected package: Ready to configure";
+        
+        storageSlider.value = 0;
+        storageExactInput.value = '';
+        storageSlider.disabled = true;
+        storageExactInput.disabled = true;
+        unitSelector.disabled = true;
+        currentLimitDisplay.textContent = "0.00 GiB allocation";
+
+        initialStateMessage.classList.remove('hidden');
+        computedPlanBlock.classList.add('hidden');
+        planErrorBanner.classList.add('hidden');
+
+        startDownloadBtn.disabled = true;
+      }
+
+      // Cancel button interaction
+      cancelBtn.addEventListener('click', () => {
+        resetToInitialState();
+      });
+
+      // Recalculate demo button
+      recalcBtn.addEventListener('click', () => {
+        planErrorBanner.classList.add('hidden');
+        computedPlanBlock.classList.remove('hidden');
+      });
+
+      // Trigger start download demo feedback
+      startDownloadBtn.addEventListener('click', () => {
+        if (!startDownloadBtn.disabled) {
+          startDownloadBtn.innerHTML = `
+            <span class="material-symbols-outlined text-[18px] animate-spin">refresh</span>
+            <span>Allocating disk...</span>
+          `;
+          setTimeout(() => {
+            startDownloadBtn.innerHTML = `
+              <span class="material-symbols-outlined text-[18px]">done</span>
+              <span>Downloading</span>
+            `;
+          }, 1000);
+        }
+      });
+
+    })();
+  </script>
+</body></html>

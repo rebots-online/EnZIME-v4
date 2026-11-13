@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Screen S09 Notes - EnZIME Reader</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-error": "#690005",
+            "primary-fixed": "#dfe0ff",
+            "on-primary-fixed-variant": "#2839aa",
+            "surface-variant": "#33343e",
+            "on-primary-fixed": "#000c60",
+            "inverse-on-surface": "#2e3039",
+            "on-tertiary": "#442c00",
+            "on-surface": "#e2e1ee",
+            "on-secondary-fixed": "#00201e",
+            "on-secondary-container": "#00534e",
+            "surface-container": "#1d1f28",
+            "secondary": "#46ebdf",
+            "surface-container-highest": "#33343e",
+            "inverse-primary": "#4353c3",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "primary": "#bcc3ff",
+            "error": "#ffb4ab",
+            "surface-dim": "#11131b",
+            "on-tertiary-container": "#402900",
+            "tertiary-container": "#c88900",
+            "on-surface-variant": "#c6c5d5",
+            "background": "#11131b",
+            "on-tertiary-fixed": "#281800",
+            "on-background": "#e2e1ee",
+            "secondary-container": "#00cec3",
+            "on-primary": "#041c94",
+            "tertiary": "#ffba43",
+            "on-primary-container": "#001892",
+            "primary-container": "#7c8cff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline": "#8f8f9f",
+            "surface": "#11131b",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-low": "#191b24",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "surface-tint": "#bcc3ff",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-lowest": "#0c0e16",
+            "on-secondary": "#003733",
+            "surface-container-high": "#282a32",
+            "outline-variant": "#454653"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "label-mono-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "display-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "body-editorial": ["Literata"],
+            "label-mono-sm": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#090B13] text-[#F4F6FF] font-body-md text-body-md antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container relative overflow-x-hidden">
+<!-- Ambient Aurora Glow Canvas -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[25%] -left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-[#7C8CFF]/10 via-[#34E0D4]/05 to-transparent blur-[140px]"></div>
+<div class="absolute top-[40%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-bl from-[#7C8CFF]/08 via-[#171C2C]/50 to-transparent blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[20%] w-[40vw] h-[40vw] rounded-full bg-gradient-to-t from-[#34E0D4]/06 via-transparent to-transparent blur-[160px]"></div>
+</div>
+<!-- COMPACT 104px LEFT NAVIGATION RAIL (Desktop) -->
+<aside class="hidden md:flex flex-col justify-between items-center w-[104px] h-screen fixed left-0 top-0 z-50 bg-[rgba(23,28,44,0.72)] backdrop-blur-xl border-r border-[rgba(189,198,255,0.14)] py-6 select-none">
+<!-- Top Geometric Icon / Brand Mark -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-2xl bg-surface-container-high/80 border border-[rgba(189,198,255,0.18)] flex items-center justify-center text-primary shadow-[0_0_20px_rgba(124,140,255,0.2)]">
+<span class="text-headline-md font-headline-md font-bold tracking-tight text-[#7C8CFF]">Z</span>
+</div>
+</div>
+<!-- Navigation Stack (Stacked Icon + Inter Text Label) -->
+<nav aria-label="Primary Navigation" class="flex flex-col gap-2.5 w-full px-2">
+<!-- Home -->
+<a class="group flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Home</span>
+</a>
+<!-- Library -->
+<a class="group flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Library</span>
+</a>
+<!-- Ask -->
+<a class="group flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Ask</span>
+</a>
+<!-- Notes (ACTIVE) -->
+<a aria-current="page" class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#7C8CFF] bg-[#7C8CFF]/15 border border-[#7C8CFF]/30 shadow-[0_0_16px_rgba(124,140,255,0.2)] transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold mt-1 tracking-tight text-[#7C8CFF]">Notes</span>
+</a>
+<!-- Memory -->
+<a class="group flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Memory</span>
+</a>
+<!-- Settings -->
+<a class="group flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all duration-150 min-h-[44px]" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight">Settings</span>
+</a>
+</nav>
+<!-- Rail Footer status -->
+</aside>
+<!-- MAIN CANVAS (Offset by 104px on Desktop) -->
+<div class="md:ml-[104px] min-h-screen flex flex-col relative z-10 pb-20 md:pb-8" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- DESKTOP / MOBILE TOP BAR -->
+<!-- Top bar ONLY: 'Z EnZIME Reader' brand and Search. No sync, account avatar, online/offline badge, technical footer. -->
+<header class="sticky top-0 z-40 w-full h-14 bg-[rgba(23,28,44,0.72)] backdrop-blur-md border-b border-[rgba(189,198,255,0.14)] px-4 sm:px-8 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Mobile menu hint / Brand Logo -->
+<span class="text-[#7C8CFF] font-headline-md text-headline-md font-bold">Z</span>
+<h1 class="font-headline-md text-headline-md font-semibold tracking-tight text-[#F4F6FF]">EnZIME Reader</h1>
+</div>
+<!-- Clean Search Anchor in Top Bar -->
+<div class="w-64 sm:w-80 md:w-96 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#B7BDD4]">search</span>
+<input class="w-full bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] pl-9 pr-3 py-1.5 text-body-md font-body-md text-[#F4F6FF] placeholder-[#8E96B0] focus:outline-none focus:border-[#7C8CFF] focus:ring-1 focus:ring-[#7C8CFF] transition-all min-h-[44px]" placeholder="Search all offline content..." type="text"/>
+</div>
+</header>
+<!-- NOTES VIEW WRAPPER -->
+<main class="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto flex flex-col gap-6">
+<!-- NOTES SCREEN HEADER & ACTIONS -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-[#F4F6FF] tracking-tight">Notes</h2>
+<p class="font-body-md text-body-md text-[#B7BDD4] mt-0.5">Offline annotations, notebook archives, and excerpts</p>
+</div>
+<!-- Action Buttons: Import & Export -->
+<div class="flex items-center gap-3">
+<!-- Import trigger -->
+<button class="px-4 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.18)] hover:border-[#7C8CFF]/40 text-[#F4F6FF] hover:bg-surface-container/60 transition-all flex items-center gap-2 min-h-[44px] shadow-sm" onclick="document.getElementById('import-dialog').showModal()" type="button">
+<span class="material-symbols-outlined text-[20px] text-[#7C8CFF]">upload_file</span>
+<span class="font-label-mono-lg text-label-mono-lg font-medium">Import</span>
+</button>
+<!-- Export trigger (Indicates selection requirement when empty) -->
+<button class="px-4 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.18)] text-[#F4F6FF] hover:bg-surface-container/60 transition-all flex items-center gap-2 min-h-[44px]" onclick="document.getElementById('export-dialog').showModal()" title="Export selected notes or entire notebook" type="button">
+<span class="material-symbols-outlined text-[20px] text-[#B7BDD4]">file_download</span>
+<span class="font-label-mono-lg text-label-mono-lg font-medium">Export</span>
+</button>
+</div>
+</div>
+<!-- MAIN SPLIT WORKSPACE: Notebooks Rail + Filter & Content Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT SUB-NAVIGATION: Notebooks Section -->
+<div class="lg:col-span-3 bg-[rgba(23,28,44,0.72)] backdrop-blur-xl border border-[rgba(189,198,255,0.14)] rounded-[22px] p-4 flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<span class="font-label-mono-md text-label-mono-md tracking-wider text-[#B7BDD4] uppercase font-semibold">Notebooks</span>
+<!-- New notebook trigger -->
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-[#7C8CFF] transition-colors" onclick="document.getElementById('notebook-dialog').showModal()" title="New notebook" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<div class="flex flex-col gap-1"><button class="w-full flex items-center justify-between px-3 py-2.5 rounded-[14px] bg-[#7C8CFF]/15 border border-[#7C8CFF]/25 text-[#F4F6FF] text-left transition-all min-h-[44px]"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-[20px] text-[#7C8CFF]">folder_open</span><span class="font-body-md text-body-md font-medium truncate">All notes</span></div></button></div>
+<div class="pt-2 border-t border-[rgba(189,198,255,0.08)]">
+<button class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-[14px] border border-dashed border-[rgba(189,198,255,0.2)] text-[#B7BDD4] hover:text-[#7C8CFF] hover:border-[#7C8CFF]/40 transition-all min-h-[44px]" onclick="document.getElementById('notebook-dialog').showModal()" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="font-label-mono-md text-label-mono-md font-medium">New notebook</span>
+</button>
+</div>
+</div>
+<!-- RIGHT CONTENT AREA: Filters + Notes Grid / List + Empty State Toggle -->
+<div class="lg:col-span-9 flex flex-col gap-5">
+<!-- FILTER BAR CONTROLS -->
+<div class="bg-[rgba(23,28,44,0.72)] backdrop-blur-xl border border-[rgba(189,198,255,0.14)] rounded-[22px] p-3.5 flex flex-wrap items-center gap-3"><div class="relative flex-1 min-w-[200px]"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#B7BDD4]">search</span><input class="w-full bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] pl-9 pr-3 py-2 text-body-md font-body-md text-[#F4F6FF] placeholder-[#8E96B0] focus:outline-none focus:border-[#7C8CFF] min-h-[44px]" placeholder="Search notes..." type="text"/></div><div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 custom-scroll"><button class="px-3 py-1.5 rounded-[14px] bg-[#7C8CFF]/15 border border-[#7C8CFF]/30 text-[#F4F6FF] font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 min-h-[44px]"><span class="material-symbols-outlined text-[16px] text-[#7C8CFF]">select_all</span>All</button><button class="px-3 py-1.5 rounded-[14px] bg-[rgba(14,17,27,0.6)] border border-[rgba(189,198,255,0.1)] text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 min-h-[44px]"><span class="material-symbols-outlined text-[16px]">notes</span>Text</button><button class="px-3 py-1.5 rounded-[14px] bg-[rgba(14,17,27,0.6)] border border-[rgba(189,198,255,0.1)] text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 min-h-[44px]"><span class="material-symbols-outlined text-[16px]">draw</span>Ink</button><button class="px-3 py-1.5 rounded-[14px] bg-[rgba(14,17,27,0.6)] border border-[rgba(189,198,255,0.1)] text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 min-h-[44px]"><span class="material-symbols-outlined text-[16px]">mic</span>Voice</button><button class="px-3 py-1.5 rounded-[14px] bg-[rgba(14,17,27,0.6)] border border-[rgba(189,198,255,0.1)] text-[#B7BDD4] hover:text-[#F4F6FF] font-label-mono-sm text-label-mono-sm flex items-center gap-1.5 min-h-[44px]"><span class="material-symbols-outlined text-[16px]">image</span>Media</button></div><div class="flex items-center gap-2"><select class="bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] px-3 py-2 text-label-mono-sm font-label-mono-sm text-[#B7BDD4] focus:outline-none focus:border-[#7C8CFF] min-h-[44px]"><option value="">Tag: All tags</option></select><select class="bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] px-3 py-2 text-label-mono-sm font-label-mono-sm text-[#B7BDD4] focus:outline-none focus:border-[#7C8CFF] min-h-[44px]"><option value="">Source: All files</option></select></div></div>
+<!-- TAB SWITCH FOR PREVIEWING NOTES VS MAIN EMPTY STATE -->
+<!-- NOTE LIST / DETAIL INERT TEMPLATES (REAL EXCERPT, SOURCE, DATE, MEDIA ATTACHMENTS, ACTIONS) -->
+<template id="note-card-template"><article class="bg-[rgba(23,28,44,0.72)] backdrop-blur-xl border border-[rgba(189,198,255,0.14)] hover:border-[#7C8CFF]/30 rounded-[22px] p-5 flex flex-col gap-4 transition-all" data-note-id="" data-note-title="" data-note-type="" data-source-pack=""><div class="flex flex-wrap items-start justify-between gap-2 border-b border-[rgba(189,198,255,0.06)] pb-3"><div class="flex flex-col"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-[#34E0D4]" data-field="icon">menu_book</span><span class="font-label-mono-md text-label-mono-md text-[#34E0D4] font-medium tracking-tight" data-field="source"></span></div><span class="font-label-mono-sm text-label-mono-sm text-[#8E96B0] mt-0.5" data-field="meta"></span></div><div class="flex items-center gap-2" data-field="tags"></div></div><blockquote class="font-body-editorial text-body-editorial text-[#F4F6FF] pl-4 border-l-2 border-[#7C8CFF] italic bg-[rgba(14,17,27,0.3)] py-2 rounded-r-lg" data-field="excerpt"></blockquote><div class="flex flex-wrap items-center gap-3" data-field="attachments"></div><div class="flex items-center justify-between pt-2 border-t border-[rgba(189,198,255,0.06)]"><button class="flex items-center gap-1.5 text-primary hover:text-primary-fixed-dim transition-colors min-h-[44px]" type="button"><span class="material-symbols-outlined text-[18px]">open_in_new</span><span class="font-label-mono-md text-label-mono-md font-medium">Open source</span></button><div class="flex items-center gap-1"><button class="flex items-center gap-1 px-3 py-1.5 rounded-[14px] text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all min-h-[44px]" type="button"><span class="material-symbols-outlined text-[18px]">edit</span><span class="font-label-mono-md text-label-mono-md">Edit</span></button><button class="flex items-center gap-1 px-3 py-1.5 rounded-[14px] text-error hover:bg-error-container/20 transition-all min-h-[44px]" onclick="document.getElementById('delete-dialog').showModal()" type="button"><span class="material-symbols-outlined text-[18px]">delete</span><span class="font-label-mono-md text-label-mono-md">Delete</span></button></div></div></article></template>
+<!-- MAIN EMPTY STATE (Clean & Calm Glassmorphism State) -->
+<div class="bg-[rgba(23,28,44,0.72)] backdrop-blur-xl border border-[rgba(189,198,255,0.14)] rounded-[22px] p-12 sm:p-16 flex flex-col items-center justify-center text-center" id="empty-state-view"><div class="w-16 h-16 rounded-2xl bg-surface-container-high/60 border border-[rgba(189,198,255,0.18)] flex items-center justify-center text-[#7C8CFF] mb-5 shadow-[0_0_24px_rgba(124,140,255,0.15)]"><span class="material-symbols-outlined text-[36px]">edit_note</span></div><h3 class="font-headline-lg text-headline-lg font-semibold text-[#F4F6FF] tracking-tight">No notes yet</h3><p class="font-body-md text-body-md text-[#B7BDD4] max-w-md mt-2 mb-6">Highlight text while reading or create standalone research notes, voice memos, and sketches.</p><button class="px-5 py-2.5 rounded-[14px] bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-label-mono-lg text-label-mono-lg font-semibold flex items-center gap-2 shadow-[0_0_20px_rgba(124,140,255,0.35)] transition-all min-h-[44px]" onclick="document.getElementById('notebook-dialog').showModal()" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span>Create a note</span></button></div>
+</div>
+</div>
+</main>
+<!-- FOOTER WITH SINGLE QUIET PLAIN VERSION STRING -->
+<footer class="w-full px-4 sm:px-8 py-4 flex items-center justify-end text-[#8E96B0] mt-auto">
+<span class="font-label-mono-sm text-label-mono-sm tracking-wide">EnZIME Reader v1.29.08988</span>
+</footer>
+</div>
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<!-- Responsive Pivot: On MOBILE (md:hidden), BottomNavBar with Home, Library, Notes, More -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-[rgba(23,28,44,0.90)] backdrop-blur-xl border-t border-[rgba(189,198,255,0.14)] shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Home</span>
+</a>
+<!-- Library -->
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Library</span>
+</a>
+<!-- Notes (ACTIVE) -->
+<a aria-current="page" class="flex flex-col items-center justify-center text-[#7C8CFF] bg-[#7C8CFF]/10 rounded-xl px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold mt-0.5">Notes</span>
+</a>
+<!-- More -->
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs min-h-[44px] min-w-[44px] active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[22px]">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- ==================== MODALS & DIALOGS ==================== -->
+<!-- 1. NOTEBOOK CREATE / RENAME DIALOG -->
+<dialog class="bg-transparent backdrop:bg-black/70 p-4 max-w-md w-full focus:outline-none" id="notebook-dialog">
+<div class="bg-[rgba(23,28,44,0.92)] backdrop-blur-2xl border border-[rgba(189,198,255,0.18)] rounded-[22px] p-6 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] text-[#F4F6FF] flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-[rgba(189,198,255,0.08)] pb-3">
+<h3 class="font-headline-md text-headline-md font-semibold text-[#F4F6FF]">Notebook</h3>
+<button class="text-[#B7BDD4] hover:text-[#F4F6FF]" onclick="document.getElementById('notebook-dialog').close()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-mono-md text-label-mono-md text-[#B7BDD4]" for="notebook-name">Name</label>
+<input class="w-full bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] px-3.5 py-2.5 text-body-md font-body-md text-[#F4F6FF] focus:outline-none focus:border-[#7C8CFF] min-h-[44px]" id="notebook-name" placeholder="e.g. Field Protocols" type="text" value="Field Protocols"/>
+</div>
+<!-- Action Buttons: Save & Cancel -->
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2 rounded-[14px] text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all font-label-mono-lg text-label-mono-lg min-h-[44px]" onclick="document.getElementById('notebook-dialog').close()" type="button">
+          Cancel
+        </button>
+<button class="px-5 py-2 rounded-[14px] bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-label-mono-lg text-label-mono-lg font-semibold transition-all min-h-[44px]" onclick="document.getElementById('notebook-dialog').close()" type="button">
+          Save
+        </button>
+</div>
+</div>
+</dialog>
+<!-- 2. SIDECAR IMPORT DIALOG -->
+<dialog class="bg-transparent backdrop:bg-black/70 p-4 max-w-lg w-full focus:outline-none" id="import-dialog"><div class="bg-[rgba(23,28,44,0.92)] backdrop-blur-2xl border border-[rgba(189,198,255,0.18)] rounded-[22px] p-6 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] text-[#F4F6FF] flex flex-col gap-5"><div class="flex items-center justify-between border-b border-[rgba(189,198,255,0.08)] pb-3"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[22px] text-[#7C8CFF]">upload_file</span><h3 class="font-headline-md text-headline-md font-semibold text-[#F4F6FF]">Import sidecar notes</h3></div><button class="text-[#B7BDD4] hover:text-[#F4F6FF]" onclick="document.getElementById('import-dialog').close()" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="flex flex-col gap-2"><label class="font-label-mono-md text-label-mono-md text-[#B7BDD4]">Sidecar file (.eznotes, .json)</label><label class="border-2 border-dashed border-[rgba(189,198,255,0.18)] hover:border-[#7C8CFF]/50 rounded-[14px] p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-[rgba(14,17,27,0.4)] transition-all"><span class="material-symbols-outlined text-[32px] text-[#7C8CFF] mb-2">upload_file</span><span class="font-body-md text-body-md font-medium text-[#F4F6FF]">Choose file</span><span class="font-label-mono-sm text-label-mono-sm text-[#8E96B0] mt-1">Select an EnZIME sidecar notes archive</span><input accept=".eznotes,.json" class="hidden" type="file"/></label></div><div class="flex flex-col gap-2"><label class="font-label-mono-md text-label-mono-md text-[#B7BDD4]" for="target-notebook">Target Notebook</label><select class="w-full bg-[rgba(14,17,27,0.8)] border border-[rgba(189,198,255,0.14)] rounded-[14px] px-3.5 py-2.5 text-body-md font-body-md text-[#F4F6FF] focus:outline-none focus:border-[#7C8CFF] min-h-[44px]" id="target-notebook"><option value="all">All notes (Root)</option></select></div><div class="flex items-center justify-end gap-3 pt-2"><button class="px-4 py-2 rounded-[14px] text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all font-label-mono-lg text-label-mono-lg min-h-[44px]" onclick="document.getElementById('import-dialog').close()" type="button">Cancel</button><button class="px-5 py-2 rounded-[14px] bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-label-mono-lg text-label-mono-lg font-semibold transition-all min-h-[44px]" onclick="document.getElementById('import-dialog').close()" type="button">Import</button></div></div></dialog>
+<!-- 3. EXPORT DIALOG -->
+<dialog class="bg-transparent backdrop:bg-black/70 p-4 max-w-lg w-full focus:outline-none" id="export-dialog">
+<div class="bg-[rgba(23,28,44,0.92)] backdrop-blur-2xl border border-[rgba(189,198,255,0.18)] rounded-[22px] p-6 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] text-[#F4F6FF] flex flex-col gap-5">
+<div class="flex items-center justify-between border-b border-[rgba(189,198,255,0.08)] pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[22px] text-[#7C8CFF]">file_download</span>
+<h3 class="font-headline-md text-headline-md font-semibold text-[#F4F6FF]">Export notes</h3>
+</div>
+<button class="text-[#B7BDD4] hover:text-[#F4F6FF]" onclick="document.getElementById('export-dialog').close()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Scope Selector (actual selection / entire notebook) -->
+<div class="flex flex-col gap-2">
+<label class="font-label-mono-md text-label-mono-md text-[#B7BDD4]">Export Scope</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="flex items-center gap-2.5 p-3 rounded-[14px] border border-[rgba(189,198,255,0.14)] bg-[rgba(14,17,27,0.6)] cursor-pointer hover:border-[#7C8CFF]/50 transition-all min-h-[44px]">
+<input checked="" class="text-[#7C8CFF] focus:ring-0 focus:ring-offset-0 bg-[rgba(23,28,44,0.72)] border-[rgba(255,255,255,0.2)]" name="export-scope" type="radio" value="notebook"/>
+<span class="font-body-md text-body-md text-[#F4F6FF]">Entire notebook</span>
+</label>
+<label class="flex items-center gap-2.5 p-3 rounded-[14px] border border-[rgba(189,198,255,0.14)] bg-[rgba(14,17,27,0.6)] cursor-pointer hover:border-[#7C8CFF]/50 transition-all min-h-[44px]">
+<input class="text-[#7C8CFF] focus:ring-0 focus:ring-offset-0 bg-[rgba(23,28,44,0.72)] border-[rgba(255,255,255,0.2)]" name="export-scope" type="radio" value="selected"/>
+<span class="font-body-md text-body-md text-[#F4F6FF]">Active selection (2)</span>
+</label>
+</div>
+</div>
+<!-- Format Choice ('Human-readable' or 'Signed file') -->
+<div class="flex flex-col gap-2">
+<label class="font-label-mono-md text-label-mono-md text-[#B7BDD4]">Export Format</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="flex flex-col gap-1 p-3 rounded-[14px] border border-[#7C8CFF]/40 bg-[#7C8CFF]/10 cursor-pointer transition-all">
+<div class="flex items-center gap-2">
+<input checked="" class="text-[#7C8CFF] focus:ring-0 focus:ring-offset-0 bg-[rgba(23,28,44,0.72)] border-[rgba(255,255,255,0.2)]" name="export-format" type="radio" value="human"/>
+<span class="font-body-md text-body-md font-medium text-[#F4F6FF]">Human-readable</span>
+</div>
+<span class="font-label-mono-sm text-label-mono-sm text-[#8E96B0] pl-6">Markdown &amp; HTML excerpts</span>
+</label>
+<label class="flex flex-col gap-1 p-3 rounded-[14px] border border-[rgba(189,198,255,0.14)] bg-[rgba(14,17,27,0.6)] cursor-pointer hover:border-[#7C8CFF]/50 transition-all">
+<div class="flex items-center gap-2">
+<input class="text-[#7C8CFF] focus:ring-0 focus:ring-offset-0 bg-[rgba(23,28,44,0.72)] border-[rgba(255,255,255,0.2)]" name="export-format" type="radio" value="signed"/>
+<span class="font-body-md text-body-md font-medium text-[#F4F6FF]">Signed file</span>
+</div>
+<span class="font-label-mono-sm text-label-mono-sm text-[#8E96B0] pl-6">Full metadata sidecar archive</span>
+</label>
+</div>
+</div>
+<!-- Action Buttons: Export & Cancel -->
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2 rounded-[14px] text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all font-label-mono-lg text-label-mono-lg min-h-[44px]" onclick="document.getElementById('export-dialog').close()" type="button">
+          Cancel
+        </button>
+<button class="px-5 py-2 rounded-[14px] bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-label-mono-lg text-label-mono-lg font-semibold transition-all min-h-[44px]" onclick="document.getElementById('export-dialog').close()" type="button">
+          Export
+        </button>
+</div>
+</div>
+</dialog>
+<!-- 4. DELETE CONFIRMATION DIALOG -->
+<dialog class="bg-transparent backdrop:bg-black/70 p-4 max-w-sm w-full focus:outline-none" id="delete-dialog"><div class="bg-[rgba(23,28,44,0.95)] backdrop-blur-2xl border border-[rgba(189,198,255,0.18)] rounded-[22px] p-6 shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)] text-[#F4F6FF] flex flex-col gap-3"><div class="w-10 h-10 rounded-full bg-error-container/30 text-error flex items-center justify-center mb-1"><span class="material-symbols-outlined text-[22px]">delete</span></div><h3 class="font-headline-md text-headline-md font-semibold text-[#F4F6FF]">Delete this note and its annotation?</h3><p class="font-body-md text-body-md text-[#B7BDD4]">The source article will remain unchanged.</p><div class="flex items-center justify-end gap-3 pt-3 mt-1"><button class="px-4 py-2 rounded-[14px] text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-surface-container/60 transition-all font-label-mono-lg text-label-mono-lg min-h-[44px]" onclick="document.getElementById('delete-dialog').close()" type="button">Keep note</button><button class="px-5 py-2 rounded-[14px] bg-error text-on-error hover:brightness-110 font-label-mono-lg text-label-mono-lg font-semibold transition-all min-h-[44px]" onclick="document.getElementById('delete-dialog').close()" type="button">Delete</button></div></div></dialog>
+</body></html>

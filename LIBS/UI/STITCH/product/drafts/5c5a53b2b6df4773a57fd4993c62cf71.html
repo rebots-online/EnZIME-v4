@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Library - EnZIME Reader</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#F4F6FF",
+            "on-surface-variant": "#B7BDD4",
+            "primary": "#7C8CFF",
+            "accent": "#34E0D4",
+            "surface-dim": "#090B13",
+            "surface-glass": "rgba(23, 28, 44, 0.72)",
+            "border-glass": "rgba(189, 198, 255, 0.14)",
+            "surface-container": "#171C2C",
+            "surface-container-high": "#1E2438",
+            "outline": "#8F95B2"
+          },
+          borderRadius: {
+            "card": "22px",
+            "field": "14px",
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            "headline-lg": ["Inter", "sans-serif"],
+            "body-editorial": ["Literata", "serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-mono-sm": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "label-mono-md": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"]
+          },
+          fontSize: {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.15);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#090B13] text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary/20 selection:text-primary relative overflow-x-hidden">
+<!-- Restrained Aurora Background Atmosphere -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[25%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-[#7C8CFF]/[0.035] blur-[140px]"></div>
+<div class="absolute top-[20%] -right-[15%] w-[55vw] h-[55vw] rounded-full bg-[#34E0D4]/[0.025] blur-[160px]"></div>
+<div class="absolute -bottom-[20%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-[#7C8CFF]/[0.025] blur-[150px]"></div>
+</div>
+<!-- Compact 104px Desktop Side Rail Navigation (fixed w-[104px] z-50) -->
+<aside aria-label="Main Navigation" class="hidden md:flex flex-col justify-between h-screen w-[104px] fixed left-0 top-0 z-50 bg-[#171C2C]/72 backdrop-blur-xl border-r border-[#BDC6FF]/14 px-3 py-6 select-none">
+<div class="flex flex-col items-center gap-7">
+<!-- Minimalist Z Mark Brand Anchor -->
+<a class="flex flex-col items-center gap-1 group focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1.5 transition-all" href="#">
+<div class="w-10 h-10 rounded-xl bg-[#1E2438] border border-white/10 flex items-center justify-center text-primary group-hover:border-primary/50 transition-colors shadow-sm">
+<svg class="w-5 h-5 stroke-current fill-none stroke-[2.2]" viewbox="0 0 24 24">
+<path d="M4 6h16L6 18h14" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- Primary Left Rail Tabs with stacked icon and Inter labels -->
+<nav class="flex flex-col gap-2.5 w-full items-center">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-[#1E2438]/50 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Home</span>
+</a>
+<!-- Library (Strict Active Match) -->
+<a aria-current="page" class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-[0_0_16px_rgba(124,140,255,0.12)] min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 font-semibold tracking-tight text-center">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-[#1E2438]/50 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="contact_support">contact_support</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-[#1E2438]/50 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-[#1E2438]/50 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px] group-hover:scale-105 transition-transform" data-icon="memory">memory</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Memory</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Anchor: Settings Only (No badges, no status dots, no hardware telemetry) -->
+<div class="flex flex-col items-center w-full">
+<a class="w-full flex flex-col items-center justify-center py-2.5 px-1 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-[#1E2438]/50 transition-all min-h-[44px] group focus-visible:ring-2 focus-visible:ring-primary" href="#" title="Settings">
+<span class="material-symbols-outlined text-[22px] group-hover:rotate-45 transition-transform" data-icon="settings">settings</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-1 tracking-tight text-center">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Desktop Header Outer Wrapper (Explicit style to prevent left-rail overlap) -->
+<header class="sticky top-0 z-40 bg-[#171C2C]/72 backdrop-blur-xl border-b border-[#BDC6FF]/14 h-16" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Inner Wrapper with padding and layout -->
+<div class="w-full h-full flex items-center justify-between px-6 lg:px-10">
+<!-- Left: Brand mark & title + Global Search -->
+<div class="flex items-center gap-6 flex-1 max-w-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-[#1E2438] border border-white/10 flex items-center justify-center text-primary shadow-sm">
+<svg class="w-4 h-4 stroke-current fill-none stroke-[2.2]" viewbox="0 0 24 24">
+<path d="M4 6h16L6 18h14" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight whitespace-nowrap">
+            EnZIME Reader
+          </span>
+</div>
+<!-- Global Search Field -->
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-10 pr-4 py-2 text-on-surface placeholder:text-outline font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px]" placeholder="Search all knowledge..." type="text"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Desktop Main Content Outer Wrapper (Explicit style, NO conflicting px or mx-auto on outer wrapper) -->
+<div class="flex-1 flex flex-col z-10" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Inner Wrapper with proper padding and content constraints -->
+<main class="w-full max-w-7xl px-6 lg:px-10 pt-8 pb-16 flex-1 flex flex-col">
+<!-- Page Header: Title + ONLY ONE "Open a ZIM" action button -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Library</h1>
+<p class="text-on-surface-variant font-body-md text-body-md mt-1">Manage and access local offline knowledge archives.</p>
+</div>
+<!-- Single Open a ZIM button in page header -->
+<div class="flex items-center">
+<button class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2438]/90 hover:bg-[#282F48] text-on-surface border border-[#BDC6FF]/20 rounded-lg min-h-[44px] transition-all focus-visible:ring-2 focus-visible:ring-primary group" type="button">
+<span class="material-symbols-outlined text-primary text-[20px] group-hover:scale-110 transition-transform" data-icon="folder_open">folder_open</span>
+<span class="font-body-md font-medium">Open a ZIM</span>
+</button>
+</div>
+</div>
+<!-- Local Navigation Tabs -->
+<div class="flex items-center gap-2 mt-6 border-b border-white/[0.08] overflow-x-auto custom-scrollbar pb-px">
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-primary border-b-2 border-primary -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-installed" onclick="switchLibraryTab('installed')" type="button">
+<span>Installed</span>
+</button>
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-available" onclick="switchLibraryTab('available')" type="button">
+<span>Available downloads</span>
+</button>
+<button class="relative px-5 py-3 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface border-b-2 border-transparent -mb-px transition-colors min-h-[44px] flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary rounded-t-lg" id="tab-btn-downloads" onclick="switchLibraryTab('downloads')" type="button">
+<span>Downloads</span>
+</button>
+</div>
+<!-- TAB 1: INSTALLED (Active Default) -->
+<section class="pt-10 flex-1 flex flex-col" id="panel-installed">
+<!-- Useful Calm Empty State (22px radius, Glassmorphism) -->
+<div class="w-full max-w-2xl mx-auto my-auto py-16 px-6 sm:px-12 rounded-[22px] bg-[#171C2C]/72 backdrop-blur-xl border border-[#BDC6FF]/14 text-center flex flex-col items-center justify-center shadow-[0_12px_32px_-4px_rgba(0,0,0,0.5)]">
+<!-- Glass icon holder -->
+<div class="w-20 h-20 rounded-2xl bg-[#1E2438] border border-white/10 flex items-center justify-center text-primary mb-6 shadow-[0_0_24px_-2px_rgba(124,140,255,0.18)]">
+<span class="material-symbols-outlined text-[38px]" data-icon="menu_book">menu_book</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight mb-2">
+            Your library starts here
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-8 leading-relaxed">
+            Add an offline ZIM package from your device storage or browse available offline references.
+          </p>
+<!-- Two Actions -->
+<div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-primary text-[#0A0D1B] font-body-md font-semibold rounded-lg min-h-[44px] hover:bg-[#96A4FF] shadow-[0_0_20px_rgba(124,140,255,0.3)] transition-all active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span>Open a ZIM</span>
+</button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 bg-[#1E2438]/80 hover:bg-[#282F48] text-on-surface border border-white/10 rounded-lg min-h-[44px] transition-all active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary" onclick="switchLibraryTab('available')" type="button">
+<span class="material-symbols-outlined text-accent text-[20px]" data-icon="cloud_download">cloud_download</span>
+<span>Find a download</span>
+</button>
+</div>
+</div>
+<!-- Semantic clean template for installed cards binding -->
+<template id="installed-card-template">
+<article class="p-5 rounded-[22px] bg-[#171C2C]/72 backdrop-blur-md border border-[#BDC6FF]/14 flex flex-col justify-between transition-all hover:border-primary/40 focus-within:ring-2 focus-within:ring-primary">
+<div class="flex items-start justify-between gap-4">
+<div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface" data-slot="pack-title"></h3>
+<p class="font-body-md text-label-mono-md text-on-surface-variant mt-0.5" data-slot="pack-edition"></p>
+</div>
+<span class="font-label-mono-sm text-label-mono-sm px-2.5 py-1 rounded bg-[#1E2438] text-on-surface-variant uppercase tracking-wider" data-slot="pack-language"></span>
+</div>
+<div class="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-on-surface-variant">
+<div class="flex items-center gap-4 font-label-mono-sm text-label-mono-sm">
+<span data-slot="pack-file-size"></span>
+<span data-slot="pack-last-read"></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg text-primary hover:bg-primary/10 min-h-[44px]" data-action="open" type="button">Open</button>
+<button aria-label="Manage ZIM pack" class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-white/5 min-h-[44px] min-w-[44px]" data-action="manage" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</article>
+</template>
+</section>
+<!-- TAB 2: AVAILABLE DOWNLOADS -->
+<section class="pt-6 flex-1 flex flex-col hidden" id="panel-available">
+<!-- Filter Bar with Visibly Labelled Fields -->
+<div class="p-5 rounded-[22px] bg-[#171C2C]/72 backdrop-blur-md border border-[#BDC6FF]/14 flex flex-col md:flex-row items-stretch md:items-end justify-between gap-4">
+<div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-4 flex-1">
+<!-- Search Downloads Input with visible label -->
+<div class="flex flex-col gap-1.5 flex-1 max-w-lg">
+<label class="text-label-mono-sm font-label-mono-sm text-on-surface-variant font-medium" for="search-downloads-input">Search downloads</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-10 pr-4 py-2.5 text-on-surface placeholder:text-outline font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px]" id="search-downloads-input" placeholder="Search available packages..." type="text"/>
+</div>
+</div>
+<!-- Language Selector with visible label -->
+<div class="flex flex-col gap-1.5 min-w-[190px]">
+<label class="text-label-mono-sm font-label-mono-sm text-on-surface-variant font-medium" for="catalog-language-select">Language</label>
+<div class="relative">
+<select aria-label="Language" class="w-full bg-[#0E111B]/80 border border-white/10 rounded-[14px] pl-3.5 pr-8 py-2.5 text-on-surface font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all h-[44px] appearance-none cursor-pointer" id="catalog-language-select">
+<option value="all">All Languages</option>
+<option value="en">English</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+<option value="de">German</option>
+<option value="zh">Chinese</option>
+<option value="ar">Arabic</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[18px] pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Catalog Container (Real binding target; honest empty list) -->
+<div class="mt-8 flex-1 flex flex-col items-center justify-center py-12" id="catalog-state-container">
+<div class="w-14 h-14 rounded-2xl bg-[#1E2438] border border-white/10 flex items-center justify-center text-outline mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="cloud_queue">cloud_queue</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-medium text-on-surface mb-1">Catalog empty</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md text-center">Available online repositories will appear here when configured.</p>
+</div>
+</section>
+<!-- TAB 3: DOWNLOADS QUEUE -->
+<section class="pt-8 flex-1 flex flex-col hidden" id="panel-downloads">
+<div class="w-full max-w-xl mx-auto my-auto py-16 px-6 rounded-[22px] bg-[#171C2C]/50 border border-white/[0.08] text-center flex flex-col items-center justify-center">
+<div class="w-14 h-14 rounded-2xl bg-[#1E2438] border border-white/10 flex items-center justify-center text-outline mb-4">
+<span class="material-symbols-outlined text-[28px]" data-icon="download_done">download_done</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-medium text-on-surface mb-1">No active downloads</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Files currently transferring will be listed here with download progress and verification status.</p>
+</div>
+</section>
+<!-- Quiet plain version anchor at bottom right (No badges, no status telemetry) -->
+<footer class="mt-auto pt-10 pb-2 flex justify-end">
+<span class="font-label-mono-sm text-label-mono-sm text-outline select-none tracking-tight">
+          EnZIME Reader v1.29.08988
+        </span>
+</footer>
+</main>
+</div>
+<!-- Mobile Bottom Navigation (Visible < 768px, 4 Tabs) -->
+<nav aria-label="Mobile Navigation" class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-[#171C2C]/90 backdrop-blur-xl border-t border-[#BDC6FF]/15 flex justify-around items-center px-2 py-1.5 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="home">home</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Home</span>
+</a>
+<a aria-current="page" class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-4 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_library" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="font-label-mono-sm text-label-mono-sm font-semibold mt-0.5">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="description">description</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="more_horiz">more_horiz</span>
+<span class="font-label-mono-sm text-label-mono-sm mt-0.5">More</span>
+</a>
+</nav>
+<!-- Clean tab switching logic (no fake timers or mock fetch states) -->
+<script>
+    function switchLibraryTab(targetTab) {
+      const tabs = ['installed', 'available', 'downloads'];
+      
+      tabs.forEach(tabKey => {
+        const btn = document.getElementById(`tab-btn-${tabKey}`);
+        const panel = document.getElementById(`panel-${tabKey}`);
+        
+        if (btn && panel) {
+          if (tabKey === targetTab) {
+            btn.classList.add('text-primary', 'border-primary');
+            btn.classList.remove('text-on-surface-variant', 'hover:text-on-surface', 'border-transparent');
+            panel.classList.remove('hidden');
+          } else {
+            btn.classList.remove('text-primary', 'border-primary');
+            btn.classList.add('text-on-surface-variant', 'hover:text-on-surface', 'border-transparent');
+            panel.classList.add('hidden');
+          }
+        }
+      });
+    }
+  </script>
+</body></html>

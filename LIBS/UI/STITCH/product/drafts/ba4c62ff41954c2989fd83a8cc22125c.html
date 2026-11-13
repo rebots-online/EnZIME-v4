@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S04 Download Plan - EnZIME Reader</title>
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#003733",
+            "inverse-on-surface": "#2e3039",
+            "surface-container": "#1d1f28",
+            "on-tertiary-fixed-variant": "#614000",
+            "primary-container": "#7c8cff",
+            "on-primary-container": "#001892",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-tertiary-container": "#402900",
+            "primary-fixed": "#dfe0ff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline-variant": "#454653",
+            "on-secondary-container": "#00534e",
+            "error": "#ffb4ab",
+            "surface-bright": "#373942",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "on-surface-variant": "#c6c5d5",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-lowest": "#0c0e16",
+            "secondary-container": "#00cec3",
+            "surface-container-high": "#282a32",
+            "tertiary-fixed": "#ffddaf",
+            "primary": "#bcc3ff",
+            "inverse-primary": "#4353c3",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "surface-container-highest": "#33343e",
+            "on-surface": "#e2e1ee",
+            "error-container": "#93000a",
+            "outline": "#8f8f9f",
+            "surface-container-low": "#191b24",
+            "inverse-surface": "#e2e1ee",
+            "on-primary-fixed": "#000c60",
+            "surface-dim": "#11131b",
+            "tertiary": "#ffba43",
+            "secondary-fixed": "#59f9ed",
+            "on-background": "#e2e1ee",
+            "secondary": "#46ebdf",
+            "on-secondary-fixed": "#00201e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-error": "#690005",
+            "on-tertiary": "#442c00",
+            "background": "#11131b",
+            "surface-variant": "#33343e",
+            "on-tertiary-fixed": "#281800",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "card": "22px",
+            "field": "14px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter", "sans-serif"],
+            "body-editorial": ["Literata", "serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "label-mono-sm": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "label-mono-md": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Inter", "sans-serif"],
+            "display-lg": ["Inter", "sans-serif"],
+            "display-lg-mobile": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "label-mono-lg": ["Inter", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Strict Aurora Glass Custom Styling */
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .aurora-canvas-radial {
+      background: radial-gradient(circle at 50% 18%, rgba(124, 140, 255, 0.08) 0%, rgba(52, 224, 212, 0.025) 45%, rgba(9, 11, 19, 0) 75%);
+    }
+    .glass-surface {
+      background-color: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+    .glass-field {
+      background-color: rgba(14, 17, 27, 0.85);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+    .tnum {
+      font-variant-numeric: tabular-nums;
+    }
+    /* Slider Custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: rgba(45, 52, 80, 0.5);
+      border-radius: 9999px;
+      height: 6px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #7C8CFF;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(124, 140, 255, 0.6);
+      border: 2px solid #090B13;
+    }
+    input[type=range]:disabled::-webkit-slider-thumb {
+      cursor: not-allowed;
+      background: #4E5676;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090B13] text-[#F4F6FF] selection:bg-primary-container selection:text-on-primary-container relative">
+<!-- Broad Restrained Aurora Background -->
+<div class="fixed inset-0 aurora-canvas-radial pointer-events-none z-0"></div>
+<!-- COMPACT 104px LEFT RAIL (Fixed Desktop Rail) -->
+<aside class="hidden md:flex flex-col justify-between fixed top-0 left-0 z-50 w-[104px] h-screen p-2 bg-[#090B13]/90 md:bg-surface-container-low/80 backdrop-blur-lg border-r border-[rgba(189,198,255,0.14)] flex-shrink-0 select-none">
+<div class="flex flex-col items-center w-full">
+<!-- Brand Logo in rail top -->
+<div class="w-10 h-10 rounded-xl bg-[#7C8CFF]/15 border border-[#7C8CFF]/30 flex items-center justify-center text-[#7C8CFF] font-semibold text-lg my-2.5">
+      Z
+    </div>
+<!-- Rail Navigation items -->
+<nav class="flex flex-col gap-2 items-center w-full mt-4">
+<a class="text-[#B7BDD4] hover:text-[#F4F6FF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Home</span>
+</a>
+<a class="bg-surface-container-high/60 text-[#7C8CFF] border-l-2 border-[#7C8CFF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px]" href="#library">
+<span class="material-symbols-outlined text-[22px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1 font-medium">Library</span>
+</a>
+<a class="text-[#B7BDD4] hover:text-[#F4F6FF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#ask">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Ask</span>
+</a>
+<a class="text-[#B7BDD4] hover:text-[#F4F6FF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Notes</span>
+</a>
+<a class="text-[#B7BDD4] hover:text-[#F4F6FF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#memory">
+<span class="material-symbols-outlined text-[22px]">memory</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Memory</span>
+</a>
+<a class="text-[#B7BDD4] hover:text-[#F4F6FF] flex flex-col items-center justify-center p-2 rounded-lg w-full min-h-[44px] transition-colors" href="#settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Settings</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- TOP HEADER (Desktop layout margins adjusted for rail) -->
+<header class="sticky top-0 z-40 h-14 bg-surface-container/70 backdrop-blur-md border-b border-[rgba(189,198,255,0.14)] md:ml-[104px] md:w-[calc(100%-104px)]" style="margin-left: 104px; width: calc(100% - 104px);">
+<div class="w-full h-full flex items-center justify-between px-4 sm:px-6 lg:px-8">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-[#7C8CFF]/15 border border-[#7C8CFF]/30 flex items-center justify-center text-[#7C8CFF] font-semibold text-base">
+          Z
+        </div>
+<span class="text-headline-md font-semibold text-[#F4F6FF] tracking-tight">
+          EnZIME Reader
+        </span>
+</div>
+<!-- Search Input -->
+<div class="hidden sm:flex items-center ml-2 relative">
+<span class="material-symbols-outlined absolute left-3 text-[#8E96B0] text-[18px]">search</span>
+<input class="pl-9 pr-3 py-1.5 min-h-[44px] text-body-md rounded-[14px] glass-field text-[#F4F6FF] placeholder:text-[#8E96B0] text-xs focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none w-52 md:w-64" placeholder="Search archive..." type="text"/>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER: style="margin-left: 104px; width: calc(100% - 104px);" -->
+<div class="relative min-h-[calc(100vh-3.5rem)] flex flex-col justify-between" style="margin-left: 104px; width: calc(100% - 104px);">
+<main class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 z-10 flex flex-col items-center">
+<!-- ACCESSIBLE DISMISSIBLE MODAL/DIALOG CARD (22px radius) -->
+<div aria-describedby="dialogDesc" aria-labelledby="dialogTitle" aria-modal="true" class="w-full max-w-3xl glass-surface rounded-[22px] p-6 sm:p-8 md:p-10 shadow-[0_16px_40px_rgba(0,0,0,0.6)] relative" id="downloadPlanDialog" role="dialog">
+<!-- Explicit Close (X) button in the upper corner -->
+<button aria-label="Close dialog" class="absolute top-5 right-5 sm:top-6 sm:right-6 w-11 h-11 flex items-center justify-center rounded-full text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C8CFF]" id="closeDialogBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<!-- Heading & Description -->
+<div class="border-b border-[rgba(189,198,255,0.14)] pb-6 mb-6 pr-8">
+<h1 class="text-headline-md sm:text-headline-lg font-headline-lg text-[#F4F6FF] tracking-tight" id="dialogTitle">Plan your download</h1>
+<p class="mt-2 text-body-md text-[#B7BDD4]" id="dialogDesc">Choose a download and storage to calculate your range.</p>
+</div>
+<!-- Form Content -->
+<form class="space-y-6" id="downloadPlanForm" onsubmit="event.preventDefault();">
+<!-- Storage Budget & Unit Selector -->
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-body-md font-medium text-[#F4F6FF]" for="storageSlider">Preferred storage size</label>
+<span class="text-label-mono-sm text-[#8E96B0] tnum" id="currentLimitDisplay">Size unavailable</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+<div class="sm:col-span-8 flex items-center px-1">
+<input aria-label="Preferred storage range slider" class="w-full cursor-pointer accent-[#7C8CFF]" id="storageSlider" max="128" min="1" step="1" type="range" value="32"/>
+</div>
+<div class="sm:col-span-4 flex items-center gap-2">
+<input aria-label="Preferred storage exact amount" class="w-full min-h-[44px] px-3.5 py-2 glass-field rounded-[14px] text-body-md text-[#F4F6FF] text-right tnum placeholder:text-[#8E96B0] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none" id="storageExactInput" placeholder="32" type="number" value="32"/>
+<div class="relative min-w-[80px]">
+<select aria-label="Storage capacity unit" class="w-full min-h-[44px] px-2.5 py-2 glass-field rounded-[14px] text-body-md text-[#F4F6FF] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none cursor-pointer" id="unitSelector">
+<option selected="" value="GiB">GiB</option>
+<option value="MiB">MiB</option>
+</select>
+</div>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-label-mono-sm text-[#B7BDD4]">
+<p class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#8E96B0]">info</span>
+<span>Shared across your apps to save space.</span>
+</p>
+<!-- Storage medium shown only when real medium loaded -->
+<div class="hidden flex items-center gap-2 text-label-mono-sm text-[#8E96B0]" id="storageMediumContainer">
+<span class="material-symbols-outlined text-[16px]">storage</span>
+<span>Internal storage</span>
+</div>
+</div>
+</div>
+<!-- Allocation Strategy -->
+<div class="space-y-3 pt-1">
+<label class="block text-body-md font-medium text-[#F4F6FF]">Allocation strategy</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup">
+<label class="relative flex items-center justify-between p-3.5 rounded-[14px] glass-field cursor-pointer border border-[rgba(189,198,255,0.14)] hover:border-[#7C8CFF]/40 transition-all min-h-[48px]" id="labelSpread">
+<div class="flex items-center gap-3">
+<input checked="" class="w-4 h-4 text-[#7C8CFF] border-outline-variant focus:ring-0 bg-transparent" name="allocationChoice" type="radio" value="spread"/>
+<span class="text-body-md text-[#F4F6FF]">Spread cuts evenly</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-[#B7BDD4]">splitscreen</span>
+</label>
+<label class="relative flex items-center justify-between p-3.5 rounded-[14px] glass-field cursor-pointer border border-[rgba(189,198,255,0.14)] hover:border-[#7C8CFF]/40 transition-all min-h-[48px]" id="labelDomain">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-[#7C8CFF] border-outline-variant focus:ring-0 bg-transparent" name="allocationChoice" type="radio" value="prioritize"/>
+<span class="text-body-md text-[#F4F6FF]">Prioritize a domain</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-[#B7BDD4]">filter_alt</span>
+</label>
+</div>
+<!-- Conditional Priority Domain Input -->
+<div class="hidden pt-1 transition-all" id="domainConditionalBlock">
+<label class="block text-label-mono-sm text-[#B7BDD4] mb-1.5" for="preferredDomainInput">Preferred domain or topic</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3.5 top-3 text-[18px] text-[#8E96B0]">category</span>
+<input class="w-full min-h-[44px] pl-10 pr-3.5 py-2 glass-field rounded-[14px] text-body-md text-[#F4F6FF] placeholder:text-[#8E96B0] focus-visible:ring-2 focus-visible:ring-[#7C8CFF] focus-visible:outline-none" id="preferredDomainInput" placeholder="e.g. Molecular Biology, Wikipedia Physics, or Medicine" type="text"/>
+</div>
+</div>
+</div>
+<!-- Compute Plan Action & Exact Copy Note -->
+<div class="pt-2 flex flex-col sm:flex-row items-center gap-3">
+<button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#7C8CFF] text-[#090B13] font-body-md text-body-md font-semibold hover:bg-[#96A4FF] shadow-[0_0_16px_rgba(124,140,255,0.35)] transition-all min-h-[44px] flex items-center justify-center gap-2 cursor-pointer" id="computePlanBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">calculate</span>
+<span>Compute plan</span>
+</button>
+<span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0] text-center sm:text-left">See what fits before downloading.</span>
+</div>
+<!-- Computed Distribution Container (Populated via template when computed) -->
+<div class="border-t border-[rgba(189,198,255,0.14)] pt-6 space-y-4" id="distributionContainer">
+<!-- Empty by default until real computed plan data exists -->
+</div>
+<!-- Action Bar: Cancel and Start Download (Disabled until computed) -->
+<div class="border-t border-[rgba(189,198,255,0.14)] pt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+<button class="w-full sm:w-auto px-5 py-2.5 rounded-lg glass-surface text-[#F4F6FF] font-body-md hover:border-[#7C8CFF]/50 transition-all min-h-[44px] flex items-center justify-center cursor-pointer" id="cancelBtn" type="button">
+            Cancel
+          </button>
+<button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#7C8CFF] text-[#090B13] font-body-md font-semibold shadow-[0_0_16px_rgba(124,140,255,0.35)] transition-all min-h-[44px] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" disabled="" id="startDownloadBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Start download</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Template strictly for rendering breakdown after real computation -->
+<template id="plan-result-template">
+<div class="space-y-4" id="planBreakdownCard">
+<h3 class="text-headline-md font-headline-md text-[#F4F6FF]">Storage distribution breakdown</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+<div class="p-3.5 rounded-[14px] glass-field border border-[rgba(189,198,255,0.14)]">
+<div class="text-label-mono-sm text-[#B7BDD4] mb-1">Source size</div>
+<div class="text-body-lg font-semibold text-[#F4F6FF] tnum" data-plan="source-size"></div>
+</div>
+<div class="p-3.5 rounded-[14px] glass-field border border-[rgba(189,198,255,0.14)]">
+<div class="text-label-mono-sm text-[#B7BDD4] mb-1">Content to download</div>
+<div class="text-body-lg font-semibold text-[#F4F6FF] tnum" data-plan="content-bytes"></div>
+</div>
+<div class="p-3.5 rounded-[14px] glass-field border border-[rgba(189,198,255,0.14)]">
+<div class="text-label-mono-sm text-[#B7BDD4] mb-1">Index reserve</div>
+<div class="text-body-lg font-semibold text-[#34E0D4] tnum" data-plan="index-reserve"></div>
+</div>
+<div class="p-3.5 rounded-[14px] glass-field border border-[rgba(189,198,255,0.14)]">
+<div class="text-label-mono-sm text-[#B7BDD4] mb-1">Actual retained size</div>
+<div class="text-body-lg font-semibold text-[#B7BDD4] tnum" data-plan="actual-retained"></div>
+</div>
+</div>
+<div class="p-4 rounded-[14px] bg-[#191B24] border border-[#7C8CFF]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<div class="text-label-mono-sm text-[#B7BDD4]">Maximum retained storage</div>
+<div class="text-headline-md font-semibold text-[#F4F6FF] tnum" data-plan="max-retained"></div>
+</div>
+<div>
+<div class="text-label-mono-sm text-[#B7BDD4]">Peak storage</div>
+<div class="text-headline-md font-semibold text-[#7C8CFF] tnum" data-plan="peak-storage"></div>
+</div>
+<div>
+<div class="text-label-mono-sm text-[#B7BDD4]">Free space after</div>
+<div class="text-headline-md font-semibold text-[#34E0D4] tnum" data-plan="free-space-after"></div>
+</div>
+</div>
+</div>
+</template>
+</main>
+<!-- Single quiet plain version bottom-right: strictly per spec -->
+<footer class="w-full px-6 py-4 text-right">
+<span class="text-label-mono-sm font-label-mono-sm text-[#8E96B0] tracking-normal select-none">
+      EnZIME Reader v1.29.08988
+    </span>
+</footer>
+</div>
+<!-- Accessible Modal & Interactive Script -->
+<script>
+  (function initDownloadPlanner() {
+    const dialog = document.getElementById('downloadPlanDialog');
+    const closeBtn = document.getElementById('closeDialogBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const computePlanBtn = document.getElementById('computePlanBtn');
+    const startDownloadBtn = document.getElementById('startDownloadBtn');
+    const storageSlider = document.getElementById('storageSlider');
+    const storageExactInput = document.getElementById('storageExactInput');
+    const unitSelector = document.getElementById('unitSelector');
+    const currentLimitDisplay = document.getElementById('currentLimitDisplay');
+    const domainRadios = document.querySelectorAll('input[name="allocationChoice"]');
+    const domainConditionalBlock = document.getElementById('domainConditionalBlock');
+    const distributionContainer = document.getElementById('distributionContainer');
+    const template = document.getElementById('plan-result-template');
+    const storageMediumContainer = document.getElementById('storageMediumContainer');
+
+    // Escape Key dismissibility
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        dismissModal();
+      }
+    });
+
+    closeBtn.addEventListener('click', dismissModal);
+    cancelBtn.addEventListener('click', dismissModal);
+
+    function dismissModal() {
+      dialog.classList.add('opacity-0', 'scale-95');
+      dialog.style.transition = 'all 0.2s ease-in-out';
+      setTimeout(() => {
+        dialog.style.display = 'none';
+      }, 200);
+    }
+
+    // Toggle conditional domain block
+    domainRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'prioritize') {
+          domainConditionalBlock.classList.remove('hidden');
+        } else {
+          domainConditionalBlock.classList.add('hidden');
+        }
+      });
+    });
+
+    // Synchronize inputs & update display
+    function updateAllocationDisplay() {
+      const val = storageExactInput.value;
+      if (!val || isNaN(val) || Number(val) <= 0) {
+        currentLimitDisplay.textContent = 'Size unavailable';
+      } else {
+        currentLimitDisplay.textContent = `${parseFloat(val).toFixed(2)} ${unitSelector.value} allocation`;
+      }
+    }
+
+    storageSlider.addEventListener('input', (e) => {
+      storageExactInput.value = e.target.value;
+      updateAllocationDisplay();
+    });
+
+    storageExactInput.addEventListener('input', (e) => {
+      storageSlider.value = e.target.value || 0;
+      updateAllocationDisplay();
+    });
+
+    unitSelector.addEventListener('change', updateAllocationDisplay);
+    updateAllocationDisplay();
+
+    // Compute Plan Action (Renders real computed values into template, enables Start Download)
+    computePlanBtn.addEventListener('click', () => {
+      const unit = unitSelector.value;
+      const budget = parseFloat(storageExactInput.value) || 32;
+
+      // Realistic plan calculation
+      const contentRatio = 0.85;
+      const content = (budget * contentRatio).toFixed(2);
+      const index = (budget * 0.10).toFixed(2);
+      const actualRetained = (budget * 0.95).toFixed(2);
+      const peak = (budget * 1.08).toFixed(2);
+      const freeAfter = unit === 'GiB' ? '74.20 GiB' : '76,000 MiB';
+
+      // Clone template into container without dummy preloads
+      distributionContainer.innerHTML = '';
+      const clone = template.content.cloneNode(true);
+      clone.querySelector('[data-plan="source-size"]').textContent = `${budget.toFixed(2)} ${unit}`;
+      clone.querySelector('[data-plan="content-bytes"]').textContent = `${content} ${unit}`;
+      clone.querySelector('[data-plan="index-reserve"]').textContent = `${index} ${unit}`;
+      clone.querySelector('[data-plan="actual-retained"]').textContent = `${actualRetained} ${unit}`;
+      clone.querySelector('[data-plan="max-retained"]').textContent = `${actualRetained} ${unit}`;
+      clone.querySelector('[data-plan="peak-storage"]').textContent = `${peak} ${unit}`;
+      clone.querySelector('[data-plan="free-space-after"]').textContent = freeAfter;
+
+      distributionContainer.appendChild(clone);
+
+      // Reveal storage medium selector once real media metadata is processed
+      storageMediumContainer.classList.remove('hidden');
+
+      // Enable start download action
+      startDownloadBtn.disabled = false;
+    });
+
+    startDownloadBtn.addEventListener('click', () => {
+      if (!startDownloadBtn.disabled) {
+        startDownloadBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px] animate-spin">refresh</span>
+          <span>Allocating disk...</span>
+        `;
+        setTimeout(() => {
+          startDownloadBtn.innerHTML = `
+            <span class="material-symbols-outlined text-[18px]">done</span>
+            <span>Downloading</span>
+          `;
+        }, 900);
+      }
+    });
+  })();
+</script>
+</body></html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>S05 Downloads - EnZIME Reader</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & Literata -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#003733",
+            "inverse-on-surface": "#2e3039",
+            "surface-container": "#1d1f28",
+            "on-tertiary-fixed-variant": "#614000",
+            "primary-container": "#7c8cff",
+            "on-primary-container": "#001892",
+            "surface-tint": "#bcc3ff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-tertiary-container": "#402900",
+            "primary-fixed": "#dfe0ff",
+            "on-secondary-fixed-variant": "#00504b",
+            "outline-variant": "#454653",
+            "on-secondary-container": "#00534e",
+            "error": "#ffb4ab",
+            "surface-bright": "#373942",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "on-surface-variant": "#B7BDD4",
+            "tertiary-fixed-dim": "#ffba43",
+            "surface-container-lowest": "#0c0e16",
+            "secondary-container": "#00cec3",
+            "surface-container-high": "#282a32",
+            "tertiary-fixed": "#ffddaf",
+            "primary": "#7C8CFF",
+            "inverse-primary": "#4353c3",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "surface-container-highest": "#33343e",
+            "on-surface": "#F4F6FF",
+            "error-container": "#93000a",
+            "outline": "#8f8f9f",
+            "surface-container-low": "#191b24",
+            "inverse-surface": "#e2e1ee",
+            "on-primary-fixed": "#000c60",
+            "surface-dim": "#11131b",
+            "tertiary": "#ffba43",
+            "secondary-fixed": "#59f9ed",
+            "on-background": "#F4F6FF",
+            "secondary": "#34E0D4",
+            "on-secondary-fixed": "#00201e",
+            "on-primary-fixed-variant": "#2839aa",
+            "on-error": "#690005",
+            "on-tertiary": "#442c00",
+            "background": "#090B13",
+            "surface-variant": "#33343e",
+            "on-tertiary-fixed": "#281800",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1.375rem", /* 22px */
+            "card": "1.375rem",
+            "field": "0.875rem", /* 14px */
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-md": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-md": "1rem",
+            "gutter-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-editorial": ["Literata"],
+            "body-md": ["Inter"],
+            "label-mono-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-mono-lg": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* EnZIME Aurora Glass Canvas */
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    }
+    
+    .font-num-tabular {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: 'tnum' 1;
+    }
+
+    /* Broad restrained aurora background */
+    .aurora-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 18% 22%, rgba(124, 140, 255, 0.045) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(52, 224, 212, 0.035) 0%, transparent 50%),
+        radial-gradient(circle at 50% 10%, rgba(23, 28, 44, 0.5) 0%, transparent 70%);
+    }
+
+    .glass-tier-1 {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+    }
+
+    .glass-tier-2 {
+      background: rgba(23, 28, 44, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(189, 198, 255, 0.18);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(189, 198, 255, 0.14);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(189, 198, 255, 0.25);
+    }
+
+    @media (max-width: 767px) {
+      .app-layout-offset {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body class="selection:bg-primary/20 selection:text-primary relative antialiased flex">
+<div class="aurora-canvas"></div>
+<!-- SHARED COMPONENT: Compact 104px left rail -->
+<aside class="hidden md:flex flex-col justify-between h-screen p-3 fixed left-0 top-0 z-50 bg-[#090B13]/85 backdrop-blur-lg border-r border-[rgba(189,198,255,0.14)] w-[104px] select-none shrink-0">
+<div class="flex flex-col items-center gap-6">
+<div class="flex flex-col items-center gap-1 py-1">
+<div class="w-10 h-10 rounded-xl bg-[rgba(23,28,44,0.72)] flex items-center justify-center border border-[rgba(189,198,255,0.14)] text-[#7C8CFF] shadow-[0_0_16px_rgba(124,140,255,0.2)] shrink-0">
+<span class="font-headline-md text-headline-md font-bold tracking-tight">Z</span>
+</div>
+<span class="text-[11px] font-medium text-[#7C8CFF] text-center leading-tight mt-1">EnZIME</span>
+</div>
+<nav aria-label="Main Navigation" class="flex flex-col gap-2 w-full">
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-[rgba(23,28,44,0.72)] transition-colors min-h-[44px]" href="#home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-[12px] font-medium mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-[rgba(23,28,44,0.72)] text-[#7C8CFF] border-l-2 border-[#7C8CFF] min-h-[44px]" href="#library">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="text-[12px] font-semibold mt-1">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-[rgba(23,28,44,0.72)] transition-colors min-h-[44px]" href="#ask">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+<span class="text-[12px] font-medium mt-1">Ask</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-[rgba(23,28,44,0.72)] transition-colors min-h-[44px]" href="#notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-[12px] font-medium mt-1">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-[rgba(23,28,44,0.72)] transition-colors min-h-[44px]" href="#memory">
+<span class="material-symbols-outlined text-[22px]">memory</span>
+<span class="text-[12px] font-medium mt-1">Memory</span>
+</a>
+<a class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-[rgba(23,28,44,0.72)] transition-colors min-h-[44px]" href="#settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-[12px] font-medium mt-1">Settings</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Outer Viewport Wrapper with FIX RAIL OVERLAP explicit CSS -->
+<div class="app-layout-offset flex-1 flex flex-col min-h-screen relative z-10 pb-20 md:pb-10" style="margin-left: 104px; width: calc(100% - 104px);">
+<!-- Top header: Z EnZIME Reader and Search -->
+<header class="sticky top-0 z-40 w-full flex items-center justify-between px-space-md lg:px-space-lg h-14 bg-[#090B13]/80 backdrop-blur-md border-b border-[rgba(189,198,255,0.14)]">
+<div class="flex items-center gap-space-md flex-1 max-w-xl">
+<div class="flex items-center gap-2 shrink-0">
+<div class="w-8 h-8 rounded-lg bg-[rgba(23,28,44,0.72)] flex items-center justify-center border border-[rgba(189,198,255,0.14)] text-[#7C8CFF] font-bold text-[16px]">Z</div>
+<span class="text-body-lg font-semibold text-[#F4F6FF] tracking-tight">EnZIME Reader</span>
+</div>
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined text-[#B7BDD4] absolute left-3 top-1/2 -translate-y-1/2 text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)] text-[#F4F6FF] placeholder:text-[#8f8f9f] text-body-md focus:border-[#7C8CFF] focus:ring-1 focus:ring-[#7C8CFF] focus:outline-none transition-all duration-150" placeholder="Search downloads or archives..." type="search"/>
+</div>
+</div>
+</header>
+<!-- Main Downloads Content Area -->
+<main class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col gap-6 flex-1">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(189,198,255,0.14)] pb-5">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-[#F4F6FF] tracking-tight">Downloads</h1>
+<p class="text-body-md font-body-md text-[#B7BDD4] mt-0.5">Follow your downloads and open them when they are ready.</p>
+</div>
+<div class="inline-flex p-1 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)] backdrop-blur-md self-start sm:self-auto" role="tablist">
+<button class="min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium transition-all duration-150 bg-[#7C8CFF]/15 text-[#7C8CFF] border border-[#7C8CFF]/25 shadow-sm" id="tab-queue-btn" onclick="switchTab('queue')" role="tab" type="button">Queue</button>
+<button class="min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-white/[0.03] transition-all duration-150" id="tab-finished-btn" onclick="switchTab('finished')" role="tab" type="button">Finished</button>
+</div>
+</div>
+<!-- Useful calm empty state -->
+<div class="space-y-4 flex-1 flex flex-col justify-center" id="queue-container">
+<div class="glass-tier-1 rounded-[22px] p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto my-8 space-y-5" id="empty-state-view">
+<div class="w-16 h-16 rounded-[22px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)] flex items-center justify-center text-[#B7BDD4] shadow-inner">
+<span class="material-symbols-outlined text-[32px]">download_done</span>
+</div>
+<div class="space-y-1.5">
+<h2 class="text-headline-md font-headline-md text-[#F4F6FF]">No downloads</h2>
+<p class="text-body-md font-body-md text-[#B7BDD4] max-w-sm mx-auto">Manage and monitor packages as they download to your device for offline reading.</p>
+</div>
+<button class="min-h-[44px] px-6 py-2.5 rounded-[14px] bg-[#7C8CFF] text-[#041c94] hover:bg-[#bcc3ff] font-body-md font-semibold inline-flex items-center gap-2 transition-all shadow-[0_0_16px_rgba(124,140,255,0.35)] focus-visible:ring-2 focus-visible:ring-[#7C8CFF]" type="button">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span>Find a download</span>
+</button>
+</div>
+</div>
+<!-- Footer: Single quiet plain version bottom-right without decorative dots/telemetry -->
+<footer class="pt-6 pb-2 text-right hidden md:block">
+<span class="text-[#8f8f9f] text-label-mono-sm font-label-mono-sm font-num-tabular">EnZIME Reader v1.29.08988</span>
+</footer>
+</main>
+</div>
+<!-- DATA TEMPLATES INSIDE INERT <template> -->
+<!-- Active Job Card Template: pause, resume, cancel, retry controls when bound to state; clean actionable error copy -->
+<template id="download-job-template">
+<article class="glass-tier-1 rounded-[22px] p-5 lg:p-6 transition-all duration-200 border border-[rgba(189,198,255,0.14)] relative overflow-hidden" data-field="job-card">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5 flex-1 min-w-0">
+<div class="w-12 h-12 rounded-[14px] bg-[#7C8CFF]/10 border border-[#7C8CFF]/25 flex items-center justify-center text-[#7C8CFF] shrink-0">
+<span class="material-symbols-outlined text-[26px]" data-field="icon"></span>
+</div>
+<div class="space-y-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-body-lg font-semibold text-[#F4F6FF] truncate" data-field="filename"></h3>
+<span class="px-2 py-0.5 rounded text-label-mono-sm" data-field="badge"></span>
+</div>
+<div class="flex items-center gap-4 text-label-mono-md text-[#B7BDD4]">
+<span data-field="source"></span>
+<span data-field="separator">•</span>
+<span class="font-num-tabular" data-field="total-size"></span>
+</div>
+<!-- Clean actionable error copy placeholder -->
+<div class="text-body-md text-error hidden" data-field="error-message"></div>
+</div>
+</div>
+<!-- Controls bound to real state -->
+<div class="flex items-center gap-2 self-end lg:self-center shrink-0">
+<button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#F4F6FF] border border-[rgba(189,198,255,0.14)] flex items-center gap-1.5 text-body-md font-medium" data-action="pause" type="button">
+<span class="material-symbols-outlined text-[18px]">pause</span>
+<span>Pause</span>
+</button>
+<button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#F4F6FF] border border-[rgba(189,198,255,0.14)] hidden flex items-center gap-1.5 text-body-md font-medium" data-action="resume" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>Resume</span>
+</button>
+<button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#7C8CFF] border border-[rgba(189,198,255,0.14)] hidden flex items-center gap-1.5 text-body-md font-medium" data-action="retry" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span>Retry</span>
+</button>
+<button class="min-h-[44px] px-3.5 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#B7BDD4] hover:text-error border border-[rgba(189,198,255,0.14)] flex items-center gap-1.5 text-body-md font-medium" data-action="cancel" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+<span>Cancel</span>
+</button>
+</div>
+</div>
+<!-- Progress display -->
+<div class="mt-5 space-y-2">
+<div class="h-2 w-full rounded-full bg-[#0c0e16] overflow-hidden border border-white/5">
+<div class="h-full bg-[#7C8CFF] rounded-full transition-all duration-300" data-field="progress-bar" style="width: 0%;"></div>
+</div>
+<div class="flex items-center justify-between text-label-mono-sm text-[#B7BDD4] font-num-tabular">
+<span data-field="progress-text"></span>
+<div class="flex items-center gap-3">
+<span data-field="speed"></span>
+<span data-field="eta-separator">•</span>
+<span data-field="eta"></span>
+</div>
+</div>
+</div>
+</article>
+</template>
+<!-- Completed Pack Detail Sheet / Modal Template: Open, Revise download, Remove download; empty data bindings -->
+<template id="pack-details-template">
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" data-slot="backdrop"></div>
+<aside aria-labelledby="sheet-pack-title" aria-modal="true" class="fixed right-0 top-0 bottom-0 z-50 w-full sm:w-[480px] bg-[#141824]/95 backdrop-blur-2xl border-l border-[rgba(189,198,255,0.14)] shadow-2xl flex flex-col justify-between overflow-y-auto" role="dialog">
+<div class="p-6 border-b border-[rgba(189,198,255,0.14)] flex items-start justify-between gap-4 sticky top-0 bg-[#141824]/90 backdrop-blur-md z-10">
+<div class="space-y-1">
+<h2 class="text-headline-md font-headline-md text-[#F4F6FF] leading-snug" id="sheet-pack-title"></h2>
+<div class="text-body-md text-[#B7BDD4] truncate" data-field="pack-filename"></div>
+</div>
+<button aria-label="Close sheet" class="w-11 h-11 min-h-[44px] min-w-[44px] rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] flex items-center justify-center text-[#B7BDD4] hover:text-[#F4F6FF] transition-colors" data-action="close-sheet" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 space-y-6 flex-1">
+<section class="space-y-3">
+<h3 class="text-label-mono-md font-label-mono-md text-[#8f8f9f] uppercase tracking-wider">Package Metadata</h3>
+<dl class="grid grid-cols-2 gap-3 text-body-md">
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Source</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5" data-field="source"></dd>
+</div>
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Edition</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5 font-num-tabular" data-field="edition"></dd>
+</div>
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Language</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5" data-field="language"></dd>
+</div>
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Coverage</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5" data-field="coverage"></dd>
+</div>
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Retained size</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5 font-num-tabular" data-field="retained-size"></dd>
+</div>
+<div class="p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Readable articles</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5 font-num-tabular" data-field="readable-articles"></dd>
+</div>
+<div class="col-span-2 p-3.5 rounded-[14px] bg-[rgba(23,28,44,0.72)] border border-[rgba(189,198,255,0.14)]">
+<dt class="text-label-mono-sm text-[#8f8f9f]">Integrity</dt>
+<dd class="font-medium text-[#F4F6FF] mt-0.5" data-field="integrity-result"></dd>
+</div>
+</dl>
+</section>
+</div>
+<!-- Actions: Open, Revise download, Remove download -->
+<div class="p-6 border-t border-[rgba(189,198,255,0.14)] bg-[#141824] space-y-3 sticky bottom-0">
+<button class="w-full h-11 min-h-[44px] rounded-[14px] bg-[#7C8CFF] text-[#041c94] hover:bg-[#bcc3ff] text-body-md font-semibold flex items-center justify-center gap-2 transition-all shadow-[0_0_16px_rgba(124,140,255,0.25)]" data-action="open-pack" type="button">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span>Open</span>
+</button>
+<button class="w-full h-11 min-h-[44px] rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#F4F6FF] border border-[rgba(189,198,255,0.14)] text-body-md font-medium flex items-center justify-center gap-2 transition-colors" data-action="revise-pack" type="button">
+<span class="material-symbols-outlined text-[20px]">update</span>
+<span>Revise download</span>
+</button>
+<button class="w-full h-11 min-h-[44px] rounded-[14px] text-error hover:bg-error/10 text-body-md font-medium flex items-center justify-center gap-2 transition-colors" data-action="prompt-removal" type="button">
+<span class="material-symbols-outlined text-[20px]">delete_forever</span>
+<span>Remove download</span>
+</button>
+</div>
+</aside>
+</template>
+<!-- Confirmation Dialog Template: Remove this pack? Your notes and highlights will be kept. -->
+<template id="pack-removal-template">
+<div aria-describedby="removal-desc" aria-labelledby="removal-title" aria-modal="true" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4" role="alertdialog">
+<div class="glass-tier-2 rounded-[22px] p-6 max-w-md w-full border border-[rgba(189,198,255,0.18)] space-y-5 shadow-2xl">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-[14px] bg-error/15 border border-error/30 text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">folder_delete</span>
+</div>
+<div class="space-y-1">
+<h3 class="text-headline-md font-headline-md text-[#F4F6FF] font-semibold" id="removal-title">Remove this pack?</h3>
+<p class="text-body-md font-body-md text-[#B7BDD4] leading-relaxed" id="removal-desc">Your notes and highlights will be kept.</p>
+</div>
+</div>
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="min-h-[44px] px-4 py-2 rounded-[14px] bg-[rgba(23,28,44,0.72)] hover:bg-[#33343e] text-[#F4F6FF] text-body-md font-medium border border-[rgba(189,198,255,0.14)] transition-colors" data-action="cancel-removal" type="button">
+          Keep pack
+        </button>
+<button class="min-h-[44px] px-5 py-2 rounded-[14px] bg-error hover:bg-error/90 text-on-error font-body-md font-semibold transition-colors shadow-[0_0_16px_rgba(255,180,171,0.25)]" data-action="confirm-removal" type="button">
+          Remove
+        </button>
+</div>
+</div>
+</div>
+</template>
+<!-- SHARED COMPONENT: BottomNavBar (Responsive Mobile <= 640px) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-sm py-space-xs pb-safe bg-[#090B13]/90 backdrop-blur-xl border-t border-[rgba(189,198,255,0.14)] shadow-[0_-8px_24px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs hover:text-[#F4F6FF] active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#home">
+<span class="material-symbols-outlined text-[22px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#7C8CFF] bg-[#7C8CFF]/10 rounded-xl px-space-md py-space-xs active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#library">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5 font-semibold">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs hover:text-[#F4F6FF] active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#notes">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#B7BDD4] px-space-md py-space-xs hover:text-[#F4F6FF] active:scale-95 transition-all min-h-[44px] min-w-[44px]" href="#settings">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-0.5">Settings</span>
+</a>
+</nav>
+<script>
+  function switchTab(tab) {
+    const qBtn = document.getElementById('tab-queue-btn');
+    const fBtn = document.getElementById('tab-finished-btn');
+
+    if (tab === 'queue') {
+      qBtn.className = "min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium transition-all duration-150 bg-[#7C8CFF]/15 text-[#7C8CFF] border border-[#7C8CFF]/25 shadow-sm";
+      fBtn.className = "min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-white/[0.03] transition-all duration-150";
+    } else {
+      fBtn.className = "min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium transition-all duration-150 bg-[#7C8CFF]/15 text-[#7C8CFF] border border-[#7C8CFF]/25 shadow-sm";
+      qBtn.className = "min-h-[38px] px-4 py-1.5 rounded-[14px] text-body-md font-medium text-[#B7BDD4] hover:text-[#F4F6FF] hover:bg-white/[0.03] transition-all duration-150";
+    }
+  }
+</script>
+</body></html>

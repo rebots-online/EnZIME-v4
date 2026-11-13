@@ -1,0 +1,237 @@
+{
+  "project": "17076380137565911053",
+  "status": "draft-unfrozen",
+  "screens": [
+    {
+      "group": "home",
+      "name": "projects/17076380137565911053/screens/2d56e0fcadb04bcbbf075fca550a5583",
+      "title": "S02 Home Desktop - EnZIME Reader (Aurora Glass)",
+      "path": "LIBS/UI/STITCH/product/drafts/2d56e0fcadb04bcbbf075fca550a5583.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "home",
+      "name": "projects/17076380137565911053/screens/36e8862a75984f52bf6643d3a091f4a3",
+      "title": "S02 Home Mobile - EnZIME Reader (Aurora Glass)",
+      "path": "LIBS/UI/STITCH/product/drafts/36e8862a75984f52bf6643d3a091f4a3.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v1",
+      "name": "projects/17076380137565911053/screens/63ef250146104e28b7a2be217aef2621",
+      "title": "S03 Library - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/63ef250146104e28b7a2be217aef2621.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v1",
+      "name": "projects/17076380137565911053/screens/239bbcd47563448381998f5149b4afa9",
+      "title": "S01 Setup - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/239bbcd47563448381998f5149b4afa9.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v1",
+      "name": "projects/17076380137565911053/screens/21b38eef11314cad9df1bdfe4c1df222",
+      "title": "S02 Home Mobile - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/21b38eef11314cad9df1bdfe4c1df222.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v1",
+      "name": "projects/17076380137565911053/screens/8a2477632ad14cf7b7551dfc89230476",
+      "title": "S04 Download Plan - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/8a2477632ad14cf7b7551dfc89230476.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v1",
+      "name": "projects/17076380137565911053/screens/5b3449a3cb37405495519cde66b8e8b1",
+      "title": "S05 Downloads - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/5b3449a3cb37405495519cde66b8e8b1.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v2",
+      "name": "projects/17076380137565911053/screens/bce49e0d3fd84815a443fb6d8a254f80",
+      "title": "S07 Navigator - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/bce49e0d3fd84815a443fb6d8a254f80.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v2",
+      "name": "projects/17076380137565911053/screens/c92e6d1f22184bfaa0846fb492705d17",
+      "title": "S09 Notes - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/c92e6d1f22184bfaa0846fb492705d17.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v2",
+      "name": "projects/17076380137565911053/screens/f7bbb7e00b954fa3a32e434461505b4d",
+      "title": "S06 Reader - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/f7bbb7e00b954fa3a32e434461505b4d.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v2",
+      "name": "projects/17076380137565911053/screens/eae475acf9194e7784452c9b123be7bb",
+      "title": "S08 Annotation workspace - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/eae475acf9194e7784452c9b123be7bb.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v1",
+      "name": "projects/17076380137565911053/screens/1e8be178f3bc400fae91ff69308b2336",
+      "title": "S11 Memory - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/1e8be178f3bc400fae91ff69308b2336.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v1",
+      "name": "projects/17076380137565911053/screens/5cb1d42c2dc8431ba96e2d5396655c99",
+      "title": "S10 Ask - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/5cb1d42c2dc8431ba96e2d5396655c99.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v1",
+      "name": "projects/17076380137565911053/screens/f2baa98971f54c579c07e7b83e3e3132",
+      "title": "S12 Search - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/f2baa98971f54c579c07e7b83e3e3132.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v1",
+      "name": "projects/17076380137565911053/screens/030785c521304b5db06e03ed41d1f1b2",
+      "title": "S13 Settings and Help - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/030785c521304b5db06e03ed41d1f1b2.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v3",
+      "name": "projects/17076380137565911053/screens/5c5a53b2b6df4773a57fd4993c62cf71",
+      "title": "S03 Library - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/5c5a53b2b6df4773a57fd4993c62cf71.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v3",
+      "name": "projects/17076380137565911053/screens/ba4c62ff41954c2989fd83a8cc22125c",
+      "title": "S04 Download Plan - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/ba4c62ff41954c2989fd83a8cc22125c.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "acquisition-v3",
+      "name": "projects/17076380137565911053/screens/9bb82a12965e43df96c760e21648e089",
+      "title": "S05 Downloads - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/9bb82a12965e43df96c760e21648e089.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v3",
+      "name": "projects/17076380137565911053/screens/1f61b6a92a874221ac0735257974315a",
+      "title": "S09 Notes - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/1f61b6a92a874221ac0735257974315a.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v3",
+      "name": "projects/17076380137565911053/screens/1dc940687b204910b8bd867d570760c4",
+      "title": "S07 Navigator - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/1dc940687b204910b8bd867d570760c4.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v3",
+      "name": "projects/17076380137565911053/screens/7bf5111e289e48a8b2642a97c8ee4c87",
+      "title": "S06 Reader - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/7bf5111e289e48a8b2642a97c8ee4c87.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v3",
+      "name": "projects/17076380137565911053/screens/6061c5031b084a89b28b6a15b9f38e79",
+      "title": "S12 Search - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/6061c5031b084a89b28b6a15b9f38e79.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "reading-v3",
+      "name": "projects/17076380137565911053/screens/4abd508a87bb476a9dd3d703c15afc76",
+      "title": "S05 Downloads - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/4abd508a87bb476a9dd3d703c15afc76.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "annotation-v3",
+      "name": "projects/17076380137565911053/screens/d6c333a402c8488bb8f89eef305f8a58",
+      "title": "S08 Annotation workspace - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/d6c333a402c8488bb8f89eef305f8a58.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v2",
+      "name": "projects/17076380137565911053/screens/e565e246fdd24caa982ca6b8ef60fb07",
+      "title": "S11 Memory - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/e565e246fdd24caa982ca6b8ef60fb07.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v2",
+      "name": "projects/17076380137565911053/screens/6ec83203c4444c7981f79afed3370b77",
+      "title": "S12 Search - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/6ec83203c4444c7981f79afed3370b77.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v2",
+      "name": "projects/17076380137565911053/screens/7894f17da78a4e91b4bee93c59677574",
+      "title": "S13 Settings and Help - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/7894f17da78a4e91b4bee93c59677574.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "knowledge-v2",
+      "name": "projects/17076380137565911053/screens/af133ef8d97b452eac8cc20d1d2c89ba",
+      "title": "S10 Ask - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/af133ef8d97b452eac8cc20d1d2c89ba.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "settings-v3",
+      "name": "projects/17076380137565911053/screens/12de473e646a428284fd8ed2ec61a292",
+      "title": "S13 Settings and Help - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/12de473e646a428284fd8ed2ec61a292.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "activation-v2",
+      "name": "projects/17076380137565911053/screens/ced6cbeb988644cb90a0409e9b08c630",
+      "title": "S14 Welcome - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/ced6cbeb988644cb90a0409e9b08c630.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "activation-v2",
+      "name": "projects/17076380137565911053/screens/4ab8de7633574fd8b6b2bfbfca8c1da5",
+      "title": "S15 One-time activation - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/4ab8de7633574fd8b6b2bfbfca8c1da5.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "activation-v2",
+      "name": "projects/17076380137565911053/screens/b5cf8b48e087495ead39becd730fb643",
+      "title": "S16 Purchase pending/restore - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/b5cf8b48e087495ead39becd730fb643.html",
+      "status": "draft-unfrozen"
+    },
+    {
+      "group": "activation-v2",
+      "name": "projects/17076380137565911053/screens/f7fe0aa3f3ee427cbda35820f9b4b0c7",
+      "title": "S17 Activated - EnZIME Reader",
+      "path": "LIBS/UI/STITCH/product/drafts/f7fe0aa3f3ee427cbda35820f9b4b0c7.html",
+      "status": "draft-unfrozen"
+    }
+  ]
+}

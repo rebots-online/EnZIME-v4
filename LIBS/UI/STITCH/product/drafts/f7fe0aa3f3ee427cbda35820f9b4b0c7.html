@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnZIME Reader - Activated</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#4353c3",
+            "on-error-container": "#ffdad6",
+            "error": "#ffb4ab",
+            "on-primary-fixed": "#000c60",
+            "surface-variant": "#33343e",
+            "inverse-on-surface": "#2e3039",
+            "on-primary": "#041c94",
+            "tertiary-container": "#c88900",
+            "secondary": "#46ebdf",
+            "on-error": "#690005",
+            "primary-container": "#7c8cff",
+            "secondary-fixed-dim": "#2eddd1",
+            "on-secondary": "#003733",
+            "on-primary-fixed-variant": "#2839aa",
+            "primary": "#bcc3ff",
+            "on-tertiary-fixed-variant": "#614000",
+            "surface-bright": "#373942",
+            "on-surface-variant": "#c6c5d5",
+            "on-secondary-fixed-variant": "#00504b",
+            "on-primary-container": "#001892",
+            "outline-variant": "#454653",
+            "surface-tint": "#bcc3ff",
+            "outline": "#8f8f9f",
+            "surface-dim": "#11131b",
+            "tertiary-fixed": "#ffddaf",
+            "surface-container-highest": "#33343e",
+            "inverse-surface": "#e2e1ee",
+            "tertiary-fixed-dim": "#ffba43",
+            "background": "#11131b",
+            "on-secondary-container": "#00534e",
+            "on-tertiary": "#442c00",
+            "secondary-container": "#00cec3",
+            "on-background": "#e2e1ee",
+            "surface": "#11131b",
+            "primary-fixed-dim": "#bcc3ff",
+            "surface-container-high": "#282a32",
+            "on-surface": "#e2e1ee",
+            "tertiary": "#ffba43",
+            "on-secondary-fixed": "#00201e",
+            "primary-fixed": "#dfe0ff",
+            "surface-container-lowest": "#0c0e16",
+            "surface-container-low": "#191b24",
+            "surface-container": "#1d1f28",
+            "error-container": "#93000a",
+            "secondary-fixed": "#59f9ed",
+            "on-tertiary-fixed": "#281800",
+            "on-tertiary-container": "#402900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "1rem",
+            "gutter-lg": "1.5rem",
+            "margin-lg": "2.5rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "margin-md": "1.5rem",
+            "space-xl": "2.5rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Inter"],
+            "label-mono-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "label-mono-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "body-md": ["Inter"],
+            "body-editorial": ["Literata"],
+            "label-mono-sm": ["Inter"]
+          },
+          "fontSize": {
+            "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "600" }],
+            "label-mono-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "label-mono-md": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-editorial": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-mono-sm": ["11px", { "lineHeight": "14px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #090B13;
+      color: #F4F6FF;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Subtle Glassmorphic card styling & borders per visual specs */
+    .glass-surface {
+      background: rgba(23, 28, 44, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(189, 198, 255, 0.14);
+      border-radius: 22px;
+    }
+
+    .glass-rail {
+      background: rgba(14, 17, 27, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(189, 198, 255, 0.08);
+    }
+
+    .glass-header {
+      background: rgba(17, 19, 27, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(189, 198, 255, 0.08);
+    }
+
+    /* Ambient Aurora Glow */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at 50% 35%, rgba(124, 140, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 65% 55%, rgba(52, 224, 212, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 20% 20%, rgba(67, 83, 195, 0.05) 0%, transparent 40%);
+      z-index: 0;
+    }
+
+    /* Custom details disclosure marker rotation */
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] summary .expand-icon {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Background Glow -->
+<div aria-hidden="true" class="aurora-bg"></div>
+<!-- Left Navigation Rail (104px compact rail) -->
+<aside class="fixed left-0 top-0 h-screen w-[104px] glass-rail flex flex-col items-center py-space-lg z-30 select-none">
+<!-- Brand Logo Mark -->
+<div class="mb-space-xl flex flex-col items-center justify-center">
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center border border-outline-variant/30 text-primary shadow-sm">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary">Z</span>
+</div>
+</div>
+<!-- Navigation Stack -->
+<nav aria-label="Main Navigation" class="flex-1 flex flex-col items-center gap-space-sm w-full px-2">
+<!-- Home -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Home</span>
+</a>
+<!-- Library -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">local_library</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Library</span>
+</a>
+<!-- Ask -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Ask</span>
+</a>
+<!-- Notes -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">description</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Notes</span>
+</a>
+<!-- Memory -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" href="#">
+<span class="material-symbols-outlined text-[24px]">memory</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Memory</span>
+</a>
+<!-- Settings -->
+<a class="w-full flex flex-col items-center justify-center py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[44px] min-w-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none mt-auto" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-label-mono-sm font-label-mono-sm mt-1">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Canvas Container (Offset by 104px left rail) -->
+<div class="ml-[104px] w-[calc(100%-104px)] min-h-screen flex flex-col relative z-10">
+<!-- Top Desktop Header -->
+<header class="h-14 glass-header sticky top-0 z-20 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center border border-outline-variant/30 text-primary font-bold text-[16px]">Z</div><span class="text-headline-md font-headline-md font-semibold text-on-surface tracking-tight">EnZIME Reader</span></div><div class="flex items-center gap-space-md"><button aria-label="Close" class="inline-flex items-center justify-center p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-colors duration-150 min-h-[38px] min-w-[38px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div></header>
+<!-- Main Activation Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center px-space-lg py-space-xl">
+<!-- 4-Step Progress Indicator -->
+<div aria-label="Activation Progress" class="w-full max-w-xl mb-8 select-none"><div class="flex items-center justify-center gap-3"><div class="w-2.5 h-2.5 rounded-full bg-primary-container/40" title="Step 1: Welcome"></div><div class="w-2.5 h-2.5 rounded-full bg-primary-container/40" title="Step 2: Activation"></div><div class="w-2.5 h-2.5 rounded-full bg-primary-container/40" title="Step 3: Confirmation"></div><div class="w-2.5 h-2.5 rounded-full bg-primary-container ring-4 ring-primary-container/20" title="Step 4: Ready (Active)"></div></div></div>
+<!-- Centered Glass Card (Step 4 of 4) -->
+<section aria-labelledby="activation-title" class="w-full max-w-xl glass-surface p-8 sm:p-10 shadow-2xl flex flex-col items-center text-center relative overflow-hidden">
+<!-- Subtle Celebratory Aurora Accent Icon -->
+<div class="w-16 h-16 rounded-full bg-[#34E0D4]/10 border border-[#34E0D4]/25 flex items-center justify-center text-[#34E0D4] mb-6 shadow-[0_0_24px_-4px_rgba(52,224,212,0.3)]">
+<span class="material-symbols-outlined text-[32px]">verified</span>
+</div>
+<!-- Heading -->
+<h1 class="text-headline-lg font-headline-lg text-[#F4F6FF] mb-3" id="activation-title">EnZIME is activated.</h1>
+<!-- Explanatory Copy -->
+<p class="text-body-lg font-body-lg text-[#B7BDD4] max-w-md mb-8 leading-relaxed">Your purchase is saved for offline use.</p>
+<!-- Primary Action Button -->
+<a class="w-full sm:w-auto px-8 py-3.5 bg-[#7C8CFF] hover:bg-[#96A4FF] text-[#090B13] font-headline-md font-semibold text-body-lg rounded-xl flex items-center justify-center gap-2 transition-all duration-150 min-h-[44px] shadow-[0_0_20px_rgba(124,140,255,0.3)] focus-visible:ring-4 focus-visible:ring-[#7C8CFF]/50 focus-visible:outline-none" href="#"><span>Start reading</span><span class="material-symbols-outlined text-[20px]">arrow_forward</span></a>
+<!-- Purchase Disclosure Details (Empty data-* bindings, no fake values) -->
+<div class="w-full mt-8 pt-6 border-t border-[rgba(189,198,255,0.1)] text-left">
+<details class="group cursor-pointer">
+<summary class="flex items-center justify-between text-body-md font-body-md text-[#B7BDD4] hover:text-[#F4F6FF] transition-colors duration-150 select-none py-1 min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                View purchase details
+              </span>
+<span class="material-symbols-outlined text-[20px] transition-transform duration-200 expand-icon text-outline">expand_more</span>
+</summary>
+<!-- Authentic Binding Slots -->
+<div class="mt-4 p-4 rounded-xl bg-surface-container-lowest/60 border border-outline-variant/20 text-body-md font-body-md space-y-2"><div class="flex justify-between items-center py-1"><span class="text-on-surface-variant text-label-mono-md font-label-mono-md">Product</span><span class="text-on-surface font-mono text-label-mono-md" data-product-name=""></span></div><div class="flex justify-between items-center py-1 border-t border-outline-variant/15"><span class="text-on-surface-variant text-label-mono-md font-label-mono-md">Order Date</span><span class="text-on-surface font-mono text-label-mono-md" data-order-date=""></span></div><div class="flex justify-between items-center py-1 border-t border-outline-variant/15"><span class="text-on-surface-variant text-label-mono-md font-label-mono-md">Store Receipt</span><span class="text-on-surface font-mono text-label-mono-md" data-store-receipt=""></span></div></div>
+</details>
+</div>
+<!-- Succinct Offline Reassurance -->
+</section>
+</main>
+<!-- Bottom-right quiet version text (Quiet plain version without badge or glowing status dot) -->
+<footer class="h-10 px-space-xl flex items-center justify-end select-none">
+<span class="text-label-mono-sm font-label-mono-sm text-outline tracking-wider">
+        EnZIME Reader v1.29.08988
+      </span>
+</footer>
+</div>
+<!-- Inert Template for future state bindings -->
+</body></html>
