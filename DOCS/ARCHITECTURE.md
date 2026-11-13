@@ -6983,3 +6983,18 @@ packaging, signing and artifact/source manifest generation continue normally.
 Log the omission explicitly; never claim those app checks passed. This is an
 operator-stop control on the existing build, not a product setting or a new test
 workflow. The default build behavior is unchanged for other invocations.
+
+
+## BuildAll additional success increment — 2026-11-12
+
+Authority: Robin's explicit instruction: always use build_all.sh for the full platform set; add one MINOR increment after success, without removing, moving or consolidating any existing increment. Double increments are accepted. CC2 already specifies this addition.
+
+| Exact entity | Target | Responsibility |
+|---|---|---|
+| `build_all.sh` | `build_all.sh:1` | Existing sole build entry. Run its existing child normally instead of exec. Under existing set -euo pipefail, only after child success, advance the next source version, commit only the two canonical version files with a v<next-source-version>: prefix and [skip ci], push, and report built versus next-source versions. |
+| `version.txt` | `version.txt:1` | Existing canonical MAJOR.MINOR.BUILD. Post-success increment keeps MAJOR, adds one to MINOR, and computes BUILD using the existing epoch-minutes modulo 100000 scheme; display BUILD padded to five digits. |
+| `version.json` | `version.json:1` | Preserve existing product fields. Reflect the same next version in version, semver (unpadded numeric BUILD), versionBase, buildNumber, versionCode, buildDate; builtAt is null for the next unbuilt source state. |
+
+Keep the existing build runner, pre-build increments, stamp script, platform set, artifact names, freeze and source archive behavior intact. Only build_all.sh gains executable behavior. Existing Python is already a build dependency, so its inline post-success version update needs no new helper file or dependency. Built artifacts retain their frozen build version. Never label the next source version as an existing package. Git commit/push failure remains a reported error. No application installation is part of this change.
+
+CodeGraph coverage: BuildSet, prepare_snapshot and finalize were read from the graph. Bash entry/stamper are a parser coverage gap; targeted reads of build_all.sh and scripts/update-version.sh established the existing entrypoint and version fields.
